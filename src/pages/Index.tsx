@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -7,46 +7,79 @@ import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { supabase } from "@/lib/supabase";
 import type { Property } from "@/types/property";
-import heroImage from "@/assets/hero-marrakech.jpg";
+import slide1 from "@/assets/slide1.png";
+import slide2 from "@/assets/slide2.png";
+import slide3 from "@/assets/slide3.png";
+import slide4 from "@/assets/slide4.png";
+import slide5 from "@/assets/slide5.png";
 
 const heroSlides = [
   {
-    image: "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?q=80&w=2000",
-    title: "Découvrez les plus beaux riads",
-    subtitle: "Des demeures d'exception au cœur de la Médina de Marrakech."
+    image: slide1,
+    title: "Villas d'exception avec jardins et piscines",
+    subtitle: "Une oasis de verdure et de fraîcheur pour votre confort absolu."
   },
   {
-    image: "https://images.unsplash.com/photo-1597843786411-a8904dfd8da0?q=80&w=2000",
-    title: "Une oasis avec piscine privée",
-    subtitle: "L'excellence immobilière alliant fraîcheur et sérénité."
+    image: slide2,
+    title: "Votre nouvelle vie en famille commence ici",
+    subtitle: "Location longue durée dans des cadres idylliques pour petits et grands."
   },
   {
-    image: "https://images.unsplash.com/photo-1572120360610-d971b9d7767c?q=80&w=2000",
-    title: "Jardins luxuriants et havres de paix",
-    subtitle: "Profitez de la nature et du soleil marocain depuis chez vous."
+    image: slide3,
+    title: "Design contemporain dans la Palmeraie",
+    subtitle: "Une architecture moderne se mêlant parfaitement au paysage millénaire."
   },
   {
-    image: "https://images.unsplash.com/photo-1552086438-e62a0572e9dd?q=80&w=2000",
-    title: "Vue imprenable sur la Médina",
-    subtitle: "Terrasses panoramiques offrant des couchers de soleil uniques."
+    image: slide4,
+    title: "Des soirées magiques au bord de l'eau",
+    subtitle: "Profitez de la douceur des nuits de Marrakech dans un cadre raffiné."
   },
   {
-    image: "https://images.unsplash.com/photo-1558229875-d14dc6cbd7cb?q=80&w=2000",
-    title: "Salons marocains de luxe",
-    subtitle: "Des intérieurs somptueux respectant la tradition de l'artisanat."
+    image: slide5,
+    title: "Jardins secrets et havres de paix",
+    subtitle: "Le luxe du calme et de l'intimité au cœur de domaines luxuriants."
   }
 ];
+
+// Durée d'affichage par photo et durée du fondu — modifiable ici
+const DISPLAY_MS = 6000; // ms d'affichage complet avant le fondu
+const FADE_MS    = 1500; // ms de crossfade
 
 const Index = () => {
   const [featured, setFeatured] = useState<Property[]>([]);
   const [searchType, setSearchType] = useState<"vente" | "location_courte" | "location_longue">("vente");
-  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Deux couches empilées : bottom toujours visible, top fadeIn puis swap
+  const [bottomSlide, setBottomSlide] = useState(0);
+  const [topSlide,    setTopSlide]    = useState(1);
+  const [topVisible,  setTopVisible]  = useState(false);
+  const currentRef = useRef(0); // index de la photo visible (bottom)
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
-    }, 5000);
-    return () => clearInterval(timer);
+    let swapTimer: ReturnType<typeof setTimeout>;
+
+    const advance = () => {
+      // 1. Fade in la prochaine photo (top layer)
+      setTopVisible(true);
+
+      // 2. Après le fondu : promouvoir top → bottom, charger la suivante
+      swapTimer = setTimeout(() => {
+        const newCurrent = (currentRef.current + 1) % heroSlides.length;
+        const newNext    = (newCurrent    + 1) % heroSlides.length;
+        currentRef.current = newCurrent;
+        setBottomSlide(newCurrent);
+        setTopSlide(newNext);
+        setTopVisible(false);
+      }, FADE_MS + 50);
+    };
+
+    // Même délai pour chaque photo, dès la première
+    const interval = setInterval(advance, DISPLAY_MS);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(swapTimer);
+    };
   }, []);
 
   useEffect(() => {
@@ -66,50 +99,58 @@ const Index = () => {
     <div className="min-h-screen">
       <Header />
 
-      {/* Hero Slider */}
-      <section className="relative h-screen overflow-hidden bg-black">
-        {heroSlides.map((slide, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-[1500ms] ease-in-out ${
-              currentSlide === index ? "opacity-100 z-10" : "opacity-0 z-0"
-            }`}
-          >
-            {/* Image with Ken Burns effect */}
-            <div
-              className={`absolute inset-0 transition-transform duration-[10000ms] ease-out ${
-                currentSlide === index ? "scale-110" : "scale-100"
-              }`}
-            >
-              <img
-                src={slide.image}
-                alt={slide.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            
-            {/* Elegant dark gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-foreground/30 to-foreground/50" />
-            
-            {/* Slide Text */}
-            <div className="absolute inset-x-0 top-[40%] -translate-y-1/2 flex flex-col items-center justify-center text-center px-6">
-              <h1
-                className={`text-primary-foreground mb-6 max-w-4xl font-serif transition-all duration-1000 delay-300 transform ${
-                  currentSlide === index ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                }`}
-              >
-                {slide.title}
-              </h1>
-              <p
-                className={`text-primary-foreground/90 font-light text-lg md:text-xl max-w-2xl transition-all duration-1000 delay-500 transform ${
-                  currentSlide === index ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                }`}
-              >
-                {slide.subtitle}
-              </p>
-            </div>
+      {/* Hero Slider — two-layer crossfade with Ken Burns effect */}
+      <section className="relative h-screen overflow-hidden">
+        {/* Bottom layer: always fully visible (outgoing photo) */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 scale-110 transition-transform duration-[10000ms] linear" style={{ transform: 'scale(1.15)' }}>
+            <img
+              src={heroSlides[bottomSlide].image}
+              alt={heroSlides[bottomSlide].title}
+              className="w-full h-full object-cover"
+            />
           </div>
-        ))}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/40" />
+        </div>
+
+        {/* Top layer: fades in (incoming photo), then becomes bottom */}
+        <div
+          className="absolute inset-0 z-10"
+          style={{
+            opacity: topVisible ? 1 : 0,
+            transition: `opacity ${FADE_MS}ms ease-in-out`,
+          }}
+        >
+          <div 
+            className="absolute inset-0 transition-transform duration-[10000ms] linear" 
+            style={{ transform: topVisible ? 'scale(1.15)' : 'scale(1)' }}
+          >
+            <img
+              src={heroSlides[topSlide].image}
+              alt={heroSlides[topSlide].title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/40" />
+        </div>
+
+        {/* Slide text — always shows the active (bottom) slide's text */}
+        <div className="absolute inset-x-0 top-[40%] -translate-y-1/2 flex flex-col items-center justify-center text-center px-6 z-20">
+          <h1
+            key={bottomSlide}
+            className="text-primary-foreground mb-6 max-w-4xl font-serif animate-fade-in"
+          >
+            {heroSlides[bottomSlide].title}
+          </h1>
+          <p
+            key={`sub-${bottomSlide}`}
+            className="text-primary-foreground/90 font-light text-lg md:text-xl max-w-2xl animate-fade-in"
+            style={{ animationDelay: "200ms" }}
+          >
+            {heroSlides[bottomSlide].subtitle}
+          </p>
+        </div>
+
 
         {/* Search bar positioned absolutely at the bottom */}
         <div className="absolute inset-x-0 bottom-24 md:bottom-32 flex justify-center px-6 z-20">
@@ -155,8 +196,12 @@ const Index = () => {
 
           {featured.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
-              {featured.map((property) => (
-                <PropertyCard key={property.id} property={property} />
+              {featured.map((property, i) => (
+                <PropertyCard
+                  key={property.id}
+                  property={property}
+                  revealDelay={i * 120}
+                />
               ))}
             </div>
           ) : (

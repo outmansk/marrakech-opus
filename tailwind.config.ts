@@ -89,11 +89,16 @@ export default {
           from: { opacity: "0", transform: "translateY(20px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
+        "card-reveal": {
+          from: { opacity: "0", transform: "translateY(48px)" },
+          to:   { opacity: "1", transform: "translateY(0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.8s ease-out forwards",
+        "card-reveal": "card-reveal 0.7s cubic-bezier(0.16,1,0.3,1) forwards",
       },
     },
   },
