@@ -8,37 +8,37 @@ import PropertyCard from "@/components/PropertyCard";
 import { supabase } from "@/lib/supabase";
 import type { Property } from "@/types/property";
 import type { Article } from "@/types/article";
-import slide1 from "@/assets/slide1.png";
-import slide2 from "@/assets/slide2.png";
-import slide3 from "@/assets/slide3.png";
-import slide4 from "@/assets/slide4.png";
-import slide5 from "@/assets/slide5.png";
+import slide1 from "@/assets/slide1.jpg";
+import slide2 from "@/assets/slide2.jpg";
+import slide3 from "@/assets/slide3.jpg";
+import slide4 from "@/assets/slide4.jpg";
+import slide5 from "@/assets/slide5.jpg";
 
 const heroSlides = [
   {
     image: slide1,
-    title: "Villas d'exception avec jardins et piscines",
-    subtitle: "Une oasis de verdure et de fraîcheur pour votre confort absolu."
+    title: "Votre arrivée dans l'exceptionnel",
+    subtitle: "Dar Prestige vous ouvre les portes des plus belles demeures de Marrakech."
   },
   {
     image: slide2,
-    title: "Votre nouvelle vie en famille commence ici",
-    subtitle: "Location longue durée dans des cadres idylliques pour petits et grands."
+    title: "L'art de vivre à la marocaine",
+    subtitle: "Élégance, prestige et authenticité pour un style de vie incomparable."
   },
   {
     image: slide3,
-    title: "Design contemporain dans la Palmeraie",
-    subtitle: "Une architecture moderne se mêlant parfaitement au paysage millénaire."
+    title: "Détente et sérénité absolue",
+    subtitle: "Des espaces pensés pour votre bien-être au cœur de la ville ocre."
   },
   {
     image: slide4,
-    title: "Des soirées magiques au bord de l'eau",
-    subtitle: "Profitez de la douceur des nuits de Marrakech dans un cadre raffiné."
+    title: "Vivez et travaillez depuis le paradis",
+    subtitle: "Le luxe du calme pour une inspiration sans limite au quotidien."
   },
   {
     image: slide5,
-    title: "Jardins secrets et havres de paix",
-    subtitle: "Le luxe du calme et de l'intimité au cœur de domaines luxuriants."
+    title: "L'authenticité au cœur de la Médina",
+    subtitle: "Découvrez des havres de paix chargés d'histoire et de poésie."
   }
 ];
 
