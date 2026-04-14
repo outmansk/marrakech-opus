@@ -23,7 +23,9 @@ const Admin = () => {
 
   // Form state for new property
   const [form, setForm] = useState({
-    title: "", description: "", price: "", transaction_type: "vente" as string,
+    title: "", description: "",
+    price_vente: "", price_location_courte: "", price_location_longue: "",
+    transaction_types: ["vente"],
     property_type: "Villa", bedrooms: "", secure_parking: false,
     environment_type: "", proximities: "[]", is_available: true,
   });
@@ -90,8 +92,11 @@ const Admin = () => {
     const { error } = await supabase.from("properties").insert({
       title: form.title,
       description: form.description,
-      price: parseFloat(form.price),
-      transaction_type: form.transaction_type,
+      price: 0, // Legacy
+      price_vente: form.price_vente ? parseFloat(form.price_vente) : 0,
+      price_location_courte: form.price_location_courte ? parseFloat(form.price_location_courte) : 0,
+      price_location_longue: form.price_location_longue ? parseFloat(form.price_location_longue) : 0,
+      transaction_types: form.transaction_types,
       property_type: form.property_type,
       bedrooms: form.bedrooms ? parseInt(form.bedrooms) : null,
       secure_parking: form.secure_parking,
@@ -106,7 +111,7 @@ const Admin = () => {
       toast({ title: "Erreur", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Bien ajoute avec succes" });
-      setForm({ title: "", description: "", price: "", transaction_type: "vente", property_type: "Villa", bedrooms: "", secure_parking: false, environment_type: "", proximities: "[]", is_available: true });
+      setForm({ title: "", description: "", price_vente: "", price_location_courte: "", price_location_longue: "", transaction_types: ["vente"], property_type: "Villa", bedrooms: "", secure_parking: false, environment_type: "", proximities: "[]", is_available: true });
       setImageFiles([]);
       setTab("properties");
       fetchData();
@@ -196,7 +201,7 @@ const Admin = () => {
                   )}
                   <div>
                     <p className="font-medium">{p.title}</p>
-                    <p className="text-sm text-muted-foreground font-light">{p.property_type} — {p.transaction_type}</p>
+                    <p className="text-sm text-muted-foreground font-light">{p.property_type} — {(p.transaction_types || []).join(', ')}</p>
                   </div>
                 </div>
                 <Button variant="ghost" size="icon" onClick={() => handleDeleteProperty(p.id)}>
@@ -232,17 +237,53 @@ const Admin = () => {
                 <Label className="text-xs tracking-widest uppercase text-muted-foreground">Titre</Label>
                 <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required className="h-12 bg-transparent" />
               </div>
-              <div className="space-y-2">
-                <Label className="text-xs tracking-widest uppercase text-muted-foreground">Prix</Label>
-                <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required className="h-12 bg-transparent" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs tracking-widest uppercase text-muted-foreground">Type de transaction</Label>
-                <select value={form.transaction_type} onChange={(e) => setForm({ ...form, transaction_type: e.target.value })} className="h-12 w-full border border-input bg-transparent px-3 text-sm">
-                  <option value="vente">Vente</option>
-                  <option value="location_courte">Location courte duree</option>
-                  <option value="location_longue">Location longue duree</option>
-                </select>
+              <div className="space-y-4 md:col-span-2">
+                <Label className="text-xs tracking-widest uppercase text-muted-foreground">Types de transactions & Prix</Label>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  
+                  {/* VENTE */}
+                  <div className="flex flex-col gap-3 p-4 border border-border">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked={form.transaction_types.includes("vente")} onChange={(e) => {
+                        const types = e.target.checked 
+                          ? [...form.transaction_types, "vente"]
+                          : form.transaction_types.filter(t => t !== "vente");
+                        setForm({ ...form, transaction_types: types });
+                      }} className="accent-olive" />
+                      <span className="text-sm font-medium uppercase tracking-widest">En Vente</span>
+                    </label>
+                    <Input type="number" placeholder="Prix Vente (MAD)" value={form.price_vente} onChange={(e) => setForm({ ...form, price_vente: e.target.value })} disabled={!form.transaction_types.includes("vente")} className="h-10 bg-transparent" />
+                  </div>
+
+                  {/* LOCATION LONGUE */}
+                  <div className="flex flex-col gap-3 p-4 border border-border">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked={form.transaction_types.includes("location_longue")} onChange={(e) => {
+                        const types = e.target.checked 
+                          ? [...form.transaction_types, "location_longue"]
+                          : form.transaction_types.filter(t => t !== "location_longue");
+                        setForm({ ...form, transaction_types: types });
+                      }} className="accent-olive" />
+                      <span className="text-sm font-medium uppercase tracking-widest">Loc. Longue</span>
+                    </label>
+                    <Input type="number" placeholder="Prix par mois (MAD)" value={form.price_location_longue} onChange={(e) => setForm({ ...form, price_location_longue: e.target.value })} disabled={!form.transaction_types.includes("location_longue")} className="h-10 bg-transparent" />
+                  </div>
+
+                  {/* LOCATION COURTE */}
+                  <div className="flex flex-col gap-3 p-4 border border-border">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked={form.transaction_types.includes("location_courte")} onChange={(e) => {
+                        const types = e.target.checked 
+                          ? [...form.transaction_types, "location_courte"]
+                          : form.transaction_types.filter(t => t !== "location_courte");
+                        setForm({ ...form, transaction_types: types });
+                      }} className="accent-olive" />
+                      <span className="text-sm font-medium uppercase tracking-widest">Loc. Courte</span>
+                    </label>
+                    <Input type="number" placeholder="Prix par nuit (MAD)" value={form.price_location_courte} onChange={(e) => setForm({ ...form, price_location_courte: e.target.value })} disabled={!form.transaction_types.includes("location_courte")} className="h-10 bg-transparent" />
+                  </div>
+
+                </div>
               </div>
               <div className="space-y-2">
                 <Label className="text-xs tracking-widest uppercase text-muted-foreground">Type de bien</Label>

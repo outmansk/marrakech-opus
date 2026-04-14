@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { supabase } from "@/lib/supabase";
 import type { Property } from "@/types/property";
+import type { Article } from "@/types/article";
 import slide1 from "@/assets/slide1.png";
 import slide2 from "@/assets/slide2.png";
 import slide3 from "@/assets/slide3.png";
@@ -47,6 +48,7 @@ const FADE_MS    = 1500; // ms de crossfade
 
 const Index = () => {
   const [featured, setFeatured] = useState<Property[]>([]);
+  const [latestArticles, setLatestArticles] = useState<Article[]>([]);
   const [searchType, setSearchType] = useState<"vente" | "location_courte" | "location_longue">("vente");
 
   // Deux couches empilées : bottom toujours visible, top fadeIn puis swap
@@ -83,16 +85,26 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
-    const fetchFeatured = async () => {
-      const { data } = await supabase
+    const fetchData = async () => {
+      // Biens
+      const { data: propsData } = await supabase
         .from("properties")
         .select("*")
         .eq("is_available", true)
         .order("created_at", { ascending: false })
         .limit(6);
-      if (data) setFeatured(data as Property[]);
+      if (propsData) setFeatured(propsData as Property[]);
+
+      // Articles
+      const { data: artsData } = await supabase
+        .from("articles")
+        .select("*")
+        .eq("est_publie", true)
+        .order("created_at", { ascending: false })
+        .limit(3);
+      if (artsData) setLatestArticles(artsData as Article[]);
     };
-    fetchFeatured();
+    fetchData();
   }, []);
 
   return (
@@ -222,6 +234,48 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Latest Articles */}
+      {latestArticles.length > 0 && (
+        <section className="py-24 md:py-32">
+          <div className="container mx-auto px-6 md:px-12">
+            <div className="flex items-end justify-between mb-16">
+              <div>
+                <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Actualités</p>
+                <h2>Derniers Articles</h2>
+              </div>
+              <Link to="/blog" className="hidden md:flex items-center gap-2 text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors font-sans">
+                Voir tout
+                <ArrowRight size={16} strokeWidth={1.25} />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+              {latestArticles.map((article) => (
+                <Link to={`/blog/${article.slug}`} key={article.id} className="group flex flex-col items-start hover-target h-full border border-border bg-card overflow-hidden">
+                  <div className="relative w-full aspect-[4/3] overflow-hidden bg-muted">
+                    <img src={article.image_url} alt={article.title} className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+                  </div>
+                  <div className="p-6 flex flex-col flex-grow w-full">
+                    <h3 className="font-serif text-lg mb-3 line-clamp-2 transition-colors duration-300">{article.title}</h3>
+                    <p className="text-muted-foreground font-light text-sm line-clamp-3 mb-6">{article.excerpt}</p>
+                    <div className="mt-auto flex items-center gap-2 text-xs tracking-widest uppercase font-sans font-medium text-muted-foreground group-hover:text-foreground transition-all duration-300">
+                      Lire l'article <ArrowRight size={14} strokeWidth={1} className="transition-transform duration-300 group-hover:translate-x-1" />
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <div className="text-center mt-12 md:hidden">
+              <Link to="/blog">
+                <Button variant="luxury-ghost" size="lg">
+                  Visiter le Blog
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CTA */}
       <section className="bg-secondary py-24 md:py-32">

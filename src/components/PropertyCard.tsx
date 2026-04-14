@@ -22,12 +22,31 @@ const transactionLabel = (type: string) => {
   }
 };
 
+const getDisplayPrice = (property: Property, activeType?: string) => {
+  if (activeType && activeType !== 'all') {
+    if (activeType === 'vente') return new Intl.NumberFormat("fr-MA").format(property.price_vente) + " MAD";
+    if (activeType === 'location_courte') return new Intl.NumberFormat("fr-MA").format(property.price_location_courte) + " MAD / nuit";
+    if (activeType === 'location_longue') return new Intl.NumberFormat("fr-MA").format(property.price_location_longue) + " MAD / mois";
+  }
+  
+  // S'il n'y a pas de filtre spécifique, on affiche le premier prix disponible
+  if (property.transaction_types.includes('vente') && property.price_vente > 0) 
+    return new Intl.NumberFormat("fr-MA").format(property.price_vente) + " MAD (Vente)";
+  if (property.transaction_types.includes('location_longue') && property.price_location_longue > 0) 
+    return new Intl.NumberFormat("fr-MA").format(property.price_location_longue) + " MAD / mois";
+  if (property.transaction_types.includes('location_courte') && property.price_location_courte > 0) 
+    return new Intl.NumberFormat("fr-MA").format(property.price_location_courte) + " MAD / nuit";
+    
+  return "Prix sur demande";
+};
+
 interface PropertyCardProps {
   property: Property;
   revealDelay?: number;
+  activeType?: string;
 }
 
-const PropertyCard = ({ property, revealDelay = 0 }: PropertyCardProps) => {
+const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardProps) => {
   const images = property.image_urls?.length ? property.image_urls : ["/placeholder.svg"];
   const hasMultiple = images.length > 1;
 
@@ -143,7 +162,7 @@ const PropertyCard = ({ property, revealDelay = 0 }: PropertyCardProps) => {
       <div className="pt-5 pb-2">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs tracking-widest uppercase text-muted-foreground font-sans">
-            {transactionLabel(property.transaction_type)}
+            {property.transaction_types.map(transactionLabel).join(' • ')}
           </span>
           <span className="text-xs tracking-widest uppercase text-muted-foreground font-sans">
             {property.property_type}
@@ -153,7 +172,7 @@ const PropertyCard = ({ property, revealDelay = 0 }: PropertyCardProps) => {
           {property.title}
         </h3>
         <p className="text-accent font-serif text-lg">
-          {formatPrice(property.price, property.transaction_type)}
+          {getDisplayPrice(property, activeType)}
         </p>
         <div className="flex items-center gap-4 mt-3 text-muted-foreground">
           {property.bedrooms && (

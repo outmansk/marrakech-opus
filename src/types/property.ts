@@ -2,8 +2,11 @@ export interface Property {
   id: string;
   title: string;
   description: string | null;
-  price: number;
-  transaction_type: 'vente' | 'location_courte' | 'location_longue';
+  price: number; // Keep for legacy
+  price_vente: number;
+  price_location_courte: number;
+  price_location_longue: number;
+  transaction_types: string[];
   property_type: string;
   bedrooms: number | null;
   secure_parking: boolean;

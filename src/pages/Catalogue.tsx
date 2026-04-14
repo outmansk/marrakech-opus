@@ -17,7 +17,7 @@ const Catalogue = () => {
       setLoading(true);
       let query = supabase.from("properties").select("*").eq("is_available", true).order("created_at", { ascending: false });
       if (activeType !== "all") {
-        query = query.eq("transaction_type", activeType);
+        query = query.contains("transaction_types", [activeType]);
       }
       const { data } = await query;
       setProperties((data as Property[]) || []);
@@ -73,7 +73,7 @@ const Catalogue = () => {
           ) : properties.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
               {properties.map((property) => (
-                <PropertyCard key={property.id} property={property} />
+                <PropertyCard key={property.id} property={property} activeType={activeType} />
               ))}
             </div>
           ) : (

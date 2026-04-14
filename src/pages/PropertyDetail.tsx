@@ -119,15 +119,25 @@ const PropertyDetail = () => {
         <div className="container mx-auto px-6 md:px-12 py-16">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
             <div className="lg:col-span-2 space-y-10">
-              <div>
-                <p className="text-xs tracking-widest uppercase text-muted-foreground mb-3">
-                  {transactionLabel(property.transaction_type)} — {property.property_type}
-                </p>
-                <h1 className="mb-4">{property.title}</h1>
-                <p className="text-accent font-serif text-2xl">
-                  {formatPrice(property.price, property.transaction_type)}
-                </p>
-              </div>
+                <div className="flex flex-col mb-12">
+                  <span className="text-xs tracking-widest uppercase font-sans text-muted-foreground mb-4">
+                    {property.transaction_types.map(t => t === 'vente' ? 'Vente' : t === 'location_courte' ? 'Location courte durée' : 'Location longue durée').join(' & ')} — {property.property_type}
+                  </span>
+                  <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-6 leading-tight">
+                    {property.title}
+                  </h1>
+                  <div className="flex flex-col gap-2">
+                    {property.transaction_types.includes('vente') && property.price_vente > 0 && (
+                      <p className="text-2xl font-serif text-accent">{new Intl.NumberFormat("fr-MA").format(property.price_vente)} MAD <span className="text-sm font-light text-muted-foreground uppercase tracking-widest ml-2">À la vente</span></p>
+                    )}
+                    {property.transaction_types.includes('location_longue') && property.price_location_longue > 0 && (
+                      <p className="text-2xl font-serif text-accent">{new Intl.NumberFormat("fr-MA").format(property.price_location_longue)} MAD / mois <span className="text-sm font-light text-muted-foreground uppercase tracking-widest ml-2">Longue durée</span></p>
+                    )}
+                    {property.transaction_types.includes('location_courte') && property.price_location_courte > 0 && (
+                      <p className="text-2xl font-serif text-accent">{new Intl.NumberFormat("fr-MA").format(property.price_location_courte)} MAD / nuit <span className="text-sm font-light text-muted-foreground uppercase tracking-widest ml-2">Courte durée</span></p>
+                    )}
+                  </div>
+                </div>
 
               <div className="flex flex-wrap items-center gap-4 sm:gap-8 py-6 border-y border-border">
                 {property.bedrooms && (

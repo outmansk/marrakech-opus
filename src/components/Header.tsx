@@ -37,6 +37,7 @@ const Header = () => {
           {[
             { to: "/",          label: "Accueil" },
             { to: "/catalogue", label: "Catalogue" },
+            { to: "/blog",      label: "Blog" },
             { to: "/contact",   label: "Contact" },
           ].map(({ to, label }) => (
             <Link
@@ -90,6 +91,7 @@ const Header = () => {
           {[
             { to: "/",          label: "Accueil" },
             { to: "/catalogue", label: "Catalogue" },
+            { to: "/blog",      label: "Blog" },
             { to: "/contact",   label: "Contact" },
           ].map(({ to, label }) => (
             <Link
