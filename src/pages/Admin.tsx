@@ -168,7 +168,13 @@ const Admin = () => {
     <div className="min-h-screen bg-background">
       <div className="border-b border-border">
         <div className="container mx-auto px-6 md:px-12 flex items-center justify-between h-16">
-          <h2 className="font-serif text-xl">Administration</h2>
+          <div className="flex items-center gap-8">
+            <h2 className="font-serif text-xl cursor-pointer" onClick={() => navigate("/admin")}>Administration</h2>
+            <nav className="hidden md:flex items-center gap-6">
+              <button onClick={() => navigate("/admin")} className={`text-xs tracking-widest uppercase font-sans ${tab !== 'visits' ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>Immobilier</button>
+              <button onClick={() => navigate("/admin/blog")} className="text-xs tracking-widest uppercase font-sans text-muted-foreground hover:text-foreground">Blog</button>
+            </nav>
+          </div>
           <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-2">
             <LogOut size={16} strokeWidth={1.25} />
             Deconnexion
