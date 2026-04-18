@@ -7,11 +7,15 @@ import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import Catalogue from "./pages/Catalogue";
 import PropertyDetail from "./pages/PropertyDetail";
-import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
-import AdminBlog from "./pages/AdminBlog";
+import AdminLayout from "./components/admin/AdminLayout";
+import AdminBlog from "./pages/admin/AdminBlog";
+import AdminBiens from "./pages/admin/AdminBiens";
+import AdminVisites from "./pages/admin/AdminVisites";
+import { Navigate } from "react-router-dom";
+
 
 const queryClient = new QueryClient();
 
@@ -28,8 +32,12 @@ const App = () => (
             <Route path="/bien/:id" element={<PropertyDetail />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/blog" element={<AdminBlog />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="/admin/biens" replace />} />
+              <Route path="biens" element={<AdminBiens />} />
+              <Route path="blog" element={<AdminBlog />} />
+              <Route path="visites" element={<AdminVisites />} />
+            </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

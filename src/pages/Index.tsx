@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { supabase } from "@/lib/supabase";
-import type { Property } from "@/types/property";
+import type { Bien } from "@/types/property";
 import type { Article } from "@/types/article";
 import slide1 from "@/assets/slide1.jpg";
 import slide2 from "@/assets/slide2.jpg";
@@ -88,12 +88,12 @@ const Index = () => {
     const fetchData = async () => {
       // Biens
       const { data: propsData } = await supabase
-        .from("properties")
+        .from("properties_v2")
         .select("*")
-        .eq("is_available", true)
+        .eq("statut", "publie")
         .order("created_at", { ascending: false })
         .limit(6);
-      if (propsData) setFeatured(propsData as Property[]);
+      if (propsData) setFeatured(propsData as Bien[]);
 
       // Articles
       const { data: artsData } = await supabase
@@ -147,16 +147,16 @@ const Index = () => {
         </div>
 
         {/* Slide text — always shows the active (bottom) slide's text */}
-        <div className="absolute inset-x-0 top-[40%] -translate-y-1/2 flex flex-col items-center justify-center text-center px-6 z-20">
+        <div className="absolute inset-x-0 top-[42%] -translate-y-1/2 flex flex-col items-center justify-center text-center px-6 z-20">
           <h1
             key={bottomSlide}
-            className="text-primary-foreground mb-6 max-w-4xl font-serif animate-fade-in"
+            className="text-primary-foreground mb-4 md:mb-6 max-w-4xl font-serif animate-fade-in text-3xl md:text-5xl lg:text-7xl leading-[1.1]"
           >
             {heroSlides[bottomSlide].title}
           </h1>
           <p
             key={`sub-${bottomSlide}`}
-            className="text-primary-foreground/90 font-light text-lg md:text-xl max-w-2xl animate-fade-in"
+            className="text-primary-foreground/90 font-light text-base md:text-xl max-w-2xl animate-fade-in"
             style={{ animationDelay: "200ms" }}
           >
             {heroSlides[bottomSlide].subtitle}
@@ -165,27 +165,27 @@ const Index = () => {
 
 
         {/* Search bar positioned absolutely at the bottom */}
-        <div className="absolute inset-x-0 bottom-24 md:bottom-32 flex justify-center px-6 z-20">
-          <div className="bg-background/95 backdrop-blur-sm p-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-1 w-full max-w-3xl rounded-none sm:rounded-sm shadow-2xl animate-fade-in" style={{ animationDelay: "1s" }}>
-            <div className="flex flex-col sm:flex-row gap-1 flex-1">
-              {(["vente", "location_courte", "location_longue"] as const).map((type) => (
+        <div className="absolute inset-x-0 bottom-12 md:bottom-32 flex justify-center px-4 md:px-6 z-20">
+          <div className="bg-background/95 backdrop-blur-sm p-1.5 md:p-2 flex flex-col items-stretch gap-2 w-full max-w-3xl rounded-none shadow-2xl animate-fade-in" style={{ animationDelay: "1s" }}>
+            <div className="flex flex-row overflow-x-auto scrollbar-hide gap-1">
+              {(["vente", "location-courte-duree", "location-longue-duree"] as const).map((type) => (
                 <button
                   key={type}
                   onClick={() => setSearchType(type)}
-                  className={`px-4 sm:px-6 py-3 text-xs tracking-widest uppercase font-sans font-medium transition-colors flex-1 ${
+                  className={`px-3 md:px-6 py-3 text-[10px] md:text-xs tracking-widest uppercase font-sans font-medium transition-colors flex-1 whitespace-nowrap ${
                     searchType === type
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {type === "vente" ? "Acheter" : type === "location_courte" ? "Louer court" : "Louer long"}
+                  {type === "vente" ? "Acheter" : type === "location-courte-duree" ? "Louer court" : "Louer long"}
                 </button>
               ))}
             </div>
-            <Link to={`/catalogue?type=${searchType}`} className="w-full sm:w-auto">
-              <Button variant="luxury" size="lg" className="w-full h-12 gap-2 sm:ml-2">
+            <Link to={`/catalogue?type=${searchType}`} className="w-full">
+              <Button variant="luxury" size="lg" className="w-full h-12 md:h-14 gap-2 text-xs tracking-widest">
                 <Search size={16} strokeWidth={1.25} />
-                Rechercher
+                Lancer la recherche
               </Button>
             </Link>
           </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -183,6 +183,21 @@ const Admin = () => {
       </div>
 
       <div className="container mx-auto px-6 md:px-12 py-8">
+        <div className="bg-amber-50 border border-amber-200 p-6 mb-8 rounded-sm flex flex-col md:flex-row md:items-center justify-between gap-4 text-amber-900 shadow-sm">
+          <div className="flex gap-4 items-start">
+            <span className="text-xl">⚠️</span>
+            <div className="text-sm">
+              <p className="font-bold mb-1">Attention : Ce panneau utilise l'ancienne base de données.</p>
+              <p className="font-light">Pour profiter du <strong>multi-service</strong>, de l'<strong>upload direct</strong> et des <strong>proximités</strong>, utilisez le nouveau panel.</p>
+            </div>
+          </div>
+          <Link to="/admin/biens">
+            <Button variant="luxury" className="w-full md:w-auto">
+              Accéder au Panel v2 →
+            </Button>
+          </Link>
+        </div>
+
         <div className="flex gap-1 mb-8 border-b border-border">
           {([["properties", "Biens"], ["visits", "Demandes de visite"], ["add", "Ajouter un bien"]] as const).map(([key, label]) => (
             <button

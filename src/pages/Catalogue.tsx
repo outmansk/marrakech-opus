@@ -4,23 +4,30 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { supabase } from "@/lib/supabase";
-import type { Property } from "@/types/property";
+import type { Bien } from "@/types/property";
 
 const Catalogue = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [properties, setProperties] = useState<Property[]>([]);
+  const [properties, setProperties] = useState<Bien[]>([]);
   const [loading, setLoading] = useState(true);
   const activeType = searchParams.get("type") || "all";
 
   useEffect(() => {
     const fetch = async () => {
       setLoading(true);
-      let query = supabase.from("properties").select("*").eq("is_available", true).order("created_at", { ascending: false });
+      // On utilise désormais la table properties_v2
+      let query = supabase
+        .from("properties_v2")
+        .select("*")
+        .eq("statut", "publie")
+        .order("created_at", { ascending: false });
+
       if (activeType !== "all") {
-        query = query.contains("transaction_types", [activeType]);
+        query = query.contains("services", [activeType]);
       }
+
       const { data } = await query;
-      setProperties((data as Property[]) || []);
+      setProperties((data as Bien[]) || []);
       setLoading(false);
     };
     fetch();
@@ -29,8 +36,8 @@ const Catalogue = () => {
   const filters = [
     { key: "all", label: "Tous" },
     { key: "vente", label: "Vente" },
-    { key: "location_courte", label: "Location courte" },
-    { key: "location_longue", label: "Location longue" },
+    { key: "location-longue-duree", label: "Location longue" },
+    { key: "location-courte-duree", label: "Location courte" },
   ];
 
   return (
@@ -41,20 +48,24 @@ const Catalogue = () => {
           <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Notre collection</p>
           <h1 className="mb-12">Catalogue</h1>
 
-          <div className="flex gap-1 mb-16 border-b border-border overflow-x-auto pb-px scrollbar-hide w-full max-w-full">
-            {filters.map((f) => (
-              <button
-                key={f.key}
-                onClick={() => setSearchParams(f.key === "all" ? {} : { type: f.key })}
-                className={`px-6 py-3 text-xs tracking-widest uppercase font-sans font-medium transition-colors border-b-2 -mb-px ${
-                  activeType === f.key
-                    ? "border-foreground text-foreground"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
+          <div className="relative mb-12">
+            <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
+              {filters.map((f) => (
+                <button
+                  key={f.key}
+                  onClick={() => setSearchParams(f.key === "all" ? {} : { type: f.key })}
+                  className={`px-6 py-2.5 text-[10px] tracking-[0.2em] uppercase font-sans font-medium transition-all whitespace-nowrap border ${
+                    activeType === f.key
+                      ? "bg-foreground text-background border-foreground"
+                      : "bg-transparent text-muted-foreground border-border/60 hover:border-foreground/40"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+            {/* Gradient fade indicator for mobile scroll */}
+            <div className="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-background to-transparent pointer-events-none md:hidden" />
           </div>
 
           {loading ? (
