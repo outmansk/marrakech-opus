@@ -17,28 +17,28 @@ import slide5 from "@/assets/slide5.jpg";
 const heroSlides = [
   {
     image: slide1,
-    title: "Votre arrivée dans l'exceptionnel",
-    subtitle: "Dar Prestige vous ouvre les portes des plus belles demeures de Marrakech."
+    title: "L'Art de Vivre au Cœur de la Ville Ocre",
+    subtitle: "Découvrez une collection exclusive de propriétés d'exception pour un style de vie incomparable."
   },
   {
     image: slide2,
-    title: "L'art de vivre à la marocaine",
-    subtitle: "Élégance, prestige et authenticité pour un style de vie incomparable."
+    title: "Investissez là où le Soleil ne s'éteint jamais",
+    subtitle: "Marrakech offre des opportunités uniques de valorisation et de rendement locatif."
   },
   {
     image: slide3,
-    title: "Détente et sérénité absolue",
-    subtitle: "Des espaces pensés pour votre bien-être au cœur de la ville ocre."
+    title: "Votre Nouveau Chapitre commence ici",
+    subtitle: "Villas de prestige en location longue durée pour les familles en quête d'excellence."
   },
   {
     image: slide4,
-    title: "Vivez et travaillez depuis le paradis",
-    subtitle: "Le luxe du calme pour une inspiration sans limite au quotidien."
+    title: "Maîtrisez votre Rendement Locatif",
+    subtitle: "De l'accompagnement à l'investissement jusqu'à la gestion complète de vos biens."
   },
   {
     image: slide5,
-    title: "L'authenticité au cœur de la Médina",
-    subtitle: "Découvrez des havres de paix chargés d'histoire et de poésie."
+    title: "L'Excellence Immobilière à Marrakech",
+    subtitle: "Sécurité, transparence et discrétion pour vos projets d'acquisition les plus ambitieux."
   }
 ];
 
@@ -164,8 +164,8 @@ const Index = () => {
         <div className="container mx-auto px-6 md:px-12">
           <div className="flex items-end justify-between mb-16">
             <div>
-              <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Selection</p>
-              <h2>Biens d'exception</h2>
+              <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Exclusivités</p>
+              <h2>Résidences & Investissements</h2>
             </div>
             <Link to="/catalogue" className="hidden md:flex items-center gap-2 text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors font-sans">
               Voir tout
@@ -247,7 +247,7 @@ const Index = () => {
       {/* CTA */}
       <section className="bg-secondary py-24 md:py-32">
         <div className="container mx-auto px-6 md:px-12 text-center">
-          <h2 className="mb-6">Un projet immobilier a Marrakech ?</h2>
+          <h2 className="mb-6">Votre Signature Immobilière à Marrakech</h2>
           <p className="text-muted-foreground font-light text-lg max-w-xl mx-auto mb-10">
             Notre equipe vous accompagne dans la recherche du bien ideal, de la premiere visite a la signature.
           </p>
