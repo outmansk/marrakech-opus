@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import type { Bien, BienService } from "@/types/property";
-import { Bed, Car, ArrowRight, Bath } from "lucide-react";
+import { Bed, Car, ArrowRight, Bath, Maximize } from "lucide-react";
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("fr-MA").format(price) + " MAD";
@@ -183,7 +183,8 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
           {getDisplayPrice(property, activeType)}
         </p>
 
-        <div className="flex items-center gap-6 text-muted-foreground border-t border-border/40 pt-4">
+
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-muted-foreground border-t border-border/40 pt-4">
           {property.chambres && (
             <div className="flex items-center gap-2">
               <Bed size={16} strokeWidth={1} />
@@ -194,6 +195,12 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
             <div className="flex items-center gap-2">
               <Bath size={16} strokeWidth={1} />
               <span className="text-xs font-light tracking-wide">{property.salles_de_bain} Sdb</span>
+            </div>
+          )}
+          {property.surface_terrain && (
+            <div className="flex items-center gap-2">
+              <Maximize size={16} strokeWidth={1} />
+              <span className="text-xs font-light tracking-wide">{property.surface_terrain} m²</span>
             </div>
           )}
           {property.equipements?.includes('Parking') && (

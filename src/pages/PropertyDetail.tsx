@@ -175,10 +175,10 @@ const PropertyDetail = () => {
                     <span className="font-light tracking-wide">{property.salles_de_bain} Sdb</span>
                   </div>
                 )}
-                {property.surface_habitable && (
+                {property.surface_terrain && (
                   <div className="flex items-center gap-3">
                     <Maximize size={22} strokeWidth={1} className="text-muted-foreground" />
-                    <span className="font-light tracking-wide">{property.surface_habitable} m²</span>
+                    <span className="font-light tracking-wide">{property.surface_terrain} m²</span>
                   </div>
                 )}
                 {property.equipements?.includes('Parking') && (
