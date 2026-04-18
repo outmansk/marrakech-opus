@@ -43,45 +43,21 @@ const heroSlides = [
 ];
 
 // Durée d'affichage par photo et durée du fondu — modifiable ici
-const DISPLAY_MS = 6000; // ms d'affichage complet avant le fondu
-const FADE_MS    = 1500; // ms de crossfade
+const DISPLAY_MS = 5000; // Time per slide
+const FADE_MS    = 2000; // Duration of crossfade
 
 const Index = () => {
-  const [featured, setFeatured] = useState<Property[]>([]);
+  const [featured, setFeatured] = useState<Bien[]>([]);
   const [latestArticles, setLatestArticles] = useState<Article[]>([]);
-  const [searchType, setSearchType] = useState<"vente" | "location_courte" | "location_longue">("vente");
+  const [searchType, setSearchType] = useState<"vente" | "location-courte-duree" | "location-longue-duree">("vente");
 
-  // Deux couches empilées : bottom toujours visible, top fadeIn puis swap
-  const [bottomSlide, setBottomSlide] = useState(0);
-  const [topSlide,    setTopSlide]    = useState(1);
-  const [topVisible,  setTopVisible]  = useState(false);
-  const currentRef = useRef(0); // index de la photo visible (bottom)
+  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
-    let swapTimer: ReturnType<typeof setTimeout>;
-
-    const advance = () => {
-      // 1. Fade in la prochaine photo (top layer)
-      setTopVisible(true);
-
-      // 2. Après le fondu : promouvoir top → bottom, charger la suivante
-      swapTimer = setTimeout(() => {
-        const newCurrent = (currentRef.current + 1) % heroSlides.length;
-        const newNext    = (newCurrent    + 1) % heroSlides.length;
-        currentRef.current = newCurrent;
-        setBottomSlide(newCurrent);
-        setTopSlide(newNext);
-        setTopVisible(false);
-      }, FADE_MS + 50);
-    };
-
-    // Même délai pour chaque photo, dès la première
-    const interval = setInterval(advance, DISPLAY_MS);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(swapTimer);
-    };
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % heroSlides.length);
+    }, DISPLAY_MS + FADE_MS);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -111,56 +87,47 @@ const Index = () => {
     <div className="min-h-screen">
       <Header />
 
-      {/* Hero Slider — two-layer crossfade with Ken Burns effect */}
-      <section className="relative h-screen overflow-hidden">
-        {/* Bottom layer: always fully visible (outgoing photo) */}
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 scale-110 transition-transform duration-[10000ms] linear" style={{ transform: 'scale(1.15)' }}>
-            <img
-              src={heroSlides[bottomSlide].image}
-              alt={heroSlides[bottomSlide].title}
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/40" />
-        </div>
-
-        {/* Top layer: fades in (incoming photo), then becomes bottom */}
-        <div
-          className="absolute inset-0 z-10"
-          style={{
-            opacity: topVisible ? 1 : 0,
-            transition: `opacity ${FADE_MS}ms ease-in-out`,
-          }}
-        >
+      <section className="relative h-screen overflow-hidden bg-black">
+        {heroSlides.map((slide, i) => (
           <div 
-            className="absolute inset-0 transition-transform duration-[10000ms] linear" 
-            style={{ transform: topVisible ? 'scale(1.15)' : 'scale(1)' }}
+            key={i}
+            className={`absolute inset-0 transition-opacity duration-[2000ms] ease-in-out
+              ${i === activeIndex ? "opacity-100 z-10" : "opacity-0 z-0"}`}
           >
-            <img
-              src={heroSlides[topSlide].image}
-              alt={heroSlides[topSlide].title}
-              className="w-full h-full object-cover"
-            />
+            {/* Ken Burns Effect: Continuous subtle zoom */}
+            <div 
+              className={`absolute inset-0 transition-transform duration-[12000ms] ease-out
+                ${i === activeIndex ? "scale-110" : "scale-100"}`}
+            >
+              <img
+                src={slide.image}
+                alt={slide.title}
+                className="w-full h-full object-cover grayscale-[10%]"
+              />
+            </div>
+            {/* Elegant Gradient Overlay - More pronounced at the bottom for readability */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/10 to-black/80 z-10" />
           </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/40" />
-        </div>
+        ))}
 
-        {/* Slide text — always shows the active (bottom) slide's text */}
-        <div className="absolute inset-x-0 top-[42%] -translate-y-1/2 flex flex-col items-center justify-center text-center px-6 z-20">
-          <h1
-            key={bottomSlide}
-            className="text-primary-foreground mb-4 md:mb-6 max-w-4xl font-serif animate-fade-in text-3xl md:text-5xl lg:text-7xl leading-[1.1]"
-          >
-            {heroSlides[bottomSlide].title}
-          </h1>
-          <p
-            key={`sub-${bottomSlide}`}
-            className="text-primary-foreground/90 font-light text-base md:text-xl max-w-2xl animate-fade-in"
-            style={{ animationDelay: "200ms" }}
-          >
-            {heroSlides[bottomSlide].subtitle}
-          </p>
+        {/* Slide Content with Reveal Animation */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-20 pointer-events-none">
+          <div className="max-w-4xl overflow-hidden">
+            <h1
+              key={`title-${activeIndex}`}
+              className="text-primary-foreground mb-4 md:mb-6 font-serif text-3xl md:text-5xl lg:text-7xl leading-[1.1] animate-in fade-in slide-in-from-bottom-20 duration-1000 ease-out fill-mode-forwards"
+            >
+              {heroSlides[activeIndex].title}
+            </h1>
+          </div>
+          <div className="max-w-2xl overflow-hidden">
+            <p
+              key={`sub-${activeIndex}`}
+              className="text-primary-foreground/90 font-light text-base md:text-xl animate-in fade-in slide-in-from-bottom-12 duration-1200 delay-300 ease-out fill-mode-forwards"
+            >
+              {heroSlides[activeIndex].subtitle}
+            </p>
+          </div>
         </div>
 
 
