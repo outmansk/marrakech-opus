@@ -82,52 +82,63 @@ const Index = () => {
               <img
                 src={slide.image}
                 alt={slide.title}
-                className="w-full h-full object-cover grayscale-[10%]"
+                className="w-full h-full object-cover grayscale-[15%]"
               />
             </div>
-            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/10 to-black/80 z-10" />
+            {/* Dégradé plus profond pour faire ressortir le texte et le glassmorphism */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/80 z-10" />
           </div>
         ))}
 
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-20 pointer-events-none">
-          <div className="max-w-4xl overflow-hidden">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-20 pointer-events-none mt-[-5vh]">
+          <div className="max-w-5xl overflow-hidden">
             <h1
               key={`title-${activeIndex}`}
-              className="text-primary-foreground mb-4 md:mb-6 font-serif text-3xl md:text-5xl lg:text-7xl leading-[1.1] animate-in fade-in slide-in-from-bottom-20 duration-1000 ease-out fill-mode-forwards"
+              className="text-white mb-6 font-serif text-4xl md:text-6xl lg:text-7xl leading-[1.15] font-light tracking-[0.02em] animate-in fade-in slide-in-from-bottom-12 duration-[1500ms] ease-out fill-mode-forwards drop-shadow-2xl"
             >
               {heroSlides[activeIndex].title}
             </h1>
           </div>
+          
+          <div 
+            className="w-12 h-[1px] bg-white/50 my-6 animate-in fade-in zoom-in duration-[1500ms] delay-[400ms] ease-out fill-mode-forwards" 
+            key={`line-${activeIndex}`}
+          />
+          
           <div className="max-w-2xl overflow-hidden">
             <p
               key={`sub-${activeIndex}`}
-              className="text-primary-foreground/90 font-light text-base md:text-xl animate-in fade-in slide-in-from-bottom-12 duration-1200 delay-300 ease-out fill-mode-forwards"
+              className="text-white/80 font-sans font-light tracking-[0.2em] uppercase text-[10px] md:text-xs animate-in fade-in slide-in-from-bottom-8 duration-[1500ms] delay-[600ms] ease-out fill-mode-forwards"
             >
               {heroSlides[activeIndex].subtitle}
             </p>
           </div>
         </div>
 
-        <div className="absolute inset-x-0 bottom-12 md:bottom-32 flex justify-center px-4 md:px-6 z-20">
-          <div className="bg-background/95 backdrop-blur-sm p-1.5 md:p-2 flex flex-col items-stretch gap-2 w-full max-w-3xl rounded-none shadow-2xl animate-fade-in" style={{ animationDelay: "1s" }}>
-            <div className="flex flex-row overflow-x-auto scrollbar-hide gap-1">
+        <div className="absolute inset-x-0 bottom-10 md:bottom-20 flex justify-center px-4 md:px-6 z-20">
+          <div 
+            className="bg-black/30 backdrop-blur-md border border-white/15 p-6 md:p-8 flex flex-col items-center gap-6 w-full max-w-4xl shadow-2xl animate-fade-in" 
+            style={{ animationDelay: "1s" }}
+          >
+            <div className="flex flex-row overflow-x-auto scrollbar-hide gap-8 justify-center border-b border-white/10 pb-4 w-full px-2">
               {(["vente", "location-courte-duree", "location-longue-duree"] as const).map((type) => (
                 <button
                   key={type}
                   onClick={() => setSearchType(type)}
-                  className={`px-3 md:px-6 py-3 text-[10px] md:text-xs tracking-widest uppercase font-sans font-medium transition-colors flex-1 whitespace-nowrap ${
-                    searchType === type
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  className={`text-[10px] md:text-xs tracking-[0.25em] uppercase font-sans font-light transition-all whitespace-nowrap pb-2 -mb-[18px] border-b-[2px]
+                    ${searchType === type ? "text-white border-white" : "text-white/50 border-transparent hover:text-white/80"}`}
                 >
                   {type === "vente" ? t("hero.acheter") : type === "location-courte-duree" ? t("hero.louer_court") : t("hero.louer_long")}
                 </button>
               ))}
             </div>
-            <Link to={`/catalogue?type=${searchType}`} className="w-full">
-              <Button variant="luxury" size="lg" className="w-full h-12 md:h-14 gap-2 text-xs tracking-widest">
-                <Search size={16} strokeWidth={1.25} />
+            <Link to={`/catalogue?type=${searchType}`} className="w-full mt-2">
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="w-full h-14 md:h-16 gap-3 text-[10px] md:text-xs tracking-widest uppercase bg-white/5 hover:bg-white hover:text-black border-white/20 text-white transition-all duration-500 rounded-none shadow-none"
+              >
+                <Search size={16} strokeWidth={1} />
                 {t("hero.lancer_recherche")}
               </Button>
             </Link>
