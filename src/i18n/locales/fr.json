@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "accueil": "Accueil",
+    "catalogue": "Catalogue",
+    "blog": "Blog",
+    "contact": "Contact",
+    "journal": "Journal / Blog",
+    "nous_contacter": "Nous contacter"
+  },
+  "hero": {
+    "slide1_title": "L'Art de Vivre au Cœur de la Ville Ocre",
+    "slide1_subtitle": "Découvrez une collection exclusive de propriétés d'exception pour un style de vie incomparable.",
+    "slide2_title": "Investissez là où le Soleil ne s'éteint jamais",
+    "slide2_subtitle": "Marrakech offre des opportunités uniques de valorisation et de rendement locatif.",
+    "slide3_title": "Votre Nouveau Chapitre commence ici",
+    "slide3_subtitle": "Villas de prestige en location longue durée pour les familles en quête d'excellence.",
+    "slide4_title": "Maîtrisez votre Rendement Locatif",
+    "slide4_subtitle": "De l'accompagnement à l'investissement jusqu'à la gestion complète de vos biens.",
+    "slide5_title": "L'Excellence Immobilière à Marrakech",
+    "slide5_subtitle": "Sécurité, transparence et discrétion pour vos projets d'acquisition les plus ambitieux.",
+    "acheter": "Acheter",
+    "louer_court": "Louer court",
+    "louer_long": "Louer long",
+    "lancer_recherche": "Lancer la recherche"
+  },
+  "biens": {
+    "exclusivites": "Exclusivités",
+    "residences_investissements": "Résidences & Investissements",
+    "voir_tout": "Voir tout",
+    "voir_catalogue": "Voir tout le catalogue",
+    "aucun_bien": "Aucun bien disponible pour le moment.",
+    "ajouter_via_admin": "Ajoutez des biens via le panneau d'administration.",
+    "chambres": "chambre",
+    "chambres_plural": "chambres",
+    "surface": "m²",
+    "terrain": "terrain",
+    "disponible": "Disponible",
+    "vendu": "Vendu / Loué",
+    "brouillon": "Brouillon"
+  },
+  "services": {
+    "vente": "Vente",
+    "location_longue": "Location longue durée",
+    "location_courte": "Location courte durée",
+    "sous_location": "Sous-location"
+  },
+  "blog": {
+    "actualites": "Actualités",
+    "derniers_articles": "Derniers Articles",
+    "voir_tout": "Voir tout",
+    "lire_article": "Lire l'article",
+    "visiter_blog": "Visiter le Blog",
+    "aucun_article": "Aucun article disponible.",
+    "retour_blog": "Retour au Blog",
+    "partager": "Partager"
+  },
+  "contact": {
+    "cta_titre": "Votre Signature Immobilière à Marrakech",
+    "cta_texte": "Notre équipe vous accompagne dans la recherche du bien idéal, de la première visite à la signature.",
+    "decouvrir_biens": "Découvrir nos biens",
+    "nous_contacter": "Nous contacter"
+  },
+  "footer": {
+    "description": "L'excellence immobilière à Marrakech. Vente, location courte et longue durée de biens d'exception.",
+    "navigation": "Navigation",
+    "contact": "Contact",
+    "adresse": "Gueliz, Marrakech, Maroc",
+    "droits": "Tous droits réservés."
+  },
+  "commun": {
+    "chargement": "Chargement...",
+    "erreur": "Une erreur est survenue.",
+    "retour": "Retour",
+    "annuler": "Annuler",
+    "confirmer": "Confirmer",
+    "enregistrer": "Enregistrer",
+    "supprimer": "Supprimer",
+    "modifier": "Modifier",
+    "ajouter": "Ajouter",
+    "voir_plus": "Voir plus",
+    "fermer": "Fermer"
+  },
+  "auth": {
+    "titre": "Administration",
+    "sous_titre": "Dar Prestige",
+    "email": "Email",
+    "mot_de_passe": "Mot de passe",
+    "connexion": "Se connecter",
+    "connexion_chargement": "Connexion...",
+    "deconnexion": "Déconnexion",
+    "erreur_auth": "Erreur d'authentification"
+  },
+  "admin": {
+    "tableau_bord": "Tableau de bord",
+    "biens": "Biens",
+    "blog": "Blog",
+    "visites": "Demandes de Visite",
+    "ajouter_bien": "+ Ajouter un bien",
+    "generer_article": "✨ Générer un article",
+    "stats": {
+      "total_biens": "Total des biens",
+      "biens_publies": "Biens publiés",
+      "total_articles": "Total des articles",
+      "articles_publies": "Articles publiés"
+    }
+  }
+}

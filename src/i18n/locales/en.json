@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "accueil": "Home",
+    "catalogue": "Catalogue",
+    "blog": "Blog",
+    "contact": "Contact",
+    "journal": "Journal / Blog",
+    "nous_contacter": "Contact us"
+  },
+  "hero": {
+    "slide1_title": "The Art of Living at the Heart of the Ochre City",
+    "slide1_subtitle": "Discover an exclusive collection of exceptional properties for an incomparable lifestyle.",
+    "slide2_title": "Invest Where the Sun Never Sets",
+    "slide2_subtitle": "Marrakech offers unique opportunities for capital appreciation and rental yield.",
+    "slide3_title": "Your New Chapter Begins Here",
+    "slide3_subtitle": "Prestige villas for long-term rental for families in search of excellence.",
+    "slide4_title": "Master Your Rental Return",
+    "slide4_subtitle": "From investment guidance to complete property management.",
+    "slide5_title": "Real Estate Excellence in Marrakech",
+    "slide5_subtitle": "Security, transparency and discretion for your most ambitious acquisition projects.",
+    "acheter": "Buy",
+    "louer_court": "Short rent",
+    "louer_long": "Long rent",
+    "lancer_recherche": "Start search"
+  },
+  "biens": {
+    "exclusivites": "Exclusives",
+    "residences_investissements": "Residences & Investments",
+    "voir_tout": "View all",
+    "voir_catalogue": "View full catalogue",
+    "aucun_bien": "No properties available at the moment.",
+    "ajouter_via_admin": "Add properties via the administration panel.",
+    "chambres": "bedroom",
+    "chambres_plural": "bedrooms",
+    "surface": "sqm",
+    "terrain": "land",
+    "disponible": "Available",
+    "vendu": "Sold / Rented",
+    "brouillon": "Draft"
+  },
+  "services": {
+    "vente": "Sale",
+    "location_longue": "Long-term rental",
+    "location_courte": "Short-term rental",
+    "sous_location": "Sublease"
+  },
+  "blog": {
+    "actualites": "News",
+    "derniers_articles": "Latest Articles",
+    "voir_tout": "View all",
+    "lire_article": "Read article",
+    "visiter_blog": "Visit the Blog",
+    "aucun_article": "No articles available.",
+    "retour_blog": "Back to Blog",
+    "partager": "Share"
+  },
+  "contact": {
+    "cta_titre": "Your Real Estate Signature in Marrakech",
+    "cta_texte": "Our team accompanies you in finding the ideal property, from the first visit to signing.",
+    "decouvrir_biens": "Discover our properties",
+    "nous_contacter": "Contact us"
+  },
+  "footer": {
+    "description": "Real estate excellence in Marrakech. Sale, short and long-term rental of exceptional properties.",
+    "navigation": "Navigation",
+    "contact": "Contact",
+    "adresse": "Gueliz, Marrakech, Morocco",
+    "droits": "All rights reserved."
+  },
+  "commun": {
+    "chargement": "Loading...",
+    "erreur": "An error occurred.",
+    "retour": "Back",
+    "annuler": "Cancel",
+    "confirmer": "Confirm",
+    "enregistrer": "Save",
+    "supprimer": "Delete",
+    "modifier": "Edit",
+    "ajouter": "Add",
+    "voir_plus": "See more",
+    "fermer": "Close"
+  },
+  "auth": {
+    "titre": "Administration",
+    "sous_titre": "Dar Prestige",
+    "email": "Email",
+    "mot_de_passe": "Password",
+    "connexion": "Sign in",
+    "connexion_chargement": "Signing in...",
+    "deconnexion": "Sign out",
+    "erreur_auth": "Authentication error"
+  },
+  "admin": {
+    "tableau_bord": "Dashboard",
+    "biens": "Properties",
+    "blog": "Blog",
+    "visites": "Visit Requests",
+    "ajouter_bien": "+ Add property",
+    "generer_article": "✨ Generate article",
+    "stats": {
+      "total_biens": "Total properties",
+      "biens_publies": "Published properties",
+      "total_articles": "Total articles",
+      "articles_publies": "Published articles"
+    }
+  }
+}

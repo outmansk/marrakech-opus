@@ -14,6 +14,141 @@ export type Database = {
   }
   public: {
     Tables: {
+      articles: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          est_publie: boolean | null
+          excerpt: string | null
+          id: string
+          image_url: string | null
+          meta_description: string | null
+          meta_title: string | null
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          content: string
+          created_at?: string
+          est_publie?: boolean | null
+          excerpt?: string | null
+          id?: string
+          image_url?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          est_publie?: boolean | null
+          excerpt?: string | null
+          id?: string
+          image_url?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      properties_v2: {
+        Row: {
+          chambres: number | null
+          created_at: string
+          description_courte: string | null
+          description_longue: string | null
+          devise: string
+          disponible_le: string | null
+          equipements: string[] | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          photo_principale: string | null
+          photos: string[] | null
+          prix: number | null
+          prix_location_courte: number | null
+          prix_location_longue: number | null
+          prix_vente: number | null
+          proximites: Json | null
+          quartier: string | null
+          reference: string | null
+          salles_de_bain: number | null
+          services: string[]
+          statut: string
+          surface_habitable: number | null
+          surface_terrain: number | null
+          titre: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          chambres?: number | null
+          created_at?: string
+          description_courte?: string | null
+          description_longue?: string | null
+          devise?: string
+          disponible_le?: string | null
+          equipements?: string[] | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          photo_principale?: string | null
+          photos?: string[] | null
+          prix?: number | null
+          prix_location_courte?: number | null
+          prix_location_longue?: number | null
+          prix_vente?: number | null
+          proximites?: Json | null
+          quartier?: string | null
+          reference?: string | null
+          salles_de_bain?: number | null
+          services: string[]
+          statut?: string
+          surface_habitable?: number | null
+          surface_terrain?: number | null
+          titre: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          chambres?: number | null
+          created_at?: string
+          description_courte?: string | null
+          description_longue?: string | null
+          devise?: string
+          disponible_le?: string | null
+          equipements?: string[] | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          photo_principale?: string | null
+          photos?: string[] | null
+          prix?: number | null
+          prix_location_courte?: number | null
+          prix_location_longue?: number | null
+          prix_vente?: number | null
+          proximites?: Json | null
+          quartier?: string | null
+          reference?: string | null
+          salles_de_bain?: number | null
+          services?: string[]
+          statut?: string
+          surface_habitable?: number | null
+          surface_terrain?: number | null
+          titre?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       properties: {
         Row: {
           bedrooms: number | null

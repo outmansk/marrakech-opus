@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { MapPin, Phone, Mail, Menu, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const Header = () => {
+  const { t } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   // Animation #6 — Transparent au-dessus du hero, opaque après scroll
   const [scrolled, setScrolled] = useState(false);
@@ -12,6 +15,13 @@ const Header = () => {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const navLinks = [
+    { to: "/",          label: t("nav.accueil") },
+    { to: "/catalogue", label: t("nav.catalogue") },
+    { to: "/blog",      label: t("nav.blog") },
+    { to: "/contact",   label: t("nav.contact") },
+  ];
 
   return (
     <>
@@ -35,12 +45,7 @@ const Header = () => {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-10 shrink-0">
-            {[
-              { to: "/",          label: "Accueil" },
-              { to: "/catalogue", label: "Catalogue" },
-              { to: "/blog",      label: "Blog" },
-              { to: "/contact",   label: "Contact" },
-            ].map(({ to, label }) => (
+            {navLinks.map(({ to, label }) => (
               <Link
                 key={to}
                 to={to}
@@ -55,8 +60,9 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Icônes contact */}
+          {/* Icônes contact + Language Switcher */}
           <div className="hidden md:flex flex-1 justify-end items-center gap-4">
+            <LanguageSwitcher variant={scrolled ? "dark" : "light"} />
             <a
               href="tel:+212600000000"
               className={`transition-colors duration-500
@@ -78,6 +84,7 @@ const Header = () => {
             className={`md:hidden ml-auto p-2 transition-colors duration-500
               ${(scrolled || isMobileMenuOpen) ? "text-foreground" : "text-white"}`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Menu"
           >
             {isMobileMenuOpen
               ? <X size={24} strokeWidth={1.25} />
@@ -87,19 +94,14 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Mobile Nav Overlay - Moved outside header for better layering */}
-      <div 
+      {/* Mobile Nav Overlay */}
+      <div
         className={`fixed inset-0 z-[60] bg-[#fafaf9] transition-all duration-700 ease-in-out md:hidden
           ${isMobileMenuOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-full pointer-events-none"}`}
       >
         <div className="flex flex-col h-full px-10 pt-32 pb-16">
           <nav className="flex flex-col gap-8">
-            {[
-              { to: "/",          label: "Accueil" },
-              { to: "/catalogue", label: "Catalogue" },
-              { to: "/blog",      label: "Journal / Blog" },
-              { to: "/contact",   label: "Contact" },
-            ].map(({ to, label }, i) => (
+            {navLinks.map(({ to, label }, i) => (
               <Link
                 key={to}
                 to={to}
@@ -115,12 +117,19 @@ const Header = () => {
 
           <div className="mt-auto space-y-12">
             <div className={`h-px bg-border/40 transition-all duration-1000 delay-500
-              ${isMobileMenuOpen ? "w-full" : "w-0"}`} 
+              ${isMobileMenuOpen ? "w-full" : "w-0"}`}
             />
-            
+
+            {/* Language Switcher mobile */}
+            <div className={`transition-all duration-700 delay-600
+              ${isMobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+              <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3">Langue</p>
+              <LanguageSwitcher variant="dark" />
+            </div>
+
             <div className={`flex flex-col gap-6 transition-all duration-700 delay-700
               ${isMobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-              <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground">Nous contacter</p>
+              <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground">{t("nav.nous_contacter")}</p>
               <div className="flex flex-col gap-4">
                 <a href="tel:+212600000000" className="font-sans text-lg tracking-wider hover:text-accent transition-colors">
                   +212 6 00 00 00 00

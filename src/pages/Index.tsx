@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { ArrowRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -8,57 +8,38 @@ import PropertyCard from "@/components/PropertyCard";
 import { supabase } from "@/lib/supabase";
 import type { Bien } from "@/types/property";
 import type { Article } from "@/types/article";
+import { useTranslation } from "react-i18next";
+
 import slide1 from "@/assets/slide1.jpg";
 import slide2 from "@/assets/slide2.jpg";
 import slide3 from "@/assets/slide3.jpg";
 import slide4 from "@/assets/slide4.jpg";
 import slide5 from "@/assets/slide5.jpg";
 
-const heroSlides = [
-  {
-    image: slide1,
-    title: "L'Art de Vivre au Cœur de la Ville Ocre",
-    subtitle: "Découvrez une collection exclusive de propriétés d'exception pour un style de vie incomparable."
-  },
-  {
-    image: slide2,
-    title: "Investissez là où le Soleil ne s'éteint jamais",
-    subtitle: "Marrakech offre des opportunités uniques de valorisation et de rendement locatif."
-  },
-  {
-    image: slide3,
-    title: "Votre Nouveau Chapitre commence ici",
-    subtitle: "Villas de prestige en location longue durée pour les familles en quête d'excellence."
-  },
-  {
-    image: slide4,
-    title: "Maîtrisez votre Rendement Locatif",
-    subtitle: "De l'accompagnement à l'investissement jusqu'à la gestion complète de vos biens."
-  },
-  {
-    image: slide5,
-    title: "L'Excellence Immobilière à Marrakech",
-    subtitle: "Sécurité, transparence et discrétion pour vos projets d'acquisition les plus ambitieux."
-  }
-];
-
-// Durée d'affichage par photo et durée du fondu — modifiable ici
-const DISPLAY_MS = 5000; // Time per slide
-const FADE_MS    = 2000; // Duration of crossfade
+const DISPLAY_MS = 5000;
+const FADE_MS    = 2000;
 
 const Index = () => {
+  const { t } = useTranslation();
   const [featured, setFeatured] = useState<Bien[]>([]);
   const [latestArticles, setLatestArticles] = useState<Article[]>([]);
   const [searchType, setSearchType] = useState<"vente" | "location-courte-duree" | "location-longue-duree">("vente");
-
   const [activeIndex, setActiveIndex] = useState(0);
+
+  const heroSlides = useMemo(() => [
+    { image: slide1, title: t("hero.slide1_title"), subtitle: t("hero.slide1_subtitle") },
+    { image: slide2, title: t("hero.slide2_title"), subtitle: t("hero.slide2_subtitle") },
+    { image: slide3, title: t("hero.slide3_title"), subtitle: t("hero.slide3_subtitle") },
+    { image: slide4, title: t("hero.slide4_title"), subtitle: t("hero.slide4_subtitle") },
+    { image: slide5, title: t("hero.slide5_title"), subtitle: t("hero.slide5_subtitle") }
+  ], [t]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % heroSlides.length);
     }, DISPLAY_MS + FADE_MS);
     return () => clearInterval(interval);
-  }, []);
+  }, [heroSlides.length]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -94,7 +75,6 @@ const Index = () => {
             className={`absolute inset-0 transition-opacity duration-[2000ms] ease-in-out
               ${i === activeIndex ? "opacity-100 z-10" : "opacity-0 z-0"}`}
           >
-            {/* Ken Burns Effect: Continuous subtle zoom */}
             <div 
               className={`absolute inset-0 transition-transform duration-[12000ms] ease-out
                 ${i === activeIndex ? "scale-110" : "scale-100"}`}
@@ -105,12 +85,10 @@ const Index = () => {
                 className="w-full h-full object-cover grayscale-[10%]"
               />
             </div>
-            {/* Elegant Gradient Overlay - More pronounced at the bottom for readability */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/10 to-black/80 z-10" />
           </div>
         ))}
 
-        {/* Slide Content with Reveal Animation */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-20 pointer-events-none">
           <div className="max-w-4xl overflow-hidden">
             <h1
@@ -130,8 +108,6 @@ const Index = () => {
           </div>
         </div>
 
-
-        {/* Search bar positioned absolutely at the bottom */}
         <div className="absolute inset-x-0 bottom-12 md:bottom-32 flex justify-center px-4 md:px-6 z-20">
           <div className="bg-background/95 backdrop-blur-sm p-1.5 md:p-2 flex flex-col items-stretch gap-2 w-full max-w-3xl rounded-none shadow-2xl animate-fade-in" style={{ animationDelay: "1s" }}>
             <div className="flex flex-row overflow-x-auto scrollbar-hide gap-1">
@@ -145,14 +121,14 @@ const Index = () => {
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {type === "vente" ? "Acheter" : type === "location-courte-duree" ? "Louer court" : "Louer long"}
+                  {type === "vente" ? t("hero.acheter") : type === "location-courte-duree" ? t("hero.louer_court") : t("hero.louer_long")}
                 </button>
               ))}
             </div>
             <Link to={`/catalogue?type=${searchType}`} className="w-full">
               <Button variant="luxury" size="lg" className="w-full h-12 md:h-14 gap-2 text-xs tracking-widest">
                 <Search size={16} strokeWidth={1.25} />
-                Lancer la recherche
+                {t("hero.lancer_recherche")}
               </Button>
             </Link>
           </div>
@@ -164,11 +140,11 @@ const Index = () => {
         <div className="container mx-auto px-6 md:px-12">
           <div className="flex items-end justify-between mb-16">
             <div>
-              <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Exclusivités</p>
-              <h2>Résidences & Investissements</h2>
+              <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">{t("biens.exclusivites")}</p>
+              <h2>{t("biens.residences_investissements")}</h2>
             </div>
             <Link to="/catalogue" className="hidden md:flex items-center gap-2 text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors font-sans">
-              Voir tout
+              {t("biens.voir_tout")}
               <ArrowRight size={16} strokeWidth={1.25} />
             </Link>
           </div>
@@ -185,9 +161,9 @@ const Index = () => {
             </div>
           ) : (
             <div className="text-center py-20">
-              <p className="text-muted-foreground font-light">Aucun bien disponible pour le moment.</p>
+              <p className="text-muted-foreground font-light">{t("biens.aucun_bien")}</p>
               <p className="text-muted-foreground font-light mt-2 text-sm">
-                Ajoutez des biens via le panneau d'administration.
+                {t("biens.ajouter_via_admin")}
               </p>
             </div>
           )}
@@ -195,7 +171,7 @@ const Index = () => {
           <div className="text-center mt-16 md:hidden">
             <Link to="/catalogue">
               <Button variant="luxury-ghost" size="lg">
-                Voir tout le catalogue
+                {t("biens.voir_catalogue")}
               </Button>
             </Link>
           </div>
@@ -208,11 +184,11 @@ const Index = () => {
           <div className="container mx-auto px-6 md:px-12">
             <div className="flex items-end justify-between mb-16">
               <div>
-                <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Actualités</p>
-                <h2>Derniers Articles</h2>
+                <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">{t("blog.actualites")}</p>
+                <h2>{t("blog.derniers_articles")}</h2>
               </div>
               <Link to="/blog" className="hidden md:flex items-center gap-2 text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors font-sans">
-                Voir tout
+                {t("blog.voir_tout")}
                 <ArrowRight size={16} strokeWidth={1.25} />
               </Link>
             </div>
@@ -227,7 +203,7 @@ const Index = () => {
                     <h3 className="font-serif text-lg mb-3 line-clamp-2 transition-colors duration-300">{article.title}</h3>
                     <p className="text-muted-foreground font-light text-sm line-clamp-3 mb-6">{article.excerpt}</p>
                     <div className="mt-auto flex items-center gap-2 text-xs tracking-widest uppercase font-sans font-medium text-muted-foreground group-hover:text-foreground transition-all duration-300">
-                      Lire l'article <ArrowRight size={14} strokeWidth={1} className="transition-transform duration-300 group-hover:translate-x-1" />
+                      {t("blog.lire_article")} <ArrowRight size={14} strokeWidth={1} className="transition-transform duration-300 group-hover:translate-x-1" />
                     </div>
                   </div>
                 </Link>
@@ -236,7 +212,7 @@ const Index = () => {
             <div className="text-center mt-12 md:hidden">
               <Link to="/blog">
                 <Button variant="luxury-ghost" size="lg">
-                  Visiter le Blog
+                  {t("blog.visiter_blog")}
                 </Button>
               </Link>
             </div>
@@ -247,19 +223,19 @@ const Index = () => {
       {/* CTA */}
       <section className="bg-secondary py-24 md:py-32">
         <div className="container mx-auto px-6 md:px-12 text-center">
-          <h2 className="mb-6">Votre Signature Immobilière à Marrakech</h2>
+          <h2 className="mb-6">{t("contact.cta_titre")}</h2>
           <p className="text-muted-foreground font-light text-lg max-w-xl mx-auto mb-10">
-            Notre equipe vous accompagne dans la recherche du bien ideal, de la premiere visite a la signature.
+            {t("contact.cta_texte")}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/catalogue">
               <Button variant="luxury" size="lg" className="h-12 px-10">
-                Decouvrir nos biens
+                {t("contact.decouvrir_biens")}
               </Button>
             </Link>
             <a href="https://wa.me/212600000000" target="_blank" rel="noopener noreferrer">
               <Button variant="luxury-ghost" size="lg" className="h-12 px-10">
-                Nous contacter
+                {t("contact.nous_contacter")}
               </Button>
             </a>
           </div>

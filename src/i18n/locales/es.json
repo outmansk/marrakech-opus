@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "accueil": "Inicio",
+    "catalogue": "Catálogo",
+    "blog": "Blog",
+    "contact": "Contacto",
+    "journal": "Revista / Blog",
+    "nous_contacter": "Contáctenos"
+  },
+  "hero": {
+    "slide1_title": "El Arte de Vivir en el Corazón de la Ciudad Ocre",
+    "slide1_subtitle": "Descubra una colección exclusiva de propiedades de excepción para un estilo de vida incomparable.",
+    "slide2_title": "Invierta donde el Sol no se apaga nunca",
+    "slide2_subtitle": "Marrakech ofrece oportunidades únicas de revalorización y rendimiento de alquiler.",
+    "slide3_title": "Su Nuevo Capítulo comienza aquí",
+    "slide3_subtitle": "Villas de prestigio en alquiler de larga duración para familias en busca de excelencia.",
+    "slide4_title": "Domine su Rendimiento de Alquiler",
+    "slide4_subtitle": "Del asesoramiento de inversión hasta la gestión completa de sus propiedades.",
+    "slide5_title": "Excelencia Inmobiliaria en Marrakech",
+    "slide5_subtitle": "Seguridad, transparencia y discreción para sus proyectos de adquisición más ambiciosos.",
+    "acheter": "Comprar",
+    "louer_court": "Alquiler corto",
+    "louer_long": "Alquiler largo",
+    "lancer_recherche": "Iniciar búsqueda"
+  },
+  "biens": {
+    "exclusivites": "Exclusivas",
+    "residences_investissements": "Residencias & Inversiones",
+    "voir_tout": "Ver todo",
+    "voir_catalogue": "Ver catálogo completo",
+    "aucun_bien": "No hay propiedades disponibles en este momento.",
+    "ajouter_via_admin": "Añada propiedades a través del panel de administración.",
+    "chambres": "habitación",
+    "chambres_plural": "habitaciones",
+    "surface": "m²",
+    "terrain": "terreno",
+    "disponible": "Disponible",
+    "vendu": "Vendido / Alquilado",
+    "brouillon": "Borrador"
+  },
+  "services": {
+    "vente": "Venta",
+    "location_longue": "Alquiler de larga duración",
+    "location_courte": "Alquiler de corta duración",
+    "sous_location": "Subarrendamiento"
+  },
+  "blog": {
+    "actualites": "Noticias",
+    "derniers_articles": "Últimos Artículos",
+    "voir_tout": "Ver todo",
+    "lire_article": "Leer el artículo",
+    "visiter_blog": "Visitar el Blog",
+    "aucun_article": "No hay artículos disponibles.",
+    "retour_blog": "Volver al Blog",
+    "partager": "Compartir"
+  },
+  "contact": {
+    "cta_titre": "Su Firma Inmobiliaria en Marrakech",
+    "cta_texte": "Nuestro equipo le acompaña en la búsqueda de la propiedad ideal, desde la primera visita hasta la firma.",
+    "decouvrir_biens": "Descubrir nuestras propiedades",
+    "nous_contacter": "Contáctenos"
+  },
+  "footer": {
+    "description": "Excelencia inmobiliaria en Marrakech. Venta, alquiler de corta y larga duración de propiedades de excepción.",
+    "navigation": "Navegación",
+    "contact": "Contacto",
+    "adresse": "Gueliz, Marrakech, Marruecos",
+    "droits": "Todos los derechos reservados."
+  },
+  "commun": {
+    "chargement": "Cargando...",
+    "erreur": "Se produjo un error.",
+    "retour": "Volver",
+    "annuler": "Cancelar",
+    "confirmer": "Confirmar",
+    "enregistrer": "Guardar",
+    "supprimer": "Eliminar",
+    "modifier": "Editar",
+    "ajouter": "Añadir",
+    "voir_plus": "Ver más",
+    "fermer": "Cerrar"
+  },
+  "auth": {
+    "titre": "Administración",
+    "sous_titre": "Dar Prestige",
+    "email": "Email",
+    "mot_de_passe": "Contraseña",
+    "connexion": "Iniciar sesión",
+    "connexion_chargement": "Iniciando...",
+    "deconnexion": "Cerrar sesión",
+    "erreur_auth": "Error de autenticación"
+  },
+  "admin": {
+    "tableau_bord": "Panel de control",
+    "biens": "Propiedades",
+    "blog": "Blog",
+    "visites": "Solicitudes de visita",
+    "ajouter_bien": "+ Añadir propiedad",
+    "generer_article": "✨ Generar artículo",
+    "stats": {
+      "total_biens": "Total de propiedades",
+      "biens_publies": "Propiedades publicadas",
+      "total_articles": "Total de artículos",
+      "articles_publies": "Artículos publicados"
+    }
+  }
+}

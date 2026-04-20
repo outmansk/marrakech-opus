@@ -1,28 +1,20 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ArrowLeft, Bed, Car, MapPin, Clock, MessageCircle, CalendarDays, Bath, Maximize } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import VisitModal from "@/components/VisitModal";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
-import type { Bien, BienService } from "@/types/property";
+import type { Bien } from "@/types/property";
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("fr-MA").format(price) + " MAD";
 };
 
-const transactionLabel = (service: BienService) => {
-  switch (service) {
-    case "vente": return "Vente";
-    case "location-courte-duree": return "Location courte durée";
-    case "location-longue-duree": return "Location longue durée";
-    case "sous-location": return "Sous-location";
-    default: return service;
-  }
-};
-
 const PropertyDetail = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [property, setProperty] = useState<Bien | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,6 +30,16 @@ const PropertyDetail = () => {
     };
     fetchProperty();
   }, [id]);
+
+  const transactionLabel = (service: string) => {
+    switch (service) {
+      case "vente": return t('services.vente');
+      case "location-courte-duree": return t('services.location_courte');
+      case "location-longue-duree": return t('services.location_longue');
+      case "sous-location": return t('services.sous_location');
+      default: return service;
+    }
+  };
 
   if (loading) {
     return (
@@ -59,7 +61,7 @@ const PropertyDetail = () => {
       <div className="min-h-screen">
         <Header />
         <div className="pt-32 pb-24 container mx-auto px-6 md:px-12 text-center">
-          <h2 className="mb-6">Bien introuvable</h2>
+          <h2 className="mb-6">{t('biens.aucun_bien')}</h2>
           <Link to="/catalogue">
             <Button variant="luxury-ghost">Retour au catalogue</Button>
           </Link>
@@ -77,11 +79,10 @@ const PropertyDetail = () => {
       <Header />
 
       <div className="pt-24">
-        {/* Gallery */}
         <div className="container mx-auto px-6 md:px-12 mb-4">
           <Link to="/catalogue" className="inline-flex items-center gap-2 text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors font-sans mb-8">
             <ArrowLeft size={16} strokeWidth={1.25} />
-            Retour au catalogue
+            {t("nav.catalogue")}
           </Link>
         </div>
 
@@ -110,7 +111,6 @@ const PropertyDetail = () => {
           )}
         </div>
 
-        {/* Content */}
         <div className="container mx-auto px-6 md:px-12 py-16">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
             <div className="lg:col-span-2 space-y-10">
@@ -141,19 +141,19 @@ const PropertyDetail = () => {
                     {property.services.includes('vente') && property.prix_vente && (
                       <div className="flex items-baseline gap-4">
                         <p className="text-3xl font-serif text-accent">{formatPrice(property.prix_vente)}</p>
-                        <span className="text-[10px] tracking-widest uppercase text-muted-foreground font-sans border border-border px-2 py-0.5">À la vente</span>
+                        <span className="text-[10px] tracking-widest uppercase text-muted-foreground font-sans border border-border px-2 py-0.5">{t('services.vente')}</span>
                       </div>
                     )}
                     {property.services.includes('location-longue-duree') && property.prix_location_longue && (
                       <div className="flex items-baseline gap-4">
                         <p className="text-3xl font-serif text-accent">{formatPrice(property.prix_location_longue)} / mois</p>
-                        <span className="text-[10px] tracking-widest uppercase text-muted-foreground font-sans border border-border px-2 py-0.5">Longue durée</span>
+                        <span className="text-[10px] tracking-widest uppercase text-muted-foreground font-sans border border-border px-2 py-0.5">{t('services.location_longue')}</span>
                       </div>
                     )}
                     {property.services.includes('location-courte-duree') && property.prix_location_courte && (
                       <div className="flex items-baseline gap-4">
                         <p className="text-3xl font-serif text-accent">{formatPrice(property.prix_location_courte)} / nuit</p>
-                        <span className="text-[10px] tracking-widest uppercase text-muted-foreground font-sans border border-border px-2 py-0.5">Courte durée</span>
+                        <span className="text-[10px] tracking-widest uppercase text-muted-foreground font-sans border border-border px-2 py-0.5">{t('services.location_courte')}</span>
                       </div>
                     )}
                     {!property.prix_vente && !property.prix_location_longue && !property.prix_location_courte && property.prix && (
@@ -163,22 +163,22 @@ const PropertyDetail = () => {
                 </div>
 
               <div className="flex flex-wrap items-center gap-x-8 gap-y-4 py-8 border-y border-border">
-                {property.chambres && (
+                {property.chambres !== null && (
                   <div className="flex items-center gap-3">
                     <Bed size={22} strokeWidth={1} className="text-muted-foreground" />
-                    <span className="font-light tracking-wide">{property.chambres} chambre{property.chambres > 1 ? "s" : ""}</span>
+                    <span className="font-light tracking-wide">{property.chambres} {t('biens.chambres_plural')}</span>
                   </div>
                 )}
-                {property.salles_de_bain && (
+                {property.salles_de_bain !== null && (
                   <div className="flex items-center gap-3">
                     <Bath size={22} strokeWidth={1} className="text-muted-foreground" />
                     <span className="font-light tracking-wide">{property.salles_de_bain} Sdb</span>
                   </div>
                 )}
-                {property.surface_terrain && (
+                {property.surface_terrain !== null && (
                   <div className="flex items-center gap-3">
                     <Maximize size={22} strokeWidth={1} className="text-muted-foreground" />
-                    <span className="font-light tracking-wide">{property.surface_terrain} m²</span>
+                    <span className="font-light tracking-wide">{property.surface_terrain} {t('biens.surface')}</span>
                   </div>
                 )}
                 {property.equipements?.includes('Parking') && (
@@ -239,7 +239,6 @@ const PropertyDetail = () => {
               )}
             </div>
 
-            {/* Sidebar CTAs (Desktop only) */}
             <div className="hidden lg:block lg:col-span-1">
               <div className="sticky top-28 space-y-4">
                 <div className="bg-card border border-border p-8 space-y-6">
@@ -274,7 +273,6 @@ const PropertyDetail = () => {
         </div>
       </div>
 
-      {/* Sticky Mobile Action Bar */}
       <div className="lg:hidden fixed bottom-6 left-6 right-6 z-40 animate-fade-in-up">
         <div className="bg-background/90 backdrop-blur-xl border border-border/50 p-3 shadow-2xl flex gap-3">
           <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex-1">
@@ -294,7 +292,6 @@ const PropertyDetail = () => {
         </div>
       </div>
 
-      {/* Padding for Mobile Action Bar */}
       <div className="h-24 lg:hidden" />
 
       <Footer />

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import ReactMarkdown from "react-markdown";
+import { useTranslation } from "react-i18next";
 import { ArrowLeft, Calendar, Share2, ArrowRight } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import Header from "@/components/Header";
@@ -10,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import type { Article } from "@/types/article";
 
 const BlogPost = () => {
+  const { t } = useTranslation();
   const { slug } = useParams<{ slug: string }>();
   const [article, setArticle] = useState<Article | null>(null);
   const [similarArticles, setSimilarArticles] = useState<Article[]>([]);
@@ -127,11 +129,10 @@ const BlogPost = () => {
       
       <Header />
 
-      {/* Hero Article */}
       <div className="pt-32 pb-16">
         <div className="container mx-auto px-6 max-w-4xl">
           <Link to="/blog" className="inline-flex items-center text-xs tracking-widest uppercase font-medium text-muted-foreground hover:text-foreground transition-colors mb-8">
-            <ArrowLeft size={16} strokeWidth={1.25} className="mr-2" /> Retour au blog
+            <ArrowLeft size={16} strokeWidth={1.25} className="mr-2" /> Retour
           </Link>
           
           <div className="inline-block bg-secondary text-muted-foreground px-4 py-1.5 text-[10px] uppercase tracking-widest font-medium mb-6">
@@ -161,7 +162,6 @@ const BlogPost = () => {
       </div>
 
       <div className="container mx-auto px-6 pb-24 grid grid-cols-1 lg:grid-cols-12 gap-16 max-w-5xl">
-        {/* Table of Contents (Sidebar) */}
         <div className="lg:col-span-4 order-2 lg:order-1">
           <div className="sticky top-32">
             <p className="text-xs tracking-widest uppercase text-muted-foreground mb-6">Sommaire</p>
@@ -187,7 +187,6 @@ const BlogPost = () => {
           </div>
         </div>
 
-        {/* Article Content */}
         <div className="lg:col-span-8 order-1 lg:order-2">
           <article className="prose prose-p:text-muted-foreground prose-headings:font-serif prose-headings:text-foreground max-w-none">
             <ReactMarkdown components={MarkdownComponents}>
@@ -197,13 +196,11 @@ const BlogPost = () => {
         </div>
       </div>
 
-      {/* Similar Articles */}
       {similarArticles.length > 0 && (
         <section className="bg-secondary py-24 md:py-32">
           <div className="container mx-auto px-6 max-w-5xl">
             <div className="flex items-end justify-between mb-16">
               <div>
-                <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">À lire aussi</p>
                 <h2>Articles similaires</h2>
               </div>
             </div>
@@ -218,7 +215,7 @@ const BlogPost = () => {
                     <h3 className="font-serif text-lg mb-3 line-clamp-2 transition-colors duration-300">{sim.title}</h3>
                     <p className="text-muted-foreground font-light text-sm line-clamp-2 mb-6">{sim.excerpt}</p>
                     <div className="mt-auto flex items-center gap-2 text-xs tracking-widest uppercase font-sans font-medium text-muted-foreground group-hover:text-foreground transition-all duration-300">
-                      Lire <ArrowRight size={14} strokeWidth={1} className="transition-transform duration-300 group-hover:translate-x-1" />
+                      {t('blog.lire_article')} <ArrowRight size={14} strokeWidth={1} className="transition-transform duration-300 group-hover:translate-x-1" />
                     </div>
                   </div>
                 </Link>

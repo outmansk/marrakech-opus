@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { Bien, BienService } from "@/types/property";
 import { Bed, Car, ArrowRight, Bath, Maximize } from "lucide-react";
 
@@ -7,18 +8,7 @@ const formatPrice = (price: number) => {
   return new Intl.NumberFormat("fr-MA").format(price) + " MAD";
 };
 
-const transactionLabel = (service: BienService) => {
-  switch (service) {
-    case "vente":                   return "Vente";
-    case "location-courte-duree":   return "Location courte";
-    case "location-longue-duree":   return "Location longue";
-    case "sous-location":           return "Sous-location";
-    default:                        return service;
-  }
-};
-
 const getDisplayPrice = (bien: Bien, activeService?: string) => {
-  // Si un filtre spécifique est actif, on affiche le prix correspondant
   if (activeService === 'vente' && bien.prix_vente) 
     return `${formatPrice(bien.prix_vente)}`;
   
@@ -28,9 +18,8 @@ const getDisplayPrice = (bien: Bien, activeService?: string) => {
   if (activeService === 'location-courte-duree' && bien.prix_location_courte) 
     return `${formatPrice(bien.prix_location_courte)} / nuit`;
 
-  // Valeur par défaut si aucun filtre ou service non trouvé : on prend le premier disponible
   if (bien.services.includes('vente') && bien.prix_vente) 
-    return `${formatPrice(bien.prix_vente)} (Vente)`;
+    return `${formatPrice(bien.prix_vente)}`;
     
   if (bien.services.includes('location-longue-duree') && bien.prix_location_longue) 
     return `${formatPrice(bien.prix_location_longue)} / mois`;
@@ -48,10 +37,26 @@ interface PropertyCardProps {
 }
 
 const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardProps) => {
+  const { t } = useTranslation();
   const images = property.photos?.length ? property.photos : ["/placeholder.svg"];
   const hasMultiple = images.length > 1;
 
-  // ── Slideshow automatique des photos ──────────────────────────────────
+  const transactionLabel = (service: BienService) => {
+    switch (service) {
+      case "vente":                   return t('services.vente');
+      case "location-courte-duree":   return t('services.location_courte');
+      case "location-longue-duree":   return t('services.location_longue');
+      case "sous-location":           return t('services.sous_location');
+      default:                        return service;
+    }
+  };
+
+  const statusLabel = () => {
+    if (property.statut === 'vendu-loue') return t('biens.vendu');
+    if (property.statut === 'brouillon') return t('biens.brouillon');
+    return t('biens.disponible');
+  };
+
   const [activeIdx, setActiveIdx] = useState(0);
   const [prevIdx, setPrevIdx] = useState<number | null>(null);
   const [fading, setFading] = useState(false);
@@ -67,17 +72,16 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
       activeRef.current = next;
       setActiveIdx(next);
 
-      const t = setTimeout(() => {
+      const to = setTimeout(() => {
         setPrevIdx(null);
         setFading(false);
       }, 700);
-      return () => clearTimeout(t);
+      return () => clearTimeout(to);
     }, 3000);
 
     return () => clearInterval(interval);
   }, [hasMultiple, images.length]);
 
-  // ── Scroll reveal ──────────────────────────────────────────────────────
   const cardRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
@@ -102,7 +106,6 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
       ref={cardRef}
       className="group block card-reveal-init"
     >
-      {/* ── Zone image ── */}
       <div className="overflow-hidden aspect-[4/3] relative bg-muted rounded-0 border-b border-border/10">
         {prevIdx !== null && (
           <img
@@ -147,20 +150,18 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
                         group-hover:translate-y-0 group-hover:opacity-100
                         transition-all duration-500 ease-out z-20">
           <span className="text-white font-sans text-xs tracking-widest uppercase">
-            Voir le bien
+            {t('commun.voir_plus')}
           </span>
           <ArrowRight size={16} strokeWidth={1.25} className="text-white" />
         </div>
 
-        {/* Badge Vendu/Loué */}
         {property.statut === 'vendu-loue' && (
           <div className="absolute top-4 right-4 z-30 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
-            <span className="text-white text-[10px] tracking-widest uppercase font-medium">Vendu / Loué</span>
+            <span className="text-white text-[10px] tracking-widest uppercase font-medium">{statusLabel()}</span>
           </div>
         )}
       </div>
 
-      {/* ── Infos propriété ── */}
       <div className="pt-6 pb-2">
         <div className="flex items-center justify-between mb-3 text-muted-foreground">
           <div className="flex flex-wrap gap-2">
@@ -183,24 +184,23 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
           {getDisplayPrice(property, activeType)}
         </p>
 
-
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-muted-foreground border-t border-border/40 pt-4">
-          {property.chambres && (
+          {property.chambres !== null && (
             <div className="flex items-center gap-2">
               <Bed size={16} strokeWidth={1} />
-              <span className="text-xs font-light tracking-wide">{property.chambres} Ch.</span>
+              <span className="text-xs font-light tracking-wide">{property.chambres} {t('biens.chambres_plural')}</span>
             </div>
           )}
-          {property.salles_de_bain && (
+          {property.salles_de_bain !== null && (
             <div className="flex items-center gap-2">
               <Bath size={16} strokeWidth={1} />
               <span className="text-xs font-light tracking-wide">{property.salles_de_bain} Sdb</span>
             </div>
           )}
-          {property.surface_terrain && (
+          {property.surface_terrain !== null && (
             <div className="flex items-center gap-2">
               <Maximize size={16} strokeWidth={1} />
-              <span className="text-xs font-light tracking-wide">{property.surface_terrain} m²</span>
+              <span className="text-xs font-light tracking-wide">{property.surface_terrain} {t('biens.surface')}</span>
             </div>
           )}
           {property.equipements?.includes('Parking') && (

@@ -2,89 +2,49 @@ import { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, LogOut } from "lucide-react";
+import { LayoutDashboard, Building2, FileText, CalendarCheck, LogOut } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function AdminLayout() {
   const [session, setSession] = useState<any>(null);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [authLoading, setAuthLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  
-  const { toast } = useToast();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      if (!session) {
+        navigate("/admin/login", { replace: true });
+      }
     });
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      if (!session) {
+        navigate("/admin/login", { replace: true });
+      }
     });
-  }, []);
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setAuthLoading(false);
-    if (error) {
-      toast({ title: "Erreur d'authentification", description: error.message, variant: "destructive" });
-    }
-  };
+  }, [navigate]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    setSession(null);
-    navigate("/admin");
+    navigate("/admin/login", { replace: true });
   };
 
-  if (!session) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background px-6">
-        <div className="w-full max-w-sm space-y-8">
-          <div className="text-center">
-            <h1 className="font-serif text-3xl mb-2">Administration</h1>
-            <p className="text-muted-foreground font-light text-sm">Dar Prestige</p>
-          </div>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-xs tracking-widest uppercase text-muted-foreground">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-12 bg-transparent" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-xs tracking-widest uppercase text-muted-foreground">Mot de passe</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="h-12 bg-transparent pr-12"
-                />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  {showPassword ? <EyeOff size={18} strokeWidth={1.25} /> : <Eye size={18} strokeWidth={1.25} />}
-                </button>
-              </div>
-            </div>
-            <Button type="submit" variant="luxury" size="lg" className="w-full h-12" disabled={authLoading}>
-              {authLoading ? "Connexion..." : "Se connecter"}
-            </Button>
-          </form>
-        </div>
-      </div>
-    );
-  }
-
   // Determine active tab based on route
-  const isBiens = location.pathname.includes('/admin/biens');
-  const isBlog = location.pathname.includes('/admin/blog');
-  const isVisites = location.pathname.includes('/admin/visites');
+  const isDashboard = location.pathname.includes('/admin/dashboard');
+  const isBiens     = location.pathname.includes('/admin/biens');
+  const isBlog      = location.pathname.includes('/admin/blog');
+  const isVisites   = location.pathname.includes('/admin/visites');
+
+  const navItems = [
+    { path: '/admin/dashboard', label: t('admin.tableau_bord'), icon: LayoutDashboard, active: isDashboard },
+    { path: '/admin/biens',     label: t('admin.biens'),        icon: Building2,        active: isBiens     },
+    { path: '/admin/blog',      label: t('admin.blog'),         icon: FileText,         active: isBlog      },
+    { path: '/admin/visites',   label: t('admin.visites'),      icon: CalendarCheck,    active: isVisites   },
+  ];
+
+  if (!session) return null;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -93,59 +53,48 @@ export default function AdminLayout() {
           <div className="flex items-center gap-6">
             <h1
               className="font-serif text-xl cursor-pointer select-none"
-              onClick={() => navigate("/admin/biens")}
+              onClick={() => navigate("/admin/dashboard")}
             >
-              Administration
+              Dar Prestige
             </h1>
-            <nav className="hidden md:flex items-center gap-4">
-              <button
-                onClick={() => navigate("/admin/biens")}
-                className={`text-xs tracking-widest uppercase font-sans transition-colors ${isBiens ? 'text-foreground font-semibold border-b-2 border-foreground pb-0.5' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                Biens
-              </button>
-              <button
-                onClick={() => navigate("/admin/blog")}
-                className={`text-xs tracking-widest uppercase font-sans transition-colors ${isBlog ? 'text-foreground font-semibold border-b-2 border-foreground pb-0.5' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                Blog
-              </button>
-              <button
-                onClick={() => navigate("/admin/visites")}
-                className={`text-xs tracking-widest uppercase font-sans transition-colors ${isVisites ? 'text-foreground font-semibold border-b-2 border-foreground pb-0.5' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                Demandes de Visite
-              </button>
+            <nav className="hidden md:flex items-center gap-1">
+              {navItems.map(({ path, label, icon: Icon, active }) => (
+                <button
+                  key={path}
+                  onClick={() => navigate(path)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs tracking-widest uppercase font-sans transition-colors rounded-sm
+                    ${active
+                      ? 'text-foreground font-semibold bg-secondary'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    }`}
+                >
+                  <Icon size={13} strokeWidth={1.5} />
+                  {label}
+                </button>
+              ))}
             </nav>
           </div>
           <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-2">
             <LogOut size={16} strokeWidth={1.25} />
-            <span className="hidden sm:inline">Déconnexion</span>
+            <span className="hidden sm:inline">{t('auth.deconnexion')}</span>
           </Button>
         </div>
       </header>
-      
-      {/* Mobile nav fallback (if needed) */}
+
+      {/* Mobile nav */}
       <div className="md:hidden border-b border-border bg-muted/20">
-        <div className="flex px-4 overflow-x-auto gap-4 py-3">
-          <button
-            onClick={() => navigate("/admin/biens")}
-            className={`text-[10px] tracking-widest uppercase whitespace-nowrap ${isBiens ? 'font-bold' : 'text-muted-foreground'}`}
-          >
-            Biens
-          </button>
-          <button
-            onClick={() => navigate("/admin/blog")}
-            className={`text-[10px] tracking-widest uppercase whitespace-nowrap ${isBlog ? 'font-bold' : 'text-muted-foreground'}`}
-          >
-            Blog
-          </button>
-          <button
-            onClick={() => navigate("/admin/visites")}
-            className={`text-[10px] tracking-widest uppercase whitespace-nowrap ${isVisites ? 'font-bold' : 'text-muted-foreground'}`}
-          >
-            Visites
-          </button>
+        <div className="flex overflow-x-auto gap-1 px-4 py-2">
+          {navItems.map(({ path, label, icon: Icon, active }) => (
+            <button
+              key={path}
+              onClick={() => navigate(path)}
+              className={`flex items-center gap-1 px-3 py-1.5 text-[10px] tracking-widest uppercase whitespace-nowrap rounded-sm transition-colors
+                ${active ? 'font-bold bg-secondary text-foreground' : 'text-muted-foreground'}`}
+            >
+              <Icon size={12} strokeWidth={1.5} />
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 

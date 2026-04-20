@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -7,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 import type { Bien } from "@/types/property";
 
 const Catalogue = () => {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [properties, setProperties] = useState<Bien[]>([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +17,6 @@ const Catalogue = () => {
   useEffect(() => {
     const fetch = async () => {
       setLoading(true);
-      // On utilise désormais la table properties_v2
       let query = supabase
         .from("properties_v2")
         .select("*")
@@ -34,10 +35,10 @@ const Catalogue = () => {
   }, [activeType]);
 
   const filters = [
-    { key: "all", label: "Tous" },
-    { key: "vente", label: "Vente" },
-    { key: "location-longue-duree", label: "Location longue" },
-    { key: "location-courte-duree", label: "Location courte" },
+    { key: "all", label: "Tous" }, // Could add specific translations for this array
+    { key: "vente", label: t("services.vente") },
+    { key: "location-longue-duree", label: t("services.location_longue") },
+    { key: "location-courte-duree", label: t("services.location_courte") },
   ];
 
   return (
@@ -46,7 +47,7 @@ const Catalogue = () => {
       <div className="pt-32 pb-24">
         <div className="container mx-auto px-6 md:px-12">
           <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Notre collection</p>
-          <h1 className="mb-12">Catalogue</h1>
+          <h1 className="mb-12">{t("nav.catalogue")}</h1>
 
           <div className="relative mb-12">
             <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
@@ -64,7 +65,6 @@ const Catalogue = () => {
                 </button>
               ))}
             </div>
-            {/* Gradient fade indicator for mobile scroll */}
             <div className="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-background to-transparent pointer-events-none md:hidden" />
           </div>
 
@@ -74,9 +74,9 @@ const Catalogue = () => {
                 <div key={i} className="animate-pulse">
                   <div className="aspect-[4/3] bg-muted" />
                   <div className="pt-5 space-y-3">
-                    <div className="h-3 w-24 bg-muted rounded" />
-                    <div className="h-5 w-48 bg-muted rounded" />
-                    <div className="h-4 w-32 bg-muted rounded" />
+                     <div className="h-3 w-24 bg-muted rounded" />
+                     <div className="h-5 w-48 bg-muted rounded" />
+                     <div className="h-4 w-32 bg-muted rounded" />
                   </div>
                 </div>
               ))}
@@ -89,7 +89,7 @@ const Catalogue = () => {
             </div>
           ) : (
             <div className="text-center py-20">
-              <p className="text-muted-foreground font-light text-lg">Aucun bien disponible dans cette categorie.</p>
+              <p className="text-muted-foreground font-light text-lg">{t("biens.aucun_bien")}</p>
             </div>
           )}
         </div>

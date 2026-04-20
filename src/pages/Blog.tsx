@@ -1,24 +1,27 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, FileText } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
 import type { Article } from "@/types/article";
 
-const categories = [
-  { id: 'all', label: 'Tous' },
-  { id: 'location-longue-duree', label: 'Location Longue Durée' },
-  { id: 'sous-location', label: 'Sous-location' },
-  { id: 'vente', label: 'Vente' },
-  { id: 'terrain', label: 'Terrain' },
-];
 
 const Blog = () => {
+  const { t } = useTranslation();
   const [articles, setArticles] = useState<Article[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [loading, setLoading] = useState(true);
+
+  const categories = [
+    { id: 'all', label: 'Tous' },
+    { id: 'location-longue-duree', label: t('services.location_longue') },
+    { id: 'sous-location', label: t('services.sous_location') },
+    { id: 'vente', label: t('services.vente') },
+    { id: 'terrain', label: 'Terrain' },
+  ];
 
   useEffect(() => {
     fetchArticles();
@@ -52,7 +55,7 @@ const Blog = () => {
 
       <div className="pt-32 pb-24">
         <div className="container mx-auto px-6 md:px-12">
-          <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Le Journal</p>
+          <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">{t('nav.journal')}</p>
           <h1 className="mb-12">Blog Immobilier</h1>
 
           {/* Filters */}
@@ -89,7 +92,7 @@ const Blog = () => {
           ) : articles.length === 0 ? (
             <div className="text-center py-20">
               <FileText className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
-              <p className="text-muted-foreground font-light text-lg">Aucun article publié dans cette catégorie pour le moment.</p>
+              <p className="text-muted-foreground font-light text-lg">Aucun article publié.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
@@ -118,7 +121,7 @@ const Blog = () => {
                     </p>
                     
                     <div className="mt-auto flex items-center gap-2 text-xs tracking-widest uppercase font-sans font-medium text-muted-foreground group-hover:text-foreground transition-all duration-300">
-                      Lire l'article
+                      {t('blog.lire_article')}
                       <ArrowRight size={14} strokeWidth={1} className="transition-transform duration-300 group-hover:translate-x-1" />
                     </div>
                   </div>
