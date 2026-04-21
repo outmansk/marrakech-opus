@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { CalendarIcon, X, Plus, Star, Upload, Trash2, MapPin, Code } from 'lucide-react';
+import { CalendarIcon, X, Plus, Star, Upload, Trash2, MapPin, Code, ArrowLeft, ArrowRight } from 'lucide-react';
 
 import {
   Sheet,
@@ -325,6 +325,19 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
   const handleRemoveProximite = (index: number) => {
     const current = form.getValues('proximites') ?? [];
     form.setValue('proximites', current.filter((_, i) => i !== index));
+  };
+
+  const movePhoto = (index: number, direction: 'left' | 'right') => {
+    const current = form.getValues('photos') ?? [];
+    if (direction === 'left' && index > 0) {
+      const next = [...current];
+      [next[index - 1], next[index]] = [next[index], next[index - 1]];
+      form.setValue('photos', next, { shouldDirty: true });
+    } else if (direction === 'right' && index < current.length - 1) {
+      const next = [...current];
+      [next[index + 1], next[index]] = [next[index], next[index + 1]];
+      form.setValue('photos', next, { shouldDirty: true });
+    }
   };
 
   const onSubmit = async (values: BienFormValues) => {
@@ -857,19 +870,40 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
                     onValueChange={(val) => form.setValue('photo_principale', val)}
                   >
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      {form.watch('photos').map((url) => (
+                      {form.watch('photos').map((url, index) => (
                         <div key={url} className="relative group rounded-md overflow-hidden border border-border aspect-square">
                           <img src={url} alt="" className="w-full h-full object-cover" />
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2">
-                            <div className="flex justify-end">
+                            <div className="flex justify-between items-start">
+                              <div className="flex gap-1">
+                                {index > 0 && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => { e.preventDefault(); movePhoto(index, 'left'); }}
+                                    className="p-1 rounded bg-black/60 text-white hover:bg-black/90 transition-colors backdrop-blur-sm"
+                                  >
+                                    <ArrowLeft className="h-3 w-3" />
+                                  </button>
+                                )}
+                                {index < form.watch('photos').length - 1 && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => { e.preventDefault(); movePhoto(index, 'right'); }}
+                                    className="p-1 rounded bg-black/60 text-white hover:bg-black/90 transition-colors backdrop-blur-sm"
+                                  >
+                                    <ArrowRight className="h-3 w-3" />
+                                  </button>
+                                )}
+                              </div>
                               <button
                                 type="button"
-                                onClick={() => {
+                                onClick={(e) => {
+                                  e.preventDefault();
                                   const current = form.getValues('photos') ?? [];
                                   const next = current.filter(p => p !== url);
-                                  form.setValue('photos', next);
+                                  form.setValue('photos', next, { shouldDirty: true });
                                   if (form.getValues('photo_principale') === url) {
-                                    form.setValue('photo_principale', next[0] ?? null);
+                                    form.setValue('photo_principale', next[0] ?? null, { shouldDirty: true });
                                   }
                                 }}
                                 className="p-1 rounded bg-destructive text-white hover:bg-destructive/80 transition-colors"
