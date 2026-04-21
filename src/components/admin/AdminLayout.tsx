@@ -15,33 +15,33 @@ export default function AdminLayout() {
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       if (!session) {
-        navigate("/admin/login", { replace: true });
+        navigate("/manage-xk92p/login", { replace: true });
       }
     });
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (!session) {
-        navigate("/admin/login", { replace: true });
+        navigate("/manage-xk92p/login", { replace: true });
       }
     });
   }, [navigate]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate("/admin/login", { replace: true });
+    navigate("/manage-xk92p/login", { replace: true });
   };
 
   // Determine active tab based on route
-  const isDashboard = location.pathname.includes('/admin/dashboard');
-  const isBiens     = location.pathname.includes('/admin/biens');
-  const isBlog      = location.pathname.includes('/admin/blog');
-  const isVisites   = location.pathname.includes('/admin/visites');
+  const isDashboard = location.pathname.includes('/manage-xk92p/dashboard');
+  const isBiens     = location.pathname.includes('/manage-xk92p/biens');
+  const isBlog      = location.pathname.includes('/manage-xk92p/blog');
+  const isVisites   = location.pathname.includes('/manage-xk92p/visites');
 
   const navItems = [
-    { path: '/admin/dashboard', label: t('admin.tableau_bord'), icon: LayoutDashboard, active: isDashboard },
-    { path: '/admin/biens',     label: t('admin.biens'),        icon: Building2,        active: isBiens     },
-    { path: '/admin/blog',      label: t('admin.blog'),         icon: FileText,         active: isBlog      },
-    { path: '/admin/visites',   label: t('admin.visites'),      icon: CalendarCheck,    active: isVisites   },
+    { path: '/manage-xk92p/dashboard', label: t('admin.tableau_bord'), icon: LayoutDashboard, active: isDashboard },
+    { path: '/manage-xk92p/biens',     label: t('admin.biens'),        icon: Building2,        active: isBiens     },
+    { path: '/manage-xk92p/blog',      label: t('admin.blog'),         icon: FileText,         active: isBlog      },
+    { path: '/manage-xk92p/visites',   label: t('admin.visites'),      icon: CalendarCheck,    active: isVisites   },
   ];
 
   if (!session) return null;
@@ -53,7 +53,7 @@ export default function AdminLayout() {
           <div className="flex items-center gap-6">
             <h1
               className="font-serif text-xl cursor-pointer select-none"
-              onClick={() => navigate("/admin/dashboard")}
+              onClick={() => navigate("/manage-xk92p/dashboard")}
             >
               Live In Marrakech
             </h1>

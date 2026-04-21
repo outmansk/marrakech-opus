@@ -33,19 +33,49 @@ export default function AdminLogin() {
   });
 
   const onSubmit = async (data: LoginForm) => {
+    // Check lockout status
+    const lockoutUntil = localStorage.getItem('lockoutUntil');
+    if (lockoutUntil && Date.now() < parseInt(lockoutUntil)) {
+      const minutesLeft = Math.ceil((parseInt(lockoutUntil) - Date.now()) / 60000);
+      toast({
+        title: "Compte verrouillé",
+        description: `Trop de tentatives. Veuillez réessayer dans ${minutesLeft} minute(s).`,
+        variant: 'destructive',
+      });
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email: data.email,
       password: data.password,
     });
 
     if (error) {
-      toast({
-        title: t('auth.erreur_auth'),
-        description: error.message,
-        variant: 'destructive',
-      });
+      // Increment failed attempts
+      const attempts = parseInt(localStorage.getItem('loginAttempts') || '0') + 1;
+      localStorage.setItem('loginAttempts', attempts.toString());
+
+      if (attempts >= 5) {
+        // Lock for 15 minutes
+        localStorage.setItem('lockoutUntil', (Date.now() + 15 * 60 * 1000).toString());
+        localStorage.removeItem('loginAttempts');
+        toast({
+          title: "Compte verrouillé",
+          description: "Trop de tentatives. Veuillez réessayer dans 15 minutes.",
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: t('auth.erreur_auth'),
+          description: "Invalid credentials", // Generic error
+          variant: 'destructive',
+        });
+      }
     } else {
-      navigate('/admin/dashboard', { replace: true });
+      // Reset attempts on success
+      localStorage.removeItem('loginAttempts');
+      localStorage.removeItem('lockoutUntil');
+      navigate('/manage-xk92p/dashboard', { replace: true });
     }
   };
 
@@ -65,6 +95,13 @@ export default function AdminLogin() {
       </div>
 
       <div className="w-full max-w-sm space-y-10 relative z-10">
+        <div className="absolute -top-16 left-0">
+          <button onClick={() => navigate('/')} className="inline-flex items-center gap-2 text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors font-sans">
+            <ArrowLeft size={16} strokeWidth={1.25} />
+            Retour au site
+          </button>
+        </div>
+        
         {/* Logo / Brand */}
         <div className="text-center space-y-3">
           <div className="inline-flex items-center justify-center w-16 h-16 border border-border/60 mb-2">

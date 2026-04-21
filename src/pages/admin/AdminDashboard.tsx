@@ -100,7 +100,7 @@ function RecentBienRow({ bien }: { bien: Bien }) {
 
   return (
     <Link
-      to="/admin/biens"
+      to="/manage-xk92p/biens"
       className="flex items-center gap-4 p-3 hover:bg-muted/40 transition-colors group"
     >
       <div className="w-12 h-10 bg-muted shrink-0 overflow-hidden">
@@ -132,7 +132,7 @@ function RecentBienRow({ bien }: { bien: Bien }) {
 function RecentArticleRow({ article }: { article: Article }) {
   return (
     <Link
-      to="/admin/blog"
+      to="/manage-xk92p/blog"
       className="flex items-center gap-4 p-3 hover:bg-muted/40 transition-colors group"
     >
       <div className="w-12 h-10 bg-muted shrink-0 overflow-hidden">
@@ -234,7 +234,7 @@ export default function AdminDashboard() {
             variant="luxury"
             size="sm"
             className="gap-2"
-            onClick={() => navigate('/admin/biens')}
+            onClick={() => navigate('/manage-xk92p/biens')}
           >
             <Plus size={14} />
             {t('admin.ajouter_bien')}
@@ -243,7 +243,7 @@ export default function AdminDashboard() {
             variant="luxury-ghost"
             size="sm"
             className="gap-2"
-            onClick={() => navigate('/admin/blog')}
+            onClick={() => navigate('/manage-xk92p/blog')}
           >
             <Sparkles size={14} />
             {t('admin.generer_article')}
@@ -365,7 +365,7 @@ export default function AdminDashboard() {
               5 derniers biens
             </p>
             <Link
-              to="/admin/biens"
+              to="/manage-xk92p/biens"
               className="flex items-center gap-1 text-[10px] tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors"
             >
               Voir tout <ArrowRight size={12} />
@@ -386,7 +386,7 @@ export default function AdminDashboard() {
               5 derniers articles
             </p>
             <Link
-              to="/admin/blog"
+              to="/manage-xk92p/blog"
               className="flex items-center gap-1 text-[10px] tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors"
             >
               Voir tout <ArrowRight size={12} />

@@ -55,6 +55,10 @@ const Blog = () => {
 
       <div className="pt-32 pb-24">
         <div className="container mx-auto px-6 md:px-12">
+          <Link to="/" className="inline-flex items-center text-xs tracking-widest uppercase font-medium text-muted-foreground hover:text-foreground transition-colors mb-8">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            Retour à l'accueil
+          </Link>
           <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">{t('nav.journal')}</p>
           <h1 className="mb-12">Blog Immobilier</h1>
 

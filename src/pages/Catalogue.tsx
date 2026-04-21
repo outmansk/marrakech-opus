@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -46,6 +46,10 @@ const Catalogue = () => {
       <Header />
       <div className="pt-32 pb-24">
         <div className="container mx-auto px-6 md:px-12">
+          <Link to="/" className="inline-flex items-center gap-2 text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors font-sans mb-8">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            Retour à l'accueil
+          </Link>
           <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Notre collection</p>
           <h1 className="mb-12">{t("nav.catalogue")}</h1>
 

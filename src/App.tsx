@@ -40,18 +40,18 @@ const App = () => (
             <Route path="/blog/:slug" element={<BlogPost />} />
 
             {/* ── Admin (login public) ─────────────────────────────── */}
-            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/manage-xk92p/login" element={<AdminLogin />} />
 
             {/* ── Admin (protected) ────────────────────────────────── */}
             <Route
-              path="/admin"
+              path="/manage-xk92p"
               element={
                 <ProtectedRoute>
                   <AdminLayout />
                 </ProtectedRoute>
               }
             >
-              <Route index element={<Navigate to="/admin/dashboard" replace />} />
+              <Route index element={<Navigate to="/manage-xk92p/dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="biens" element={<AdminBiens />} />
               <Route path="blog" element={<AdminBlog />} />
