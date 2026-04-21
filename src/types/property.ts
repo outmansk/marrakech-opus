@@ -51,6 +51,7 @@ export const QUARTIERS = [
   'Route d\'Amizmiz',
   'Sidi Ghanem',
   'Agdal',
+  'Route de Fes',
 ];
 
 export const EQUIPEMENTS_LIST = [
