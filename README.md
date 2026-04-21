@@ -2,6 +2,8 @@
 
 Plateforme immobilière premium pour la vente, la location longue durée et la sous-location de biens à Marrakech.
 
+Le site est accessible à : [https://liveinmarrakech.com](https://liveinmarrakech.com)
+
 ## Stack Technique
 
 | Couche | Technologie |
@@ -106,16 +108,18 @@ node scripts/seed_blog.js
 
 ---
 
-## Panel Administrateur
+## Panel Administrateur (SECRET)
 
-Accessible à `/admin` (protégé par Supabase Auth).
+L'accès à l'administration est masqué pour des raisons de sécurité. Il n'y a aucun lien public vers cette section.
 
 | Section | URL | Description |
 |---------|-----|-------------|
-| Dashboard | `/admin` | Statistiques globales |
-| Biens | `/admin/biens` | Gestion des propriétés |
-| Blog | `/admin/blog` | Gestion des articles |
-| Visites | `/admin/visites` | Demandes de visite |
+| Dashboard | `/manage-xk92p` | Statistiques globales |
+| Biens | `/manage-xk92p/biens` | Gestion des propriétés |
+| Blog | `/manage-xk92p/blog` | Gestion des articles |
+| Visites | `/manage-xk92p/visites` | Demandes de visite |
+
+⚠️ L'accès est protégé par un système de rôles (RBAC) en base de données. Seuls les utilisateurs avec le rôle `admin` dans la table `profiles` peuvent accéder à ces routes et modifier les données (Row Level Security).
 
 ---
 
