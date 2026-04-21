@@ -127,6 +127,7 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [isJsonImportOpen, setIsJsonImportOpen] = useState(false);
   const [jsonInput, setJsonInput] = useState('');
+  const [draggedPhotoIndex, setDraggedPhotoIndex] = useState<number | null>(null);
 
   const handleJsonImport = () => {
     try {
@@ -338,6 +339,36 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
       [next[index + 1], next[index]] = [next[index], next[index + 1]];
       form.setValue('photos', next, { shouldDirty: true });
     }
+  };
+
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    setDraggedPhotoIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+    e.currentTarget.style.opacity = '0.5';
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    e.preventDefault(); 
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, targetIndex: number) => {
+    e.preventDefault();
+    if (draggedPhotoIndex !== null && draggedPhotoIndex !== targetIndex) {
+      const currentPhotos = form.getValues('photos') ?? [];
+      const newPhotos = [...currentPhotos];
+      const draggedPhoto = newPhotos[draggedPhotoIndex];
+      
+      newPhotos.splice(draggedPhotoIndex, 1);
+      newPhotos.splice(targetIndex, 0, draggedPhoto);
+      
+      form.setValue('photos', newPhotos, { shouldDirty: true });
+    }
+  };
+
+  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
+    setDraggedPhotoIndex(null);
+    e.currentTarget.style.opacity = '1';
   };
 
   const onSubmit = async (values: BienFormValues) => {
@@ -871,7 +902,18 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
                   >
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {form.watch('photos').map((url, index) => (
-                        <div key={url} className="relative group rounded-md overflow-hidden border border-border aspect-square">
+                        <div 
+                          key={url} 
+                          className={cn(
+                            "relative group rounded-md overflow-hidden border border-border aspect-square cursor-grab active:cursor-grabbing",
+                            draggedPhotoIndex === index ? "ring-2 ring-primary border-primary opacity-50" : ""
+                          )}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, index)}
+                          onDragOver={(e) => handleDragOver(e, index)}
+                          onDrop={(e) => handleDrop(e, index)}
+                          onDragEnd={handleDragEnd}
+                        >
                           <img src={url} alt="" className="w-full h-full object-cover" />
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2">
                             <div className="flex justify-between items-start">
