@@ -47,7 +47,7 @@ const Blog = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Helmet>
-        <title>Le Blog Immobilier Marrakech | Dar Prestige</title>
+        <title>Le Blog Immobilier Marrakech | Live In Marrakech</title>
         <meta name="description" content="Actualités, conseils et analyses du marché immobilier à Marrakech : location, vente, investissement et sous-location." />
       </Helmet>
       

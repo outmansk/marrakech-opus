@@ -101,7 +101,7 @@ export default function AdminBlog() {
             <FileText className="h-5 w-5 text-muted-foreground" strokeWidth={1.5} />
             <div>
               <h2 className="font-serif text-2xl">Gestion du Blog</h2>
-              <p className="text-sm text-muted-foreground">Créez et gérez vos articles SEO pour Dar Prestige.</p>
+              <p className="text-sm text-muted-foreground">Créez et gérez vos articles SEO pour Live In Marrakech.</p>
             </div>
           </div>
 

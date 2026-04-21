@@ -244,7 +244,7 @@ const Index = () => {
                 {t("contact.decouvrir_biens")}
               </Button>
             </Link>
-            <a href="https://wa.me/212600000000" target="_blank" rel="noopener noreferrer">
+            <a href="https://wa.me/212605387041" target="_blank" rel="noopener noreferrer">
               <Button variant="luxury-ghost" size="lg" className="h-12 px-10">
                 {t("contact.nous_contacter")}
               </Button>

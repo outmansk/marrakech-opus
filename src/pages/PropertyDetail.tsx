@@ -72,7 +72,7 @@ const PropertyDetail = () => {
   }
 
   const images = property.photos?.length > 0 ? property.photos : ["/placeholder.svg"];
-  const whatsappUrl = `https://wa.me/212600000000?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien : ${property.titre} (Ref: ${property.reference})`)}`;
+  const whatsappUrl = `https://wa.me/212605387041?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien : ${property?.titre} (Ref: ${property?.reference})`)}`;
 
   return (
     <div className="min-h-screen">

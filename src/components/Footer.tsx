@@ -10,7 +10,7 @@ const Footer = () => {
       <div className="container mx-auto px-6 md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16 text-center md:text-left">
           <div>
-            <h3 className="text-2xl mb-6">Dar Prestige</h3>
+            <h3 className="text-2xl mb-6">Live In Marrakech</h3>
             <p className="text-primary-foreground/60 font-light leading-relaxed max-w-sm mx-auto md:mx-0">
               {t('footer.description')}
             </p>
@@ -31,13 +31,13 @@ const Footer = () => {
                 <MapPin size={16} strokeWidth={1.25} />
                 <span>{t('footer.adresse')}</span>
               </div>
-              <p>+212 6 00 00 00 00</p>
-              <p>contact@darprestige.ma</p>
+              <p>+212 6 05 38 70 41</p>
+              <p>contact@liveinmarrakech.com</p>
             </div>
           </div>
         </div>
         <div className="border-t border-primary-foreground/10 mt-16 pt-8 text-center text-primary-foreground/30 text-xs tracking-[0.2em] font-light uppercase">
-          &copy; {new Date().getFullYear()} Dar Prestige. {t('footer.droits')}
+          &copy; {new Date().getFullYear()} Live In Marrakech. {t('footer.droits')}
         </div>
       </div>
     </footer>

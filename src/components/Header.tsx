@@ -39,7 +39,7 @@ const Header = () => {
               className={`font-serif text-2xl tracking-wide whitespace-nowrap transition-colors duration-500
                 ${(scrolled || isMobileMenuOpen) ? "text-foreground" : "text-white"}`}
             >
-              Dar Prestige
+              Live In Marrakech
             </Link>
           </div>
 
@@ -64,14 +64,14 @@ const Header = () => {
           <div className="hidden md:flex flex-1 justify-end items-center gap-4">
             <LanguageSwitcher variant={scrolled ? "dark" : "light"} />
             <a
-              href="tel:+212600000000"
+              href="tel:+212605387041"
               className={`transition-colors duration-500
                 ${scrolled ? "text-muted-foreground hover:text-foreground" : "text-white/80 hover:text-white"}`}
             >
               <Phone size={18} strokeWidth={1.25} />
             </a>
             <a
-              href="mailto:contact@darprestige.ma"
+              href="mailto:contact@liveinmarrakech.com"
               className={`transition-colors duration-500
                 ${scrolled ? "text-muted-foreground hover:text-foreground" : "text-white/80 hover:text-white"}`}
             >
@@ -131,11 +131,11 @@ const Header = () => {
               ${isMobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
               <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground">{t("nav.nous_contacter")}</p>
               <div className="flex flex-col gap-4">
-                <a href="tel:+212600000000" className="font-sans text-lg tracking-wider hover:text-accent transition-colors">
-                  +212 6 00 00 00 00
+                <a href="tel:+212605387041" className="font-sans text-lg tracking-wider hover:text-accent transition-colors">
+                  +212 6 05 38 70 41
                 </a>
-                <a href="mailto:contact@darprestige.ma" className="font-sans text-lg tracking-wider hover:text-accent transition-colors">
-                  contact@darprestige.ma
+                <a href="mailto:contact@liveinmarrakech.com" className="font-sans text-lg tracking-wider hover:text-accent transition-colors">
+                  contact@liveinmarrakech.com
                 </a>
               </div>
             </div>

@@ -115,7 +115,7 @@ const BlogPost = () => {
     "dateModified": article.updated_at,
     "author": {
       "@type": "Organization",
-      "name": "Dar Prestige"
+      "name": "Live In Marrakech"
     }
   };
 

@@ -82,7 +82,7 @@ export function ArticleForm({ article, onSuccess }: ArticleFormProps) {
     excerpt: "Découvrez nos conseils d'experts pour vendre rapidement.",
     content: "Voici les étapes clés pour réussir votre vente immobilière...\n\n1. Estimation\n2. Mise en valeur\n3. Visites",
     image_url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750",
-    meta_title: "Conseils Vente Immobilière Marrakech | Dar Prestige",
+    meta_title: "Conseils Vente Immobilière Marrakech | Live In Marrakech",
     meta_description: "Guide complet pour vendre votre propriété au meilleur prix à Marrakech.",
     est_publie: true
   }, null, 2);

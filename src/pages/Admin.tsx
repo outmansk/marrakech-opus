@@ -132,7 +132,7 @@ const Admin = () => {
         <div className="w-full max-w-sm space-y-8">
           <div className="text-center">
             <h1 className="font-serif text-3xl mb-2">Administration</h1>
-            <p className="text-muted-foreground font-light text-sm">Dar Prestige</p>
+            <p className="text-muted-foreground font-light text-sm">Live In Marrakech</p>
           </div>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">

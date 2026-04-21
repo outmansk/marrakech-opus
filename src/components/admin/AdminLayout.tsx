@@ -55,7 +55,7 @@ export default function AdminLayout() {
               className="font-serif text-xl cursor-pointer select-none"
               onClick={() => navigate("/admin/dashboard")}
             >
-              Dar Prestige
+              Live In Marrakech
             </h1>
             <nav className="hidden md:flex items-center gap-1">
               {navItems.map(({ path, label, icon: Icon, active }) => (
