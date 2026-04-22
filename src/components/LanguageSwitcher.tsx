@@ -24,18 +24,17 @@ export default function LanguageSwitcher({ variant = 'dark' }: LanguageSwitcherP
     : 'text-foreground font-semibold';
 
   return (
-    <div className="flex items-center gap-1" aria-label="Language switcher">
-      {LANGUAGES.map(({ code, label, flag }) => (
+    <div className="flex items-center gap-2" aria-label="Language switcher">
+      {LANGUAGES.map(({ code, label }) => (
         <button
           key={code}
           onClick={() => i18n.changeLanguage(code)}
-          className={`flex items-center gap-0.5 text-[10px] tracking-widest uppercase transition-colors duration-300 px-1 py-0.5
+          className={`flex items-center text-[10px] tracking-widest uppercase transition-colors duration-300 px-1 py-0.5
             ${currentLang === code ? activeClass : textClass}`}
           aria-label={`Switch to ${label}`}
           aria-pressed={currentLang === code}
         >
-          <span className="text-sm leading-none">{flag}</span>
-          <span className="hidden sm:inline">{label}</span>
+          <span>{label}</span>
         </button>
       ))}
     </div>
