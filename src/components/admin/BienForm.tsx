@@ -525,38 +525,31 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
                   </FormItem>
                 )} />
 
-                <FormField control={form.control} name="services" render={() => (
+                <FormField control={form.control} name="services" render={({ field }) => (
                   <FormItem className="sm:col-span-2">
                     <FormLabel>Services (plusieurs choix possibles) *</FormLabel>
                     <div className="flex flex-wrap gap-4 pt-2">
-                      {BIEN_SERVICES.map((serv) => (
-                        <FormField
-                          key={serv}
-                          control={form.control}
-                          name="services"
-                          render={({ field }) => {
-                            const checked = (field.value ?? []).includes(serv);
-                            return (
-                              <FormItem className="flex items-center space-x-2 space-y-0 bg-muted/30 px-3 py-2 rounded-md border border-border">
-                                <FormControl>
-                                  <Checkbox
-                                    checked={checked}
-                                    onCheckedChange={(val) => {
-                                      const current = field.value ?? [];
-                                      field.onChange(
-                                        val ? [...current, serv] : current.filter((s) => s !== serv)
-                                      );
-                                    }}
-                                  />
-                                </FormControl>
-                                <FormLabel className="font-normal cursor-pointer text-sm capitalize">
-                                  {serv.replace(/-/g, ' ')}
-                                </FormLabel>
-                              </FormItem>
-                            );
-                          }}
-                        />
-                      ))}
+                      {BIEN_SERVICES.map((serv) => {
+                        const checked = (field.value ?? []).includes(serv);
+                        return (
+                          <FormItem key={serv} className="flex items-center space-x-2 space-y-0 bg-muted/30 px-3 py-2 rounded-md border border-border">
+                            <FormControl>
+                              <Checkbox
+                                checked={checked}
+                                onCheckedChange={(val) => {
+                                  const current = field.value ?? [];
+                                  field.onChange(
+                                    val ? [...current, serv] : current.filter((s) => s !== serv)
+                                  );
+                                }}
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal cursor-pointer text-sm capitalize">
+                              {serv.replace(/-/g, ' ')}
+                            </FormLabel>
+                          </FormItem>
+                        );
+                      })}
                     </div>
                     <FormMessage />
                   </FormItem>
