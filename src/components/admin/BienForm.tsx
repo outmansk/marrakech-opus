@@ -69,6 +69,7 @@ const bienSchema = z.object({
   reference: z.string().optional(),
   type: z.enum(['villa', 'appartement', 'riad', 'maison', 'terrain']),
   services: z.array(z.enum(['location-longue-duree', 'location-courte-duree', 'vente', 'sous-location'])).min(1, 'Sélectionnez au moins un service'),
+  statut: z.enum(['publie', 'brouillon', 'vendu-loue']).default('brouillon'),
   prix_vente: z.coerce.number().nullable().optional(),
   prix_location_longue: z.coerce.number().nullable().optional(),
   prix_location_courte: z.coerce.number().nullable().optional(),
@@ -186,6 +187,7 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
       reference: '',
       type: 'villa',
       services: ['vente'],
+      statut: 'brouillon',
       prix_vente: null,
       prix_location_longue: null,
       prix_location_courte: null,
@@ -212,6 +214,10 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
   useEffect(() => {
     if (bien) {
       form.reset({
+        titre: bien.titre ?? '',
+        reference: bien.reference ?? '',
+        type: bien.type ?? 'villa',
+        statut: bien.statut ?? 'brouillon',
         services: bien.services ?? (bien.service ? [bien.service] : []),
         prix_vente: bien.prix_vente,
         prix_location_longue: bien.prix_location_longue,

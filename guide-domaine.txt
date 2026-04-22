@@ -1,0 +1,17 @@
+RESUME VERCEL & NAMECHEAP:
+
+1. VERCEL :
+- Aller dans Settings > Domains
+- Ajouter le nom de domaine (liveinmarrakech.com)
+- Vercel donne deux codes (A et CNAME).
+
+2. NAMECHEAP :
+- Aller sur "Advanced DNS"
+- Supprimer les anciens enregistrements (Namecheap Parking).
+- Ajouter 1 : "A Record", Host "@", Value "Ip donnée par Vercel"
+- Ajouter 2 : "CNAME Record", Host "www", Value "Lien donné par Vercel"
+- Sauvegarder (coche verte).
+
+3. FIN :
+- Retourner sur Vercel et attendre 5 minutes.
+- Le SSL (cadenas) et la validation se font tout seuls.
