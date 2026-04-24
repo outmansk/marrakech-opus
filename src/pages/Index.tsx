@@ -9,6 +9,7 @@ import { supabase } from "@/lib/supabase";
 import type { Bien } from "@/types/property";
 import type { Article } from "@/types/article";
 import { useTranslation } from "react-i18next";
+import LazyImage from "@/components/LazyImage";
 
 import slide1 from "@/assets/slide1.jpg";
 import slide2 from "@/assets/slide2.jpg";
@@ -208,7 +209,7 @@ const Index = () => {
               {latestArticles.map((article) => (
                 <Link to={`/blog/${article.slug}`} key={article.id} className="group flex flex-col items-start hover-target h-full border border-border bg-card overflow-hidden">
                   <div className="relative w-full aspect-[4/3] overflow-hidden bg-muted">
-                    <img src={article.image_url} alt={article.title} className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+                    <LazyImage src={article.image_url} alt={article.title} className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" wrapperClassName="w-full h-full" />
                   </div>
                   <div className="p-6 flex flex-col flex-grow w-full">
                     <h3 className="font-serif text-lg mb-3 line-clamp-2 transition-colors duration-300">{article.title}</h3>

@@ -8,6 +8,7 @@ import VisitModal from "@/components/VisitModal";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import type { Bien } from "@/types/property";
+import LazyImage from "@/components/LazyImage";
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("fr-MA").format(price) + " MAD";
@@ -88,10 +89,12 @@ const PropertyDetail = () => {
 
         <div className="container mx-auto px-6 md:px-12">
           <div className="aspect-[16/9] md:aspect-[21/9] overflow-hidden mb-4 bg-muted">
-            <img
+          <LazyImage
               src={images[selectedImage]}
               alt={property.titre}
+              eager
               className="w-full h-full object-cover"
+              wrapperClassName="w-full h-full"
             />
           </div>
           {images.length > 1 && (
@@ -104,7 +107,12 @@ const PropertyDetail = () => {
                     selectedImage === i ? "opacity-100 ring-2 ring-accent" : "opacity-40 hover:opacity-70"
                   }`}
                 >
-                  <img src={url} alt="" className="w-full h-full object-cover" />
+                  <LazyImage
+                    src={url}
+                    alt=""
+                    className="w-full h-full object-cover"
+                    wrapperClassName="w-full h-full"
+                  />
                 </button>
               ))}
             </div>
