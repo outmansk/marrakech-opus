@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { CalendarIcon, X, Plus, Star, Upload, Trash2, MapPin, Code, ArrowLeft, ArrowRight } from 'lucide-react';
+import DOMPurify from 'dompurify';
 
 import {
   Sheet,
@@ -65,8 +66,8 @@ import { cn } from '@/lib/utils';
 
 // ─── Schema Zod ──────────────────────────────────────────────────────────────
 const bienSchema = z.object({
-  titre: z.string().min(1, 'Le titre est requis'),
-  reference: z.string().optional(),
+  titre: z.string().min(1, 'Le titre est requis').transform(v => DOMPurify.sanitize(v)),
+  reference: z.string().optional().transform(v => v ? DOMPurify.sanitize(v) : v),
   type: z.enum(['villa', 'appartement', 'riad', 'maison', 'terrain']),
   services: z.array(z.enum(['location-longue-duree', 'location-courte-duree', 'vente', 'sous-location'])).min(1, 'Sélectionnez au moins un service'),
   statut: z.enum(['publie', 'brouillon', 'vendu-loue']).default('brouillon'),
@@ -81,20 +82,20 @@ const bienSchema = z.object({
   salles_de_bain: z.coerce.number().int().nullable().optional(),
   disponible_le: z.string().nullable().optional(),
 
-  quartier: z.string().nullable().optional(),
+  quartier: z.string().nullable().optional().transform(v => v ? DOMPurify.sanitize(v) : v),
   latitude: z.coerce.number().nullable().optional(),
   longitude: z.coerce.number().nullable().optional(),
 
-  description_courte: z.string().max(200, 'Maximum 200 caractères').nullable().optional(),
-  description_longue: z.string().nullable().optional(),
+  description_courte: z.string().max(200, 'Maximum 200 caractères').nullable().optional().transform(v => v ? DOMPurify.sanitize(v) : v),
+  description_longue: z.string().nullable().optional().transform(v => v ? DOMPurify.sanitize(v) : v),
 
-  equipements: z.array(z.string()).default([]),
+  equipements: z.array(z.string().transform(v => DOMPurify.sanitize(v))).default([]),
 
-  photos: z.array(z.string()).default([]),
-  photo_principale: z.string().nullable().optional(),
+  photos: z.array(z.string().transform(v => DOMPurify.sanitize(v))).default([]),
+  photo_principale: z.string().nullable().optional().transform(v => v ? DOMPurify.sanitize(v) : v),
   proximites: z.array(z.object({
-    place: z.string().min(1, 'Lieu requis'),
-    time: z.string().min(1, 'Temps requis'),
+    place: z.string().min(1, 'Lieu requis').transform(v => DOMPurify.sanitize(v)),
+    time: z.string().min(1, 'Temps requis').transform(v => DOMPurify.sanitize(v)),
   })).default([]),
 });
 

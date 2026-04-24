@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/useToast";
+import DOMPurify from 'dompurify';
 
 interface VisitModalProps {
   open: boolean;
@@ -27,9 +28,9 @@ const VisitModal = ({ open, onOpenChange, propertyId, propertyTitle }: VisitModa
     setLoading(true);
     const { error } = await supabase.from("visit_requests").insert({
       property_id: propertyId,
-      client_name: name.trim(),
-      client_phone: phone.trim(),
-      requested_date: date,
+      client_name: DOMPurify.sanitize(name.trim()),
+      client_phone: DOMPurify.sanitize(phone.trim()),
+      requested_date: DOMPurify.sanitize(date),
     });
     setLoading(false);
 

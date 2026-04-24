@@ -89,18 +89,19 @@ const Admin = () => {
     let proximities: any[] = [];
     try { proximities = JSON.parse(form.proximities); } catch {}
 
+    const DOMPurify = (await import('dompurify')).default;
     const { error } = await supabase.from("properties").insert({
-      title: form.title,
-      description: form.description,
+      title: DOMPurify.sanitize(form.title),
+      description: DOMPurify.sanitize(form.description),
       price: 0, // Legacy
       price_vente: form.price_vente ? parseFloat(form.price_vente) : 0,
       price_location_courte: form.price_location_courte ? parseFloat(form.price_location_courte) : 0,
       price_location_longue: form.price_location_longue ? parseFloat(form.price_location_longue) : 0,
       transaction_types: form.transaction_types,
-      property_type: form.property_type,
+      property_type: DOMPurify.sanitize(form.property_type),
       bedrooms: form.bedrooms ? parseInt(form.bedrooms) : null,
       secure_parking: form.secure_parking,
-      environment_type: form.environment_type || null,
+      environment_type: form.environment_type ? DOMPurify.sanitize(form.environment_type) : null,
       proximities,
       image_urls: imageUrls,
       is_available: form.is_available,

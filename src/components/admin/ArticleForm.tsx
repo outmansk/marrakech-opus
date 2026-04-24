@@ -5,6 +5,7 @@ import * as z from 'zod';
 import { Article } from '@/types/article';
 import { useCreateArticle, useUpdateArticle } from '@/hooks/useArticles';
 import { Button } from '@/components/ui/button';
+import DOMPurify from 'dompurify';
 import {
   Form,
   FormControl,
@@ -37,14 +38,14 @@ import {
 import { useState } from 'react';
 
 const articleSchema = z.object({
-  title: z.string().min(5, 'Le titre doit faire au moins 5 caractères'),
-  slug: z.string().min(3, 'Le slug est requis (ex: mon-bel-article)'),
+  title: z.string().min(5, 'Le titre doit faire au moins 5 caractères').transform(v => DOMPurify.sanitize(v)),
+  slug: z.string().min(3, 'Le slug est requis (ex: mon-bel-article)').transform(v => DOMPurify.sanitize(v)),
   category: z.enum(['location-longue-duree', 'sous-location', 'vente', 'terrain']),
-  content: z.string().min(20, 'Le contenu est trop court'),
-  excerpt: z.string().optional(),
-  image_url: z.string().url('URL d\'image invalide').optional().or(z.literal('')),
-  meta_title: z.string().optional(),
-  meta_description: z.string().optional(),
+  content: z.string().min(20, 'Le contenu est trop court').transform(v => DOMPurify.sanitize(v)),
+  excerpt: z.string().optional().transform(v => v ? DOMPurify.sanitize(v) : v),
+  image_url: z.string().url('URL d\'image invalide').optional().or(z.literal('')).transform(v => v ? DOMPurify.sanitize(v) : v),
+  meta_title: z.string().optional().transform(v => v ? DOMPurify.sanitize(v) : v),
+  meta_description: z.string().optional().transform(v => v ? DOMPurify.sanitize(v) : v),
   est_publie: z.boolean().default(false),
 });
 

@@ -6,13 +6,14 @@ import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { supabase } from "@/lib/supabase";
 import type { Bien } from "@/types/property";
+import DOMPurify from 'dompurify';
 
 const Catalogue = () => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [properties, setProperties] = useState<Bien[]>([]);
   const [loading, setLoading] = useState(true);
-  const activeType = searchParams.get("type") || "all";
+  const activeType = DOMPurify.sanitize(searchParams.get("type") || "all");
 
   useEffect(() => {
     const fetch = async () => {
