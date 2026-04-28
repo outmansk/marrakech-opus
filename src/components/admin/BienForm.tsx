@@ -49,7 +49,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Progress } from '@/components/ui/progress';
-import { supabase } from '@/lib/supabase';
+import { uploadToCloudinary } from '@/lib/cloudinary';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 import { useCreateProperty, useUpdateProperty } from '@/hooks/useBiens';
 import {
@@ -287,23 +288,17 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
 
     try {
       for (const file of Array.from(files)) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-        const filePath = `${fileName}`;
+        const result = await uploadToCloudinary(file, (percent) => {
+          const base = (uploadedCount / totalFiles) * 100;
+          const perFile = (1 / totalFiles) * percent;
+          setUploadProgress(Math.round(base + perFile));
+        });
 
-        const { error: uploadError } = await supabase.storage
-          .from('property_images')
-          .upload(filePath, file);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('property_images')
-          .getPublicUrl(filePath);
-
-        newPhotos.push(publicUrl);
+        // Store public_id for Cloudinary-native assets;
+        // getImageUrl() in OptimizedImage will resolve it automatically.
+        newPhotos.push(result.public_id);
         uploadedCount++;
-        setUploadProgress((uploadedCount / totalFiles) * 100);
+        setUploadProgress(Math.round((uploadedCount / totalFiles) * 100));
       }
 
       form.setValue('photos', newPhotos);
@@ -311,7 +306,7 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
         form.setValue('photo_principale', newPhotos[0]);
       }
     } catch (error: any) {
-      console.error('Error uploading images:', error.message);
+      console.error('Erreur Cloudinary:', error.message);
     } finally {
       setUploading(false);
       setUploadProgress(0);
@@ -914,7 +909,7 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
                           onDrop={(e) => handleDrop(e, index)}
                           onDragEnd={handleDragEnd}
                         >
-                          <img src={url} alt="" className="w-full h-full object-cover" />
+                          <OptimizedImage src={url} alt="" size="thumb" className="w-full h-full object-cover" wrapperClassName="w-full h-full" />
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2">
                             <div className="flex justify-between items-start">
                               <div className="flex gap-1">

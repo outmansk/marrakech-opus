@@ -20,6 +20,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminBiens from "./pages/admin/AdminBiens";
 import AdminBlog from "./pages/admin/AdminBlog";
 import AdminVisites from "./pages/admin/AdminVisites";
+import MigrateCloudinary from "./pages/admin/MigrateCloudinary";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -56,6 +57,7 @@ const App = () => (
               <Route path="biens" element={<AdminBiens />} />
               <Route path="blog" element={<AdminBlog />} />
               <Route path="visites" element={<AdminVisites />} />
+              <Route path="migration" element={<MigrateCloudinary />} />
             </Route>
 
             {/* ── 404 ─────────────────────────────────────────────── */}

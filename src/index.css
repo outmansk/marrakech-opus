@@ -109,3 +109,10 @@
     transform: translateY(0);
   }
 }
+
+/* ── Shimmer skeleton animation (used by OptimizedImage) ── */
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+

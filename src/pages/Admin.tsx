@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/useToast";
 import type { Property, VisitRequest } from "@/types/property";
 import { Trash2, Plus, LogOut, Eye, EyeOff, Upload } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 
 const Admin = () => {
   const [session, setSession] = useState<any>(null);
@@ -219,7 +220,7 @@ const Admin = () => {
               <div key={p.id} className="flex items-center justify-between p-4 border border-border">
                 <div className="flex items-center gap-4">
                   {p.image_urls?.[0] && (
-                    <img src={p.image_urls[0]} alt="" className="w-16 h-12 object-cover" />
+                    <OptimizedImage src={p.image_urls[0]} alt="" size="thumb" className="w-16 h-12 object-cover" wrapperClassName="w-16 h-12" />
                   )}
                   <div>
                     <p className="font-medium">{p.title}</p>

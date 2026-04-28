@@ -46,6 +46,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 export default function AdminBlog() {
   const { data: articles, isLoading } = useArticles();
@@ -163,10 +164,12 @@ export default function AdminBlog() {
                       <div className="flex items-center space-x-4">
                         <div className="w-14 h-14 rounded-lg bg-muted flex-shrink-0 overflow-hidden border shadow-sm group-hover:scale-105 transition-transform">
                           {article.image_url ? (
-                            <img 
+                            <OptimizedImage 
                               src={article.image_url} 
                               alt={article.title} 
+                              size="thumb"
                               className="w-full h-full object-cover"
+                              wrapperClassName="w-full h-full"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center bg-zinc-100">

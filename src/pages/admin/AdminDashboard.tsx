@@ -17,6 +17,7 @@ import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import type { Bien } from '@/types/property';
 import type { Article } from '@/types/article';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 import {
   BarChart,
   Bar,
@@ -105,7 +106,7 @@ function RecentBienRow({ bien }: { bien: Bien }) {
     >
       <div className="w-12 h-10 bg-muted shrink-0 overflow-hidden">
         {bien.photo_principale ? (
-          <img src={bien.photo_principale} alt={bien.titre} className="w-full h-full object-cover" />
+          <OptimizedImage src={bien.photo_principale} alt={bien.titre} size="thumb" className="w-full h-full object-cover" wrapperClassName="w-full h-full" />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <Home size={14} className="text-muted-foreground" />
@@ -137,7 +138,7 @@ function RecentArticleRow({ article }: { article: Article }) {
     >
       <div className="w-12 h-10 bg-muted shrink-0 overflow-hidden">
         {article.image_url ? (
-          <img src={article.image_url} alt={article.title} className="w-full h-full object-cover" />
+          <OptimizedImage src={article.image_url} alt={article.title} size="thumb" className="w-full h-full object-cover" wrapperClassName="w-full h-full" />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <BookOpen size={14} className="text-muted-foreground" />

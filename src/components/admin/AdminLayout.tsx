@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Building2, FileText, CalendarCheck, LogOut } from "lucide-react";
+import { LayoutDashboard, Building2, FileText, CalendarCheck, LogOut, CloudUpload } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export default function AdminLayout() {
@@ -36,12 +36,14 @@ export default function AdminLayout() {
   const isBiens     = location.pathname.includes('/manage-xk92p/biens');
   const isBlog      = location.pathname.includes('/manage-xk92p/blog');
   const isVisites   = location.pathname.includes('/manage-xk92p/visites');
+  const isMigration = location.pathname.includes('/manage-xk92p/migration');
 
   const navItems = [
     { path: '/manage-xk92p/dashboard', label: t('admin.tableau_bord'), icon: LayoutDashboard, active: isDashboard },
     { path: '/manage-xk92p/biens',     label: t('admin.biens'),        icon: Building2,        active: isBiens     },
     { path: '/manage-xk92p/blog',      label: t('admin.blog'),         icon: FileText,         active: isBlog      },
     { path: '/manage-xk92p/visites',   label: t('admin.visites'),      icon: CalendarCheck,    active: isVisites   },
+    { path: '/manage-xk92p/migration', label: 'Migration',             icon: CloudUpload,      active: isMigration },
   ];
 
   if (!session) return null;

@@ -9,6 +9,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import type { Article } from "@/types/article";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 
 const BlogPost = () => {
   const { t } = useTranslation();
@@ -155,7 +156,7 @@ const BlogPost = () => {
         {article.image_url && (
           <div className="container mx-auto px-6 max-w-5xl mb-16">
             <div className="aspect-[21/9] w-full overflow-hidden bg-muted">
-              <img src={article.image_url} alt={article.title} className="w-full h-full object-cover" />
+              <OptimizedImage src={article.image_url} alt={article.title} size="hero" className="w-full h-full object-cover" wrapperClassName="w-full h-full" />
             </div>
           </div>
         )}
@@ -209,7 +210,7 @@ const BlogPost = () => {
               {similarArticles.map(sim => (
                 <Link to={`/blog/${sim.slug}`} key={sim.id} className="group flex flex-col items-start hover-target h-full border border-border bg-background overflow-hidden">
                   <div className="relative w-full aspect-[4/3] overflow-hidden bg-muted">
-                    <img src={sim.image_url} alt={sim.title} className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+                    <OptimizedImage src={sim.image_url} alt={sim.title} size="card" className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" wrapperClassName="w-full h-full" />
                   </div>
                   <div className="p-6 flex flex-col flex-grow w-full">
                     <h3 className="font-serif text-lg mb-3 line-clamp-2 transition-colors duration-300">{sim.title}</h3>

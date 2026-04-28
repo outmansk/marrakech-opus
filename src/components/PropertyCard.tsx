@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { Bien, BienService } from "@/types/property";
 import { Bed, Car, ArrowRight, Bath, Maximize } from "lucide-react";
-import LazyImage from "@/components/LazyImage";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("fr-MA").format(price) + " MAD";
@@ -109,22 +109,24 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
     >
       <div className="overflow-hidden aspect-[4/3] relative bg-muted rounded-0 border-b border-border/10">
         {prevIdx !== null && (
-          <LazyImage
+          <OptimizedImage
             key={`prev-${prevIdx}`}
             src={images[prevIdx]}
             alt=""
             aria-hidden
             eager
+            size="card"
             className="absolute inset-0 w-full h-full object-cover"
             wrapperClassName="absolute inset-0"
           />
         )}
 
-        <LazyImage
+        <OptimizedImage
           key={`active-${activeIdx}`}
           src={images[activeIdx]}
           alt={property.titre}
           eager={activeIdx === 0}
+          size="card"
           className="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-[1.08]"
           wrapperClassName="absolute inset-0"
           style={{ opacity: fading ? 0 : 1, transition: "opacity 700ms ease-in-out, transform 700ms ease-out" }}
