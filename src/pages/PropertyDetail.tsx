@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import type { Bien } from "@/types/property";
 import LazyImage from "@/components/LazyImage";
+import { Helmet } from "react-helmet-async";
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("fr-MA").format(price) + " MAD";
@@ -75,8 +76,83 @@ const PropertyDetail = () => {
   const images = property.photos?.length > 0 ? property.photos : ["/placeholder.svg"];
   const whatsappUrl = `https://wa.me/212605387041?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien : ${property?.titre} (Ref: ${property?.reference})`)}`;
 
+  // Définition dynamique du type de bien pour le Schema.org
+  const schemaType = property.type.toLowerCase().includes('appartement') ? 'Apartment' : 'SingleFamilyResidence';
+  
+  // Prix de l'offre (priorité à la vente, puis location)
+  let offerPrice = property.prix_vente || property.prix_location_longue || property.prix_location_courte || property.prix || 0;
+  
+  // Construction du JSON-LD pour les LLMs (GEO) et Google
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": schemaType,
+    "name": property.titre,
+    "description": property.description_courte || property.description_longue || "Magnifique bien immobilier à Marrakech",
+    "image": images,
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Marrakech",
+      "addressRegion": "Marrakech-Safi",
+      "addressCountry": "MA",
+      "streetAddress": property.quartier || "Marrakech"
+    },
+    ...(property.chambres && { "numberOfRooms": property.chambres }),
+    ...(property.salles_de_bain && { "numberOfBathroomsTotal": property.salles_de_bain }),
+    ...(property.surface_terrain && { 
+      "floorSize": {
+        "@type": "QuantitativeValue",
+        "value": property.surface_terrain,
+        "unitCode": "MTK" // Mètre carré
+      }
+    }),
+    "amenityFeature": property.equipements?.map(eq => ({
+      "@type": "LocationFeatureSpecification",
+      "name": eq,
+      "value": true
+    })) || [],
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "MAD",
+      "price": offerPrice,
+      "availability": "https://schema.org/InStock",
+      "url": window.location.href,
+      "seller": {
+        "@type": "RealEstateAgent",
+        "name": "Live In Marrakech",
+        "image": "https://liveinmarrakech.com/logo.png"
+      }
+    }
+  };
+
+  const metaTitle = `${property.titre} | Live In Marrakech`;
+  const metaDescription = property.description_courte || `Découvrez ce magnifique bien immobilier (${property.type}) à ${property.quartier || 'Marrakech'}. Exclusivité Live In Marrakech.`;
+
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDescription} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={window.location.href} />
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:image" content={images[0]} />
+
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={window.location.href} />
+        <meta property="twitter:title" content={metaTitle} />
+        <meta property="twitter:description" content={metaDescription} />
+        <meta property="twitter:image" content={images[0]} />
+
+        {/* JSON-LD GEO/SEO Script */}
+        <script type="application/ld+json">
+          {JSON.stringify(jsonLd)}
+        </script>
+      </Helmet>
+
       <Header />
 
       <div className="pt-24">
