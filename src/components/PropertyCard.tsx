@@ -2,8 +2,9 @@ import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { Bien, BienService } from "@/types/property";
-import { Bed, Car, ArrowRight, Bath, Maximize } from "lucide-react";
+import { Bed, Car, ArrowRight, Bath, Maximize, MessageCircle, CalendarDays } from "lucide-react";
 import OptimizedImage from "@/components/ui/OptimizedImage";
+import VisitModal from "@/components/VisitModal";
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("fr-MA").format(price) + " MAD";
@@ -61,7 +62,22 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
   const [activeIdx, setActiveIdx] = useState(0);
   const [prevIdx, setPrevIdx] = useState<number | null>(null);
   const [fading, setFading] = useState(false);
+  const [visitOpen, setVisitOpen] = useState(false);
   const activeRef = useRef(0);
+
+  const whatsappUrl = `https://wa.me/212605387041?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien : ${property.titre} (Ref: ${property.reference || property.id})`)}`;
+
+  const handleWhatsApp = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const handleVisit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setVisitOpen(true);
+  };
 
   useEffect(() => {
     if (!hasMultiple) return;
@@ -102,6 +118,7 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
   }, [revealDelay]);
 
   return (
+    <>
     <Link
       to={`/bien/${property.id}`}
       ref={cardRef}
@@ -161,11 +178,30 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
           <ArrowRight size={16} strokeWidth={1.25} className="text-white" />
         </div>
 
-        {property.statut === 'vendu-loue' && (
-          <div className="absolute top-4 right-4 z-30 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
-            <span className="text-white text-[10px] tracking-widest uppercase font-medium">{statusLabel()}</span>
-          </div>
-        )}
+        <div className="absolute top-4 left-4 z-30">
+           <button 
+             onClick={handleVisit} 
+             className="bg-black/60 hover:bg-black/80 backdrop-blur-md text-white px-3 py-1.5 rounded-full border border-white/20 text-[10px] tracking-widest uppercase font-medium flex items-center gap-1.5 transition-colors shadow-lg"
+           >
+             <CalendarDays size={14} />
+             {t('admin.visites')}
+           </button>
+        </div>
+
+        <div className="absolute top-4 right-4 z-30 flex flex-col gap-2 items-end">
+          {property.statut === 'vendu-loue' && (
+            <div className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
+              <span className="text-white text-[10px] tracking-widest uppercase font-medium">{statusLabel()}</span>
+            </div>
+          )}
+          <button 
+            onClick={handleWhatsApp} 
+            className="bg-[#25D366] hover:bg-[#20b858] text-white p-2 rounded-full shadow-lg transition-transform hover:scale-110 flex items-center justify-center"
+            title="Contacter par WhatsApp"
+          >
+            <MessageCircle size={18} />
+          </button>
+        </div>
       </div>
 
       <div className="pt-6 pb-2">
@@ -218,6 +254,13 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
         </div>
       </div>
     </Link>
+    <VisitModal
+        open={visitOpen}
+        onOpenChange={setVisitOpen}
+        propertyId={property.id}
+        propertyTitle={property.titre}
+      />
+    </>
   );
 };
 
