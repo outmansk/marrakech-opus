@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, Bed, Car, MapPin, Clock, MessageCircle, CalendarDays, Bath, Maximize } from "lucide-react";
+import { ArrowLeft, Bed, Car, MapPin, Clock, MessageCircle, CalendarDays, Bath, Maximize, ChevronLeft, ChevronRight } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import VisitModal from "@/components/VisitModal";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import type { Bien } from "@/types/property";
-import LazyImage from "@/components/LazyImage";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 import { Helmet } from "react-helmet-async";
 
 const formatPrice = (price: number) => {
@@ -164,14 +164,42 @@ const PropertyDetail = () => {
         </div>
 
         <div className="container mx-auto px-6 md:px-12">
-          <div className="aspect-[16/9] md:aspect-[21/9] overflow-hidden mb-4 bg-muted">
-          <LazyImage
+          <div className="relative aspect-[16/9] md:aspect-[21/9] overflow-hidden mb-4 bg-muted group">
+          <OptimizedImage
               src={images[selectedImage]}
               alt={property.titre}
               eager
-              className="w-full h-full object-cover"
+              size="hero"
+              className="w-full h-full object-cover transition-transform duration-500 ease-in-out"
               wrapperClassName="w-full h-full"
             />
+            {images.length > 1 && (
+              <>
+                <button 
+                  onClick={(e) => { e.preventDefault(); setSelectedImage(prev => prev === 0 ? images.length - 1 : prev - 1); }}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                <button 
+                  onClick={(e) => { e.preventDefault(); setSelectedImage(prev => prev === images.length - 1 ? 0 : prev + 1); }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                >
+                  <ChevronRight size={24} />
+                </button>
+
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                  {images.map((_, idx) => (
+                    <button 
+                      key={idx}
+                      onClick={() => setSelectedImage(idx)}
+                      className={`w-2 h-2 rounded-full transition-all ${selectedImage === idx ? "bg-white scale-125" : "bg-white/50"}`}
+                      aria-label={`Aller à l'image ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
           {images.length > 1 && (
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
@@ -183,9 +211,10 @@ const PropertyDetail = () => {
                     selectedImage === i ? "opacity-100 ring-2 ring-accent" : "opacity-40 hover:opacity-70"
                   }`}
                 >
-                  <LazyImage
+                  <OptimizedImage
                     src={url}
                     alt=""
+                    size="thumb"
                     className="w-full h-full object-cover"
                     wrapperClassName="w-full h-full"
                   />
