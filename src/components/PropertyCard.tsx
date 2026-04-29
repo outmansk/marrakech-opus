@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import type { Bien, BienService } from "@/types/property";
-import { Bed, Car, Bath, Maximize } from "lucide-react";
+import { Bed, Car, Bath, Maximize, MessageCircle } from "lucide-react";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 
 const formatPrice = (price: number) => {
@@ -79,7 +79,7 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
     <Link
       to={`/bien/${property.id}`}
       ref={cardRef}
-      className="block card-reveal-init property-card h-full flex flex-col"
+      className="block card-reveal-init property-card h-full flex flex-col group"
       style={{ contain: 'layout' }}
     >
       <div className="overflow-hidden aspect-[16/10] relative bg-muted rounded-0 border-b border-border/10 shrink-0">
@@ -99,6 +99,17 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
               <span className="text-white text-[10px] tracking-widest uppercase font-medium">{statusLabel()}</span>
             </div>
           )}
+          <button 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              window.open(`https://wa.me/212605387041?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien : ${property.titre} (Ref: ${property.reference || property.id})`)}`, '_blank');
+            }}
+            className="bg-[#25D366] hover:bg-[#20b858] text-white p-2 rounded-full shadow-lg transition-transform hover:scale-110 flex items-center justify-center"
+            title="Contacter par WhatsApp"
+          >
+            <MessageCircle size={18} />
+          </button>
         </div>
       </div>
 
