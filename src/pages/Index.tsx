@@ -26,6 +26,7 @@ const Index = () => {
   const [latestArticles, setLatestArticles] = useState<Article[]>([]);
   const [searchType, setSearchType] = useState<"vente" | "location-courte-duree" | "location-longue-duree">("vente");
   const [activeIndex, setActiveIndex] = useState(0);
+  const [scrollY, setScrollY] = useState(0);
 
   const heroSlides = useMemo(() => [
     { image: slide1, title: t("hero.slide1_title"), subtitle: t("hero.slide1_subtitle") },
@@ -34,6 +35,14 @@ const Index = () => {
     { image: slide4, title: t("hero.slide4_title"), subtitle: t("hero.slide4_subtitle") },
     { image: slide5, title: t("hero.slide5_title"), subtitle: t("hero.slide5_subtitle") }
   ], [t]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -76,22 +85,32 @@ const Index = () => {
             className={`absolute inset-0 transition-opacity duration-[2000ms] ease-in-out
               ${i === activeIndex ? "opacity-100 z-10" : "opacity-0 z-0"}`}
           >
+            {/* Parallax wrapper */}
             <div 
-              className={`absolute inset-0 transition-transform duration-[12000ms] ease-out
-                ${i === activeIndex ? "scale-110" : "scale-100"}`}
+              className="absolute inset-0 h-[115%] -top-[7.5%]"
+              style={{ transform: `translateY(${scrollY * 0.4}px)` }}
             >
-              <img
-                src={slide.image}
-                alt={slide.title}
-                className="w-full h-full object-cover grayscale-[15%]"
-              />
+              {/* Zoom wrapper */}
+              <div 
+                className={`absolute inset-0 transition-transform duration-[12000ms] ease-out
+                  ${i === activeIndex ? "scale-110" : "scale-100"}`}
+              >
+                <img
+                  src={slide.image}
+                  alt={slide.title}
+                  className="w-full h-full object-cover grayscale-[15%]"
+                />
+              </div>
             </div>
             {/* Dégradé plus profond pour faire ressortir le texte et le glassmorphism */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/80 z-10" />
           </div>
         ))}
 
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-20 pointer-events-none mt-[-5vh]">
+        <div 
+          className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-20 pointer-events-none mt-[-5vh]"
+          style={{ transform: `translateY(${scrollY * 0.2}px)` }}
+        >
           <div className="max-w-5xl overflow-hidden">
             <h1
               key={`title-${activeIndex}`}
@@ -119,7 +138,7 @@ const Index = () => {
         <div className="absolute inset-x-0 bottom-10 md:bottom-20 flex justify-center px-4 md:px-6 z-20">
           <div 
             className="bg-black/30 backdrop-blur-md border border-white/15 p-6 md:p-8 flex flex-col items-center gap-6 w-full max-w-4xl shadow-2xl animate-fade-in" 
-            style={{ animationDelay: "1s" }}
+            style={{ animationDelay: "1s", transform: `translateY(${scrollY * 0.05}px)` }}
           >
             <div className="flex flex-row overflow-x-auto scrollbar-hide gap-8 justify-center border-b border-white/10 pb-4 w-full px-2">
               {(["vente", "location-courte-duree", "location-longue-duree"] as const).map((type) => (
@@ -133,7 +152,7 @@ const Index = () => {
                 </button>
               ))}
             </div>
-            <Link to={`/catalogue?type=${searchType}`} className="w-full mt-2">
+            <Link to={`/catalogue?type=${searchType}`} className="w-full mt-2 pointer-events-auto">
               <Button 
                 variant="outline" 
                 size="lg" 
