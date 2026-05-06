@@ -1,14 +1,78 @@
+# robots.txt — Live In Marrakech (liveinmarrakech.com)
+# Dernière mise à jour : 2026-05-06
+
+# Moteurs de recherche
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 2
+Disallow: /manage-xk92p/
+Disallow: /api/
 
 User-agent: Bingbot
 Allow: /
+Crawl-delay: 2
+Disallow: /manage-xk92p/
+Disallow: /api/
 
+# Crawlers sociaux
 User-agent: Twitterbot
 Allow: /
+Disallow: /manage-xk92p/
 
 User-agent: facebookexternalhit
 Allow: /
+Disallow: /manage-xk92p/
 
+User-agent: LinkedInBot
+Allow: /
+Disallow: /manage-xk92p/
+
+# Crawlers IA / LLM
+User-agent: GPTBot
+Allow: /
+Crawl-delay: 2
+Disallow: /manage-xk92p/
+
+User-agent: ChatGPT-User
+Allow: /
+Crawl-delay: 2
+Disallow: /manage-xk92p/
+
+User-agent: Claude-Web
+Allow: /
+Crawl-delay: 2
+Disallow: /manage-xk92p/
+
+User-agent: ClaudeBot
+Allow: /
+Crawl-delay: 2
+Disallow: /manage-xk92p/
+
+User-agent: PerplexityBot
+Allow: /
+Crawl-delay: 2
+Disallow: /manage-xk92p/
+
+User-agent: Google-Extended
+Allow: /
+Crawl-delay: 2
+Disallow: /manage-xk92p/
+
+# Blocage scrapers
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+# Règle par défaut
 User-agent: *
 Allow: /
+Crawl-delay: 2
+Disallow: /manage-xk92p/
+Disallow: /api/
+
+Sitemap: https://liveinmarrakech.com/sitemap.xml

@@ -64,3 +64,14 @@ Structure des dossiers principaux :
 
 *   **Migration Cloudinary** : Le projet a récemment migré la gestion de ses images vers Cloudinary pour de meilleures performances (optimisation au format WebP, srcset automatique, composants dédiés `OptimizedImage`). Le fichier `ARCHITECTURE.md` mentionne Supabase Storage qui sert probablement d'upload initial, mais la diffusion est gérée via Cloudinary.
 *   **Structure JSONB** : La table `properties_v2` s'appuie beaucoup sur des champs JSONB (`services`, `equipements`, `proximites`) pour une grande souplesse. Tenir compte de la structure JSON dans les requêtes de filtrage.
+
+
+Analyse le projet et confirme que tu comprends le contexte défini dans Antigravity.md.
+
+Résume :
+- l’architecture
+- la stack
+- les contraintes
+- les règles de sécurité
+
+Ensuite, utilise ce contexte pour toutes les prochaines tâches.

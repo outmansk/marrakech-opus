@@ -1,0 +1,137 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "LocalBusiness",
+      "@id": "https://liveinmarrakech.com/#business",
+      "name": "Live In Marrakech",
+      "alternateName": "Live In Marrakech Immobilier",
+      "description": "Agence immobilière de prestige spécialisée dans la vente et la location de villas de luxe, riads authentiques et appartements d'exception à Marrakech, Maroc.",
+      "url": "https://liveinmarrakech.com",
+      "logo": "https://liveinmarrakech.com/logo.png",
+      "image": "https://liveinmarrakech.com/og-image.jpg",
+      "telephone": "+212-XXX-XXXXXX",
+      "email": "contact@liveinmarrakech.com",
+      "priceRange": "$$$$",
+      "currenciesAccepted": "MAD, EUR, USD",
+      "paymentAccepted": "Cash, Bank Transfer, Check",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Avenue Mohammed V",
+        "addressLocality": "Marrakech",
+        "addressRegion": "Marrakech-Safi",
+        "postalCode": "40000",
+        "addressCountry": {
+          "@type": "Country",
+          "name": "MA"
+        }
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 31.6295,
+        "longitude": -7.9811
+      },
+      "areaServed": [
+        { "@type": "City", "name": "Marrakech" },
+        { "@type": "AdministrativeArea", "name": "Marrakech-Safi" },
+        { "@type": "Country", "name": "Morocco" }
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Biens Immobiliers de Luxe",
+        "itemListElement": [
+          { "@type": "OfferCatalog", "name": "Villas de Luxe" },
+          { "@type": "OfferCatalog", "name": "Riads Authentiques" },
+          { "@type": "OfferCatalog", "name": "Appartements de Prestige" }
+        ]
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          "opens": "09:00",
+          "closes": "18:00"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": "Saturday",
+          "opens": "09:00",
+          "closes": "13:00"
+        }
+      ],
+      "sameAs": [
+        "https://www.facebook.com/LiveInMarrakech",
+        "https://www.instagram.com/liveinmarrakech",
+        "https://www.linkedin.com/company/liveinmarrakech"
+      ],
+      "knowsLanguage": ["fr", "en", "es", "ar"],
+      "foundingDate": "2024"
+    },
+    {
+      "@type": "RealEstateAgent",
+      "@id": "https://liveinmarrakech.com/#agent",
+      "name": "Live In Marrakech",
+      "url": "https://liveinmarrakech.com",
+      "description": "Expert en immobilier de luxe à Marrakech. Accompagnement personnalisé pour l'achat, la vente et la location de biens d'exception.",
+      "areaServed": "Marrakech, Maroc",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Marrakech",
+        "addressCountry": "MA"
+      },
+      "makesOffer": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Vente immobilière de luxe",
+            "description": "Accompagnement complet pour l'achat ou la vente de biens immobiliers de prestige à Marrakech"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Location longue durée",
+            "description": "Location de villas, riads et appartements pour des séjours de moyenne et longue durée"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Location saisonnière",
+            "description": "Location courte durée type Airbnb pour des séjours touristiques à Marrakech"
+          }
+        }
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://liveinmarrakech.com/#website",
+      "name": "Live In Marrakech",
+      "url": "https://liveinmarrakech.com",
+      "description": "Immobilier de luxe à Marrakech",
+      "publisher": { "@id": "https://liveinmarrakech.com/#business" },
+      "inLanguage": ["fr", "en", "es"],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://liveinmarrakech.com/catalogue?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://liveinmarrakech.com/#homepage",
+      "url": "https://liveinmarrakech.com",
+      "name": "Live In Marrakech — Immobilier de Luxe à Marrakech",
+      "description": "Agence immobilière de prestige à Marrakech. Villas, riads et appartements d'exception.",
+      "isPartOf": { "@id": "https://liveinmarrakech.com/#website" },
+      "about": { "@id": "https://liveinmarrakech.com/#business" },
+      "inLanguage": "fr"
+    }
+  ]
+}

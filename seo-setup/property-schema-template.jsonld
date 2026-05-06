@@ -1,0 +1,47 @@
+{
+  "@context": "https://schema.org",
+  "@type": "RealEstateListing",
+  "name": "{{PROPERTY_TITLE}}",
+  "description": "{{PROPERTY_DESCRIPTION}}",
+  "url": "https://liveinmarrakech.com/bien/{{PROPERTY_ID}}",
+  "datePosted": "{{CREATED_AT}}",
+  "image": [
+    "{{IMAGE_URL_1}}",
+    "{{IMAGE_URL_2}}"
+  ],
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "{{QUARTIER}}",
+    "addressRegion": "Marrakech-Safi",
+    "addressCountry": "MA"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "{{LATITUDE}}",
+    "longitude": "{{LONGITUDE}}"
+  },
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "MAD",
+    "price": "{{PRICE}}",
+    "availability": "https://schema.org/InStock",
+    "seller": {
+      "@type": "RealEstateAgent",
+      "name": "Live In Marrakech",
+      "url": "https://liveinmarrakech.com"
+    }
+  },
+  "numberOfRooms": "{{ROOMS}}",
+  "numberOfBedrooms": "{{BEDROOMS}}",
+  "numberOfBathroomsTotal": "{{BATHROOMS}}",
+  "floorSize": {
+    "@type": "QuantitativeValue",
+    "value": "{{SURFACE}}",
+    "unitCode": "MTK"
+  },
+  "amenityFeature": [
+    { "@type": "LocationFeatureSpecification", "name": "Piscine", "value": "{{HAS_POOL}}" },
+    { "@type": "LocationFeatureSpecification", "name": "Jardin", "value": "{{HAS_GARDEN}}" },
+    { "@type": "LocationFeatureSpecification", "name": "Parking", "value": "{{HAS_PARKING}}" }
+  ]
+}

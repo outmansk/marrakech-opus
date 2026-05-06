@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- ══════════════════════════════════════════════════════════════
+       STATIC PAGES — Live In Marrakech
+       Dernière mise à jour : 2026-05-06
+       ══════════════════════════════════════════════════════════════ -->
+
+  <!-- Homepage -->
+  <url>
+    <loc>https://liveinmarrakech.com/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://liveinmarrakech.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://liveinmarrakech.com/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://liveinmarrakech.com/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://liveinmarrakech.com/" />
+    <lastmod>2026-05-06</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Catalogue (liste des biens) -->
+  <url>
+    <loc>https://liveinmarrakech.com/catalogue</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://liveinmarrakech.com/catalogue" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://liveinmarrakech.com/catalogue" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://liveinmarrakech.com/catalogue" />
+    <lastmod>2026-05-06</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Blog (liste des articles) -->
+  <url>
+    <loc>https://liveinmarrakech.com/blog</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://liveinmarrakech.com/blog" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://liveinmarrakech.com/blog" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://liveinmarrakech.com/blog" />
+    <lastmod>2026-05-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       DYNAMIC PAGES — Générées par le script generate-sitemap.cjs
+       Les URLs ci-dessous sont des exemples de structure.
+       Remplacez-les par les URLs réelles générées dynamiquement.
+       ══════════════════════════════════════════════════════════════ -->
+
+  <!-- Exemple: Page détail d'un bien immobilier -->
+  <!--
+  <url>
+    <loc>https://liveinmarrakech.com/bien/{property-id}</loc>
+    <lastmod>2026-05-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/dorxkrf4i/image/upload/...</image:loc>
+      <image:title>Villa de luxe à Marrakech</image:title>
+    </image:image>
+  </url>
+  -->
+
+  <!-- Exemple: Page article de blog -->
+  <!--
+  <url>
+    <loc>https://liveinmarrakech.com/blog/{slug}</loc>
+    <lastmod>2026-05-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  -->
+
+</urlset>

@@ -1,0 +1,47 @@
+/* TEAM */
+
+Project: Live In Marrakech
+Role: Full-Stack Developer & Designer
+Contact: contact@liveinmarrakech.com
+Location: Marrakech, Morocco
+
+/* TECHNOLOGY */
+
+Frontend Framework: React 18
+Language: TypeScript
+Build Tool: Vite (with SWC)
+Styling: Tailwind CSS v3
+UI Components: shadcn/ui (Radix UI)
+Icons: Lucide React
+Routing: React Router v6
+State Management: TanStack Query (React Query)
+Forms & Validation: React Hook Form + Zod
+Internationalization: i18next (FR, EN, ES)
+Markdown Rendering: react-markdown
+SEO: react-helmet-async
+
+Backend & Database: Supabase (PostgreSQL)
+Authentication: Supabase Auth (JWT)
+File Storage: Cloudinary (Image CDN)
+Security: Row Level Security (RLS)
+
+Hosting: Vercel (Edge Network)
+DNS: Namecheap
+CI/CD: Vercel GitHub Integration (auto-deploy from main)
+Version Control: Git + GitHub
+
+/* SITE */
+
+Domain: liveinmarrakech.com
+Standards: HTML5, CSS3, ES2022+
+Accessibility: WCAG 2.1 AA (via Radix UI primitives)
+Languages: Français (FR), English (EN), Español (ES)
+Software: Visual Studio Code, Supabase Studio, Cloudinary Console
+
+/* THANKS */
+
+shadcn — For the incredible UI component library
+Supabase — For the developer-friendly BaaS platform
+Vercel — For blazing-fast edge deployment
+Cloudinary — For image optimization and delivery
+The React community — For the ecosystem and open-source tools

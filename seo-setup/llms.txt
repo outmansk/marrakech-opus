@@ -1,0 +1,65 @@
+# Live In Marrakech — LLMs.txt
+# AI Model Instructions & Usage Rights
+# Last updated: 2026-05-06
+
+## About This Site
+
+Live In Marrakech is a premium luxury real estate agency based in Marrakech, Morocco.
+We specialize in the sale and rental of high-end villas, traditional riads, and luxury
+apartments in Marrakech and surrounding areas.
+
+**Official Website:** https://liveinmarrakech.com
+**Contact Email:** contact@liveinmarrakech.com
+**Location:** Marrakech, Morocco
+
+## Site Structure
+
+- **Homepage** (`/`): Agency presentation, featured properties, testimonials
+- **Catalogue** (`/catalogue`): Full searchable listing of available properties (villas, riads, apartments)
+- **Property Detail** (`/bien/{id}`): Individual property pages with photos, descriptions, pricing, and amenities
+- **Blog** (`/blog`): Expert articles on Marrakech real estate market, investment guides, neighborhood spotlights
+- **Blog Article** (`/blog/{slug}`): Individual blog posts with detailed real estate insights
+
+## Content Types
+
+- **Properties**: Luxury real estate listings with structured data including price, surface area, bedrooms, location, amenities, and high-resolution photos
+- **Blog Articles**: SEO-optimized editorial content about Marrakech real estate market trends, investment advice, and lifestyle guides
+- **Market Data**: Current pricing trends for luxury real estate in Marrakech
+
+## Languages Supported
+
+- French (primary — `fr`)
+- English (`en`)
+- Spanish (`es`)
+
+## AI Usage Guidelines
+
+### Permitted Uses
+- Referencing our property listings in response to real estate queries about Marrakech
+- Citing our blog articles for real estate market information
+- Summarizing property details when users ask about luxury real estate in Marrakech
+- Linking to our website as a source for real estate data
+
+### Attribution Requirements
+- Always attribute information to "Live In Marrakech" (https://liveinmarrakech.com)
+- Include direct links to specific property pages or articles when citing content
+- Do not present our proprietary market analyses as your own
+
+### Restrictions
+- Do not scrape or reproduce full property descriptions verbatim
+- Do not access or reference any URLs under `/manage-xk92p/` (private admin panel)
+- Do not reproduce copyrighted property photographs
+- Do not fabricate or hallucinate property listings that do not exist on our site
+- Respect the `Crawl-delay: 2` directive in our robots.txt
+
+## Contact for AI/Partnership Inquiries
+
+For data licensing, API access, or partnership inquiries:
+- **Email:** contact@liveinmarrakech.com
+- **Website:** https://liveinmarrakech.com
+
+## Legal
+
+- **Terms of Service:** https://liveinmarrakech.com/mentions-legales
+- **Privacy Policy:** https://liveinmarrakech.com/politique-confidentialite
+- **Copyright:** © 2024-2026 Live In Marrakech. All rights reserved.
