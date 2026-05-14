@@ -11,7 +11,8 @@ import type { Article } from "@/types/article";
 import { useTranslation } from "react-i18next";
 import LazyImage from "@/components/LazyImage";
 import { useScrollReveal, useCounter } from "@/hooks/useScrollReveal";
-
+import GalleryCarousel from "@/components/GalleryCarousel";
+import Testimonials from "@/components/Testimonials";
 import slide1 from "@/assets/slide1.jpg";
 import slide2 from "@/assets/slide2.jpg";
 import slide3 from "@/assets/slide3.jpg";
@@ -254,8 +255,86 @@ const Index = () => {
         </button>
       </section>
 
+      {/* ═══════════════════════ SERVICES ═══════════════════════ */}
+      <section className="py-20 md:py-28 bg-secondary/50 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="floating-orb absolute top-[30%] left-[5%] w-72 h-72 rounded-full bg-amber-200/20 blur-[80px]" style={{ animationDelay: "-12s" }} />
+        </div>
+
+        <div ref={servicesRef} className="container mx-auto px-6 md:px-12 reveal-up">
+          <div className="text-center mb-16 md:mb-20">
+            <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4 font-sans">{t("homepage.services_sous_titre")}</p>
+            <h2 className="max-w-2xl mx-auto">{t("homepage.services_titre")}</h2>
+          </div>
+
+          {/* Desktop Layout: Grid */}
+          <div className="hidden md:grid grid-cols-3 gap-8 md:gap-10">
+            {[
+              { icon: Home, title: t("homepage.service_vente_titre"), desc: t("homepage.service_vente_desc"), link: "/catalogue?type=vente" },
+              { icon: Key, title: t("homepage.service_location_titre"), desc: t("homepage.service_location_desc"), link: "/catalogue?type=location-longue-duree" },
+              { icon: BarChart3, title: t("homepage.service_gestion_titre"), desc: t("homepage.service_gestion_desc"), link: "/contact" },
+            ].map((service, i) => (
+              <Link
+                key={i}
+                to={service.link}
+                className="group relative bg-background border border-border/60 p-8 md:p-10 transition-all duration-500
+                  hover:border-foreground/20 hover:shadow-xl hover:shadow-black/[0.03] hover:-translate-y-1 h-full flex flex-col"
+              >
+                <div className="w-12 h-12 rounded-full border border-border/60 flex items-center justify-center mb-6
+                  group-hover:border-foreground/30 group-hover:bg-foreground group-hover:text-background transition-all duration-500">
+                  <service.icon size={20} strokeWidth={1.25} />
+                </div>
+                <h3 className="text-xl md:text-2xl font-serif mb-3">{service.title}</h3>
+                <p className="text-muted-foreground font-light text-sm leading-relaxed mb-6 flex-grow">{service.desc}</p>
+                <span className="inline-flex items-center gap-2 text-[10px] tracking-[0.2em] uppercase font-sans font-medium text-muted-foreground group-hover:text-foreground transition-colors mt-auto pt-4">
+                  {t("homepage.decouvrir")}
+                  <ArrowRight size={14} strokeWidth={1.25} className="transition-transform group-hover:translate-x-1" />
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Mobile Layout: Infinite Marquee */}
+        <div className="md:hidden w-full overflow-hidden relative mt-8 z-10">
+          <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-secondary/50 to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-secondary/50 to-transparent z-10 pointer-events-none" />
+          
+          <div className="flex w-max animate-marquee py-4">
+            {[
+              { icon: Home, title: t("homepage.service_vente_titre"), desc: t("homepage.service_vente_desc"), link: "/catalogue?type=vente" },
+              { icon: Key, title: t("homepage.service_location_titre"), desc: t("homepage.service_location_desc"), link: "/catalogue?type=location-longue-duree" },
+              { icon: BarChart3, title: t("homepage.service_gestion_titre"), desc: t("homepage.service_gestion_desc"), link: "/contact" },
+              // Duplicate for infinite loop
+              { icon: Home, title: t("homepage.service_vente_titre"), desc: t("homepage.service_vente_desc"), link: "/catalogue?type=vente" },
+              { icon: Key, title: t("homepage.service_location_titre"), desc: t("homepage.service_location_desc"), link: "/catalogue?type=location-longue-duree" },
+              { icon: BarChart3, title: t("homepage.service_gestion_titre"), desc: t("homepage.service_gestion_desc"), link: "/contact" },
+            ].map((service, i) => (
+              <div key={i} className="w-[85vw] sm:w-[60vw] shrink-0 mx-3 h-full">
+                <Link
+                  to={service.link}
+                  className="group relative bg-background border border-border/60 p-8 transition-all duration-500
+                    hover:border-foreground/20 hover:shadow-xl hover:shadow-black/[0.03] block h-full flex flex-col"
+                >
+                  <div className="w-12 h-12 rounded-full border border-border/60 flex items-center justify-center mb-6
+                    group-hover:border-foreground/30 group-hover:bg-foreground group-hover:text-background transition-all duration-500">
+                    <service.icon size={20} strokeWidth={1.25} />
+                  </div>
+                  <h3 className="text-xl font-serif mb-3">{service.title}</h3>
+                  <p className="text-muted-foreground font-light text-sm leading-relaxed mb-6 flex-grow">{service.desc}</p>
+                  <span className="inline-flex items-center gap-2 text-[10px] tracking-[0.2em] uppercase font-sans font-medium text-muted-foreground group-hover:text-foreground transition-colors mt-auto pt-4">
+                    {t("homepage.decouvrir")}
+                    <ArrowRight size={14} strokeWidth={1.25} className="transition-transform group-hover:translate-x-1" />
+                  </span>
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ═══════════════════════ STATS BAR ═══════════════════════ */}
-      <section className="py-16 md:py-20 bg-background relative">
+      <section className="py-16 md:py-20 bg-background relative border-b border-border/40">
         <div className="absolute inset-0 pointer-events-none">
           <div className="floating-orb absolute -top-20 right-[20%] w-96 h-96 rounded-full bg-amber-100/30 blur-[100px]" style={{ animationDelay: "-5s" }} />
         </div>
@@ -267,7 +346,6 @@ const Index = () => {
             <StatItem value={8} label={t("homepage.stats_annees")} delay={450} />
           </div>
         </div>
-        <div className="section-divider mt-16 md:mt-20 mx-6 md:mx-12" />
       </section>
 
       {/* ═══════════════════════ FEATURED PROPERTIES ═══════════════════════ */}
@@ -313,45 +391,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════ SERVICES ═══════════════════════ */}
-      <section className="py-20 md:py-28 bg-secondary/50 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="floating-orb absolute top-[30%] left-[5%] w-72 h-72 rounded-full bg-amber-200/20 blur-[80px]" style={{ animationDelay: "-12s" }} />
-        </div>
+      {/* ═══════════════════════ CAROUSEL GALERIE ═══════════════════════ */}
+      <GalleryCarousel />
 
-        <div ref={servicesRef} className="container mx-auto px-6 md:px-12 reveal-up">
-          <div className="text-center mb-16 md:mb-20">
-            <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4 font-sans">{t("homepage.services_sous_titre")}</p>
-            <h2 className="max-w-2xl mx-auto">{t("homepage.services_titre")}</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
-            {[
-              { icon: Home, title: t("homepage.service_vente_titre"), desc: t("homepage.service_vente_desc"), link: "/catalogue?type=vente" },
-              { icon: Key, title: t("homepage.service_location_titre"), desc: t("homepage.service_location_desc"), link: "/catalogue?type=location-longue-duree" },
-              { icon: BarChart3, title: t("homepage.service_gestion_titre"), desc: t("homepage.service_gestion_desc"), link: "/contact" },
-            ].map((service, i) => (
-              <Link
-                key={i}
-                to={service.link}
-                className="group relative bg-background border border-border/60 p-8 md:p-10 transition-all duration-500
-                  hover:border-foreground/20 hover:shadow-xl hover:shadow-black/[0.03] hover:-translate-y-1"
-              >
-                <div className="w-12 h-12 rounded-full border border-border/60 flex items-center justify-center mb-6
-                  group-hover:border-foreground/30 group-hover:bg-foreground group-hover:text-background transition-all duration-500">
-                  <service.icon size={20} strokeWidth={1.25} />
-                </div>
-                <h3 className="text-xl md:text-2xl font-serif mb-3">{service.title}</h3>
-                <p className="text-muted-foreground font-light text-sm leading-relaxed mb-6">{service.desc}</p>
-                <span className="inline-flex items-center gap-2 text-[10px] tracking-[0.2em] uppercase font-sans font-medium text-muted-foreground group-hover:text-foreground transition-colors">
-                  {t("homepage.decouvrir")}
-                  <ArrowRight size={14} strokeWidth={1.25} className="transition-transform group-hover:translate-x-1" />
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ═══════════════════════ TEMOIGNAGES 3D ═══════════════════════ */}
+      <Testimonials />
 
       {/* ═══════════════════════ BLOG ═══════════════════════ */}
       {latestArticles.length > 0 && (
