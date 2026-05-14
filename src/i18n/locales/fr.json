@@ -60,6 +60,21 @@
     "decouvrir_biens": "Découvrir nos biens",
     "nous_contacter": "Nous contacter"
   },
+  "homepage": {
+    "stats_biens": "Biens d'exception",
+    "stats_clients": "Clients satisfaits",
+    "stats_quartiers": "Quartiers couverts",
+    "stats_annees": "Années d'expertise",
+    "services_titre": "Un Accompagnement Sur-Mesure",
+    "services_sous_titre": "Nos services",
+    "service_vente_titre": "Acquisition Premium",
+    "service_vente_desc": "Un portefeuille exclusif de biens triés sur le volet pour investisseurs avertis.",
+    "service_location_titre": "Location Longue Durée",
+    "service_location_desc": "Des résidences familiales haut de gamme dans les quartiers les plus prisés.",
+    "service_gestion_titre": "Gestion Locative",
+    "service_gestion_desc": "Maximisez votre rendement avec notre service de gestion complète et transparente.",
+    "decouvrir": "Découvrir"
+  },
   "footer": {
     "description": "L'excellence immobilière à Marrakech. Vente, location courte et longue durée de biens d'exception.",
     "navigation": "Navigation",

@@ -66,7 +66,7 @@ Structure des dossiers principaux :
 *   **Structure JSONB** : La table `properties_v2` s'appuie beaucoup sur des champs JSONB (`services`, `equipements`, `proximites`) pour une grande souplesse. Tenir compte de la structure JSON dans les requêtes de filtrage.
 
 
-Analyse le projet et confirme que tu comprends le contexte défini dans Antigravity.md.
+.Analyse le projet et confirme que tu comprends le contexte défini dans Antigravity.md.
 
 Résume :
 - l’architecture
@@ -74,4 +74,4 @@ Résume :
 - les contraintes
 - les règles de sécurité
 
-Ensuite, utilise ce contexte pour toutes les prochaines tâches.
+Ensuite, utilise ce contexte pour toutes les prochaines tâches

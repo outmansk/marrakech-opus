@@ -60,6 +60,21 @@
     "decouvrir_biens": "Discover our properties",
     "nous_contacter": "Contact us"
   },
+  "homepage": {
+    "stats_biens": "Exceptional properties",
+    "stats_clients": "Satisfied clients",
+    "stats_quartiers": "Covered neighborhoods",
+    "stats_annees": "Years of expertise",
+    "services_titre": "A Tailor-Made Experience",
+    "services_sous_titre": "Our services",
+    "service_vente_titre": "Premium Acquisition",
+    "service_vente_desc": "An exclusive portfolio of hand-picked properties for discerning investors.",
+    "service_location_titre": "Long-Term Rental",
+    "service_location_desc": "High-end family residences in the most sought-after neighborhoods.",
+    "service_gestion_titre": "Property Management",
+    "service_gestion_desc": "Maximize your returns with our comprehensive and transparent management service.",
+    "decouvrir": "Discover"
+  },
   "footer": {
     "description": "Real estate excellence in Marrakech. Sale, short and long-term rental of exceptional properties.",
     "navigation": "Navigation",
