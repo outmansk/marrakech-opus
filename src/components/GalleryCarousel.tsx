@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useTranslation } from "react-i18next";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 
 import slide1 from "@/assets/slide1.jpg";
 import slide2 from "@/assets/slide2.jpg";
@@ -86,11 +87,12 @@ const GalleryCarousel = () => {
               className="relative shrink-0 w-[75vw] sm:w-[50vw] md:w-[35vw] lg:w-[25vw] aspect-[3/4] overflow-hidden group mx-2 md:mx-3"
             >
               {/* Image with hover zoom */}
-              <img
+              <OptimizedImage
                 src={slide.src}
                 alt={slide.caption}
-                loading="lazy"
+                size="card"
                 className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
+                wrapperClassName="w-full h-full"
               />
 
               {/* Gradient overlay */}

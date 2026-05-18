@@ -88,8 +88,15 @@ export function getCloudinaryUrl(publicId: string, options: CloudinaryOptions = 
 export function getImageUrl(imageRef: string, size: ImageSize = 'card'): string {
   if (!imageRef) return '/placeholder.svg';
 
-  // Already a full URL (Supabase, external CDN, data URI, etc.)
-  if (imageRef.startsWith('http://') || imageRef.startsWith('https://') || imageRef.startsWith('data:')) {
+  // Already a full URL (Supabase, external CDN, data URI, etc.) or a local static asset (Vite)
+  if (
+    imageRef.startsWith('http://') ||
+    imageRef.startsWith('https://') ||
+    imageRef.startsWith('data:') ||
+    imageRef.startsWith('/') ||
+    imageRef.startsWith('.') ||
+    imageRef.includes('assets/')
+  ) {
     return imageRef;
   }
 
@@ -110,8 +117,15 @@ const SRCSET_WIDTHS = [300, 600, 900, 1200] as const;
 export function getSrcSet(imageRef: string, baseOptions: Omit<CloudinaryOptions, 'width'> = {}): string | null {
   if (!imageRef) return null;
 
-  // Cannot build srcSet for external URLs
-  if (imageRef.startsWith('http://') || imageRef.startsWith('https://') || imageRef.startsWith('data:')) {
+  // Cannot build srcSet for external URLs or local assets
+  if (
+    imageRef.startsWith('http://') ||
+    imageRef.startsWith('https://') ||
+    imageRef.startsWith('data:') ||
+    imageRef.startsWith('/') ||
+    imageRef.startsWith('.') ||
+    imageRef.includes('assets/')
+  ) {
     return null;
   }
 
