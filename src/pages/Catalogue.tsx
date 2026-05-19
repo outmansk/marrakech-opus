@@ -7,6 +7,8 @@ import PropertyCard from "@/components/PropertyCard";
 import { supabase } from "@/lib/supabase";
 import type { Bien } from "@/types/property";
 import DOMPurify from 'dompurify';
+import { motion, AnimatePresence } from "framer-motion";
+import { PageTransition, Reveal, StaggerContainer, staggerItemVariants, EASE_LUXURY } from "@/components/motion/Animations";
 
 const Catalogue = () => {
   const { t } = useTranslation();
@@ -36,71 +38,100 @@ const Catalogue = () => {
   }, [activeType]);
 
   const filters = [
-    { key: "all", label: "Tous" }, // Could add specific translations for this array
+    { key: "all", label: "Tous" },
     { key: "vente", label: t("services.vente") },
     { key: "location-longue-duree", label: t("services.location_longue") },
     { key: "location-courte-duree", label: t("services.location_courte") },
   ];
 
   return (
+    <PageTransition>
     <div className="min-h-screen">
       <Header />
       <div className="pt-32 pb-24">
         <div className="container mx-auto px-6 md:px-12">
-          <Link to="/" className="inline-flex items-center gap-2 text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors font-sans mb-8">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-            Retour à l'accueil
-          </Link>
-          <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Notre collection</p>
-          <h1 className="mb-12">{t("nav.catalogue")}</h1>
+          <Reveal>
+            <Link to="/" className="inline-flex items-center gap-2 text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors font-sans mb-8">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+              Retour à l'accueil
+            </Link>
+            <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Notre collection</p>
+            <h1 className="mb-12">{t("nav.catalogue")}</h1>
+          </Reveal>
 
-          <div className="relative mb-12">
-            <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
-              {filters.map((f) => (
-                <button
-                  key={f.key}
-                  onClick={() => setSearchParams(f.key === "all" ? {} : { type: f.key })}
-                  className={`px-6 py-2.5 text-[10px] tracking-[0.2em] uppercase font-sans font-medium transition-all whitespace-nowrap border ${
-                    activeType === f.key
-                      ? "bg-foreground text-background border-foreground"
-                      : "bg-transparent text-muted-foreground border-border/60 hover:border-foreground/40"
-                  }`}
-                >
-                  {f.label}
-                </button>
-              ))}
+          {/* Animated filter tabs */}
+          <Reveal delay={0.2}>
+            <div className="relative mb-12">
+              <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
+                {filters.map((f) => (
+                  <motion.button
+                    key={f.key}
+                    onClick={() => setSearchParams(f.key === "all" ? {} : { type: f.key })}
+                    className={`px-6 py-2.5 text-[10px] tracking-[0.2em] uppercase font-sans font-medium transition-all whitespace-nowrap border ${
+                      activeType === f.key
+                        ? "bg-foreground text-background border-foreground"
+                        : "bg-transparent text-muted-foreground border-border/60 hover:border-foreground/40"
+                    }`}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    layout
+                  >
+                    {f.label}
+                  </motion.button>
+                ))}
+              </div>
+              <div className="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-background to-transparent pointer-events-none md:hidden" />
             </div>
-            <div className="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-background to-transparent pointer-events-none md:hidden" />
-          </div>
+          </Reveal>
 
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="aspect-[4/3] bg-muted" />
-                  <div className="pt-5 space-y-3">
-                     <div className="h-3 w-24 bg-muted rounded" />
-                     <div className="h-5 w-48 bg-muted rounded" />
-                     <div className="h-4 w-32 bg-muted rounded" />
+          <AnimatePresence mode="wait">
+            {loading ? (
+              <motion.div
+                key="skeleton"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12"
+              >
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="aspect-[4/3] bg-muted" />
+                    <div className="pt-5 space-y-3">
+                       <div className="h-3 w-24 bg-muted rounded" />
+                       <div className="h-5 w-48 bg-muted rounded" />
+                       <div className="h-4 w-32 bg-muted rounded" />
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          ) : properties.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
-              {properties.map((property) => (
-                <PropertyCard key={property.id} property={property} activeType={activeType} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-20">
-              <p className="text-muted-foreground font-light text-lg">{t("biens.aucun_bien")}</p>
-            </div>
-          )}
+                ))}
+              </motion.div>
+            ) : properties.length > 0 ? (
+              <motion.div
+                key="results"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12"
+              >
+                {properties.map((property) => (
+                  <PropertyCard key={property.id} property={property} activeType={activeType} />
+                ))}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-20"
+              >
+                <p className="text-muted-foreground font-light text-lg">{t("biens.aucun_bien")}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
       <Footer />
     </div>
+    </PageTransition>
   );
 };
 

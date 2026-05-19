@@ -10,9 +10,12 @@ import type { Bien } from "@/types/property";
 import type { Article } from "@/types/article";
 import { useTranslation } from "react-i18next";
 import LazyImage from "@/components/LazyImage";
-import { useScrollReveal, useCounter } from "@/hooks/useScrollReveal";
+import { useCounter } from "@/hooks/useScrollReveal";
 import GalleryCarousel from "@/components/GalleryCarousel";
 import Testimonials from "@/components/Testimonials";
+import { motion, AnimatePresence } from "framer-motion";
+import { Reveal, StaggerContainer, staggerItemVariants, PageTransition, SplitText, EASE_LUXURY } from "@/components/motion/Animations";
+import { useInView } from "react-intersection-observer";
 import slide1 from "@/assets/slide1.jpg";
 import slide2 from "@/assets/slide2.jpg";
 import slide3 from "@/assets/slide3.jpg";
@@ -56,9 +59,6 @@ const Index = () => {
   const [searchType, setSearchType] = useState<"vente" | "location-courte-duree" | "location-longue-duree">("vente");
   const [activeIndex, setActiveIndex] = useState(0);
   const [scrollY, setScrollY] = useState(0);
-
-  const servicesRef = useScrollReveal<HTMLDivElement>();
-  const ctaRef = useScrollReveal<HTMLDivElement>();
 
   const heroSlides = useMemo(() => [
     { image: slide1, title: t("hero.slide1_title"), subtitle: t("hero.slide1_subtitle") },
@@ -107,6 +107,7 @@ const Index = () => {
   }, []);
 
   return (
+    <PageTransition>
     <div className="min-h-screen">
       <Header />
 
@@ -152,43 +153,55 @@ const Index = () => {
           style={{ transform: `translateY(${scrollY * 0.15}px)` }}
         >
           {/* Overline */}
-          <div className="overflow-hidden mb-6">
-            <p
-              key={`overline-${activeIndex}`}
-              className="text-white/50 text-[10px] md:text-xs tracking-[0.5em] uppercase font-sans font-light
-                animate-in fade-in slide-in-from-bottom-4 duration-[1200ms] ease-out fill-mode-forwards"
-            >
+          <motion.div
+            className="overflow-hidden mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: EASE_LUXURY }}
+          >
+            <p className="text-white/50 text-[10px] md:text-xs tracking-[0.5em] uppercase font-sans font-light">
               Live In Marrakech
             </p>
-          </div>
+          </motion.div>
 
-          {/* Main title */}
+          {/* Main title — split text letter-by-letter */}
           <div className="max-w-5xl overflow-hidden">
-            <h1
-              key={`title-${activeIndex}`}
-              className="text-white mb-6 font-serif text-4xl md:text-6xl lg:text-7xl leading-[1.1] font-light tracking-[0.02em]
-                animate-in fade-in slide-in-from-bottom-12 duration-[1500ms] ease-out fill-mode-forwards drop-shadow-2xl"
-            >
-              {heroSlides[activeIndex].title}
-            </h1>
+            <AnimatePresence mode="wait">
+              <motion.h1
+                key={`title-${activeIndex}`}
+                className="text-white mb-6 font-serif text-4xl md:text-6xl lg:text-7xl leading-[1.1] font-light tracking-[0.02em] drop-shadow-2xl"
+                initial={{ opacity: 0, y: 60 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -30 }}
+                transition={{ duration: 0.9, ease: EASE_LUXURY }}
+              >
+                {heroSlides[activeIndex].title}
+              </motion.h1>
+            </AnimatePresence>
           </div>
 
           {/* Decorative line */}
-          <div
-            className="w-16 h-[1px] bg-gradient-to-r from-transparent via-white/60 to-transparent my-6
-              animate-in fade-in zoom-in duration-[1500ms] delay-[400ms] ease-out fill-mode-forwards"
-            key={`line-${activeIndex}`}
+          <motion.div
+            className="w-16 h-[1px] bg-gradient-to-r from-transparent via-white/60 to-transparent my-6"
+            initial={{ scaleX: 0, opacity: 0 }}
+            animate={{ scaleX: 1, opacity: 1 }}
+            transition={{ duration: 1, delay: 0.6, ease: EASE_LUXURY }}
           />
 
           {/* Subtitle */}
           <div className="max-w-2xl overflow-hidden">
-            <p
-              key={`sub-${activeIndex}`}
-              className="text-white/70 font-sans font-light tracking-[0.15em] uppercase text-[10px] md:text-xs leading-relaxed
-                animate-in fade-in slide-in-from-bottom-8 duration-[1500ms] delay-[600ms] ease-out fill-mode-forwards"
-            >
-              {heroSlides[activeIndex].subtitle}
-            </p>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={`sub-${activeIndex}`}
+                className="text-white/70 font-sans font-light tracking-[0.15em] uppercase text-[10px] md:text-xs leading-relaxed"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: EASE_LUXURY }}
+              >
+                {heroSlides[activeIndex].subtitle}
+              </motion.p>
+            </AnimatePresence>
           </div>
         </div>
 
@@ -261,21 +274,21 @@ const Index = () => {
           <div className="floating-orb absolute top-[30%] left-[5%] w-72 h-72 rounded-full bg-amber-200/20 blur-[80px]" style={{ animationDelay: "-12s" }} />
         </div>
 
-        <div ref={servicesRef} className="container mx-auto px-6 md:px-12 reveal-up">
-          <div className="text-center mb-16 md:mb-20">
+        <div className="container mx-auto px-6 md:px-12">
+          <Reveal className="text-center mb-16 md:mb-20">
             <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4 font-sans">{t("homepage.services_sous_titre")}</p>
             <h2 className="max-w-2xl mx-auto">{t("homepage.services_titre")}</h2>
-          </div>
+          </Reveal>
 
           {/* Desktop Layout: Grid */}
-          <div className="hidden md:grid grid-cols-3 gap-8 md:gap-10">
+          <StaggerContainer className="hidden md:grid grid-cols-3 gap-8 md:gap-10" stagger={0.15}>
             {[
               { icon: Home, title: t("homepage.service_vente_titre"), desc: t("homepage.service_vente_desc"), link: "/catalogue?type=vente" },
               { icon: Key, title: t("homepage.service_location_titre"), desc: t("homepage.service_location_desc"), link: "/catalogue?type=location-longue-duree" },
               { icon: BarChart3, title: t("homepage.service_gestion_titre"), desc: t("homepage.service_gestion_desc"), link: "/contact" },
             ].map((service, i) => (
+              <motion.div key={i} variants={staggerItemVariants}>
               <Link
-                key={i}
                 to={service.link}
                 className="group relative bg-background border border-border/60 p-8 md:p-10 transition-all duration-500
                   hover:border-foreground/20 hover:shadow-xl hover:shadow-black/[0.03] hover:-translate-y-1 h-full flex flex-col"
@@ -291,8 +304,9 @@ const Index = () => {
                   <ArrowRight size={14} strokeWidth={1.25} className="transition-transform group-hover:translate-x-1" />
                 </span>
               </Link>
+              </motion.div>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
 
         {/* Mobile Layout: Infinite Marquee */}
@@ -351,7 +365,7 @@ const Index = () => {
       {/* ═══════════════════════ FEATURED PROPERTIES ═══════════════════════ */}
       <section className="py-20 md:py-28">
         <div className="container mx-auto px-6 md:px-12">
-          <div className="flex items-end justify-between mb-16">
+          <Reveal className="flex items-end justify-between mb-16">
             <div>
               <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4 font-sans">{t("biens.exclusivites")}</p>
               <h2>{t("biens.residences_investissements")}</h2>
@@ -360,7 +374,7 @@ const Index = () => {
               {t("biens.voir_tout")}
               <ArrowRight size={16} strokeWidth={1.25} className="transition-transform group-hover:translate-x-1" />
             </Link>
-          </div>
+          </Reveal>
 
           {featured.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
@@ -456,7 +470,7 @@ const Index = () => {
           }}
         />
 
-        <div ref={ctaRef} className="container mx-auto px-6 md:px-12 text-center relative z-10 reveal-up">
+        <Reveal className="container mx-auto px-6 md:px-12 text-center relative z-10">
           <p className="text-[10px] tracking-[0.4em] uppercase text-primary-foreground/40 font-sans mb-6">Live In Marrakech</p>
           <h2 className="text-primary-foreground mb-6 max-w-3xl mx-auto">{t("contact.cta_titre")}</h2>
           <div className="w-12 h-[1px] bg-primary-foreground/20 mx-auto my-8" />
@@ -475,11 +489,12 @@ const Index = () => {
               </Button>
             </a>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       <Footer />
     </div>
+    </PageTransition>
   );
 };
 

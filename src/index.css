@@ -230,3 +230,65 @@
   transform: scale(1.08);
 }
 
+/* ── Premium Button Hover Glow ── */
+button[class*="luxury"],
+a[class*="luxury"] {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+button[class*="luxury"]:hover,
+a[class*="luxury"]:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 24px rgba(201, 168, 76, 0.15), 0 0 8px rgba(201, 168, 76, 0.08);
+}
+
+/* ── Nav Link Underline Deploy ── */
+.nav-link-animated {
+  position: relative;
+}
+.nav-link-animated::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0%;
+  height: 1.5px;
+  background: currentColor;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-link-animated:hover::after {
+  width: 100%;
+}
+
+/* ── Lenis Smooth Scroll ── */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ── Prefers Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-marquee {
+    animation: none !important;
+  }
+  .floating-orb {
+    animation: none !important;
+  }
+}

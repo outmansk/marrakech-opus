@@ -10,6 +10,8 @@ import { supabase } from "@/lib/supabase";
 import type { Bien } from "@/types/property";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import { Helmet } from "react-helmet-async";
+import { motion } from "framer-motion";
+import { PageTransition, Reveal, EASE_LUXURY } from "@/components/motion/Animations";
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("fr-MA").format(price) + " MAD";
@@ -128,6 +130,7 @@ const PropertyDetail = () => {
   const metaDescription = property.description_courte || `Découvrez ce magnifique bien immobilier (${property.type}) à ${property.quartier || 'Marrakech'}. Exclusivité Live In Marrakech.`;
 
   return (
+    <PageTransition>
     <div className="min-h-screen">
       <Helmet>
         <title>{metaTitle}</title>
@@ -163,6 +166,7 @@ const PropertyDetail = () => {
           </Link>
         </div>
 
+        <Reveal>
         <div className="container mx-auto px-6 md:px-12">
           <div className="relative aspect-[16/9] md:aspect-[21/9] overflow-hidden mb-4 bg-muted group">
           <OptimizedImage
@@ -223,6 +227,7 @@ const PropertyDetail = () => {
             </div>
           )}
         </div>
+        </Reveal>
 
         <div className="container mx-auto px-6 md:px-12 py-16">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
@@ -415,6 +420,7 @@ const PropertyDetail = () => {
         propertyTitle={property.titre}
       />
     </div>
+    </PageTransition>
   );
 };
 

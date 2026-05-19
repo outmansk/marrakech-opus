@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
-import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import type { Bien, BienService } from "@/types/property";
 import { Bed, Car, Bath, Maximize, MessageCircle } from "lucide-react";
 import OptimizedImage from "@/components/ui/OptimizedImage";
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import { EASE_LUXURY } from "@/components/motion/Animations";
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("fr-MA").format(price) + " MAD";
@@ -57,30 +59,20 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
     return t('biens.disponible');
   };
 
-  const cardRef = useRef<HTMLAnchorElement>(null);
-
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => el.classList.add("is-visible"), revealDelay);
-          observer.unobserve(el);
-        }
-      },
-      { threshold: 0.12 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [revealDelay]);
+  const { ref: cardRef, inView } = useInView({ triggerOnce: true, threshold: 0.12 });
 
   return (
+    <motion.div
+      ref={cardRef}
+      initial={{ opacity: 0, y: 40 }}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+      transition={{ duration: 0.7, delay: revealDelay * 0.001, ease: EASE_LUXURY }}
+      whileHover={{ y: -4, boxShadow: "0 20px 40px rgba(0,0,0,0.06)" }}
+      style={{ contain: 'layout' }}
+    >
     <Link
       to={`/bien/${property.id}`}
-      ref={cardRef}
-      className="block card-reveal-init property-card h-full flex flex-col group"
-      style={{ contain: 'layout' }}
+      className="block h-full flex flex-col group"
     >
       <div className="overflow-hidden aspect-[16/10] relative bg-muted rounded-0 border-b border-border/10 shrink-0">
         <OptimizedImage
@@ -169,6 +161,7 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
         </div>
       </div>
     </Link>
+    </motion.div>
   );
 };
 
