@@ -9,6 +9,7 @@ import { AnimatePresence } from "framer-motion";
 // Animation infrastructure
 import SmoothScroll from "@/components/SmoothScroll";
 import ScrollProgress from "@/components/ScrollProgress";
+import { SplashGuard } from "@/components/SplashScreen";
 
 // Public pages
 import Index from "./pages/Index";
@@ -78,9 +79,11 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <SmoothScroll />
-          <ScrollProgress />
-          <AnimatedRoutes />
+          <SplashGuard>
+            <SmoothScroll />
+            <ScrollProgress />
+            <AnimatedRoutes />
+          </SplashGuard>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
