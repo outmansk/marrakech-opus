@@ -72,7 +72,7 @@ const HeroSlideshow = () => {
 
   return (
     <section
-      className="relative h-screen overflow-hidden bg-black"
+      className="relative h-[80vh] min-h-[580px] overflow-hidden bg-black"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
@@ -83,7 +83,7 @@ const HeroSlideshow = () => {
         <div
           key={i}
           className="absolute inset-0 ease-in-out"
-          style={{ opacity: i === current ? 1 : 0, zIndex: i === current ? 10 : 0, transition: 'opacity 800ms ease-in-out' }}
+          style={{ opacity: i === current ? 1 : 0, zIndex: i === current ? 10 : 0, transition: 'opacity 1200ms ease-in-out' }}
         >
           <img
             src={slide.image}
@@ -91,69 +91,52 @@ const HeroSlideshow = () => {
             className="absolute inset-0 w-full h-full object-cover scale-105"
             loading={i === 0 ? "eager" : "lazy"}
           />
-          {/* Gradient overlay */}
+          {/* Gradient overlay - elegant bottom vignette vignette */}
           <div
             className="absolute inset-0"
             style={{
-              background: "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%)",
+              background: "linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.75) 100%)",
             }}
           />
         </div>
       ))}
 
-      {/* ── Centered text content ─────────────────────────────────── */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-20">
-        {/* Surtitre */}
+      {/* ── Centered text content - Four Seasons inspired ─────────── */}
+      <div className="absolute inset-0 flex flex-col items-center justify-end text-center px-6 pb-20 md:pb-24 z-20">
+        {/* Calligraphic Subtitle */}
         <motion.p
-          className="text-white/60 text-[10px] md:text-xs tracking-[0.3em] uppercase font-sans font-light mb-6"
+          className="font-serif italic text-white/90 text-lg sm:text-xl md:text-2xl tracking-[0.05em] mb-2 font-light"
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: EASE_LUXURY }}
         >
-          LIVE IN MARRAKECH
+          Live In Marrakech
         </motion.p>
 
-        {/* Main title */}
+        {/* Spaced Elegant Serif Title */}
         <div className="max-w-4xl overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.h1
               key={`hero-title-${current}`}
-              className="text-white font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1] font-light tracking-[0.02em]"
-              initial={{ opacity: 0, y: 50 }}
+              className="text-white font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.2] font-light tracking-[0.28em] uppercase"
+              initial={{ opacity: 0, y: 35 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -30 }}
+              exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.8, ease: EASE_LUXURY }}
             >
-              {t(SLIDES[current].titleKey)}
+              Collection Privée
             </motion.h1>
           </AnimatePresence>
         </div>
-
-        {/* CTA button */}
-        <motion.div
-          className="mt-10"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5, ease: EASE_LUXURY }}
-        >
-          <Link
-            to="/catalogue"
-            className="inline-block border border-white/60 text-white px-8 py-3.5
-              text-[10px] md:text-xs tracking-[0.25em] uppercase font-sans font-light
-              hover:bg-white hover:text-[#0A0A0A] transition-all duration-300"
-          >
-            {t("contact.decouvrir_biens")}
-          </Link>
-        </motion.div>
       </div>
 
       {/* ── Bullets navigation ────────────────────────────────────── */}
-      <div className="absolute bottom-24 md:bottom-12 left-1/2 -translate-x-1/2 z-20 flex gap-3">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-3">
         {SLIDES.map((_, i) => (
           <button
             key={i}
             onClick={() => goTo(i)}
-            className={`w-2.5 h-2.5 rounded-full border border-white/50 transition-all duration-300 ${
+            className={`w-2 h-2 rounded-full border border-white/40 transition-all duration-300 ${
               i === current ? "bg-white scale-110" : "bg-transparent hover:bg-white/40"
             }`}
             aria-label={`Slide ${i + 1}`}
@@ -165,20 +148,20 @@ const HeroSlideshow = () => {
       <button
         onClick={goPrev}
         className="hidden md:flex absolute left-6 top-1/2 -translate-y-1/2 z-20
-          w-12 h-12 items-center justify-center text-white/50 hover:text-white
+          w-12 h-12 items-center justify-center text-white/40 hover:text-white
           transition-colors duration-300"
         aria-label="Previous slide"
       >
-        <ChevronLeft size={28} strokeWidth={1} />
+        <ChevronLeft size={24} strokeWidth={1} />
       </button>
       <button
         onClick={goNext}
         className="hidden md:flex absolute right-6 top-1/2 -translate-y-1/2 z-20
-          w-12 h-12 items-center justify-center text-white/50 hover:text-white
+          w-12 h-12 items-center justify-center text-white/40 hover:text-white
           transition-colors duration-300"
         aria-label="Next slide"
       >
-        <ChevronRight size={28} strokeWidth={1} />
+        <ChevronRight size={24} strokeWidth={1} />
       </button>
     </section>
   );

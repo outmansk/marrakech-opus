@@ -29,10 +29,36 @@ const Index = () => {
         {/* ═══════════════════════ SECTION 1 — Hero Slideshow ═══════════════════════ */}
         <HeroSlideshow />
 
-        {/* ═══════════════════════ SECTION 2 — Search Bar ═══════════════════════ */}
-        <section className="bg-[#FAF8F3] py-12 md:py-16">
+        {/* ═══════════════════════ SECTION 2 — Four Seasons Style Welcome & Search ═══════════════════════ */}
+        <section className="bg-[#FAF8F3] pb-16 pt-0 relative z-20">
           <div className="container mx-auto px-6 md:px-12">
-            <div className="max-w-3xl mx-auto">
+            
+            {/* ── Four Seasons Welcoming Card (Floating over Hero) ── */}
+            <div className="max-w-2xl mx-auto bg-white shadow-xl border border-[#0A0A0A]/5 p-8 md:p-12 text-center -translate-y-16 md:-translate-y-24 relative z-30 mb-4">
+              <h2 className="font-serif text-xl sm:text-2xl md:text-3xl font-light text-[#0A0A0A] leading-relaxed mb-8 max-w-lg mx-auto">
+                {isEn ? "Welcome, your next destination awaits." : "Bienvenue, votre prochaine destination vous attend."}
+              </h2>
+              
+              <Link
+                to="/catalogue"
+                className="bg-[#0A0A0A] text-white px-10 py-4 text-[10px] tracking-[0.22em] uppercase font-sans font-medium 
+                  hover:bg-[#0A0A0A]/90 transition-all duration-300 shadow-md inline-block mb-6"
+              >
+                {isEn ? "Discover our collection" : "Découvrir la collection"}
+              </Link>
+              
+              <div className="block">
+                <Link
+                  to="/contact"
+                  className="text-[9px] tracking-[0.2em] uppercase font-sans font-medium text-[#0A0A0A]/60 hover:text-[#0A0A0A] transition-colors border-b border-[#0A0A0A]/20 pb-0.5"
+                >
+                  {isEn ? "Plan a private visit" : "Planifier une visite privée"}
+                </Link>
+              </div>
+            </div>
+
+            {/* ── Luxury Search Interface ── */}
+            <div className="max-w-3xl mx-auto -mt-4 md:-mt-8">
               {/* Premium Segmented Service tabs with Framer Motion liquid animation */}
               <div className="bg-[#F5F0E8] border border-[#0A0A0A]/5 p-1 flex w-full max-w-lg mx-auto rounded-full mb-8 relative">
                 {([
