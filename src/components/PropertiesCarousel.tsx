@@ -7,6 +7,7 @@ import type { Bien, BienType } from "@/types/property";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import { useTranslation } from "react-i18next";
 import { Reveal } from "@/components/motion/Animations";
+import { motion } from "framer-motion";
 
 /* ── Mock data for fallback ───────────────────────────────────────────────── */
 const MOCK_PROPERTIES: Array<{
@@ -205,21 +206,29 @@ const PropertiesCarousel = () => {
         </Reveal>
 
         {/* ── Horizontal filters ──────────────────────────────────── */}
-        <div className="flex gap-2 overflow-x-auto pb-4 mb-8 scrollbar-hide -mx-2 px-2">
-          {FILTERS.map((f) => (
-            <button
-              key={f.key}
-              onClick={() => setActiveFilter(f.key)}
-              className={`whitespace-nowrap px-5 py-2 text-[11px] tracking-[0.15em] uppercase font-sans font-medium
-                transition-all duration-300 shrink-0 ${
-                activeFilter === f.key
-                  ? "bg-[#0A0A0A] text-white"
-                  : "border border-[#0A0A0A]/30 text-[#0A0A0A] hover:border-[#0A0A0A]"
-              }`}
-            >
-              {isEn ? f.labelEn : f.labelFr}
-            </button>
-          ))}
+        <div className="flex gap-6 md:gap-8 overflow-x-auto border-b border-[#0A0A0A]/10 pb-px scrollbar-hide -mx-2 px-2 mb-12">
+          {FILTERS.map((f) => {
+            const isActive = activeFilter === f.key;
+            return (
+              <button
+                key={f.key}
+                onClick={() => setActiveFilter(f.key)}
+                className={`relative pb-3 text-[10px] md:text-[11px] tracking-[0.2em] uppercase font-sans font-medium
+                  transition-colors duration-300 shrink-0 ${
+                  isActive ? "text-[#0A0A0A]" : "text-[#0A0A0A]/40 hover:text-[#0A0A0A]/70"
+                }`}
+              >
+                {isEn ? f.labelEn : f.labelFr}
+                {isActive && (
+                  <motion.div
+                    layoutId="activeFilterUnderline"
+                    className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#0A0A0A]"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+              </button>
+            );
+          })}
         </div>
 
         {/* ── Embla Carousel ──────────────────────────────────────── */}

@@ -30,40 +30,48 @@ const Index = () => {
         <HeroSlideshow />
 
         {/* ═══════════════════════ SECTION 2 — Search Bar ═══════════════════════ */}
-        <section className="bg-[#FAF8F3] py-10 md:py-14">
+        <section className="bg-[#FAF8F3] py-12 md:py-16">
           <div className="container mx-auto px-6 md:px-12">
             <div className="max-w-3xl mx-auto">
-              {/* Service tabs */}
-              <div className="flex justify-center gap-2 mb-6">
+              {/* Premium Segmented Service tabs with Framer Motion liquid animation */}
+              <div className="bg-[#F5F0E8] border border-[#0A0A0A]/5 p-1 flex w-full max-w-lg mx-auto rounded-full mb-8 relative">
                 {([
                   { key: "vente" as const, label: t("hero.acheter") },
                   { key: "location-courte-duree" as const, label: t("hero.louer_court") },
                   { key: "location-longue-duree" as const, label: t("hero.louer_long") },
-                ]).map((tab) => (
-                  <button
-                    key={tab.key}
-                    onClick={() => setSearchType(tab.key)}
-                    className={`px-5 md:px-7 py-2.5 text-[10px] md:text-[11px] tracking-[0.2em] uppercase font-sans font-medium
-                      transition-all duration-300 ${
-                      searchType === tab.key
-                        ? "bg-[#0A0A0A] text-white"
-                        : "bg-transparent text-[#0A0A0A] border border-[#0A0A0A]/20 hover:border-[#0A0A0A]/50"
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
+                ]).map((tab) => {
+                  const isActive = searchType === tab.key;
+                  return (
+                    <button
+                      key={tab.key}
+                      onClick={() => setSearchType(tab.key)}
+                      className={`flex-1 py-3 text-[9px] sm:text-[10px] tracking-[0.18em] uppercase font-sans font-medium
+                        transition-colors duration-300 relative z-10 text-center rounded-full whitespace-nowrap ${
+                        isActive ? "text-white" : "text-[#0A0A0A]/60 hover:text-[#0A0A0A]"
+                      }`}
+                    >
+                      {isActive && (
+                        <motion.div
+                          layoutId="activeSearchTab"
+                          className="absolute inset-0 bg-[#0A0A0A] rounded-full -z-10 shadow-sm"
+                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                      {tab.label}
+                    </button>
+                  );
+                })}
               </div>
 
-              {/* Search input + button */}
-              <div className="flex gap-3">
+              {/* Luxury Search input + button */}
+              <div className="flex flex-col sm:flex-row gap-3 items-stretch max-w-2xl mx-auto w-full">
                 <div className="flex-1 relative">
-                  <Search size={16} strokeWidth={1.25} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <Search size={16} strokeWidth={1.25} className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
                   <input
                     type="text"
                     placeholder={isEn ? "Search by neighborhood, type..." : "Rechercher par quartier, type..."}
-                    className="w-full h-14 pl-11 pr-4 bg-white border border-[#0A0A0A]/10 text-sm font-sans font-light
-                      placeholder:text-muted-foreground/60 focus:outline-none focus:border-[#0A0A0A]/30 transition-colors"
+                    className="w-full h-14 pl-12 pr-6 bg-white border border-[#0A0A0A]/5 shadow-sm rounded-full text-sm font-sans font-light
+                      placeholder:text-muted-foreground/40 focus:outline-none focus:border-[#0A0A0A]/20 transition-all duration-300"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         window.location.href = `/catalogue?type=${searchType}`;
@@ -73,11 +81,11 @@ const Index = () => {
                 </div>
                 <Link
                   to={`/catalogue?type=${searchType}`}
-                  className="h-14 px-8 bg-[#0A0A0A] text-white flex items-center justify-center
-                    text-[10px] tracking-[0.2em] uppercase font-sans font-medium
-                    hover:bg-[#0A0A0A]/85 transition-colors shrink-0"
+                  className="h-14 px-8 bg-[#0A0A0A] text-white flex items-center justify-center gap-2
+                    text-[10px] tracking-[0.2em] uppercase font-sans font-medium rounded-full
+                    hover:bg-[#0A0A0A]/90 transition-all duration-300 shadow-md hover:shadow-lg shrink-0 text-center"
                 >
-                  {isEn ? "Search" : "Rechercher"}
+                  <span>{isEn ? "Search" : "Rechercher"}</span>
                 </Link>
               </div>
             </div>
