@@ -96,6 +96,15 @@
     font-family: var(--font-sans);
   }
 
+  /* Hide scrollbar but keep scroll functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE/Edge */
+    scrollbar-width: none;     /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;             /* Chrome/Safari/Opera */
+  }
+
   /* Animation #2 — Scroll reveal des cartes biens */
   .card-reveal-init {
     opacity: 0;
