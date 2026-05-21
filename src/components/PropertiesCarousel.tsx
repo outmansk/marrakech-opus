@@ -98,6 +98,7 @@ const PropertiesCarousel = () => {
     containScroll: "trimSnaps",
     slidesToScroll: 1,
     loop: false,
+    dragFree: true,
   });
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(true);
@@ -232,7 +233,7 @@ const PropertiesCarousel = () => {
         </div>
 
         {/* ── Embla Carousel ──────────────────────────────────────── */}
-        <div className="overflow-hidden" ref={emblaRef}>
+        <div className="overflow-hidden cursor-grab active:cursor-grabbing select-none touch-pan-y" ref={emblaRef}>
           <div className="flex gap-5">
             {filtered.map((property) => (
               <div
@@ -254,7 +255,8 @@ const PropertiesCarousel = () => {
                         src={getImage(property)}
                         alt={property.titre}
                         size="card"
-                        className="w-full h-full object-cover"
+                        draggable={false}
+                        className="w-full h-full object-cover pointer-events-none"
                         wrapperClassName="w-full h-full"
                       />
                     </div>
