@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroSlideshow from "@/components/HeroSlideshow";
 import PropertiesCarousel from "@/components/PropertiesCarousel";
+import slide5 from "@/assets/slide5.jpg";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
@@ -94,7 +95,7 @@ const Index = () => {
               <Reveal direction="left">
                 <div className="relative aspect-[4/5] overflow-hidden">
                   <img
-                    src="https://images.unsplash.com/photo-1590073242678-70ee3fc28f8e?w=900&q=80&auto=format"
+                    src={slide5}
                     alt="L'expérience Marrakech"
                     className="w-full h-full object-cover"
                     loading="lazy"

@@ -5,22 +5,27 @@ import { motion, AnimatePresence } from "framer-motion";
 import { EASE_LUXURY } from "@/components/motion/Animations";
 import { useTranslation } from "react-i18next";
 
+import slide1 from "@/assets/slide1.jpg";
+import slide2 from "@/assets/slide2.jpg";
+import slide3 from "@/assets/slide3.jpg";
+import slide4 from "@/assets/slide4.jpg";
+
 /* ── Slide data ─────────────────────────────────────────────────────────────── */
 const SLIDES = [
   {
-    image: "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=1920&q=80&auto=format",
+    image: slide1,
     titleKey: "hero.slide1_title",
   },
   {
-    image: "https://images.unsplash.com/photo-1590073242678-70ee3fc28f8e?w=1920&q=80&auto=format",
+    image: slide2,
     titleKey: "hero.slide2_title",
   },
   {
-    image: "https://images.unsplash.com/photo-1548013146-72479768bada?w=1920&q=80&auto=format",
+    image: slide3,
     titleKey: "hero.slide3_title",
   },
   {
-    image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1920&q=80&auto=format",
+    image: slide4,
     titleKey: "hero.slide4_title",
   },
 ];
