@@ -18,6 +18,7 @@ import PropertyDetail from "./pages/PropertyDetail";
 import NotFound from "./pages/NotFound";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import Contact from "./pages/Contact";
 
 // Admin pages
 import AdminLayout from "./components/admin/AdminLayout";
@@ -44,6 +45,7 @@ const AnimatedRoutes = () => {
         <Route path="/bien/:id" element={<PropertyDetail />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
+        <Route path="/contact" element={<Contact />} />
 
         {/* ── Admin (login public) ─────────────────────────────── */}
         <Route path="/manage-xk92p/login" element={<AdminLogin />} />
