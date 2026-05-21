@@ -73,15 +73,16 @@ interface FilterTab {
   key: FilterKey;
   labelFr: string;
   labelEn: string;
+  labelEs: string;
 }
 
 const FILTERS: FilterTab[] = [
-  { key: "all", labelFr: "Tous", labelEn: "All" },
-  { key: "villa", labelFr: "Villas", labelEn: "Villas" },
-  { key: "riad", labelFr: "Riads", labelEn: "Riads" },
-  { key: "appartement", labelFr: "Appartements", labelEn: "Apartments" },
-  { key: "vente", labelFr: "À vendre", labelEn: "For Sale" },
-  { key: "location", labelFr: "À louer", labelEn: "For Rent" },
+  { key: "all", labelFr: "Tous", labelEn: "All", labelEs: "Todos" },
+  { key: "villa", labelFr: "Villas", labelEn: "Villas", labelEs: "Villas" },
+  { key: "riad", labelFr: "Riads", labelEn: "Riads", labelEs: "Riads" },
+  { key: "appartement", labelFr: "Appartements", labelEn: "Apartments", labelEs: "Apartamentos" },
+  { key: "vente", labelFr: "À vendre", labelEn: "For Sale", labelEs: "En Venta" },
+  { key: "location", labelFr: "À louer", labelEn: "For Rent", labelEs: "En Alquiler" },
 ];
 
 const formatPrice = (price: number) =>
@@ -89,7 +90,13 @@ const formatPrice = (price: number) =>
 
 const PropertiesCarousel = () => {
   const { t, i18n } = useTranslation();
-  const isEn = i18n.language === "en";
+
+  const tL = (fr: string, en: string, es: string) => {
+    const lang = i18n.language?.slice(0, 2) ?? 'fr';
+    if (lang === 'en') return en;
+    if (lang === 'es') return es;
+    return fr;
+  };
 
   const [properties, setProperties] = useState<Bien[]>([]);
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
@@ -173,12 +180,12 @@ const PropertiesCarousel = () => {
         {/* ── Section header ──────────────────────────────────────── */}
         <Reveal className="mb-12">
           <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground text-center mb-3 font-sans">
-            {isEn ? "OUR PROPERTIES" : "NOS BIENS D'EXCEPTION"}
+            {tL("NOS BIENS D'EXCEPTION", "OUR PROPERTIES", "NUESTRAS PROPIEDADES")}
           </p>
           <div className="w-12 h-[1px] bg-[#0A0A0A] mx-auto mb-5" />
           <div className="flex items-center justify-between">
             <h2 className="font-serif">
-              {isEn ? "Discover our properties" : "Découvrez nos propriétés"}
+              {tL("Découvrez nos propriétés", "Discover our properties", "Descubra nuestras propiedades")}
             </h2>
             {/* Desktop arrows */}
             <div className="hidden md:flex items-center gap-2">
@@ -219,7 +226,12 @@ const PropertiesCarousel = () => {
                   isActive ? "text-[#0A0A0A]" : "text-[#0A0A0A]/40 hover:text-[#0A0A0A]/70"
                 }`}
               >
-                {isEn ? f.labelEn : f.labelFr}
+                {(() => {
+                  const lang = i18n.language?.slice(0, 2) ?? 'fr';
+                  if (lang === 'en') return f.labelEn;
+                  if (lang === 'es') return f.labelEs;
+                  return f.labelFr;
+                })()}
                 {isActive && (
                   <motion.div
                     layoutId="activeFilterUnderline"
@@ -240,17 +252,17 @@ const PropertiesCarousel = () => {
                 key={property.id}
                 className="flex-[0_0_82%] sm:flex-[0_0_45%] md:flex-[0_0_32%] lg:flex-[0_0_28%] min-w-0"
               >
-                <Link to={`/bien/${property.id}`} className="group block">
+                <Link to={`/bien/${property.id}`} className="group block relative">
                   {/* Image */}
-                  <div className="relative aspect-[2/3] overflow-hidden bg-muted mb-4 shadow-md group-hover:shadow-xl transition-shadow duration-500">
+                  <div className="relative aspect-[2/3] overflow-hidden bg-muted mb-4 shadow-md group-hover:shadow-2xl transition-all duration-500">
                     {/* Category badge */}
-                    <div className="absolute top-4 left-4 z-10 bg-[#0A0A0A] text-white px-3 py-1">
+                    <div className="absolute top-4 left-4 z-10 bg-[#0A0A0A] text-white px-3 py-1 transition-opacity duration-300 group-hover:opacity-0">
                       <span className="text-[9px] tracking-[0.2em] uppercase font-sans font-medium">
                         {property.type}
                       </span>
                     </div>
 
-                    <div className="w-full h-full group-hover:scale-105 transition-transform duration-500">
+                    <div className="w-full h-full group-hover:scale-105 transition-transform duration-700">
                       <OptimizedImage
                         src={getImage(property)}
                         alt={property.titre}
@@ -259,6 +271,52 @@ const PropertiesCarousel = () => {
                         className="w-full h-full object-cover pointer-events-none"
                         wrapperClassName="w-full h-full"
                       />
+                    </div>
+
+                    {/* Dark/Blur elegant backdrop overlay on hover */}
+                    <div className="absolute inset-0 bg-[#0A0A0A]/20 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
+
+                    {/* FOUR SEASONS SIGNATURE OVERLAPPING DETAIL CARD */}
+                    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-20 px-3 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none md:pointer-events-auto">
+                      <div className="w-[108%] ml-[-4%] bg-white shadow-2xl p-5 md:p-6 text-center border border-[#0A0A0A]/5 pointer-events-auto">
+                        <span className="text-[8px] tracking-[0.25em] text-muted-foreground uppercase font-sans mb-1.5 block">
+                          {property.type}
+                        </span>
+                        
+                        <h4 className="font-serif text-[11px] sm:text-xs md:text-sm uppercase tracking-[0.15em] text-[#0A0A0A] leading-snug line-clamp-2 mb-2">
+                          {property.titre}
+                        </h4>
+
+                        <div className="w-8 h-[1px] bg-[#0A0A0A]/25 mx-auto mb-3" />
+
+                        <p className="text-[9px] sm:text-[10px] leading-relaxed text-muted-foreground font-sans font-light mb-4 max-w-[95%] mx-auto">
+                          {tL(
+                            `Prestigieuse propriété comprenant ${property.chambres ?? 3} chambres raffinées et une surface habitable de ${property.surface_terrain ?? 250} m² dans un emplacement idéal.`,
+                            `Prestigious property featuring ${property.chambres ?? 3} refined bedrooms and a living area of ${property.surface_terrain ?? 250} sqm in an ideal location.`,
+                            `Prestigiosa propiedad que cuenta con ${property.chambres ?? 3} habitaciones refinadas y un área habitable de ${property.surface_terrain ?? 250} m² en una ubicación ideal.`
+                          )}
+                        </p>
+
+                        <div className="space-y-2">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              window.open(`https://wa.me/212605387041?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien : ${property.titre} (Ref: ${property.id})`)}`, '_blank');
+                            }}
+                            className="w-full bg-[#0A0A0A] hover:bg-[#0A0A0A]/90 text-white py-2.5 text-[9px] tracking-[0.2em] uppercase font-sans font-medium transition-all duration-300 block text-center"
+                          >
+                            {tL("RESERVER CHAT", "CHAT VIA WHATSAPP", "CONTACTAR CHAT")}
+                          </button>
+
+                          <Link
+                            to={`/bien/${property.id}`}
+                            className="w-full border border-[#0A0A0A] text-[#0A0A0A] py-2.5 text-[9px] tracking-[0.2em] uppercase font-sans font-medium hover:bg-[#0A0A0A] hover:text-white transition-all duration-300 block text-center"
+                          >
+                            {tL("DÉTAILS", "DETAILS", "DETALLES")}
+                          </Link>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -273,8 +331,8 @@ const PropertiesCarousel = () => {
                         : property.prix_vente
                           ? formatPrice(property.prix_vente)
                           : property.prix_location_longue
-                            ? `${formatPrice(property.prix_location_longue)} / mois`
-                            : "Prix sur demande"}
+                            ? `${formatPrice(property.prix_location_longue)} ${tL("/ mois", "/ month", "/ mes")}`
+                            : tL("Prix sur demande", "Price on request", "Precio bajo petición")}
                     </p>
                     <div className="flex items-center gap-4 text-muted-foreground text-xs font-light">
                       {property.chambres !== null && (

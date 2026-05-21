@@ -12,9 +12,15 @@ import slide3 from "@/assets/slide3.jpg";
 
 const Contact = () => {
   const { t, i18n } = useTranslation();
-  const isEn = i18n.language === "en";
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  const tL = (fr: string, en: string, es: string) => {
+    const lang = i18n.language?.slice(0, 2) ?? 'fr';
+    if (lang === 'en') return en;
+    if (lang === 'es') return es;
+    return fr;
+  };
 
   const [formData, setFormData] = useState({
     name: "",
@@ -33,7 +39,7 @@ const Contact = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
-      toast.error(isEn ? "Please fill in all required fields." : "Veuillez remplir tous les champs obligatoires.");
+      toast.error(tL("Veuillez remplir tous les champs obligatoires.", "Please fill in all required fields.", "Por favor, complete todos los campos obligatorios."));
       return;
     }
 
@@ -43,9 +49,11 @@ const Contact = () => {
       setLoading(false);
       setSubmitted(true);
       toast.success(
-        isEn
-          ? "Your message has been sent successfully. Our team will contact you shortly."
-          : "Votre message a été envoyé avec succès. Notre équipe vous contactera dans les plus brefs délais."
+        tL(
+          "Votre message a été envoyé avec succès. Notre équipe vous contactera dans les plus brefs délais.",
+          "Your message has been sent successfully. Our team will contact you shortly.",
+          "Su mensaje ha sido enviado con éxito. Nuestro equipo se pondrá en contacto con usted en breve."
+        )
       );
       setFormData({ name: "", email: "", phone: "", message: "" });
     }, 1500);
@@ -55,13 +63,15 @@ const Contact = () => {
     <PageTransition>
       <div className="min-h-screen bg-[#FAF8F3] text-[#0A0A0A]">
         <Helmet>
-          <title>{isEn ? "Contact Us — Live In Marrakech" : "Contactez-nous — Live In Marrakech"}</title>
+          <title>{tL("Contactez-nous — Live In Marrakech", "Contact Us — Live In Marrakech", "Contáctenos — Live In Marrakech")}</title>
           <meta
             name="description"
             content={
-              isEn
-                ? "Contact the Live In Marrakech real estate agency. Our experts are ready to assist you."
-                : "Contactez l'agence immobilière Live In Marrakech. Nos experts sont à votre disposition pour vous accompagner."
+              tL(
+                "Contactez l'agence immobilière Live In Marrakech. Nos experts sont à votre disposition pour vous accompagner.",
+                "Contact the Live In Marrakech real estate agency. Our experts are ready to assist you.",
+                "Contacte con la agencia inmobiliaria Live In Marrakech. Nuestros expertos están a su disposición para acompañarle."
+              )
             }
           />
         </Helmet>
@@ -91,7 +101,7 @@ const Contact = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: EASE_LUXURY }}
             >
-              {isEn ? "GET IN TOUCH" : "ENTRER EN CONTACT"}
+              {tL("ENTRER EN CONTACT", "GET IN TOUCH", "PONERSE EN CONTACTO")}
             </motion.p>
             <motion.h1
               className="text-white font-serif text-4xl sm:text-5xl md:text-6xl font-light tracking-[0.02em] leading-tight"
@@ -113,15 +123,17 @@ const Contact = () => {
               <div className="lg:col-span-5 space-y-12">
                 <Reveal>
                   <span className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground font-sans block mb-3">
-                    {isEn ? "CONTACT DETAILS" : "COORDONNÉES"}
+                    {tL("COORDONNÉES", "CONTACT DETAILS", "DATOS DE CONTACTO")}
                   </span>
                   <h2 className="font-serif text-3xl md:text-4xl font-light mb-6">
-                    {isEn ? "We would love to hear from you." : "Nous aimerions avoir de vos nouvelles."}
+                    {tL("Nous aimerions avoir de vos nouvelles.", "We would love to hear from you.", "Nos encantaría saber de usted.")}
                   </h2>
                   <p className="text-muted-foreground font-light leading-relaxed">
-                    {isEn
-                      ? "Whether you're searching for a historic Riad in the Medina, a contemporary villa in Amelkis, or simply wish to discuss property management in Marrakech, our advisors are here."
-                      : "Que vous recherchiez un Riad historique dans la Médina, une villa contemporaine à Amelkis, ou que vous souhaitiez simplement discuter de gestion locative, nos conseillers sont à votre écoute."}
+                    {tL(
+                      "Que vous recherchiez un Riad historique dans la Médina, une villa contemporaine à Amelkis, ou que vous souhaitiez simplement discuter de gestion locative, nos conseillers sont à votre écoute.",
+                      "Whether you're searching for a historic Riad in the Medina, a contemporary villa in Amelkis, or simply wish to discuss property management in Marrakech, our advisors are here.",
+                      "Tanto si busca un Riad histórico en la Medina, una villa contemporánea en Amelkis, o simplemente desea hablar de gestión de propiedades en Marrakech, nuestros asesores están aquí."
+                    )}
                   </p>
                 </Reveal>
 
@@ -133,7 +145,7 @@ const Contact = () => {
                         <MapPin size={18} strokeWidth={1.25} />
                       </div>
                       <div>
-                        <h4 className="font-serif text-base mb-1">{isEn ? "Our Address" : "Notre Adresse"}</h4>
+                        <h4 className="font-serif text-base mb-1">{tL("Notre Adresse", "Our Address", "Nuestra Dirección")}</h4>
                         <p className="text-muted-foreground text-sm font-light leading-relaxed">
                           {t("footer.adresse")}
                         </p>
@@ -147,7 +159,7 @@ const Contact = () => {
                         <Phone size={18} strokeWidth={1.25} />
                       </div>
                       <div>
-                        <h4 className="font-serif text-base mb-1">{isEn ? "Phone & WhatsApp" : "Téléphone & WhatsApp"}</h4>
+                        <h4 className="font-serif text-base mb-1">{tL("Téléphone & WhatsApp", "Phone & WhatsApp", "Teléfono & WhatsApp")}</h4>
                         <a
                           href="tel:+212605387041"
                           className="block text-[#0A0A0A] hover:underline text-sm font-light leading-relaxed"
@@ -160,7 +172,7 @@ const Contact = () => {
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1.5 text-emerald-600 hover:underline text-xs tracking-wider uppercase font-medium mt-1 font-sans"
                         >
-                          <span>{isEn ? "Instant Chat" : "Discussion instantanée"}</span>
+                          <span>{tL("Discussion instantanée", "Instant Chat", "Chat Instantáneo")}</span>
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                         </a>
                       </div>
@@ -173,7 +185,7 @@ const Contact = () => {
                         <Mail size={18} strokeWidth={1.25} />
                       </div>
                       <div>
-                        <h4 className="font-serif text-base mb-1">{isEn ? "Email Address" : "Adresse E-mail"}</h4>
+                        <h4 className="font-serif text-base mb-1">{tL("Adresse E-mail", "Email Address", "Dirección de Correo")}</h4>
                         <a
                           href="mailto:contact@liveinmarrakech.com"
                           className="block text-[#0A0A0A] hover:underline text-sm font-light leading-relaxed"
@@ -196,19 +208,21 @@ const Contact = () => {
                       </div>
                       <div className="space-y-2">
                         <h3 className="font-serif text-2xl">
-                          {isEn ? "Thank you!" : "Merci beaucoup !"}
+                          {tL("Merci beaucoup !", "Thank you!", "¡Muchas gracias!")}
                         </h3>
                         <p className="text-muted-foreground text-sm font-light max-w-sm mx-auto leading-relaxed">
-                          {isEn
-                            ? "Your inquiry has been received. One of our private advisors will get back to you shortly."
-                            : "Votre demande a bien été reçue. Un de nos conseillers privés vous contactera dans les plus brefs délais."}
+                          {tL(
+                            "Votre demande a bien été reçue. Un de nos conseillers privés vous contactera dans les plus brefs délais.",
+                            "Your inquiry has been received. One of our private advisors will get back to you shortly.",
+                            "Su solicitud ha sido recibida. Uno de nuestros asesores privados se pondrá en contacto con usted en breve."
+                          )}
                         </p>
                       </div>
                       <button
                         onClick={() => setSubmitted(false)}
                         className="inline-block border border-[#0A0A0A] px-8 py-3 text-[10px] tracking-[0.2em] uppercase font-sans font-medium hover:bg-[#0A0A0A] hover:text-white transition-all duration-300"
                       >
-                        {isEn ? "Send another message" : "Envoyer un autre message"}
+                        {tL("Envoyer un autre message", "Send another message", "Enviar otro mensaje")}
                       </button>
                     </div>
                   ) : (
@@ -217,7 +231,7 @@ const Contact = () => {
                         {/* Name Input */}
                         <div className="space-y-2">
                           <label className="text-[10px] tracking-widest uppercase font-sans font-medium text-muted-foreground">
-                            {isEn ? "Your Name *" : "Votre Nom *"}
+                            {tL("Votre Nom *", "Your Name *", "Su Nombre *")}
                           </label>
                           <input
                             type="text"
@@ -225,7 +239,7 @@ const Contact = () => {
                             required
                             value={formData.name}
                             onChange={handleChange}
-                            placeholder={isEn ? "John Doe" : "Ex: Jean Dupont"}
+                            placeholder={tL("Ex: Jean Dupont", "John Doe", "Ej: Juan Pérez")}
                             className="w-full h-12 px-4 bg-[#FAF8F3] border border-[#0A0A0A]/10 text-sm font-sans font-light focus:outline-none focus:border-[#0A0A0A]/30 transition-colors"
                           />
                         </div>
@@ -233,7 +247,7 @@ const Contact = () => {
                         {/* Phone Input */}
                         <div className="space-y-2">
                           <label className="text-[10px] tracking-widest uppercase font-sans font-medium text-muted-foreground">
-                            {isEn ? "Phone Number" : "Numéro de Téléphone"}
+                            {tL("Numéro de Téléphone", "Phone Number", "Número de Teléfono")}
                           </label>
                           <input
                             type="tel"
@@ -249,7 +263,7 @@ const Contact = () => {
                       {/* Email Input */}
                       <div className="space-y-2">
                         <label className="text-[10px] tracking-widest uppercase font-sans font-medium text-muted-foreground">
-                          {isEn ? "Email Address *" : "Adresse E-mail *"}
+                          {tL("Adresse E-mail *", "Email Address *", "Dirección de Correo *")}
                         </label>
                         <input
                           type="email"
@@ -265,7 +279,7 @@ const Contact = () => {
                       {/* Message Input */}
                       <div className="space-y-2">
                         <label className="text-[10px] tracking-widest uppercase font-sans font-medium text-muted-foreground">
-                          {isEn ? "Your Message *" : "Votre Message *"}
+                          {tL("Votre Message *", "Your Message *", "Su Mensaje *")}
                         </label>
                         <textarea
                           name="message"
@@ -273,11 +287,11 @@ const Contact = () => {
                           rows={6}
                           value={formData.message}
                           onChange={handleChange}
-                          placeholder={
-                            isEn
-                              ? "Tell us about your real estate plans..."
-                              : "Décrivez-nous votre projet immobilier..."
-                          }
+                          placeholder={tL(
+                            "Décrivez-nous votre projet immobilier...",
+                            "Tell us about your real estate plans...",
+                            "Cuéntenos sobre sus planes inmobiliarios..."
+                          )}
                           className="w-full p-4 bg-[#FAF8F3] border border-[#0A0A0A]/10 text-sm font-sans font-light focus:outline-none focus:border-[#0A0A0A]/30 transition-colors resize-none"
                         />
                       </div>
@@ -291,10 +305,10 @@ const Contact = () => {
                           hover:bg-[#0A0A0A]/85 disabled:opacity-50 transition-colors"
                       >
                         {loading ? (
-                          <span>{isEn ? "Sending..." : "Envoi en cours..."}</span>
+                          <span>{tL("Envoi en cours...", "Sending...", "Enviando...")}</span>
                         ) : (
                           <>
-                            <span>{isEn ? "Send Message" : "Envoyer le Message"}</span>
+                            <span>{tL("Envoyer le Message", "Send Message", "Enviar Mensaje")}</span>
                             <Send size={12} />
                           </>
                         )}

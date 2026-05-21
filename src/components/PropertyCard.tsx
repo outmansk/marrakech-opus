@@ -11,28 +11,6 @@ const formatPrice = (price: number) => {
   return new Intl.NumberFormat("fr-MA").format(price) + " MAD";
 };
 
-const getDisplayPrice = (bien: Bien, activeService?: string) => {
-  if (activeService === 'vente' && bien.prix_vente) 
-    return `${formatPrice(bien.prix_vente)}`;
-  
-  if (activeService === 'location-longue-duree' && bien.prix_location_longue) 
-    return `${formatPrice(bien.prix_location_longue)} / mois`;
-    
-  if (activeService === 'location-courte-duree' && bien.prix_location_courte) 
-    return `${formatPrice(bien.prix_location_courte)} / nuit`;
-
-  if (bien.services.includes('vente') && bien.prix_vente) 
-    return `${formatPrice(bien.prix_vente)}`;
-    
-  if (bien.services.includes('location-longue-duree') && bien.prix_location_longue) 
-    return `${formatPrice(bien.prix_location_longue)} / mois`;
-    
-  if (bien.services.includes('location-courte-duree') && bien.prix_location_courte) 
-    return `${formatPrice(bien.prix_location_courte)} / nuit`;
-
-  return bien.prix ? `${formatPrice(bien.prix)}` : "Prix sur demande";
-};
-
 interface PropertyCardProps {
   property: Bien;
   revealDelay?: number;
@@ -40,7 +18,37 @@ interface PropertyCardProps {
 }
 
 const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const tL = (fr: string, en: string, es: string) => {
+    const lang = i18n.language?.slice(0, 2) ?? 'fr';
+    if (lang === 'en') return en;
+    if (lang === 'es') return es;
+    return fr;
+  };
+
+  const getDisplayPrice = (bien: Bien, activeService?: string) => {
+    if (activeService === 'vente' && bien.prix_vente) 
+      return `${formatPrice(bien.prix_vente)}`;
+    
+    if (activeService === 'location-longue-duree' && bien.prix_location_longue) 
+      return `${formatPrice(bien.prix_location_longue)} ${tL("/ mois", "/ month", "/ mes")}`;
+      
+    if (activeService === 'location-courte-duree' && bien.prix_location_courte) 
+      return `${formatPrice(bien.prix_location_courte)} ${tL("/ nuit", "/ night", "/ noche")}`;
+
+    if (bien.services.includes('vente') && bien.prix_vente) 
+      return `${formatPrice(bien.prix_vente)}`;
+      
+    if (bien.services.includes('location-longue-duree') && bien.prix_location_longue) 
+      return `${formatPrice(bien.prix_location_longue)} ${tL("/ mois", "/ month", "/ mes")}`;
+      
+    if (bien.services.includes('location-courte-duree') && bien.prix_location_courte) 
+      return `${formatPrice(bien.prix_location_courte)} ${tL("/ nuit", "/ night", "/ noche")}`;
+
+    return bien.prix ? `${formatPrice(bien.prix)}` : tL("Prix sur demande", "Price on request", "Precio bajo petición");
+  };
+
   const image = property.photos?.length ? property.photos[0] : "/placeholder.svg";
 
   const transactionLabel = (service: BienService) => {
@@ -156,7 +164,7 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
           </div>
 
           <div className="w-full text-center border border-border/60 py-3 text-[10px] tracking-widest uppercase font-sans font-medium hover:bg-foreground hover:text-background transition-colors duration-300">
-            Voir les détails
+            {tL("Voir les détails", "View details", "Ver detalles")}
           </div>
         </div>
       </div>

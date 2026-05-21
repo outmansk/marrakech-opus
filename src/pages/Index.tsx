@@ -13,15 +13,21 @@ import { Reveal, PageTransition, EASE_LUXURY } from "@/components/motion/Animati
 
 const Index = () => {
   const { t, i18n } = useTranslation();
-  const isEn = i18n.language === "en";
   const [searchType, setSearchType] = useState<"vente" | "location-courte-duree" | "location-longue-duree">("vente");
+
+  const tL = (fr: string, en: string, es: string) => {
+    const lang = i18n.language?.slice(0, 2) ?? 'fr';
+    if (lang === 'en') return en;
+    if (lang === 'es') return es;
+    return fr;
+  };
 
   return (
     <PageTransition>
       <div className="min-h-screen">
         <Helmet>
-          <title>Live In Marrakech — L'Excellence Immobilière à Marrakech</title>
-          <meta name="description" content="Découvrez nos propriétés d'exception à Marrakech. Villas, riads, appartements en vente et location. Votre partenaire immobilier de confiance." />
+          <title>{tL("Live In Marrakech — L'Excellence Immobilière à Marrakech", "Live In Marrakech — Luxury Real Estate in Marrakech", "Live In Marrakech — Excelencia Inmobiliaria en Marrakech")}</title>
+          <meta name="description" content={tL("Découvrez nos propriétés d'exception à Marrakech. Villas, riads, appartements en vente et location. Votre partenaire immobilier de confiance.", "Discover our exceptional properties in Marrakech. Villas, riads, apartments for sale and rent. Your trusted real estate partner.", "Descubra nuestras propiedades excepcionales en Marrakech. Villas, riads, apartamentos en venta y alquiler. Su socio inmobiliario de confianza.")} />
         </Helmet>
 
         <Header />
@@ -29,36 +35,12 @@ const Index = () => {
         {/* ═══════════════════════ SECTION 1 — Hero Slideshow ═══════════════════════ */}
         <HeroSlideshow />
 
-        {/* ═══════════════════════ SECTION 2 — Four Seasons Style Welcome & Search ═══════════════════════ */}
-        <section className="bg-[#FAF8F3] pb-16 pt-0 relative z-20">
+        {/* ═══════════════════════ SECTION 2 — Four Seasons Style Search ═══════════════════════ */}
+        <section className="bg-[#FAF8F3] py-16 relative z-20">
           <div className="container mx-auto px-6 md:px-12">
             
-            {/* ── Four Seasons Welcoming Card (Floating over Hero) ── */}
-            <div className="max-w-2xl mx-auto bg-white shadow-xl border border-[#0A0A0A]/5 p-8 md:p-12 text-center -translate-y-16 md:-translate-y-24 relative z-30 mb-4">
-              <h2 className="font-serif text-xl sm:text-2xl md:text-3xl font-light text-[#0A0A0A] leading-relaxed mb-8 max-w-lg mx-auto">
-                {isEn ? "Welcome, your next destination awaits." : "Bienvenue, votre prochaine destination vous attend."}
-              </h2>
-              
-              <Link
-                to="/catalogue"
-                className="bg-[#0A0A0A] text-white px-10 py-4 text-[10px] tracking-[0.22em] uppercase font-sans font-medium 
-                  hover:bg-[#0A0A0A]/90 transition-all duration-300 shadow-md inline-block mb-6"
-              >
-                {isEn ? "Discover our collection" : "Découvrir la collection"}
-              </Link>
-              
-              <div className="block">
-                <Link
-                  to="/contact"
-                  className="text-[9px] tracking-[0.2em] uppercase font-sans font-medium text-[#0A0A0A]/60 hover:text-[#0A0A0A] transition-colors border-b border-[#0A0A0A]/20 pb-0.5"
-                >
-                  {isEn ? "Plan a private visit" : "Planifier une visite privée"}
-                </Link>
-              </div>
-            </div>
-
             {/* ── Luxury Search Interface ── */}
-            <div className="max-w-3xl mx-auto -mt-4 md:-mt-8">
+            <div className="max-w-3xl mx-auto">
               {/* Premium Segmented Service tabs with Framer Motion liquid animation */}
               <div className="bg-[#F5F0E8] border border-[#0A0A0A]/5 p-1 flex w-full max-w-lg mx-auto rounded-full mb-8 relative">
                 {([
@@ -95,7 +77,7 @@ const Index = () => {
                   <Search size={16} strokeWidth={1.25} className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
                   <input
                     type="text"
-                    placeholder={isEn ? "Search by neighborhood, type..." : "Rechercher par quartier, type..."}
+                    placeholder={tL("Rechercher par quartier, type...", "Search by neighborhood, type...", "Buscar por barrio, tipo...")}
                     className="w-full h-14 pl-12 pr-6 bg-white border border-[#0A0A0A]/5 shadow-sm rounded-full text-sm font-sans font-light
                       placeholder:text-muted-foreground/40 focus:outline-none focus:border-[#0A0A0A]/20 transition-all duration-300"
                     onKeyDown={(e) => {
@@ -111,7 +93,7 @@ const Index = () => {
                     text-[10px] tracking-[0.2em] uppercase font-sans font-medium rounded-full
                     hover:bg-[#0A0A0A]/90 transition-all duration-300 shadow-md hover:shadow-lg shrink-0 text-center"
                 >
-                  <span>{isEn ? "Search" : "Rechercher"}</span>
+                  <span>{tL("Rechercher", "Search", "Buscar")}</span>
                 </Link>
               </div>
             </div>
@@ -144,15 +126,17 @@ const Index = () => {
                 <div className="space-y-8">
                   <div>
                     <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4 font-sans">
-                      {isEn ? "OUR SERVICES" : "NOS SERVICES"}
+                      {tL("NOS SERVICES", "OUR SERVICES", "NUESTROS SERVICIOS")}
                     </p>
                     <h2 className="font-serif mb-4">
                       {t("homepage.services_titre")}
                     </h2>
                     <p className="text-muted-foreground font-light leading-relaxed max-w-md">
-                      {isEn
-                        ? "Benefit from personalized support throughout your real estate project in Marrakech. From acquisition to management, we ensure excellence at every stage."
-                        : "Bénéficiez d'un accompagnement personnalisé tout au long de votre projet immobilier à Marrakech. De l'acquisition à la gestion, nous assurons l'excellence à chaque étape."}
+                      {tL(
+                        "Bénéficiez d'un accompagnement personnalisé tout au long de votre projet immobilier à Marrakech. De l'acquisition à la gestion, nous assurons l'excellence à chaque étape.",
+                        "Benefit from personalized support throughout your real estate project in Marrakech. From acquisition to management, we ensure excellence at every stage.",
+                        "Benefíciese de un acompañamiento personalizado a lo largo de su proyecto inmobiliario en Marrakech. Desde la adquisición hasta la gestión, garantizamos la excelencia en cada etapa."
+                      )}
                     </p>
                   </div>
 
