@@ -252,9 +252,9 @@ const PropertiesCarousel = () => {
                 key={property.id}
                 className="flex-[0_0_82%] sm:flex-[0_0_45%] md:flex-[0_0_32%] lg:flex-[0_0_28%] min-w-0"
               >
-                <Link to={`/bien/${property.id}`} className="group block relative">
-                  {/* Image */}
-                  <div className="relative aspect-[2/3] overflow-hidden bg-muted mb-4 shadow-md group-hover:shadow-2xl transition-all duration-500">
+                <Link to={`/bien/${property.id}`} className="group block relative select-none">
+                  {/* Image Container */}
+                  <div className="relative aspect-[3/4] sm:aspect-[4/5] md:aspect-[3/4] overflow-hidden bg-muted mb-0 shadow-md group-hover:shadow-lg transition-all duration-500">
                     {/* Category badge */}
                     <div className="absolute top-4 left-4 z-10 bg-[#0A0A0A] text-white px-3 py-1 transition-opacity duration-300 group-hover:opacity-0">
                       <span className="text-[9px] tracking-[0.2em] uppercase font-sans font-medium">
@@ -274,79 +274,70 @@ const PropertiesCarousel = () => {
                     </div>
 
                     {/* Dark/Blur elegant backdrop overlay on hover */}
-                    <div className="absolute inset-0 bg-[#0A0A0A]/20 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
-
-                    {/* FOUR SEASONS SIGNATURE OVERLAPPING DETAIL CARD */}
-                    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-20 px-3 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none md:pointer-events-auto">
-                      <div className="w-[108%] ml-[-4%] bg-white shadow-2xl p-5 md:p-6 text-center border border-[#0A0A0A]/5 pointer-events-auto">
-                        <span className="text-[8px] tracking-[0.25em] text-muted-foreground uppercase font-sans mb-1.5 block">
-                          {property.type}
-                        </span>
-                        
-                        <h4 className="font-serif text-[11px] sm:text-xs md:text-sm uppercase tracking-[0.15em] text-[#0A0A0A] leading-snug line-clamp-2 mb-2">
-                          {property.titre}
-                        </h4>
-
-                        <div className="w-8 h-[1px] bg-[#0A0A0A]/25 mx-auto mb-3" />
-
-                        <p className="text-[9px] sm:text-[10px] leading-relaxed text-muted-foreground font-sans font-light mb-4 max-w-[95%] mx-auto">
-                          {tL(
-                            `Prestigieuse propriété comprenant ${property.chambres ?? 3} chambres raffinées et une surface habitable de ${property.surface_terrain ?? 250} m² dans un emplacement idéal.`,
-                            `Prestigious property featuring ${property.chambres ?? 3} refined bedrooms and a living area of ${property.surface_terrain ?? 250} sqm in an ideal location.`,
-                            `Prestigiosa propiedad que cuenta con ${property.chambres ?? 3} habitaciones refinadas y un área habitable de ${property.surface_terrain ?? 250} m² en una ubicación ideal.`
-                          )}
-                        </p>
-
-                        <div className="space-y-2">
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              window.open(`https://wa.me/212605387041?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien : ${property.titre} (Ref: ${property.id})`)}`, '_blank');
-                            }}
-                            className="w-full bg-[#0A0A0A] hover:bg-[#0A0A0A]/90 text-white py-2.5 text-[9px] tracking-[0.2em] uppercase font-sans font-medium transition-all duration-300 block text-center"
-                          >
-                            {tL("RESERVER CHAT", "CHAT VIA WHATSAPP", "CONTACTAR CHAT")}
-                          </button>
-
-                          <Link
-                            to={`/bien/${property.id}`}
-                            className="w-full border border-[#0A0A0A] text-[#0A0A0A] py-2.5 text-[9px] tracking-[0.2em] uppercase font-sans font-medium hover:bg-[#0A0A0A] hover:text-white transition-all duration-300 block text-center"
-                          >
-                            {tL("DÉTAILS", "DETAILS", "DETALLES")}
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
+                    <div className="absolute inset-0 bg-[#0A0A0A]/10 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
                   </div>
 
-                  {/* Details */}
-                  <div className="space-y-1.5">
-                    <h3 className="font-serif text-sm tracking-[0.08em] uppercase leading-snug line-clamp-2">
+                  {/* SIGNATURE OVERLAPPING CARD CONTAINER */}
+                  <div className="relative bg-white pt-5 pb-5 px-4 md:px-6 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] z-20 w-full left-0 border-t border-border/10
+                    group-hover:-translate-y-16 group-hover:w-[108%] group-hover:-ml-[4%] group-hover:shadow-2xl group-hover:z-30 text-center">
+                    
+                    {/* Category */}
+                    <span className="text-[8px] tracking-[0.25em] text-muted-foreground uppercase font-sans mb-1.5 block">
+                      {property.type}
+                    </span>
+                    
+                    {/* Title */}
+                    <h4 className="font-serif text-[12px] sm:text-xs md:text-sm uppercase tracking-[0.12em] text-[#0A0A0A] leading-snug line-clamp-2 mb-2 font-medium">
                       {property.titre}
-                    </h3>
-                    <p className="font-sans text-sm font-medium text-[#0A0A0A]">
-                      {property.prix
-                        ? formatPrice(property.prix)
-                        : property.prix_vente
-                          ? formatPrice(property.prix_vente)
-                          : property.prix_location_longue
-                            ? `${formatPrice(property.prix_location_longue)} ${tL("/ mois", "/ month", "/ mes")}`
-                            : tL("Prix sur demande", "Price on request", "Precio bajo petición")}
-                    </p>
-                    <div className="flex items-center gap-4 text-muted-foreground text-xs font-light">
+                    </h4>
+
+                    {/* Bed / surface info (normal state, hides on hover) */}
+                    <div className="flex items-center justify-center gap-4 text-muted-foreground text-[10px] tracking-wide font-sans font-light mt-1 mb-1 transition-all duration-300 group-hover:opacity-0 group-hover:h-0 group-hover:overflow-hidden group-hover:my-0">
                       {property.chambres !== null && (
                         <span className="flex items-center gap-1.5">
-                          <Bed size={14} strokeWidth={1} />
+                          <Bed size={12} strokeWidth={1} />
                           {property.chambres} {t("biens.chambres_plural")}
                         </span>
                       )}
                       {property.surface_terrain !== null && (
                         <span className="flex items-center gap-1.5">
-                          <Maximize size={14} strokeWidth={1} />
+                          <Maximize size={12} strokeWidth={1} />
                           {property.surface_terrain} {t("biens.surface")}
                         </span>
                       )}
+                    </div>
+
+                    {/* Separator (fades and scales on hover) */}
+                    <div className="w-8 h-[1px] bg-[#0A0A0A]/20 mx-auto my-0 opacity-0 scale-x-50 group-hover:opacity-100 group-hover:scale-x-100 group-hover:my-3 transition-all duration-500" />
+
+                    {/* Description (fades and expands on hover) */}
+                    <p className="text-[9px] sm:text-[10px] leading-relaxed text-muted-foreground font-sans font-light max-w-[95%] mx-auto opacity-0 max-h-0 overflow-hidden group-hover:opacity-100 group-hover:max-h-24 group-hover:mb-4 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]">
+                      {tL(
+                        `Prestigieuse propriété comprenant ${property.chambres ?? 3} chambres raffinées et une surface habitable de ${property.surface_terrain ?? 250} m² dans un emplacement idéal.`,
+                        `Prestigious property featuring ${property.chambres ?? 3} refined bedrooms and a living area of ${property.surface_terrain ?? 250} sqm in an ideal location.`,
+                        `Prestigiosa propiedad que cuenta con ${property.chambres ?? 3} habitaciones refinadas y un área habitable de ${property.surface_terrain ?? 250} m² en una ubicación ideal.`
+                      )}
+                    </p>
+
+                    {/* Buttons container (fades and expands on hover) */}
+                    <div className="opacity-0 max-h-0 overflow-hidden group-hover:opacity-100 group-hover:max-h-32 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] space-y-2 pointer-events-none group-hover:pointer-events-auto">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          window.open(`https://wa.me/212605387041?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien : ${property.titre} (Ref: ${property.id})`)}`, '_blank');
+                        }}
+                        className="w-full bg-[#0A0A0A] hover:bg-[#0A0A0A]/90 text-white py-3 text-[9px] tracking-[0.2em] uppercase font-sans font-medium transition-all duration-300 block text-center shadow-sm"
+                      >
+                        {tL("RESERVER CHAT", "CHAT VIA WHATSAPP", "CONTACTAR CHAT")}
+                      </button>
+
+                      <Link
+                        to={`/bien/${property.id}`}
+                        className="w-full border border-[#0A0A0A] text-[#0A0A0A] py-3 text-[9px] tracking-[0.2em] uppercase font-sans font-medium hover:bg-[#0A0A0A] hover:text-white transition-all duration-300 block text-center"
+                      >
+                        {tL("DÉTAILS", "DETAILS", "DETALLES")}
+                      </Link>
                     </div>
                   </div>
                 </Link>
