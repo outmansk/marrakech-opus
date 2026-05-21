@@ -1,0 +1,152 @@
+[
+  {
+    "folder_name": "Riad dar farida - Copie",
+    "titre": "Riad Dar Farida : Authenticité et Sérénité",
+    "type": "riad",
+    "service": "vente",
+    "prix": 0,
+    "chambres": 4,
+    "description_courte": "Superbe Riad traditionnel offrant un cadre paisible et authentique.",
+    "description_longue": "Découvrez le charme absolu du Riad Dar Farida. Ce joyau architectural vous séduira par son patio traditionnel, ses boiseries artisanales et son atmosphère apaisante. Idéal pour une résidence secondaire ou un investissement locatif."
+  },
+  {
+    "folder_name": "VILLA 45 K dipo",
+    "titre": "Prestigieuse Villa d'Exception",
+    "type": "villa",
+    "service": "location-longue-duree",
+    "prix": 45000,
+    "chambres": 5,
+    "description_courte": "Luxueuse villa offrant des prestations haut de gamme et un confort absolu.",
+    "description_longue": "Une propriété d'exception pensée pour les amateurs de luxe et de raffinement. Cette majestueuse villa propose des espaces de vie grandioses, des suites élégantes, une cuisine d'architecte et un extérieur spectaculaire avec piscine privée. Prestations très haut de gamme garanties."
+  },
+  {
+    "folder_name": "Villa douar ra9 25k",
+    "titre": "Superbe Villa Meublée avec Piscine - Douar Ra9",
+    "type": "villa",
+    "service": "location-longue-duree",
+    "prix": 25000,
+    "chambres": 5,
+    "description_courte": "Grande villa meublée de 250m² sur 500m² de terrain, 5 suites, calme absolu.",
+    "description_longue": "Située à l'écart de l'agitation urbaine, cette ravissante villa meublée offre 250 m² habitables sur un terrain de 500 m². Elle dispose de 5 chambres spacieuses avec salles de bain privatives, d'un vaste salon ouvert sur le séjour, et d'une piscine privative au sein d'un beau jardin. L'endroit idéal pour une grande famille cherchant le calme et le confort absolu."
+  },
+  {
+    "folder_name": "Villa hmoude 2",
+    "titre": "Villa Moderne aux Espaces Généreux",
+    "type": "villa",
+    "service": "vente",
+    "prix": 0,
+    "chambres": 4,
+    "description_courte": "Magnifique villa contemporaine avec une très belle luminosité.",
+    "description_longue": "Laissez-vous charmer par cette villa contemporaine aux lignes épurées. Ses immenses baies vitrées inondent les pièces à vivre de lumière naturelle. Vous y trouverez un grand jardin arboré, une belle piscine moderne et un agencement optimisé pour le bien-être au quotidien."
+  },
+  {
+    "folder_name": "amelkis villa",
+    "titre": "Prestigieuse Villa sur le Golf d'Amelkis",
+    "type": "villa",
+    "service": "vente",
+    "prix": 0,
+    "chambres": 5,
+    "description_courte": "Une adresse d'exception sur le Golf, architecture raffinée et vue imprenable.",
+    "description_longue": "Située dans l'un des domaines les plus exclusifs de Marrakech, cette villa d'architecte s'ouvre majestueusement sur les greens du Golf d'Amelkis. De très grandes réceptions, des suites luxueuses et une piscine à débordement font de cette propriété un bien unique pour les amateurs de prestige."
+  },
+  {
+    "folder_name": "maison cha3bi",
+    "titre": "Somptueuse Maison Traditionnelle avec Patio & Terrasses",
+    "type": "maison",
+    "service": "vente",
+    "prix": 0,
+    "chambres": 4,
+    "description_courte": "Demeure traditionnelle de 178 m² au cœur d'Ennakhil avec patio verdoyant.",
+    "description_longue": "Nichée dans une résidence quasi-fermée au calme absolu, cette magnifique demeure marie le cachet traditionnel marocain (murs en terre cuite, patio luxuriant, boiseries massives) au confort moderne. Avec ses deux grands salons, ses terrasses sans vis-à-vis et son état impeccable, c'est le coup de cœur assuré."
+  },
+  {
+    "folder_name": "villa 2 appel garden 20 k",
+    "titre": "Villa Plain-Pied de Charme - Appel Garden",
+    "type": "villa",
+    "service": "location-longue-duree",
+    "prix": 20000,
+    "chambres": 3,
+    "description_courte": "Charmante villa de plain-pied avec piscine chauffée dans une résidence sécurisée.",
+    "description_longue": "Superbe villa entièrement de plain-pied, offrant 150 m² de confort sur un très beau terrain de 700 m². Profitez de son double salon chaleureux avec cheminée, de ses 3 suites et surtout de sa piscine privée chauffée (8x4). La maison est vendue entièrement meublée et bénéficie d'une sécurité totale (caméras solaires, gardiennage)."
+  },
+  {
+    "folder_name": "villa 21 lghizioui",
+    "titre": "Superbe Villa Moderne 21 Garden",
+    "type": "villa",
+    "service": "location-longue-duree",
+    "prix": 25000,
+    "chambres": 3,
+    "description_courte": "Villa moderne entièrement meublée avec très grand jardin de 700m².",
+    "description_longue": "Dans un cadre verdoyant et sécurisé, découvrez cette villa moderne dotée d'un grand double salon (avec coin cheminée), d'une cuisine entièrement équipée et de 3 belles chambres. Le magnifique jardin fleuri de 700 m² entourant la piscine offre un cadre de vie idyllique."
+  },
+  {
+    "folder_name": "villa 26 25 k appel garden",
+    "titre": "Splendide Villa Appel Garden",
+    "type": "villa",
+    "service": "location-longue-duree",
+    "prix": 25000,
+    "chambres": 4,
+    "description_courte": "Finitions modernes et cadre de vie exceptionnel pour cette belle villa.",
+    "description_longue": "Située dans l'adresse très prisée d'Appel Garden, cette superbe villa propose de larges volumes baignés de lumière. Profitez d'une piscine privative entourée de végétation et d'aménagements intérieurs haut de gamme pour une qualité de vie sans pareil."
+  },
+  {
+    "folder_name": "villa 26 appel garden",
+    "titre": "Villa d'Exception Appel Garden",
+    "type": "villa",
+    "service": "vente",
+    "prix": 0,
+    "chambres": 4,
+    "description_courte": "Un véritable havre de paix avec des prestations modernes.",
+    "description_longue": "L'alliance parfaite entre l'élégance contemporaine et la douceur de vivre marrakchie. Cette propriété d'exception vous charmera par son immense jardin arboré, sa sublime piscine et la noblesse de ses matériaux intérieurs."
+  },
+  {
+    "folder_name": "villa kar im 30 k",
+    "titre": "Magnifique Villa Swigya Karim - 100% Sans Vis-à-Vis",
+    "type": "villa",
+    "service": "sous-location",
+    "prix": 30000,
+    "chambres": 5,
+    "description_courte": "Superbe villa avec 5 suites, double salon et piscine privée. Sous-location autorisée.",
+    "description_longue": "Une intimité totale garantie pour cette somptueuse villa ! Avec ses 5 chambres équipées de salles de bain, son double salon spacieux et son immense jardin, elle constitue le lieu de résidence idéal ou un excellent projet d'investissement (sous-location autorisée). Aucun vis-à-vis sur la magnifique piscine."
+  },
+  {
+    "folder_name": "villa palemeraie",
+    "titre": "Oasis de Paix à La Palmeraie",
+    "type": "villa",
+    "service": "vente",
+    "prix": 0,
+    "chambres": 5,
+    "description_courte": "Villa majestueuse au cœur d'un grand parc arboré typique de la Palmeraie.",
+    "description_longue": "Située dans le mythique quartier de la Palmeraie, cette immense propriété vous offre le luxe de l'espace et de la végétation exotique. Plongez dans l'élégance absolue de ses salons de réception majestueux, de ses patios fleuris et de sa somptueuse piscine miroir."
+  },
+  {
+    "folder_name": "villa sab3a 20 k",
+    "titre": "Charmante Villa RT S.7",
+    "type": "villa",
+    "service": "location-longue-duree",
+    "prix": 20000,
+    "chambres": 3,
+    "description_courte": "Accès facile (goudronné), grand jardin sans vis-à-vis, entretien inclus.",
+    "description_longue": "Profitez d'un véritable havre de paix à quelques minutes de la ville. Cette villa très accessible (sans piste) dispose de 3 chambres, d'un beau salon-séjour et d'une piscine très intime (zéro vis-à-vis). Le gros plus : l'entretien du jardin et de la piscine est totalement inclus dans le loyer !"
+  },
+  {
+    "folder_name": "villa sidi rahal 20 k",
+    "titre": "Belle Villa à Sidi Rahal - Sans Vis-à-Vis",
+    "type": "villa",
+    "service": "location-longue-duree",
+    "prix": 20000,
+    "chambres": 3,
+    "description_courte": "Havre de paix sur route goudronnée, entretien piscine/jardin inclus.",
+    "description_longue": "Une situation très agréable sur la route de Sidi Rahal. Cette confortable propriété propose de grands espaces de vie, 3 belles chambres et un extérieur enchanteur garanti sans aucun vis-à-vis. De plus, aucun frais supplémentaire d'entretien (piscine et jardin inclus)."
+  },
+  {
+    "folder_name": "villas chakip",
+    "titre": "Superbe Villa Chakip - Idéale Investissement",
+    "type": "villa",
+    "service": "sous-location",
+    "prix": 30000,
+    "chambres": 5,
+    "description_courte": "Villa d'exception avec 5 suites équipées, piscine & jacuzzi. Sous-location autorisée.",
+    "description_longue": "Cette villa premium a été pensée pour un standing élevé : 5 suites complètes (salle de bain et TV incluses dans chaque chambre), un imposant double salon et un très bel espace aquatique comprenant une piscine privée et un jacuzzi. Un projet hautement rentable grâce à l'autorisation explicite de sous-location."
+  }
+]
