@@ -214,7 +214,7 @@ const PropertiesCarousel = () => {
         </Reveal>
 
         {/* ── Horizontal filters ──────────────────────────────────── */}
-        <div className="flex gap-6 md:gap-8 overflow-x-auto border-b border-[#0A0A0A]/10 pb-px scrollbar-hide -mx-2 px-2 mb-12">
+        <div className="flex gap-6 md:gap-8 overflow-x-auto border-b border-[#0A0A0A]/10 pb-px scrollbar-hide -mx-2 px-2 mb-6">
           {FILTERS.map((f) => {
             const isActive = activeFilter === f.key;
             return (
@@ -255,9 +255,9 @@ const PropertiesCarousel = () => {
                 <Link to={`/bien/${property.id}`} className="group block relative select-none">
                   {/* Image Container */}
                   <div className="relative aspect-[3/4] sm:aspect-[4/5] md:aspect-[3/4] overflow-hidden bg-muted mb-0 shadow-md group-hover:shadow-lg transition-all duration-500">
-                    {/* Category badge */}
-                    <div className="absolute top-4 left-4 z-10 bg-[#0A0A0A] text-white px-3 py-1 transition-opacity duration-300 group-hover:opacity-0">
-                      <span className="text-[9px] tracking-[0.2em] uppercase font-sans font-medium">
+                    {/* Category badge — minimal luxury tag */}
+                    <div className="absolute top-3 left-3 z-10 bg-white/75 backdrop-blur-md text-[#0A0A0A] px-2.5 py-[5px] rounded-[3px] transition-opacity duration-300 group-hover:opacity-0">
+                      <span className="text-[8px] tracking-[0.25em] uppercase font-sans font-medium">
                         {property.type}
                       </span>
                     </div>
@@ -273,8 +273,8 @@ const PropertiesCarousel = () => {
                       />
                     </div>
 
-                    {/* Dark/Blur elegant backdrop overlay on hover */}
-                    <div className="absolute inset-0 bg-[#0A0A0A]/10 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
+                    {/* Dark overlay on hover (no blur to keep the image sharp and clear) */}
+                    <div className="absolute inset-0 bg-[#0A0A0A]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
                   </div>
 
                   {/* SIGNATURE OVERLAPPING CARD CONTAINER */}

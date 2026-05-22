@@ -319,6 +319,41 @@ const Contact = () => {
               </div>
 
             </div>
+
+            {/* ─── Interactive Map Section ────────────────────────────────── */}
+            <Reveal delay={0.4}>
+              <div className="mt-20 border border-[#0A0A0A]/5 rounded-sm overflow-hidden shadow-sm">
+                <div className="bg-white p-6 border-b border-[#0A0A0A]/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <h3 className="font-serif text-lg mb-1">{tL("Nos Bureaux à Marrakech", "Our Offices in Marrakech", "Nuestras Oficinas en Marrakech")}</h3>
+                    <p className="text-muted-foreground text-xs font-light">
+                      {tL("Venez nous rencontrer au cœur de l'Hivernage", "Come meet us in the heart of Hivernage", "Venga a conocernos en el corazón de Hivernage")}
+                    </p>
+                  </div>
+                  <a 
+                    href="https://maps.google.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-block border border-[#0A0A0A] px-5 py-2.5 text-[9px] tracking-[0.2em] uppercase font-sans font-medium hover:bg-[#0A0A0A] hover:text-white transition-all duration-300 self-start sm:self-auto"
+                  >
+                    {tL("Ouvrir dans Google Maps", "Open in Google Maps", "Abrir en Google Maps")}
+                  </a>
+                </div>
+                <div className="relative w-full h-[400px] bg-[#FAF8F3]">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3397.356262483861!2d-8.019777!3d31.623444!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzHCsDM3JzI0LjQiTiA4wrAwMTcxMS4yIlc!5e0!3m2!1sfr!2sma!4v1700000000000!5m2!1sfr!2sma"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0, filter: "grayscale(1) contrast(1.1) opacity(0.85)" }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Live In Marrakech Office Location"
+                  />
+                </div>
+              </div>
+            </Reveal>
+
           </div>
         </section>
 

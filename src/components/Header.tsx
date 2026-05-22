@@ -25,7 +25,7 @@ const Header = () => {
   const bgOpacity = useTransform(scrollY, [0, 80], [0, 1]);
   const blurAmount = useTransform(scrollY, [0, 80], [0, 20]);
   const borderOpacity = useTransform(scrollY, [0, 80], [0.1, 0.5]);
-  const headerHeight = useTransform(scrollY, [0, 80], [80, 64]);
+  const headerHeight = useTransform(scrollY, [0, 80], [64, 52]);
 
   const navLinks = [
     { to: "/",          label: t("nav.accueil") },
@@ -45,7 +45,7 @@ const Header = () => {
       <motion.header
         className="fixed top-0 left-0 right-0 z-[70]"
         style={{
-          height: isMobileMenuOpen ? 64 : headerHeight,
+          height: isMobileMenuOpen ? 56 : headerHeight,
         }}
       >
         {/* Animated background (separate layer for performance) */}
@@ -69,7 +69,7 @@ const Header = () => {
           >
             <Link
               to="/"
-              className={`font-serif text-2xl tracking-wide whitespace-nowrap transition-colors duration-500
+              className={`font-serif text-lg md:text-xl tracking-wide whitespace-nowrap transition-colors duration-500
                 ${(scrolled || isMobileMenuOpen) ? "text-foreground" : "text-white"}`}
             >
               Live In Marrakech
@@ -77,7 +77,7 @@ const Header = () => {
           </motion.div>
 
           {/* Desktop Nav with staggered entrance + active indicator */}
-          <nav className="hidden md:flex items-center gap-10 shrink-0">
+          <nav className="hidden md:flex items-center gap-8 shrink-0">
             {navLinks.map(({ to, label }, i) => (
               <motion.div
                 key={to}
@@ -103,8 +103,8 @@ const Header = () => {
                     className="absolute -bottom-1.5 left-0 right-0 h-[1.5px]"
                     style={{
                       background: scrolled
-                        ? "hsl(var(--foreground))"
-                        : "rgba(255, 255, 255, 0.7)",
+                      ? "hsl(var(--foreground))"
+                      : "rgba(255, 255, 255, 0.7)",
                     }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
