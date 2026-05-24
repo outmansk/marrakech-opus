@@ -154,6 +154,11 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
 
       if (parsed.proximites) newValues.proximites = parsed.proximites;
 
+      // Fix for enum validation errors (statut, type, devise)
+      if (!parsed.statut || parsed.statut === '') newValues.statut = currentValues.statut || 'brouillon';
+      if (!parsed.type || parsed.type === '') newValues.type = currentValues.type || 'villa';
+      if (!parsed.devise || parsed.devise === '') newValues.devise = currentValues.devise || 'MAD';
+
       form.reset(newValues);
       setIsJsonImportOpen(false);
       setJsonInput('');
@@ -467,7 +472,7 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
           </div>
         </SheetHeader>
 
-        <ScrollArea className="flex-1 px-6">
+        <div className="flex-1 px-6 overflow-y-auto min-h-0">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} id="bien-form" className="space-y-6 py-6">
 
@@ -967,7 +972,7 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
               <div className="h-4" />
             </form>
           </Form>
-        </ScrollArea>
+        </div>
 
         <SheetFooter className="px-6 py-4 border-t border-border flex gap-3">
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending} className="flex-1">

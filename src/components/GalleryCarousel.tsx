@@ -4,11 +4,11 @@ import { useTranslation } from "react-i18next";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 
-import slide1 from "@/assets/slide1.jpg";
+import slide1 from "@/assets/slide1_koutoubia.png";
 import slide2 from "@/assets/slide2.jpg";
-import slide3 from "@/assets/slide3.jpg";
+import slide3 from "@/assets/hero-marrakech.jpg";
 import slide4 from "@/assets/slide4.jpg";
-import slide5 from "@/assets/slide5.jpg";
+import slide5 from "@/assets/slide1.jpg";
 
 /* Marrakech ambiance images — mixed with property photos */
 const MARRAKECH_SLIDES = [

@@ -5,9 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { EASE_LUXURY } from "@/components/motion/Animations";
 import { useTranslation } from "react-i18next";
 
-import slide1 from "@/assets/slide1.jpg";
+import slide1 from "@/assets/slide1_koutoubia.png";
 import slide2 from "@/assets/slide2.jpg";
-import slide3 from "@/assets/slide3.jpg";
 import slide4 from "@/assets/slide4.jpg";
 
 /* ── Slide data ─────────────────────────────────────────────────────────────── */
@@ -19,10 +18,6 @@ const SLIDES = [
   {
     image: slide2,
     titleKey: "hero.slide2_title",
-  },
-  {
-    image: slide3,
-    titleKey: "hero.slide3_title",
   },
   {
     image: slide4,
@@ -109,14 +104,14 @@ const HeroSlideshow = () => {
       ))}
 
       {/* ── Four Seasons inspired Grid layout ──────────────────────── */}
-      <div className="absolute inset-0 z-20 container mx-auto px-6 md:px-12 flex flex-col justify-end md:justify-between pb-12 pt-28 md:py-24">
+      <div className="absolute inset-0 z-20 container mx-auto px-6 md:px-12 flex flex-col pb-0 pt-24 md:py-24">
         {/* Top Spacer */}
-        <div className="hidden md:block" />
+        <div className="hidden md:block flex-1" />
 
         {/* Bottom Section: Left Column (Text) & Right Column (Floating Card) */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-end justify-between w-full gap-8 md:gap-12">
+        <div className="flex flex-col md:flex-row items-stretch md:items-end justify-between w-full flex-1 md:flex-none">
           {/* Left Column: Brand & Title */}
-          <div className="text-left max-w-lg md:max-w-2xl text-white space-y-3 self-end">
+          <div className="text-left max-w-lg md:max-w-2xl text-white space-y-3 mt-auto md:mt-0 mb-12 md:mb-0">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -147,7 +142,7 @@ const HeroSlideshow = () => {
             initial={{ opacity: 0, scale: 0.98, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.3, ease: EASE_LUXURY }}
-            className="w-full md:w-[400px] bg-white p-8 md:p-10 shadow-2xl relative z-30 text-left border border-white/10"
+            className="w-full md:w-[400px] bg-white p-8 md:p-10 shadow-2xl relative z-30 text-left border border-white/10 mt-auto md:mt-0 mb-0 md:mb-0"
           >
             <h2 className="font-serif text-lg sm:text-xl md:text-2xl font-light text-[#0A0A0A] leading-relaxed mb-8">
               {tL("Bienvenue, votre prochaine destination vous attend.", "Welcome, your next destination awaits.", "Bienvenido, su próximo destino le espera.")}

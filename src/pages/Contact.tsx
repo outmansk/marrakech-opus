@@ -8,7 +8,7 @@ import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Reveal, PageTransition, EASE_LUXURY } from "@/components/motion/Animations";
 import { toast } from "sonner";
-import slide3 from "@/assets/slide3.jpg";
+import slide3 from "@/assets/slide2.jpg";
 
 const Contact = () => {
   const { t, i18n } = useTranslation();

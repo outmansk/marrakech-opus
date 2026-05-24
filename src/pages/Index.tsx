@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroSlideshow from "@/components/HeroSlideshow";
 import PropertiesCarousel from "@/components/PropertiesCarousel";
-import slide5 from "@/assets/slide5.jpg";
+import slide5 from "@/assets/slide2.jpg";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
