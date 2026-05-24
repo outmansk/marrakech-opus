@@ -34,9 +34,9 @@ Structure des dossiers principaux :
 *   **Catalogue Public** : Listing des propriétés filtrable par transaction (vente, location). Architecture à deux niveaux (carte simplifiée super rapide, et page de détails riche avec galerie).
 *   **Détails de Propriété** : Informations complètes, carrousel photo optimisé, SEO / JSON-LD pour le référencement local.
 *   **Blog SEO** : Rédaction et affichage d'articles en Markdown.
-*   **Demandes de Visites** : Formulaires de contact client couplés à WhatsApp.
+*   **Demandes de Visites** : Formulaires de contact client couplés à WhatsApp et suivis dans le tableau de bord administrateur (Statut : En attente / Confirmée / Annulée).
 *   **Multilingue** : Interface disponible en Français et Anglais.
-*   **Panel Administrateur Sécurisé** : Gestion (CRUD) des propriétés, du blog et des visites avec contrôle d'accès strict (RBAC).
+*   **Panel Administrateur Sécurisé** : Gestion (CRUD) des propriétés via un formulaire tiroir avancé (import JSON, drag & drop photos), gestion du blog et suivi complet des visites avec contrôle d'accès strict (RBAC).
 
 # Règles et contraintes
 
@@ -46,7 +46,7 @@ Structure des dossiers principaux :
     *   Sanitisation systématique des inputs utilisateur via `DOMPurify` combiné à `Zod`.
     *   Rate-limiting implémenté sur les requêtes frontend.
 *   **Style & Performance UI** :
-    *   Design esthétique et premium avec typographie moderne et palettes de couleurs soignées. Éviter les placeholders bruts.
+    *   Design esthétique et premium avec typographie moderne et palettes de couleurs soignées. Le dashboard administrateur respecte le même thème luxueux (palette Olive/Bronze/Terracotta) avec une barre latérale élégante.
     *   Performances CSS exigées : utilisation de `contain: layout` et limitation des reflows/repaints.
     *   Images systématiquement optimisées (composant `OptimizedImage`, lazy-loading ciblé).
 *   **Typage & Code** :
@@ -55,23 +55,13 @@ Structure des dossiers principaux :
 
 # Directives d'exécution
 
-1.  **Modifications UI/UX** : Toute nouvelle interface doit utiliser les variables Tailwind existantes et maintenir le niveau "premium". Utiliser les composants `shadcn/ui` existants avant d'en créer de nouveaux.
+1.  **Modifications UI/UX** : Toute nouvelle interface doit utiliser les variables Tailwind existantes et maintenir le niveau "premium". Le Dashboard Admin doit être aussi esthétique que le site client.
 2.  **Gestion de Base de données** : Ne pas modifier le schéma directement sans une migration Supabase valide dans `supabase/migrations/`.
-3.  **Performances Frontend** : Maintenir un LCP (Largest Contentful Paint) très bas (chargement instantané). Ne pas réintroduire de Javascript lourd sur le catalogue principal.
+3.  **Performances Frontend** : Maintenir un LCP (Largest Contentful Paint) très bas (chargement instantané).
 4.  **Sécurité Admin** : Ne jamais intégrer de liens dynamiques ou publics pointant vers les routes `/manage-xk92p`.
 
 # Notes
 
 *   **Migration Cloudinary** : Le projet a récemment migré la gestion de ses images vers Cloudinary pour de meilleures performances (optimisation au format WebP, srcset automatique, composants dédiés `OptimizedImage`). Le fichier `ARCHITECTURE.md` mentionne Supabase Storage qui sert probablement d'upload initial, mais la diffusion est gérée via Cloudinary.
 *   **Structure JSONB** : La table `properties_v2` s'appuie beaucoup sur des champs JSONB (`services`, `equipements`, `proximites`) pour une grande souplesse. Tenir compte de la structure JSON dans les requêtes de filtrage.
-
-
-.Analyse le projet et confirme que tu comprends le contexte défini dans Antigravity.md.
-
-Résume :
-- l’architecture
-- la stack
-- les contraintes
-- les règles de sécurité
-
-Ensuite, utilise ce contexte pour toutes les prochaines tâches
+*   **Mise à jour de l'admin** : L'interface d'administration a été entièrement refondue pour offrir une expérience premium homogène avec le site client.

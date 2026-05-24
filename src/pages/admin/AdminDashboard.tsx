@@ -12,6 +12,7 @@ import {
   Home,
   BookOpen,
   Eye,
+  CalendarCheck,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
@@ -168,16 +169,19 @@ export default function AdminDashboard() {
 
   const [biens, setBiens] = useState<Bien[]>([]);
   const [articles, setArticles] = useState<Article[]>([]);
+  const [visites, setVisites] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetch = async () => {
-      const [{ data: b }, { data: a }] = await Promise.all([
+      const [{ data: b }, { data: a }, { data: v }] = await Promise.all([
         supabase.from('properties_v2').select('*').order('created_at', { ascending: false }),
         supabase.from('articles').select('*').order('created_at', { ascending: false }),
+        supabase.from('visit_requests').select('id, status').order('created_at', { ascending: false }),
       ]);
       if (b) setBiens(b as Bien[]);
       if (a) setArticles(a as Article[]);
+      if (v) setVisites(v);
       setLoading(false);
     };
     fetch();
@@ -265,6 +269,13 @@ export default function AdminDashboard() {
           label={t('admin.stats.biens_publies')}
           value={publies}
           sub={`${totalBiens > 0 ? Math.round((publies / totalBiens) * 100) : 0}% du total`}
+          color="bronze"
+        />
+        <StatCard
+          icon={CalendarCheck}
+          label={t('admin.stats.visites') || "Demandes de visites"}
+          value={visites.length}
+          sub={`${visites.filter(v => v.status === 'en-attente').length} en attente`}
           color="bronze"
         />
         <StatCard
