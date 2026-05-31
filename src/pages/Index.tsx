@@ -36,7 +36,7 @@ const Index = () => {
         <HeroSlideshow />
 
         {/* ═══════════════════════ SECTION 2 — Four Seasons Style Search ═══════════════════════ */}
-        <section className="bg-[#FAF8F3] py-16 relative z-20">
+        <section className="hidden md:block bg-[#FAF8F3] py-12 relative z-20">
           <div className="container mx-auto px-6 md:px-12">
             
             {/* ── Luxury Search Interface ── */}

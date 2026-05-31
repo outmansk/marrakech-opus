@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { EASE_LUXURY } from "@/components/motion/Animations";
+import { EASE_LUXURY, SplitText } from "@/components/motion/Animations";
 import { useTranslation } from "react-i18next";
 
 import slide1 from "@/assets/slide1_koutoubia.png";
@@ -120,8 +120,8 @@ const HeroSlideshow = () => {
               <p className="font-serif italic text-white/90 text-base md:text-xl tracking-[0.05em] mb-1 font-light">
                 {tL("Collection Privée", "Private Collection", "Colección Privada")}
               </p>
-              <h1 className="text-white font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight tracking-[0.25em] uppercase leading-none">
-                MARRAKECH
+              <h1 className="text-white font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight tracking-[0.25em] uppercase leading-none mt-2">
+                <SplitText text="MARRAKECH" delay={0.4} />
               </h1>
               <p className="text-[10px] md:text-xs tracking-[0.35em] uppercase text-white/80 font-sans mt-3">
                 {tL("1 BOULEVARD DE LA MENARA, MARRAKECH", "1 BOULEVARD DE LA MENARA, MARRAKECH", "1 BOULEVARD DE LA MENARA, MARRAKECH")}
