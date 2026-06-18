@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Helmet } from "react-helmet-async";
+import SEOHead from "@/components/SEOHead";
 import type { Article } from "@/types/article";
 
 
@@ -46,10 +46,10 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Helmet>
-        <title>Le Blog Immobilier Marrakech | Live In Marrakech</title>
-        <meta name="description" content="Actualités, conseils et analyses du marché immobilier à Marrakech : location, vente, investissement et sous-location." />
-      </Helmet>
+      <SEOHead
+        title="Blog Immobilier Marrakech — Conseils & Actualités"
+        description="Actualités, conseils et analyses du marché immobilier à Marrakech : location, vente, investissement et sous-location."
+      />
       
       <Header />
 

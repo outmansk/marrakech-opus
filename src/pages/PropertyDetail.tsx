@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import type { Bien } from "@/types/property";
 import OptimizedImage from "@/components/ui/OptimizedImage";
-import { Helmet } from "react-helmet-async";
+import SEOHead from "@/components/SEOHead";
+import { BASE_URL } from "@/hooks/useSEO";
 import { motion } from "framer-motion";
 import { PageTransition, Reveal, EASE_LUXURY } from "@/components/motion/Animations";
 
@@ -78,33 +79,39 @@ const PropertyDetail = () => {
   const images = property.photos?.length > 0 ? property.photos : ["/placeholder.svg"];
   const whatsappUrl = `https://wa.me/212605387041?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien : ${property?.titre} (Ref: ${property?.reference})`)}`;
 
-  // Définition dynamique du type de bien pour le Schema.org
-  const schemaType = property.type.toLowerCase().includes('appartement') ? 'Apartment' : 'SingleFamilyResidence';
-  
   // Prix de l'offre (priorité à la vente, puis location)
-  let offerPrice = property.prix_vente || property.prix_location_longue || property.prix_location_courte || property.prix || 0;
-  
-  // Construction du JSON-LD pour les LLMs (GEO) et Google
-  const jsonLd = {
+  const offerPrice = property.prix_vente || property.prix_location_longue || property.prix_location_courte || property.prix || 0;
+  const propertyUrl = `${BASE_URL}/bien/${property.id}`;
+
+  // Construction du JSON-LD RealEstateListing pour les LLMs (GEO) et Google
+  const jsonLd: Record<string, unknown> = {
     "@context": "https://schema.org",
-    "@type": schemaType,
+    "@type": "RealEstateListing",
     "name": property.titre,
     "description": property.description_courte || property.description_longue || "Magnifique bien immobilier à Marrakech",
+    "url": propertyUrl,
+    "datePosted": property.created_at,
     "image": images,
     "address": {
       "@type": "PostalAddress",
-      "addressLocality": "Marrakech",
+      "addressLocality": property.quartier || "Marrakech",
       "addressRegion": "Marrakech-Safi",
-      "addressCountry": "MA",
-      "streetAddress": property.quartier || "Marrakech"
+      "addressCountry": "MA"
     },
-    ...(property.chambres && { "numberOfRooms": property.chambres }),
-    ...(property.salles_de_bain && { "numberOfBathroomsTotal": property.salles_de_bain }),
-    ...(property.surface_terrain && { 
+    ...(property.latitude && property.longitude && {
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": property.latitude,
+        "longitude": property.longitude
+      }
+    }),
+    ...(property.chambres != null && { "numberOfRooms": property.chambres }),
+    ...(property.salles_de_bain != null && { "numberOfBathroomsTotal": property.salles_de_bain }),
+    ...((property.surface_habitable || property.surface_terrain) && {
       "floorSize": {
         "@type": "QuantitativeValue",
-        "value": property.surface_terrain,
-        "unitCode": "MTK" // Mètre carré
+        "value": property.surface_habitable || property.surface_terrain,
+        "unitCode": "MTK"
       }
     }),
     "amenityFeature": property.equipements?.map(eq => ({
@@ -117,44 +124,26 @@ const PropertyDetail = () => {
       "priceCurrency": "MAD",
       "price": offerPrice,
       "availability": "https://schema.org/InStock",
-      "url": window.location.href,
+      "url": propertyUrl,
       "seller": {
         "@type": "RealEstateAgent",
         "name": "Live In Marrakech",
-        "image": "https://liveinmarrakech.com/logo.png"
+        "url": "https://liveinmarrakech.com"
       }
     }
   };
 
-  const metaTitle = `${property.titre} | Live In Marrakech`;
   const metaDescription = property.description_courte || `Découvrez ce magnifique bien immobilier (${property.type}) à ${property.quartier || 'Marrakech'}. Exclusivité Live In Marrakech.`;
 
   return (
     <PageTransition>
     <div className="min-h-screen">
-      <Helmet>
-        <title>{metaTitle}</title>
-        <meta name="description" content={metaDescription} />
-        
-        {/* Open Graph / Facebook */}
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={window.location.href} />
-        <meta property="og:title" content={metaTitle} />
-        <meta property="og:description" content={metaDescription} />
-        <meta property="og:image" content={images[0]} />
-
-        {/* Twitter */}
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content={window.location.href} />
-        <meta property="twitter:title" content={metaTitle} />
-        <meta property="twitter:description" content={metaDescription} />
-        <meta property="twitter:image" content={images[0]} />
-
-        {/* JSON-LD GEO/SEO Script */}
-        <script type="application/ld+json">
-          {JSON.stringify(jsonLd)}
-        </script>
-      </Helmet>
+      <SEOHead
+        title={property.titre}
+        description={metaDescription}
+        image={images[0]}
+        schema={jsonLd}
+      />
 
       <Header />
 

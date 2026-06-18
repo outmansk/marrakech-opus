@@ -7,7 +7,7 @@ import HeroSlideshow from "@/components/HeroSlideshow";
 import PropertiesCarousel from "@/components/PropertiesCarousel";
 import slide5 from "@/assets/slide2.jpg";
 import { useTranslation } from "react-i18next";
-import { Helmet } from "react-helmet-async";
+import SEOHead from "@/components/SEOHead";
 import { motion } from "framer-motion";
 import { Reveal, PageTransition, EASE_LUXURY } from "@/components/motion/Animations";
 
@@ -25,10 +25,10 @@ const Index = () => {
   return (
     <PageTransition>
       <div className="min-h-screen">
-        <Helmet>
-          <title>{tL("Live In Marrakech — L'Excellence Immobilière à Marrakech", "Live In Marrakech — Luxury Real Estate in Marrakech", "Live In Marrakech — Excelencia Inmobiliaria en Marrakech")}</title>
-          <meta name="description" content={tL("Découvrez nos propriétés d'exception à Marrakech. Villas, riads, appartements en vente et location. Votre partenaire immobilier de confiance.", "Discover our exceptional properties in Marrakech. Villas, riads, apartments for sale and rent. Your trusted real estate partner.", "Descubra nuestras propiedades excepcionales en Marrakech. Villas, riads, apartamentos en venta y alquiler. Su socio inmobiliario de confianza.")} />
-        </Helmet>
+        <SEOHead
+          title={tL("Immobilier de Luxe à Marrakech — Villas, Riads & Appartements", "Luxury Real Estate in Marrakech — Villas, Riads & Apartments", "Inmuebles de Lujo en Marrakech — Villas, Riads y Apartamentos")}
+          description={tL("Découvrez nos propriétés d'exception à Marrakech. Villas, riads, appartements en vente et location. Votre partenaire immobilier de confiance.", "Discover our exceptional properties in Marrakech. Villas, riads, apartments for sale and rent. Your trusted real estate partner.", "Descubra nuestras propiedades excepcionales en Marrakech. Villas, riads, apartamentos en venta y alquiler. Su socio inmobiliario de confianza.")}
+        />
 
         <Header />
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
+import SEOHead from "@/components/SEOHead";
 import ReactMarkdown from "react-markdown";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, Calendar, Share2, ArrowRight } from "lucide-react";
@@ -122,11 +122,12 @@ const BlogPost = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Helmet>
-        <title>{article.meta_title || article.title}</title>
-        <meta name="description" content={article.meta_description || article.excerpt} />
-        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
-      </Helmet>
+      <SEOHead
+        title={article.meta_title || article.title}
+        description={article.meta_description || article.excerpt || ''}
+        image={article.image_url}
+        schema={jsonLd}
+      />
       
       <Header />
 

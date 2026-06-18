@@ -4,7 +4,7 @@ import { MapPin, Phone, Mail, Send, CheckCircle2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Helmet } from "react-helmet-async";
+import SEOHead from "@/components/SEOHead";
 import { motion } from "framer-motion";
 import { Reveal, PageTransition, EASE_LUXURY } from "@/components/motion/Animations";
 import { toast } from "sonner";
@@ -62,19 +62,14 @@ const Contact = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-[#FAF8F3] text-[#0A0A0A]">
-        <Helmet>
-          <title>{tL("Contactez-nous — Live In Marrakech", "Contact Us — Live In Marrakech", "Contáctenos — Live In Marrakech")}</title>
-          <meta
-            name="description"
-            content={
-              tL(
-                "Contactez l'agence immobilière Live In Marrakech. Nos experts sont à votre disposition pour vous accompagner.",
-                "Contact the Live In Marrakech real estate agency. Our experts are ready to assist you.",
-                "Contacte con la agencia inmobiliaria Live In Marrakech. Nuestros expertos están a su disposición para acompañarle."
-              )
-            }
-          />
-        </Helmet>
+        <SEOHead
+          title={tL("Contactez-nous", "Contact Us", "Contáctenos")}
+          description={tL(
+            "Contactez l'agence immobilière Live In Marrakech. Nos experts sont à votre disposition pour vous accompagner.",
+            "Contact the Live In Marrakech real estate agency. Our experts are ready to assist you.",
+            "Contacte con la agencia inmobiliaria Live In Marrakech. Nuestros expertos están a su disposición para acompañarle."
+          )}
+        />
 
         <Header />
 

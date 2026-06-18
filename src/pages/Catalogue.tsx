@@ -9,6 +9,7 @@ import type { Bien } from "@/types/property";
 import DOMPurify from 'dompurify';
 import { motion, AnimatePresence } from "framer-motion";
 import { PageTransition, Reveal, StaggerContainer, staggerItemVariants, EASE_LUXURY } from "@/components/motion/Animations";
+import SEOHead from "@/components/SEOHead";
 
 const Catalogue = () => {
   const { t } = useTranslation();
@@ -46,6 +47,10 @@ const Catalogue = () => {
 
   return (
     <PageTransition>
+    <SEOHead
+      title="Nos Biens — Villas, Riads & Appartements à Marrakech"
+      description="Explorez notre collection de biens immobiliers de luxe à Marrakech. Villas, riads, appartements en vente et location."
+    />
     <div className="min-h-screen">
       <Header />
       <div className="pt-32 pb-24">

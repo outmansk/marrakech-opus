@@ -68,6 +68,7 @@ export const EQUIPEMENTS_LIST = [
   'Hammam',
   'Cheminée',
   'Internet Fibre',
+  'Meublé',
 ];
 
 // ... (omit lines 43 to 71) ...

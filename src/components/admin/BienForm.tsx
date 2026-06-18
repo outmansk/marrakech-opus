@@ -154,10 +154,33 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
 
       if (parsed.proximites) newValues.proximites = parsed.proximites;
 
+      // Normalize quartier to match QUARTIERS case-insensitively and accent-insensitively
+      if (parsed.quartier) {
+        const normalizedImported = parsed.quartier.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const matchedQuartier = QUARTIERS.find(q => 
+          q.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === normalizedImported
+        );
+        newValues.quartier = matchedQuartier || parsed.quartier;
+      }
+
       // Fix for enum validation errors (statut, type, devise)
-      if (!parsed.statut || parsed.statut === '') newValues.statut = currentValues.statut || 'brouillon';
-      if (!parsed.type || parsed.type === '') newValues.type = currentValues.type || 'villa';
-      if (!parsed.devise || parsed.devise === '') newValues.devise = currentValues.devise || 'MAD';
+      if (parsed.statut) {
+        newValues.statut = parsed.statut.toLowerCase();
+      } else {
+        newValues.statut = currentValues.statut || 'brouillon';
+      }
+
+      if (parsed.type) {
+        newValues.type = parsed.type.toLowerCase();
+      } else {
+        newValues.type = currentValues.type || 'villa';
+      }
+
+      if (parsed.devise) {
+        newValues.devise = parsed.devise.toUpperCase();
+      } else {
+        newValues.devise = currentValues.devise || 'MAD';
+      }
 
       form.reset(newValues);
       setIsJsonImportOpen(false);

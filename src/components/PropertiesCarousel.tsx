@@ -232,15 +232,17 @@ const PropertiesCarousel = () => {
           <button
             onClick={() => emblaApi?.scrollPrev()}
             disabled={!canScrollPrev}
-            className={`hidden md:flex absolute left-0 top-0 bottom-24 w-12 md:w-16 z-30 items-center justify-start pl-1 md:pl-2
+            className={`flex absolute left-0 top-0 bottom-24 w-10 md:w-16 z-30 items-center justify-start pl-1 md:pl-2
               bg-gradient-to-r from-white/80 to-transparent
               transition-opacity duration-300 ${
-              canScrollPrev ? "opacity-0 group-hover/carousel:opacity-100" : "opacity-0 pointer-events-none"
+              canScrollPrev
+                ? "opacity-100 md:opacity-0 md:group-hover/carousel:opacity-100"
+                : "opacity-0 pointer-events-none"
             }`}
             aria-label="Previous"
           >
-            <span className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-white shadow-lg flex items-center justify-center border border-[#0A0A0A]/10 hover:bg-[#0A0A0A] hover:text-white transition-all duration-300">
-              <ChevronLeft size={18} strokeWidth={1.5} />
+            <span className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/90 md:bg-white shadow-lg flex items-center justify-center border border-[#0A0A0A]/10 hover:bg-[#0A0A0A] hover:text-white transition-all duration-300">
+              <ChevronLeft size={16} strokeWidth={1.5} className="md:w-[18px] md:h-[18px]" />
             </span>
           </button>
 
@@ -248,15 +250,17 @@ const PropertiesCarousel = () => {
           <button
             onClick={() => emblaApi?.scrollNext()}
             disabled={!canScrollNext}
-            className={`hidden md:flex absolute right-0 top-0 bottom-24 w-12 md:w-16 z-30 items-center justify-end pr-1 md:pr-2
+            className={`flex absolute right-0 top-0 bottom-24 w-10 md:w-16 z-30 items-center justify-end pr-1 md:pr-2
               bg-gradient-to-l from-white/80 to-transparent
               transition-opacity duration-300 ${
-              canScrollNext ? "opacity-0 group-hover/carousel:opacity-100" : "opacity-0 pointer-events-none"
+              canScrollNext
+                ? "opacity-100 md:opacity-0 md:group-hover/carousel:opacity-100"
+                : "opacity-0 pointer-events-none"
             }`}
             aria-label="Next"
           >
-            <span className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-white shadow-lg flex items-center justify-center border border-[#0A0A0A]/10 hover:bg-[#0A0A0A] hover:text-white transition-all duration-300">
-              <ChevronRight size={18} strokeWidth={1.5} />
+            <span className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/90 md:bg-white shadow-lg flex items-center justify-center border border-[#0A0A0A]/10 hover:bg-[#0A0A0A] hover:text-white transition-all duration-300">
+              <ChevronRight size={16} strokeWidth={1.5} className="md:w-[18px] md:h-[18px]" />
             </span>
           </button>
 
@@ -265,7 +269,7 @@ const PropertiesCarousel = () => {
               {filtered.map((property, index) => (
                 <div
                   key={property.id}
-                  className="flex-[0_0_82%] sm:flex-[0_0_45%] md:flex-[0_0_32%] lg:flex-[0_0_28%] min-w-0"
+                  className="flex-[0_0_78%] sm:flex-[0_0_45%] md:flex-[0_0_32%] lg:flex-[0_0_28%] min-w-0"
                 >
                   <ScaleReveal delay={index * 0.1}>
                     <Link to={`/bien/${property.id}`} className="group block relative select-none">
