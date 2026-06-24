@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Bed, Maximize } from "lucide-react";
+import { ChevronLeft, ChevronRight, Bed, Maximize, MapPin } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import { supabase } from "@/lib/supabase";
 import type { Bien, BienType } from "@/types/property";
@@ -8,6 +8,7 @@ import OptimizedImage from "@/components/ui/OptimizedImage";
 import { useTranslation } from "react-i18next";
 import { Reveal, ScaleReveal } from "@/components/motion/Animations";
 import { motion } from "framer-motion";
+import { ServiceTag, TypeBadge, PhotoCount, SoldBanner } from "@/components/PropertyTags";
 
 /* ── Mock data for fallback ───────────────────────────────────────────────── */
 const MOCK_PROPERTIES: Array<{
@@ -275,11 +276,23 @@ const PropertiesCarousel = () => {
                     <Link to={`/bien/${property.id}`} className="group block relative select-none">
                     {/* Image Container */}
                     <div className="relative aspect-[3/4] sm:aspect-[4/5] md:aspect-[3/4] overflow-hidden bg-muted mb-0 shadow-md group-hover:shadow-lg transition-all duration-500">
-                      {/* Category badge — minimal luxury tag */}
-                      <div className="absolute top-3 left-3 z-10 bg-white/75 backdrop-blur-md text-[#0A0A0A] px-2.5 py-[5px] rounded-[3px] transition-opacity duration-300 group-hover:opacity-0">
-                        <span className="text-[8px] tracking-[0.25em] uppercase font-sans font-medium">
-                          {property.type}
-                        </span>
+                      {/* Gradient overlay for readability */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent z-[5] pointer-events-none" />
+
+                      {/* Sold banner */}
+                      {property.statut === 'vendu-loue' && <SoldBanner />}
+
+                      {/* Top Left: Service tags + New badge */}
+                      <div className="absolute top-3 left-3 z-10 flex flex-wrap items-start gap-1 max-w-[70%]">
+                        {property.services?.slice(0, 2).map((s) => (
+                          <ServiceTag key={s} service={s} variant="overlay" />
+                        ))}
+
+                      </div>
+
+                      {/* Top Right: Type badge */}
+                      <div className="absolute top-3 right-3 z-10">
+                        <TypeBadge type={property.type} variant="overlay" />
                       </div>
 
                       <div className="w-full h-full group-hover:scale-105 transition-transform duration-700">
@@ -293,45 +306,59 @@ const PropertiesCarousel = () => {
                         />
                       </div>
 
-                      {/* Dark overlay on hover */}
-                      <div className="absolute inset-0 bg-[#0A0A0A]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
+                      {/* Bottom overlay: Price + Specs */}
+                      <div className="absolute bottom-0 left-0 right-0 z-10 px-4 pb-4 pt-8">
+                        {/* Price */}
+                        <div className="mb-2">
+                          <span className="text-white font-serif text-base sm:text-lg font-medium tracking-wide drop-shadow-md">
+                            {property.prix_vente ? formatPrice(property.prix_vente) : property.prix_location_longue ? `${formatPrice(property.prix_location_longue)} /mois` : property.prix_location_courte ? `${formatPrice(property.prix_location_courte)} /nuit` : property.prix ? formatPrice(property.prix) : ''}
+                          </span>
+                        </div>
+                        {/* Specs */}
+                        <div className="flex items-center gap-3 text-white/85 text-[10px] tracking-wide font-sans font-light">
+                          {property.chambres !== null && (
+                            <span className="flex items-center gap-1">
+                              <Bed size={11} strokeWidth={1.25} />
+                              {property.chambres} {t("biens.chambres_plural")}
+                            </span>
+                          )}
+                          {property.surface_terrain !== null && (
+                            <span className="flex items-center gap-1">
+                              <Maximize size={11} strokeWidth={1.25} />
+                              {property.surface_terrain} m²
+                            </span>
+                          )}
+                          {property.quartier && (
+                            <span className="flex items-center gap-1">
+                              <MapPin size={11} strokeWidth={1.25} />
+                              {property.quartier}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Photo count */}
+                      {property.photos?.length > 1 && (
+                        <div className="absolute bottom-3 right-3 z-10">
+                          <PhotoCount count={property.photos.length} />
+                        </div>
+                      )}
                     </div>
 
                     {/* SIGNATURE OVERLAPPING CARD CONTAINER */}
-                    <div className="relative bg-white pt-5 pb-5 px-4 md:px-6 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] z-20 w-full left-0 border-t border-border/10
-                      group-hover:-translate-y-16 group-hover:w-[108%] group-hover:-ml-[4%] group-hover:shadow-2xl group-hover:z-30 text-center">
-                      
-                      {/* Category */}
-                      <span className="text-[8px] tracking-[0.25em] text-muted-foreground uppercase font-sans mb-1.5 block">
-                        {property.type}
-                      </span>
+                    <div className="relative bg-white pt-4 pb-4 px-4 md:px-5 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] z-20 w-full left-0 border-t border-border/10
+                      group-hover:-translate-y-14 group-hover:w-[108%] group-hover:-ml-[4%] group-hover:shadow-2xl group-hover:z-30 text-center">
                       
                       {/* Title */}
-                      <h4 className="font-serif text-[12px] sm:text-xs md:text-sm uppercase tracking-[0.12em] text-[#0A0A0A] leading-snug line-clamp-2 mb-2 font-medium">
+                      <h4 className="font-serif text-[12px] sm:text-xs md:text-sm uppercase tracking-[0.12em] text-[#0A0A0A] leading-snug line-clamp-2 mb-1 font-medium">
                         {property.titre}
                       </h4>
-
-                      {/* Bed / surface info */}
-                      <div className="flex items-center justify-center gap-4 text-muted-foreground text-[10px] tracking-wide font-sans font-light mt-1 mb-1 transition-all duration-300 group-hover:opacity-0 group-hover:h-0 group-hover:overflow-hidden group-hover:my-0">
-                        {property.chambres !== null && (
-                          <span className="flex items-center gap-1.5">
-                            <Bed size={12} strokeWidth={1} />
-                            {property.chambres} {t("biens.chambres_plural")}
-                          </span>
-                        )}
-                        {property.surface_terrain !== null && (
-                          <span className="flex items-center gap-1.5">
-                            <Maximize size={12} strokeWidth={1} />
-                            {property.surface_terrain} {t("biens.surface")}
-                          </span>
-                        )}
-                      </div>
 
                       {/* Separator */}
                       <div className="w-8 h-[1px] bg-[#0A0A0A]/20 mx-auto my-0 opacity-0 scale-x-50 group-hover:opacity-100 group-hover:scale-x-100 group-hover:my-3 transition-all duration-500" />
 
-                      {/* Description */}
-                      <p className="text-[9px] sm:text-[10px] leading-relaxed text-muted-foreground font-sans font-light max-w-[95%] mx-auto opacity-0 max-h-0 overflow-hidden group-hover:opacity-100 group-hover:max-h-24 group-hover:mb-4 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]">
+                      {/* Description on hover */}
+                      <p className="text-[9px] sm:text-[10px] leading-relaxed text-muted-foreground font-sans font-light max-w-[95%] mx-auto opacity-0 max-h-0 overflow-hidden group-hover:opacity-100 group-hover:max-h-24 group-hover:mb-3 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]">
                         {tL(
                           `Prestigieuse propriété comprenant ${property.chambres ?? 3} chambres raffinées et une surface habitable de ${property.surface_terrain ?? 250} m² dans un emplacement idéal.`,
                           `Prestigious property featuring ${property.chambres ?? 3} refined bedrooms and a living area of ${property.surface_terrain ?? 250} sqm in an ideal location.`,

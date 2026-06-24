@@ -13,6 +13,7 @@ import SEOHead from "@/components/SEOHead";
 import { BASE_URL } from "@/hooks/useSEO";
 import { motion } from "framer-motion";
 import { PageTransition, Reveal, EASE_LUXURY } from "@/components/motion/Animations";
+import { ServiceTag, TypeBadge, EquipmentMicroTags } from "@/components/PropertyTags";
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("fr-MA").format(price) + " MAD";
@@ -222,21 +223,16 @@ const PropertyDetail = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
             <div className="lg:col-span-2 space-y-10">
                 <div className="flex flex-col mb-12">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-xs tracking-widest uppercase font-sans text-accent font-semibold">
-                      {property.services.map(s => transactionLabel(s)).join(' • ')}
-                    </span>
-                    <span className="text-muted-foreground">•</span>
-                    <span className="text-xs tracking-widest uppercase font-sans text-muted-foreground">
-                      {property.type}
-                    </span>
+                  <div className="flex items-center gap-3 mb-4 flex-wrap">
+                    {property.services.map(s => (
+                      <ServiceTag key={s} service={s} variant="detail" />
+                    ))}
+                    <TypeBadge type={property.type} />
+
                     {property.reference && (
-                      <>
-                        <span className="text-muted-foreground">•</span>
-                        <span className="text-xs tracking-widest uppercase font-sans text-muted-foreground">
-                          Réf: {property.reference}
-                        </span>
-                      </>
+                      <span className="text-xs tracking-widest uppercase font-sans text-muted-foreground border border-border px-2 py-0.5 rounded-sm">
+                        Réf: {property.reference}
+                      </span>
                     )}
                   </div>
                   
@@ -334,10 +330,10 @@ const PropertyDetail = () => {
               {property.equipements && property.equipements.length > 0 && (
                 <div>
                   <h3 className="text-xl mb-6 font-serif">Équipements & Prestations</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-8">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {property.equipements.map((eq, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <div className="w-1.5 h-1.5 rounded-full bg-accent/40" />
+                      <div key={i} className="flex items-center gap-3 p-3 bg-muted/30 border border-border/30 rounded-sm hover:bg-muted/50 transition-colors">
+                        <div className="w-2 h-2 rounded-full bg-accent/60 shrink-0" />
                         <span className="font-light text-muted-foreground text-sm tracking-wide">{eq}</span>
                       </div>
                     ))}
