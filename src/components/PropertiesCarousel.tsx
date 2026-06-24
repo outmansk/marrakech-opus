@@ -32,7 +32,7 @@ const MOCK_PROPERTIES: Array<{
   },
   {
     id: "mock-2", titre: "Riad Authentique Médina", type: "riad",
-    prix: 4200000, chambres: 4, surface_terrain: 280,
+    prix: 5000000, prix_vente: 5000000, chambres: 4, surface_terrain: 280,
     photo_principale: "https://images.unsplash.com/photo-1577493340887-b7bfff550145?w=800&q=80&auto=format",
     photos: ["https://images.unsplash.com/photo-1577493340887-b7bfff550145?w=800&q=80&auto=format"],
     services: ["vente"], statut: "publie",
