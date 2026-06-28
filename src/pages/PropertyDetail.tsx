@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, Bed, Car, MapPin, Clock, MessageCircle, CalendarDays, Bath, Maximize, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, Bed, Car, MapPin, Clock, MessageCircle, CalendarDays, Bath, Maximize, ChevronLeft, ChevronRight, Share2, Heart } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import VisitModal from "@/components/VisitModal";
@@ -13,7 +13,7 @@ import SEOHead from "@/components/SEOHead";
 import { BASE_URL } from "@/hooks/useSEO";
 import { motion } from "framer-motion";
 import { PageTransition, Reveal, EASE_LUXURY } from "@/components/motion/Animations";
-import { ServiceTag, TypeBadge, EquipmentMicroTags } from "@/components/PropertyTags";
+import { ServiceTag, TypeBadge } from "@/components/PropertyTags";
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("fr-MA").format(price) + " MAD";
@@ -26,6 +26,7 @@ const PropertyDetail = () => {
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
   const [visitOpen, setVisitOpen] = useState(false);
+  const thumbsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -37,25 +38,42 @@ const PropertyDetail = () => {
     fetchProperty();
   }, [id]);
 
-  const transactionLabel = (service: string) => {
-    switch (service) {
-      case "vente": return t('services.vente');
-      case "location-courte-duree": return t('services.location_courte');
-      case "location-longue-duree": return t('services.location_longue');
-      case "sous-location": return t('services.sous_location');
-      default: return service;
+  // Scroll thumbnail into view when selecting an image
+  useEffect(() => {
+    if (thumbsRef.current) {
+      const activeThumb = thumbsRef.current.children[selectedImage] as HTMLElement;
+      if (activeThumb) {
+        activeThumb.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      }
     }
-  };
+  }, [selectedImage]);
 
   if (loading) {
     return (
       <div className="min-h-screen">
         <Header />
-        <div className="pt-32 pb-24 container mx-auto px-6 md:px-12">
-          <div className="animate-pulse space-y-8">
-            <div className="h-[60vh] bg-muted" />
-            <div className="h-8 w-64 bg-muted rounded" />
-            <div className="h-4 w-48 bg-muted rounded" />
+        <div className="pt-20 md:pt-32 pb-24">
+          {/* Mobile skeleton */}
+          <div className="md:hidden">
+            <div className="animate-pulse">
+              <div className="aspect-[4/3] bg-muted" />
+              <div className="px-5 pt-5 space-y-4">
+                <div className="h-6 w-3/4 bg-muted rounded" />
+                <div className="h-5 w-1/2 bg-muted rounded" />
+                <div className="flex gap-2">
+                  <div className="h-8 w-20 bg-muted rounded" />
+                  <div className="h-8 w-20 bg-muted rounded" />
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Desktop skeleton */}
+          <div className="hidden md:block container mx-auto px-12">
+            <div className="animate-pulse space-y-8">
+              <div className="h-[60vh] bg-muted" />
+              <div className="h-8 w-64 bg-muted rounded" />
+              <div className="h-4 w-48 bg-muted rounded" />
+            </div>
           </div>
         </div>
       </div>
@@ -136,6 +154,9 @@ const PropertyDetail = () => {
 
   const metaDescription = property.description_courte || `Découvrez ce magnifique bien immobilier (${property.type}) à ${property.quartier || 'Marrakech'}. Exclusivité Live In Marrakech.`;
 
+  const goToPrev = () => setSelectedImage(prev => prev === 0 ? images.length - 1 : prev - 1);
+  const goToNext = () => setSelectedImage(prev => prev === images.length - 1 ? 0 : prev + 1);
+
   return (
     <PageTransition>
     <div className="min-h-screen">
@@ -148,18 +169,121 @@ const PropertyDetail = () => {
 
       <Header />
 
-      <div className="pt-24">
-        <div className="container mx-auto px-6 md:px-12 mb-4">
+      <div className="pt-20 md:pt-24">
+        {/* ── Back link (desktop only — mobile uses floating back button) ── */}
+        <div className="hidden md:block container mx-auto px-6 md:px-12 mb-4">
           <Link to="/catalogue" className="inline-flex items-center gap-2 text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors font-sans mb-8">
             <ArrowLeft size={16} strokeWidth={1.25} />
             {t("nav.catalogue")}
           </Link>
         </div>
 
+        {/* ══════════════════════════════════════════════════════════════════
+            GALLERY — Mobile: edge-to-edge immersive / Desktop: contained
+           ══════════════════════════════════════════════════════════════════ */}
         <Reveal>
-        <div className="container mx-auto px-6 md:px-12">
-          <div className="relative aspect-[16/9] md:aspect-[21/9] overflow-hidden mb-4 bg-muted group">
-          <OptimizedImage
+        {/* Mobile Gallery — edge-to-edge */}
+        <div className="md:hidden">
+          <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+            <OptimizedImage
+              src={images[selectedImage]}
+              alt={property.titre}
+              eager
+              size="hero"
+              className="w-full h-full object-cover transition-transform duration-500 ease-in-out"
+              wrapperClassName="w-full h-full"
+            />
+
+            {/* Floating back button */}
+            <Link
+              to="/catalogue"
+              className="absolute top-4 left-4 z-20 w-9 h-9 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white active:scale-95 transition-transform"
+            >
+              <ArrowLeft size={18} strokeWidth={1.5} />
+            </Link>
+
+            {/* Share button */}
+            <button
+              onClick={() => navigator.share?.({ title: property.titre, url: propertyUrl }).catch(() => {})}
+              className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white active:scale-95 transition-transform"
+            >
+              <Share2 size={16} strokeWidth={1.5} />
+            </button>
+
+            {/* Navigation arrows — always visible on mobile */}
+            {images.length > 1 && (
+              <>
+                <button
+                  onClick={(e) => { e.preventDefault(); goToPrev(); }}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/25 backdrop-blur-sm active:bg-black/50 text-white w-9 h-9 rounded-full flex items-center justify-center z-10 transition-colors"
+                >
+                  <ChevronLeft size={20} strokeWidth={1.5} />
+                </button>
+                <button
+                  onClick={(e) => { e.preventDefault(); goToNext(); }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/25 backdrop-blur-sm active:bg-black/50 text-white w-9 h-9 rounded-full flex items-center justify-center z-10 transition-colors"
+                >
+                  <ChevronRight size={20} strokeWidth={1.5} />
+                </button>
+              </>
+            )}
+
+            {/* Photo counter pill */}
+            {images.length > 1 && (
+              <div className="absolute bottom-4 right-4 z-10 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md text-white text-[11px] font-sans font-medium tracking-wide">
+                {selectedImage + 1} / {images.length}
+              </div>
+            )}
+
+            {/* Dot indicators */}
+            {images.length > 1 && images.length <= 8 && (
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                {images.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImage(idx)}
+                    className={`rounded-full transition-all duration-300 ${
+                      selectedImage === idx
+                        ? "w-5 h-1.5 bg-white"
+                        : "w-1.5 h-1.5 bg-white/50"
+                    }`}
+                    aria-label={`Image ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Thumbnails strip — mobile */}
+          {images.length > 1 && (
+            <div ref={thumbsRef} className="flex gap-2 px-4 py-3 overflow-x-auto scrollbar-hide">
+              {images.map((url, i) => (
+                <button
+                  key={i}
+                  onClick={() => setSelectedImage(i)}
+                  className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden transition-all duration-300 ${
+                    selectedImage === i
+                      ? "ring-2 ring-accent ring-offset-2 ring-offset-background opacity-100 scale-105"
+                      : "opacity-50 hover:opacity-75"
+                  }`}
+                >
+                  <OptimizedImage
+                    src={url}
+                    alt=""
+                    size="thumb"
+                    className="w-full h-full object-cover"
+                    wrapperClassName="w-full h-full"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Desktop Gallery — contained with padding */}
+        <div className="hidden md:block container mx-auto px-6 md:px-12">
+          <div className="relative aspect-[21/9] overflow-hidden mb-4 bg-muted group rounded-sm">
+            <OptimizedImage
               src={images[selectedImage]}
               alt={property.titre}
               eager
@@ -169,14 +293,14 @@ const PropertyDetail = () => {
             />
             {images.length > 1 && (
               <>
-                <button 
-                  onClick={(e) => { e.preventDefault(); setSelectedImage(prev => prev === 0 ? images.length - 1 : prev - 1); }}
+                <button
+                  onClick={(e) => { e.preventDefault(); goToPrev(); }}
                   className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
                 >
                   <ChevronLeft size={24} />
                 </button>
-                <button 
-                  onClick={(e) => { e.preventDefault(); setSelectedImage(prev => prev === images.length - 1 ? 0 : prev + 1); }}
+                <button
+                  onClick={(e) => { e.preventDefault(); goToNext(); }}
                   className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
                 >
                   <ChevronRight size={24} />
@@ -184,7 +308,7 @@ const PropertyDetail = () => {
 
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
                   {images.map((_, idx) => (
-                    <button 
+                    <button
                       key={idx}
                       onClick={() => setSelectedImage(idx)}
                       className={`w-2 h-2 rounded-full transition-all ${selectedImage === idx ? "bg-white scale-125" : "bg-white/50"}`}
@@ -201,7 +325,7 @@ const PropertyDetail = () => {
                 <button
                   key={i}
                   onClick={() => setSelectedImage(i)}
-                  className={`flex-shrink-0 w-24 h-16 overflow-hidden transition-all ${
+                  className={`flex-shrink-0 w-24 h-16 overflow-hidden rounded-sm transition-all ${
                     selectedImage === i ? "opacity-100 ring-2 ring-accent" : "opacity-40 hover:opacity-70"
                   }`}
                 >
@@ -219,107 +343,179 @@ const PropertyDetail = () => {
         </div>
         </Reveal>
 
-        <div className="container mx-auto px-6 md:px-12 py-16">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
-            <div className="lg:col-span-2 space-y-10">
-                <div className="flex flex-col mb-12">
-                  <div className="flex items-center gap-3 mb-4 flex-wrap">
-                    {property.services.map(s => (
-                      <ServiceTag key={s} service={s} variant="detail" />
-                    ))}
-                    <TypeBadge type={property.type} />
+        {/* ══════════════════════════════════════════════════════════════════
+            CONTENT — Mobile-first reorganized layout
+           ══════════════════════════════════════════════════════════════════ */}
+        <div className="container mx-auto px-5 md:px-12 py-8 md:py-16">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 md:gap-16">
+            <div className="lg:col-span-2 space-y-6 md:space-y-10">
 
-                    {property.reference && (
-                      <span className="text-xs tracking-widest uppercase font-sans text-muted-foreground border border-border px-2 py-0.5 rounded-sm">
-                        Réf: {property.reference}
-                      </span>
-                    )}
+              {/* ── Title & Location (Mobile: shown first) ── */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1, ease: EASE_LUXURY }}
+              >
+                {property.quartier && (
+                  <div className="flex items-center gap-1.5 mb-2 md:mb-3">
+                    <MapPin size={14} strokeWidth={1.5} className="text-accent" />
+                    <span className="text-xs md:text-sm tracking-wide font-sans text-muted-foreground">{property.quartier}</span>
                   </div>
-                  
-                  <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-6 leading-tight">
-                    {property.titre}
-                  </h1>
+                )}
+                <h1 className="text-2xl md:text-5xl font-serif text-foreground leading-tight mb-0">
+                  {property.titre}
+                </h1>
+              </motion.div>
 
-                  <div className="flex flex-col gap-3">
-                    {property.services.includes('vente') && property.prix_vente && (
-                      <div className="flex items-baseline gap-4">
-                        <p className="text-3xl font-serif text-accent">{formatPrice(property.prix_vente)}</p>
-                        <span className="text-[10px] tracking-widest uppercase text-muted-foreground font-sans border border-border px-2 py-0.5">{t('services.vente')}</span>
-                      </div>
-                    )}
-                    {property.services.includes('location-longue-duree') && property.prix_location_longue && (
-                      <div className="flex items-baseline gap-4">
-                        <p className="text-3xl font-serif text-accent">{formatPrice(property.prix_location_longue)} / mois</p>
-                        <span className="text-[10px] tracking-widest uppercase text-muted-foreground font-sans border border-border px-2 py-0.5">{t('services.location_longue')}</span>
-                      </div>
-                    )}
-                    {property.services.includes('location-courte-duree') && property.prix_location_courte && (
-                      <div className="flex items-baseline gap-4">
-                        <p className="text-3xl font-serif text-accent">{formatPrice(property.prix_location_courte)} / nuit</p>
-                        <span className="text-[10px] tracking-widest uppercase text-muted-foreground font-sans border border-border px-2 py-0.5">{t('services.location_courte')}</span>
-                      </div>
-                    )}
-                    {!property.prix_vente && !property.prix_location_longue && !property.prix_location_courte && property.prix && (
-                       <p className="text-3xl font-serif text-accent">{formatPrice(property.prix)}</p>
-                    )}
-                  </div>
+              {/* ── Price Card (Mobile: prominent) ── */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2, ease: EASE_LUXURY }}
+                className="bg-gradient-to-r from-muted/60 to-muted/30 border border-border/50 rounded-lg p-4 md:p-5"
+              >
+                <div className="flex flex-col gap-2">
+                  {property.services.includes('vente') && property.prix_vente && (
+                    <div className="flex items-baseline gap-3 flex-wrap">
+                      <p className="text-2xl md:text-3xl font-serif text-foreground">{formatPrice(property.prix_vente)}</p>
+                      <span className="text-[9px] md:text-[10px] tracking-widest uppercase text-muted-foreground font-sans bg-background/80 border border-border px-2 py-0.5 rounded">{t('services.vente')}</span>
+                    </div>
+                  )}
+                  {property.services.includes('location-longue-duree') && property.prix_location_longue && (
+                    <div className="flex items-baseline gap-3 flex-wrap">
+                      <p className="text-2xl md:text-3xl font-serif text-foreground">{formatPrice(property.prix_location_longue)}<span className="text-base text-muted-foreground font-sans"> / mois</span></p>
+                      <span className="text-[9px] md:text-[10px] tracking-widest uppercase text-muted-foreground font-sans bg-background/80 border border-border px-2 py-0.5 rounded">{t('services.location_longue')}</span>
+                    </div>
+                  )}
+                  {property.services.includes('location-courte-duree') && property.prix_location_courte && (
+                    <div className="flex items-baseline gap-3 flex-wrap">
+                      <p className="text-2xl md:text-3xl font-serif text-foreground">{formatPrice(property.prix_location_courte)}<span className="text-base text-muted-foreground font-sans"> / nuit</span></p>
+                      <span className="text-[9px] md:text-[10px] tracking-widest uppercase text-muted-foreground font-sans bg-background/80 border border-border px-2 py-0.5 rounded">{t('services.location_courte')}</span>
+                    </div>
+                  )}
+                  {!property.prix_vente && !property.prix_location_longue && !property.prix_location_courte && property.prix && (
+                    <p className="text-2xl md:text-3xl font-serif text-foreground">{formatPrice(property.prix)}</p>
+                  )}
+                </div>
+              </motion.div>
+
+              {/* ── Tags row (Mobile: after price) ── */}
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3, ease: EASE_LUXURY }}
+                className="flex items-center gap-2 flex-wrap"
+              >
+                {property.services.map(s => (
+                  <ServiceTag key={s} service={s} variant="detail" />
+                ))}
+                <TypeBadge type={property.type} />
+                {property.reference && (
+                  <span className="text-[10px] tracking-widest uppercase font-sans text-muted-foreground border border-border px-2 py-1 rounded">
+                    Réf: {property.reference}
+                  </span>
+                )}
+              </motion.div>
+
+              {/* ── Specs — Cards on mobile, inline on desktop ── */}
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.35, ease: EASE_LUXURY }}
+              >
+                {/* Mobile: grid of cards */}
+                <div className="grid grid-cols-2 gap-3 md:hidden">
+                  {property.chambres !== null && (
+                    <div className="flex flex-col items-center justify-center py-4 px-3 bg-muted/40 border border-border/40 rounded-lg">
+                      <Bed size={22} strokeWidth={1} className="text-accent mb-2" />
+                      <span className="text-lg font-serif text-foreground">{property.chambres}</span>
+                      <span className="text-[10px] tracking-wider uppercase text-muted-foreground font-sans mt-0.5">{t('biens.chambres_plural')}</span>
+                    </div>
+                  )}
+                  {property.salles_de_bain !== null && (
+                    <div className="flex flex-col items-center justify-center py-4 px-3 bg-muted/40 border border-border/40 rounded-lg">
+                      <Bath size={22} strokeWidth={1} className="text-accent mb-2" />
+                      <span className="text-lg font-serif text-foreground">{property.salles_de_bain}</span>
+                      <span className="text-[10px] tracking-wider uppercase text-muted-foreground font-sans mt-0.5">Sdb</span>
+                    </div>
+                  )}
+                  {property.surface_terrain !== null && (
+                    <div className="flex flex-col items-center justify-center py-4 px-3 bg-muted/40 border border-border/40 rounded-lg">
+                      <Maximize size={22} strokeWidth={1} className="text-accent mb-2" />
+                      <span className="text-lg font-serif text-foreground">{property.surface_terrain}</span>
+                      <span className="text-[10px] tracking-wider uppercase text-muted-foreground font-sans mt-0.5">{t('biens.surface')}</span>
+                    </div>
+                  )}
+                  {property.equipements?.includes('Parking') && (
+                    <div className="flex flex-col items-center justify-center py-4 px-3 bg-muted/40 border border-border/40 rounded-lg">
+                      <Car size={22} strokeWidth={1} className="text-accent mb-2" />
+                      <span className="text-lg font-serif text-foreground">✓</span>
+                      <span className="text-[10px] tracking-wider uppercase text-muted-foreground font-sans mt-0.5">Parking</span>
+                    </div>
+                  )}
                 </div>
 
-              <div className="flex flex-wrap items-center gap-x-8 gap-y-4 py-8 border-y border-border">
-                {property.chambres !== null && (
-                  <div className="flex items-center gap-3">
-                    <Bed size={22} strokeWidth={1} className="text-muted-foreground" />
-                    <span className="font-light tracking-wide">{property.chambres} {t('biens.chambres_plural')}</span>
-                  </div>
-                )}
-                {property.salles_de_bain !== null && (
-                  <div className="flex items-center gap-3">
-                    <Bath size={22} strokeWidth={1} className="text-muted-foreground" />
-                    <span className="font-light tracking-wide">{property.salles_de_bain} Sdb</span>
-                  </div>
-                )}
-                {property.surface_terrain !== null && (
-                  <div className="flex items-center gap-3">
-                    <Maximize size={22} strokeWidth={1} className="text-muted-foreground" />
-                    <span className="font-light tracking-wide">{property.surface_terrain} {t('biens.surface')}</span>
-                  </div>
-                )}
-                {property.equipements?.includes('Parking') && (
-                  <div className="flex items-center gap-3">
-                    <Car size={22} strokeWidth={1} className="text-muted-foreground" />
-                    <span className="font-light tracking-wide">Parking</span>
-                  </div>
-                )}
-                {property.quartier && (
-                  <div className="flex items-center gap-3">
-                    <MapPin size={22} strokeWidth={1} className="text-muted-foreground" />
-                    <span className="font-light tracking-wide">{property.quartier}</span>
-                  </div>
-                )}
-              </div>
+                {/* Desktop: inline specs bar */}
+                <div className="hidden md:flex flex-wrap items-center gap-x-8 gap-y-4 py-8 border-y border-border">
+                  {property.chambres !== null && (
+                    <div className="flex items-center gap-3">
+                      <Bed size={22} strokeWidth={1} className="text-muted-foreground" />
+                      <span className="font-light tracking-wide">{property.chambres} {t('biens.chambres_plural')}</span>
+                    </div>
+                  )}
+                  {property.salles_de_bain !== null && (
+                    <div className="flex items-center gap-3">
+                      <Bath size={22} strokeWidth={1} className="text-muted-foreground" />
+                      <span className="font-light tracking-wide">{property.salles_de_bain} Sdb</span>
+                    </div>
+                  )}
+                  {property.surface_terrain !== null && (
+                    <div className="flex items-center gap-3">
+                      <Maximize size={22} strokeWidth={1} className="text-muted-foreground" />
+                      <span className="font-light tracking-wide">{property.surface_terrain} {t('biens.surface')}</span>
+                    </div>
+                  )}
+                  {property.equipements?.includes('Parking') && (
+                    <div className="flex items-center gap-3">
+                      <Car size={22} strokeWidth={1} className="text-muted-foreground" />
+                      <span className="font-light tracking-wide">Parking</span>
+                    </div>
+                  )}
+                  {property.quartier && (
+                    <div className="flex items-center gap-3">
+                      <MapPin size={22} strokeWidth={1} className="text-muted-foreground" />
+                      <span className="font-light tracking-wide">{property.quartier}</span>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
 
+              {/* ── Description ── */}
               {property.description_longue || property.description_courte ? (
                 <div className="max-w-none">
-                  <h3 className="text-xl mb-6 font-serif">À propos de ce bien</h3>
-                  <p className="text-muted-foreground font-light leading-relaxed text-lg whitespace-pre-line font-sans">
+                  <h3 className="text-lg md:text-xl mb-4 md:mb-6 font-serif">À propos de ce bien</h3>
+                  <p className="text-muted-foreground font-light leading-relaxed text-[15px] md:text-lg whitespace-pre-line font-sans">
                     {property.description_longue || property.description_courte}
                   </p>
                 </div>
               ) : null}
 
+              {/* ── Proximités ── */}
               {property.proximites && property.proximites.length > 0 && (
                 <div>
-                  <h3 className="text-xl mb-6 font-serif">Points d'intérêt & Proximité</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <h3 className="text-lg md:text-xl mb-4 md:mb-6 font-serif">Points d'intérêt & Proximité</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {property.proximites.map((prox, i) => (
-                      <div key={i} className="flex items-center justify-between p-4 bg-muted/20 border border-border/40 rounded-sm">
+                      <div key={i} className="flex items-center justify-between p-3.5 md:p-4 bg-muted/20 border border-border/40 rounded-lg">
                         <div className="flex items-center gap-3">
-                          <MapPin size={18} strokeWidth={1} className="text-accent" />
-                          <span className="font-light tracking-wide">{prox.place}</span>
+                          <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+                            <MapPin size={14} strokeWidth={1.5} className="text-accent" />
+                          </div>
+                          <span className="font-light tracking-wide text-sm md:text-base">{prox.place}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          <Clock size={14} strokeWidth={1.5} />
-                          <span className="text-xs uppercase tracking-tighter">{prox.time}</span>
+                        <div className="flex items-center gap-1.5 text-muted-foreground ml-3">
+                          <Clock size={12} strokeWidth={1.5} />
+                          <span className="text-[11px] uppercase tracking-tight font-sans">{prox.time}</span>
                         </div>
                       </div>
                     ))}
@@ -327,14 +523,15 @@ const PropertyDetail = () => {
                 </div>
               )}
 
+              {/* ── Équipements ── */}
               {property.equipements && property.equipements.length > 0 && (
                 <div>
-                  <h3 className="text-xl mb-6 font-serif">Équipements & Prestations</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <h3 className="text-lg md:text-xl mb-4 md:mb-6 font-serif">Équipements & Prestations</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 md:gap-3">
                     {property.equipements.map((eq, i) => (
-                      <div key={i} className="flex items-center gap-3 p-3 bg-muted/30 border border-border/30 rounded-sm hover:bg-muted/50 transition-colors">
-                        <div className="w-2 h-2 rounded-full bg-accent/60 shrink-0" />
-                        <span className="font-light text-muted-foreground text-sm tracking-wide">{eq}</span>
+                      <div key={i} className="flex items-center gap-2.5 p-3 bg-muted/30 border border-border/30 rounded-lg hover:bg-muted/50 transition-colors">
+                        <div className="w-1.5 h-1.5 rounded-full bg-accent/60 shrink-0" />
+                        <span className="font-light text-muted-foreground text-[13px] md:text-sm tracking-wide">{eq}</span>
                       </div>
                     ))}
                   </div>
@@ -342,16 +539,17 @@ const PropertyDetail = () => {
               )}
             </div>
 
+            {/* ── Desktop sidebar CTA ── */}
             <div className="hidden lg:block lg:col-span-1">
               <div className="sticky top-28 space-y-4">
-                <div className="bg-card border border-border p-8 space-y-6">
+                <div className="bg-card border border-border rounded-lg p-8 space-y-6">
                   <div className="space-y-2">
                     <p className="text-xs tracking-widest uppercase text-muted-foreground font-sans">Réserver ou Visiter</p>
                     <p className="text-sm font-light text-muted-foreground leading-relaxed">
                       Ce bien vous intéresse ? Nos experts sont à votre disposition pour organiser une visite privée.
                     </p>
                   </div>
-                  
+
                   <div className="space-y-3">
                     <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block">
                       <Button variant="luxury" size="lg" className="w-full h-14 gap-3 text-xs tracking-[0.2em]">
@@ -376,26 +574,30 @@ const PropertyDetail = () => {
         </div>
       </div>
 
-      <div className="lg:hidden fixed bottom-6 left-6 right-6 z-40 animate-fade-in-up">
-        <div className="bg-background/90 backdrop-blur-xl border border-border/50 p-3 shadow-2xl flex gap-3">
-          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex-1">
-            <Button variant="luxury" className="w-full h-12 gap-2 text-[10px] tracking-widest px-2">
-              <MessageCircle size={16} strokeWidth={1.25} />
-              WHATSAPP
+      {/* ── Mobile sticky bottom CTA ── */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40">
+        <div className="bg-background/95 backdrop-blur-xl border-t border-border/60 px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+          <div className="flex gap-2.5 max-w-lg mx-auto">
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex-1">
+              <Button variant="luxury" className="w-full h-[46px] gap-2 text-[10px] tracking-[0.15em] rounded-lg px-3">
+                <MessageCircle size={16} strokeWidth={1.25} />
+                WHATSAPP
+              </Button>
+            </a>
+            <Button
+              variant="luxury-ghost"
+              className="flex-1 h-[46px] gap-2 text-[10px] tracking-[0.15em] rounded-lg px-3"
+              onClick={() => setVisitOpen(true)}
+            >
+              <CalendarDays size={16} strokeWidth={1.25} />
+              VISITER
             </Button>
-          </a>
-          <Button
-            variant="luxury-ghost"
-            className="flex-1 h-12 gap-2 text-[10px] tracking-widest px-2"
-            onClick={() => setVisitOpen(true)}
-          >
-            <CalendarDays size={16} strokeWidth={1.25} />
-            VISITER
-          </Button>
+          </div>
         </div>
       </div>
 
-      <div className="h-24 lg:hidden" />
+      {/* Spacer for bottom bar */}
+      <div className="h-20 lg:hidden" />
 
       <Footer />
       <VisitModal
