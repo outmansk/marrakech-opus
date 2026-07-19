@@ -8,7 +8,6 @@ import {
   FileText,
   CalendarCheck,
   LogOut,
-  CloudUpload,
   Menu,
   X,
   ExternalLink,
@@ -122,12 +121,6 @@ export default function AdminLayout() {
       label: t("admin.visites"),
       icon: CalendarCheck,
       active: location.pathname.includes("/manage-xk92p/visites"),
-    },
-    {
-      path: "/manage-xk92p/migration",
-      label: "Migration",
-      icon: CloudUpload,
-      active: location.pathname.includes("/manage-xk92p/migration"),
     },
   ];
 
