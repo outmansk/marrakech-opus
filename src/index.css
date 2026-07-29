@@ -284,6 +284,154 @@ html.lenis body {
   overflow: hidden;
 }
 
+/* ── Admin Dashboard Premium Styles ── */
+
+/* Glassmorphism card for admin panels */
+.admin-glass {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+/* Admin card with hover lift + glow */
+.admin-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.35s ease;
+}
+.admin-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Stat card with gradient accent */
+.admin-stat {
+  position: relative;
+  overflow: hidden;
+}
+.admin-stat::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, hsl(82 15% 37%), hsl(30 30% 45%), hsl(15 40% 55%));
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.admin-stat:hover::before {
+  opacity: 1;
+}
+
+/* Gradient border effect */
+.admin-gradient-border {
+  position: relative;
+  border: none;
+}
+.admin-gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, hsl(82 15% 37% / 0.3), hsl(30 30% 45% / 0.2), hsl(15 40% 55% / 0.15));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Admin shimmer loading */
+@keyframes admin-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer-admin {
+  background: linear-gradient(90deg,
+    hsl(30 10% 94%) 25%,
+    hsl(30 15% 97%) 37%,
+    hsl(30 10% 94%) 63%
+  );
+  background-size: 200% 100%;
+  animation: admin-shimmer 1.8s ease-in-out infinite;
+}
+
+/* Animated counter */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.admin-count-up {
+  animation: count-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Pulse badge for pending items */
+@keyframes admin-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.admin-pulse {
+  animation: admin-pulse 2s ease-in-out infinite;
+}
+
+/* Nav link active indicator animation */
+@keyframes nav-slide-in {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+.admin-nav-indicator {
+  transform-origin: center;
+  animation: nav-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Admin sidebar glass */
+.admin-sidebar {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(250, 248, 245, 0.95) 100%
+  );
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* Table row hover lift */
+.admin-table-row {
+  transition: background-color 0.2s ease, box-shadow 0.3s ease;
+}
+.admin-table-row:hover {
+  background-color: hsl(30 10% 97%);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+}
+
+/* Icon container glow */
+.admin-icon-glow {
+  transition: box-shadow 0.35s ease, transform 0.35s ease;
+}
+.admin-icon-glow:hover {
+  box-shadow: 0 0 20px rgba(90, 100, 60, 0.15);
+  transform: scale(1.05);
+}
+
+/* Chart tooltip glass */
+.admin-tooltip {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+}
+
 /* ── Prefers Reduced Motion ── */
 @media (prefers-reduced-motion: reduce) {
   *,

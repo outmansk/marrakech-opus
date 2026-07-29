@@ -33,25 +33,28 @@ function SidebarLink({ item, collapsed, onClick }: { item: NavItem; collapsed: b
       onClick={() => { navigate(item.path); onClick?.(); }}
       title={collapsed ? item.label : undefined}
       className={cn(
-        "relative w-full flex items-center gap-3 px-3 py-2.5 text-left transition-all duration-200 group rounded-sm",
+        "relative w-full flex items-center gap-3 px-3 py-2.5 text-left transition-all duration-300 group rounded-lg",
         item.active
-          ? "bg-primary/10 text-primary font-medium"
-          : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+          ? "bg-primary/8 text-primary font-medium"
+          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
       )}
     >
-      {/* Active indicator */}
+      {/* Active indicator — animated bar */}
       {item.active && (
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-primary rounded-r-full" />
+        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 bg-gradient-to-b from-primary to-primary/60 rounded-r-full admin-nav-indicator" />
       )}
 
-      <item.icon
-        size={16}
-        strokeWidth={item.active ? 2 : 1.5}
-        className={cn(
-          "shrink-0 transition-colors",
-          item.active ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-        )}
-      />
+      <div className={cn(
+        "shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300",
+        item.active
+          ? "bg-primary/12 text-primary"
+          : "bg-transparent text-muted-foreground group-hover:bg-muted/80 group-hover:text-foreground"
+      )}>
+        <item.icon
+          size={16}
+          strokeWidth={item.active ? 2 : 1.5}
+        />
+      </div>
 
       {!collapsed && (
         <>
@@ -59,16 +62,34 @@ function SidebarLink({ item, collapsed, onClick }: { item: NavItem; collapsed: b
             {item.label}
           </span>
           {item.badge !== undefined && item.badge > 0 && (
-            <span className="text-[9px] bg-terracotta text-white px-1.5 py-0.5 rounded-full font-medium">
+            <span className="text-[9px] bg-gradient-to-r from-terracotta to-terracotta/80 text-white px-2 py-0.5 rounded-full font-medium shadow-sm">
               {item.badge}
             </span>
           )}
           {item.active && (
-            <ChevronRight size={12} className="text-primary/60 shrink-0" />
+            <ChevronRight size={12} className="text-primary/50 shrink-0" />
           )}
         </>
       )}
     </button>
+  );
+}
+
+// ─── User Avatar ──────────────────────────────────────────────────────────────
+function UserAvatar({ email, size = 'md' }: { email: string; size?: 'sm' | 'md' }) {
+  const initials = email
+    ? email.split('@')[0].slice(0, 2).toUpperCase()
+    : 'AD';
+  
+  const sizeClass = size === 'sm' ? 'w-7 h-7 text-[10px]' : 'w-8 h-8 text-[11px]';
+  
+  return (
+    <div className={cn(
+      sizeClass,
+      "rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center font-medium text-primary/80 shrink-0 ring-1 ring-primary/10"
+    )}>
+      {initials}
+    </div>
   );
 }
 
@@ -130,17 +151,17 @@ export default function AdminLayout() {
   const SidebarContent = ({ mobile = false }: { mobile?: boolean }) => (
     <div className="flex flex-col h-full">
       {/* Brand */}
-      <div className={cn("px-4 py-6 border-b border-border/60", sidebarCollapsed && !mobile && "px-3")}>
+      <div className={cn("px-4 py-6 border-b border-border/40", sidebarCollapsed && !mobile && "px-3")}>
         <button
           onClick={() => navigate("/manage-xk92p/dashboard")}
           className="flex items-center gap-3 w-full group"
         >
-          {/* Logo mark */}
+          {/* Logo mark — gradient accent */}
           <div className={cn(
-            "shrink-0 flex items-center justify-center border border-primary/30 bg-primary/5 transition-all",
-            sidebarCollapsed && !mobile ? "w-8 h-8" : "w-9 h-9"
+            "shrink-0 flex items-center justify-center rounded-xl transition-all duration-300 bg-gradient-to-br from-primary/10 to-accent/10 ring-1 ring-primary/15 group-hover:ring-primary/30 group-hover:shadow-md",
+            sidebarCollapsed && !mobile ? "w-9 h-9" : "w-10 h-10"
           )}>
-            <span className="font-serif text-base text-primary leading-none">L</span>
+            <span className="font-serif text-lg text-primary leading-none font-medium">L</span>
           </div>
           {(!sidebarCollapsed || mobile) && (
             <div className="text-left min-w-0">
@@ -157,6 +178,11 @@ export default function AdminLayout() {
 
       {/* Navigation */}
       <nav className={cn("flex-1 px-3 py-5 space-y-1 overflow-y-auto", sidebarCollapsed && !mobile && "px-2")}>
+        {!sidebarCollapsed && !mobile && (
+          <p className="text-[9px] tracking-[0.3em] uppercase text-muted-foreground/60 font-sans px-3 mb-3">
+            Navigation
+          </p>
+        )}
         {navItems.map((item) => (
           <SidebarLink
             key={item.path}
@@ -169,7 +195,7 @@ export default function AdminLayout() {
 
       {/* Footer */}
       <div className={cn(
-        "px-3 py-4 border-t border-border/60 space-y-2",
+        "px-3 py-4 border-t border-border/40 space-y-2",
         sidebarCollapsed && !mobile && "px-2"
       )}>
         {/* Lien site public */}
@@ -178,7 +204,7 @@ export default function AdminLayout() {
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2.5 px-3 py-2 text-[10px] tracking-[0.18em] uppercase text-muted-foreground hover:text-foreground transition-colors group rounded-sm hover:bg-muted/40"
+            className="flex items-center gap-2.5 px-3 py-2 text-[10px] tracking-[0.18em] uppercase text-muted-foreground hover:text-foreground transition-all duration-200 group rounded-lg hover:bg-muted/40"
           >
             <ExternalLink size={13} strokeWidth={1.5} className="shrink-0" />
             Voir le site
@@ -188,7 +214,7 @@ export default function AdminLayout() {
         <button
           onClick={handleLogout}
           className={cn(
-            "flex items-center gap-2.5 px-3 py-2 w-full text-[10px] tracking-[0.18em] uppercase text-muted-foreground hover:text-destructive transition-colors rounded-sm hover:bg-destructive/5",
+            "flex items-center gap-2.5 px-3 py-2 w-full text-[10px] tracking-[0.18em] uppercase text-muted-foreground hover:text-destructive transition-all duration-200 rounded-lg hover:bg-destructive/5",
             sidebarCollapsed && !mobile && "justify-center px-2"
           )}
           title={sidebarCollapsed && !mobile ? t("auth.deconnexion") : undefined}
@@ -197,32 +223,40 @@ export default function AdminLayout() {
           {(!sidebarCollapsed || mobile) && <span>{t("auth.deconnexion")}</span>}
         </button>
 
-        {/* User email */}
+        {/* User info */}
         {(!sidebarCollapsed || mobile) && session?.user?.email && (
-          <p className="px-3 text-[9px] text-muted-foreground/60 tracking-wide truncate">
-            {session.user.email}
-          </p>
+          <div className="flex items-center gap-2.5 px-3 py-2">
+            <UserAvatar email={session.user.email} size="sm" />
+            <p className="text-[10px] text-muted-foreground/70 tracking-wide truncate flex-1">
+              {session.user.email}
+            </p>
+          </div>
+        )}
+        {sidebarCollapsed && !mobile && session?.user?.email && (
+          <div className="flex justify-center py-1" title={session.user.email}>
+            <UserAvatar email={session.user.email} size="sm" />
+          </div>
         )}
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-muted/20 flex">
+    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20 flex">
 
       {/* ── Desktop Sidebar ── */}
       <aside
         className={cn(
-          "hidden md:flex flex-col sticky top-0 h-screen bg-background border-r border-border/70 transition-all duration-300 shrink-0 z-30",
-          sidebarCollapsed ? "w-[60px]" : "w-[220px]"
+          "hidden md:flex flex-col sticky top-0 h-screen admin-sidebar border-r border-border/50 transition-all duration-300 shrink-0 z-30",
+          sidebarCollapsed ? "w-[64px]" : "w-[232px]"
         )}
       >
         <SidebarContent />
 
-        {/* Collapse toggle */}
+        {/* Collapse toggle — floating pill */}
         <button
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          className="absolute -right-3 top-20 w-6 h-6 bg-background border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shadow-sm z-10"
+          className="absolute -right-3 top-20 w-6 h-6 bg-background border border-border/60 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 hover:shadow-md transition-all duration-300 shadow-sm z-10"
           title={sidebarCollapsed ? "Déployer" : "Réduire"}
         >
           <ChevronRight
@@ -235,19 +269,19 @@ export default function AdminLayout() {
       {/* ── Mobile: slide-in overlay ── */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-black/40 z-40 md:hidden backdrop-blur-sm"
           onClick={() => setSidebarOpen(false)}
         />
       )}
       <aside
         className={cn(
-          "fixed top-0 left-0 h-full w-[260px] bg-background border-r border-border z-50 flex flex-col transition-transform duration-300 md:hidden",
+          "fixed top-0 left-0 h-full w-[272px] admin-sidebar border-r border-border/50 z-50 flex flex-col transition-transform duration-300 md:hidden shadow-2xl",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="flex items-center justify-between px-4 h-14 border-b border-border/60 shrink-0">
+        <div className="flex items-center justify-between px-4 h-14 border-b border-border/40 shrink-0">
           <span className="font-serif text-sm">Menu Admin</span>
-          <button onClick={() => setSidebarOpen(false)} className="text-muted-foreground hover:text-foreground p-1">
+          <button onClick={() => setSidebarOpen(false)} className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted/50 transition-colors">
             <X size={18} />
           </button>
         </div>
@@ -260,12 +294,12 @@ export default function AdminLayout() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
         {/* Top bar — mobile only */}
-        <header className="md:hidden sticky top-0 bg-background/95 backdrop-blur border-b border-border z-20 px-4 h-14 flex items-center justify-between shrink-0">
-          <button onClick={() => setSidebarOpen(true)} className="text-muted-foreground hover:text-foreground p-1">
+        <header className="md:hidden sticky top-0 bg-background/90 backdrop-blur-lg border-b border-border/50 z-20 px-4 h-14 flex items-center justify-between shrink-0">
+          <button onClick={() => setSidebarOpen(true)} className="text-muted-foreground hover:text-foreground p-1.5 rounded-lg hover:bg-muted/50 transition-colors">
             <Menu size={20} />
           </button>
           <span className="font-serif text-base">Live In Marrakech</span>
-          <button onClick={handleLogout} className="text-muted-foreground hover:text-destructive p-1">
+          <button onClick={handleLogout} className="text-muted-foreground hover:text-destructive p-1.5 rounded-lg hover:bg-destructive/5 transition-colors">
             <LogOut size={16} />
           </button>
         </header>

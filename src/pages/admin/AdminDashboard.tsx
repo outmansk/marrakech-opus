@@ -13,6 +13,8 @@ import {
   BookOpen,
   Eye,
   CalendarCheck,
+  ArrowUpRight,
+  Clock,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
@@ -31,6 +33,7 @@ import {
   Cell,
   Legend,
 } from 'recharts';
+import { cn } from '@/lib/utils';
 
 // ─── Palette olive / bronze / terracotta ────────────────────────────────────
 const COLORS = {
@@ -56,56 +59,85 @@ const SERVICE_COLORS: Record<string, string> = {
   'sous-location':         COLORS.muted,
 };
 
-// ─── Stat Card ───────────────────────────────────────────────────────────────
+// ─── Greeting ─────────────────────────────────────────────────────────────────
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Bonjour';
+  if (hour < 18) return 'Bon après-midi';
+  return 'Bonsoir';
+}
+
+// ─── Stat Card — Premium ────────────────────────────────────────────────────
 function StatCard({
   icon: Icon,
   label,
   value,
   sub,
   color = 'olive',
+  delay = 0,
 }: {
   icon: React.ElementType;
   label: string;
   value: number | string;
   sub?: string;
   color?: 'olive' | 'bronze' | 'terracotta';
+  delay?: number;
 }) {
-  const accent = {
-    olive:      'border-l-[hsl(82_15%_37%)]',
-    bronze:     'border-l-[hsl(30_30%_45%)]',
-    terracotta: 'border-l-[hsl(15_40%_55%)]',
-  }[color];
+  const gradients = {
+    olive:      'from-[hsl(82_15%_37%)] to-[hsl(82_15%_47%)]',
+    bronze:     'from-[hsl(30_30%_45%)] to-[hsl(30_30%_55%)]',
+    terracotta: 'from-[hsl(15_40%_55%)] to-[hsl(15_40%_65%)]',
+  };
+
+  const bgGlow = {
+    olive:      'bg-[hsl(82_15%_37%/0.08)]',
+    bronze:     'bg-[hsl(30_30%_45%/0.08)]',
+    terracotta: 'bg-[hsl(15_40%_55%/0.08)]',
+  };
 
   return (
-    <div className={`bg-card border border-border border-l-4 ${accent} p-6 flex items-start gap-4`}>
-      <div className="w-10 h-10 bg-secondary flex items-center justify-center shrink-0">
-        <Icon size={18} strokeWidth={1.25} className="text-muted-foreground" />
+    <div
+      className="admin-card admin-stat rounded-xl p-5 flex items-start gap-4"
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      <div className={cn(
+        "w-11 h-11 rounded-xl flex items-center justify-center shrink-0 admin-icon-glow",
+        bgGlow[color]
+      )}>
+        <div className={cn("w-8 h-8 rounded-lg bg-gradient-to-br flex items-center justify-center", gradients[color])}>
+          <Icon size={16} strokeWidth={1.5} className="text-white" />
+        </div>
       </div>
-      <div className="min-w-0">
-        <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-1">{label}</p>
-        <p className="font-serif text-3xl leading-none">{value}</p>
-        {sub && <p className="text-xs text-muted-foreground mt-1 font-light">{sub}</p>}
+      <div className="min-w-0 flex-1">
+        <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-1.5 font-sans">{label}</p>
+        <p className="font-serif text-3xl leading-none admin-count-up">{value}</p>
+        {sub && (
+          <p className="text-[11px] text-muted-foreground mt-1.5 font-light flex items-center gap-1">
+            {sub}
+          </p>
+        )}
       </div>
     </div>
   );
 }
 
-// ─── Recent Table Row ─────────────────────────────────────────────────────────
+// ─── Recent Table Row — Card style ──────────────────────────────────────────
 function RecentBienRow({ bien }: { bien: Bien }) {
-  const statusColors: Record<string, string> = {
-    publie:      'bg-[hsl(82_15%_37%)/15] text-[hsl(82_15%_37%)]',
-    brouillon:   'bg-secondary text-muted-foreground',
-    'vendu-loue':'bg-[hsl(15_40%_55%)/15] text-[hsl(15_40%_55%)]',
+  const statusConfig: Record<string, { bg: string; text: string; dot: string }> = {
+    publie:      { bg: 'bg-emerald-500/10', text: 'text-emerald-600', dot: 'bg-emerald-500' },
+    brouillon:   { bg: 'bg-amber-500/10', text: 'text-amber-600', dot: 'bg-amber-500' },
+    'vendu-loue': { bg: 'bg-rose-500/10', text: 'text-rose-600', dot: 'bg-rose-500' },
   };
 
+  const status = statusConfig[bien.statut] ?? statusConfig.brouillon;
   const main = bien.prix_vente ?? bien.prix_location_longue ?? bien.prix_location_courte ?? null;
 
   return (
     <Link
       to="/manage-xk92p/biens"
-      className="flex items-center gap-4 p-3 hover:bg-muted/40 transition-colors group"
+      className="flex items-center gap-4 p-3.5 hover:bg-muted/30 transition-all duration-200 group rounded-lg"
     >
-      <div className="w-12 h-10 bg-muted shrink-0 overflow-hidden">
+      <div className="w-14 h-11 bg-muted/50 shrink-0 overflow-hidden rounded-lg ring-1 ring-border/50">
         {bien.photo_principale ? (
           <OptimizedImage src={bien.photo_principale} alt={bien.titre} size="thumb" className="w-full h-full object-cover" wrapperClassName="w-full h-full" />
         ) : (
@@ -115,18 +147,22 @@ function RecentBienRow({ bien }: { bien: Bien }) {
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium truncate">{bien.titre}</p>
+        <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">{bien.titre}</p>
         <p className="text-xs text-muted-foreground capitalize">{bien.type} · {bien.quartier}</p>
       </div>
       {main && (
-        <p className="text-xs font-medium shrink-0">
+        <p className="text-xs font-medium shrink-0 tabular-nums">
           {main.toLocaleString('fr-MA')} {bien.devise}
         </p>
       )}
-      <span className={`text-[10px] tracking-widest uppercase px-2 py-0.5 shrink-0 ${statusColors[bien.statut] ?? 'bg-secondary text-muted-foreground'}`}>
-        {bien.statut}
+      <span className={cn(
+        "text-[10px] tracking-widest uppercase px-2.5 py-1 shrink-0 rounded-full flex items-center gap-1.5 font-medium",
+        status.bg, status.text
+      )}>
+        <span className={cn("w-1.5 h-1.5 rounded-full", status.dot)} />
+        {bien.statut === 'vendu-loue' ? 'Vendu' : bien.statut}
       </span>
-      <ArrowRight size={14} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+      <ArrowRight size={14} className="text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
     </Link>
   );
 }
@@ -135,9 +171,9 @@ function RecentArticleRow({ article }: { article: Article }) {
   return (
     <Link
       to="/manage-xk92p/blog"
-      className="flex items-center gap-4 p-3 hover:bg-muted/40 transition-colors group"
+      className="flex items-center gap-4 p-3.5 hover:bg-muted/30 transition-all duration-200 group rounded-lg"
     >
-      <div className="w-12 h-10 bg-muted shrink-0 overflow-hidden">
+      <div className="w-14 h-11 bg-muted/50 shrink-0 overflow-hidden rounded-lg ring-1 ring-border/50">
         {article.image_url ? (
           <OptimizedImage src={article.image_url} alt={article.title} size="thumb" className="w-full h-full object-cover" wrapperClassName="w-full h-full" />
         ) : (
@@ -147,18 +183,32 @@ function RecentArticleRow({ article }: { article: Article }) {
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium truncate">{article.title}</p>
+        <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">{article.title}</p>
         <p className="text-xs text-muted-foreground capitalize">{article.category}</p>
       </div>
-      <span className={`text-[10px] tracking-widest uppercase px-2 py-0.5 shrink-0 ${
+      <span className={cn(
+        "text-[10px] tracking-widest uppercase px-2.5 py-1 shrink-0 rounded-full flex items-center gap-1.5 font-medium",
         article.est_publie
-          ? 'bg-[hsl(82_15%_37%)/15] text-[hsl(82_15%_37%)]'
-          : 'bg-secondary text-muted-foreground'
-      }`}>
+          ? 'bg-emerald-500/10 text-emerald-600'
+          : 'bg-muted text-muted-foreground'
+      )}>
+        <span className={cn("w-1.5 h-1.5 rounded-full", article.est_publie ? 'bg-emerald-500' : 'bg-muted-foreground/40')} />
         {article.est_publie ? 'Publié' : 'Brouillon'}
       </span>
-      <ArrowRight size={14} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+      <ArrowRight size={14} className="text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
     </Link>
+  );
+}
+
+// ─── Custom Tooltip ──────────────────────────────────────────────────────────
+function CustomTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="admin-tooltip px-4 py-3">
+      <p className="text-[11px] font-medium text-foreground capitalize mb-1">{payload[0]?.name || label}</p>
+      <p className="text-lg font-serif text-foreground">{payload[0]?.value}</p>
+      <p className="text-[10px] text-muted-foreground mt-0.5">biens</p>
+    </div>
   );
 }
 
@@ -192,6 +242,7 @@ export default function AdminDashboard() {
   const publies       = biens.filter(b => b.statut === 'publie').length;
   const totalArticles = articles.length;
   const articlesPubl  = articles.filter(a => a.est_publie).length;
+  const visitesEnAttente = visites.filter(v => v.status === 'en-attente').length;
 
   // ── Chart data: répartition par type ───────────────────────────────────────
   const typeCount: Record<string, number> = {};
@@ -217,52 +268,63 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-border border-t-primary rounded-full animate-spin" />
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+            <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+          </div>
+          <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground">Chargement...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <main className="container mx-auto px-6 md:px-12 py-8 space-y-10 flex-1 overflow-y-auto">
+    <main className="container mx-auto px-6 md:px-10 py-8 space-y-8 flex-1 overflow-y-auto">
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <LayoutDashboard size={20} className="text-muted-foreground" strokeWidth={1.5} />
-          <div>
-            <h2 className="font-serif text-2xl">{t('admin.tableau_bord')}</h2>
-            <p className="text-sm text-muted-foreground font-light">Vue d'ensemble de l'activité</p>
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground font-sans">
+              {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+            </span>
           </div>
+          <h2 className="font-serif text-3xl md:text-4xl text-foreground">
+            {getGreeting()} 👋
+          </h2>
+          <p className="text-sm text-muted-foreground font-light mt-1">
+            Voici un aperçu de votre activité
+          </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-2.5">
           <Button
-            variant="luxury"
             size="sm"
-            className="gap-2"
+            className="gap-2 rounded-lg h-9 px-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-sm hover:shadow-md transition-all"
             onClick={() => navigate('/manage-xk92p/biens')}
           >
             <Plus size={14} />
-            {t('admin.ajouter_bien')}
+            <span className="text-[11px] tracking-wide">{t('admin.ajouter_bien')}</span>
           </Button>
           <Button
-            variant="luxury-ghost"
+            variant="outline"
             size="sm"
-            className="gap-2"
+            className="gap-2 rounded-lg h-9 px-4 border-border/60 hover:bg-muted/50 hover:border-primary/30 transition-all"
             onClick={() => navigate('/manage-xk92p/blog')}
           >
             <Sparkles size={14} />
-            {t('admin.generer_article')}
+            <span className="text-[11px] tracking-wide">{t('admin.generer_article')}</span>
           </Button>
         </div>
       </div>
 
       {/* ── Stats Cards ─────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard
           icon={Building2}
           label={t('admin.stats.total_biens')}
           value={totalBiens}
           color="olive"
+          delay={0}
         />
         <StatCard
           icon={Eye}
@@ -270,19 +332,22 @@ export default function AdminDashboard() {
           value={publies}
           sub={`${totalBiens > 0 ? Math.round((publies / totalBiens) * 100) : 0}% du total`}
           color="bronze"
+          delay={80}
         />
         <StatCard
           icon={CalendarCheck}
           label={t('admin.stats.visites') || "Demandes de visites"}
           value={visites.length}
-          sub={`${visites.filter(v => v.status === 'en-attente').length} en attente`}
+          sub={visitesEnAttente > 0 ? `${visitesEnAttente} en attente` : 'Aucune en attente'}
           color="bronze"
+          delay={160}
         />
         <StatCard
           icon={FileText}
           label={t('admin.stats.total_articles')}
           value={totalArticles}
           color="terracotta"
+          delay={240}
         />
         <StatCard
           icon={TrendingUp}
@@ -290,18 +355,22 @@ export default function AdminDashboard() {
           value={articlesPubl}
           sub={`${totalArticles > 0 ? Math.round((articlesPubl / totalArticles) * 100) : 0}% du total`}
           color="olive"
+          delay={320}
         />
       </div>
 
       {/* ── Charts ──────────────────────────────────────────────────────── */}
       {biens.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Pie: types de biens */}
-          <div className="bg-card border border-border p-6">
-            <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-6">
-              Répartition par type de bien
-            </p>
-            <ResponsiveContainer width="100%" height={220}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {/* Donut: types de biens */}
+          <div className="admin-card rounded-xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground font-sans">
+                Répartition par type
+              </p>
+              <span className="text-[10px] text-muted-foreground/60 tabular-nums">{totalBiens} biens</span>
+            </div>
+            <ResponsiveContainer width="100%" height={240}>
               <PieChart>
                 <Pie
                   data={typeData}
@@ -309,9 +378,10 @@ export default function AdminDashboard() {
                   nameKey="name"
                   cx="50%"
                   cy="50%"
-                  outerRadius={80}
-                  innerRadius={45}
-                  paddingAngle={3}
+                  outerRadius={85}
+                  innerRadius={50}
+                  paddingAngle={4}
+                  strokeWidth={0}
                   label={({ name, percent }) =>
                     `${name} ${(percent * 100).toFixed(0)}%`
                   }
@@ -324,37 +394,35 @@ export default function AdminDashboard() {
                     />
                   ))}
                 </Pie>
-                <Tooltip
-                  contentStyle={{ border: '1px solid hsl(30 15% 88%)', borderRadius: 0 }}
-                />
+                <Tooltip content={<CustomTooltip />} />
               </PieChart>
             </ResponsiveContainer>
           </div>
 
           {/* Bar: services */}
-          <div className="bg-card border border-border p-6">
-            <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-6">
-              Répartition par service
-            </p>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={serviceData} margin={{ left: -20, right: 10 }}>
+          <div className="admin-card rounded-xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground font-sans">
+                Répartition par service
+              </p>
+              <span className="text-[10px] text-muted-foreground/60 tabular-nums">{Object.values(serviceCount).reduce((a, b) => a + b, 0)} total</span>
+            </div>
+            <ResponsiveContainer width="100%" height={240}>
+              <BarChart data={serviceData} margin={{ left: -20, right: 10, top: 5, bottom: 5 }}>
                 <XAxis
                   dataKey="name"
-                  tick={{ fontSize: 10, textTransform: 'uppercase', fill: 'hsl(0 0% 40%)' }}
+                  tick={{ fontSize: 10, fill: 'hsl(0 0% 45%)' }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fontSize: 10, fill: 'hsl(0 0% 40%)' }}
+                  tick={{ fontSize: 10, fill: 'hsl(0 0% 45%)' }}
                   axisLine={false}
                   tickLine={false}
                   allowDecimals={false}
                 />
-                <Tooltip
-                  contentStyle={{ border: '1px solid hsl(30 15% 88%)', borderRadius: 0 }}
-                  cursor={{ fill: 'hsl(30 10% 94%)' }}
-                />
-                <Bar dataKey="value" maxBarSize={40} radius={0}>
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="value" maxBarSize={44} radius={[6, 6, 0, 0]}>
                   {serviceData.map((entry) => (
                     <Cell
                       key={entry.fullName}
@@ -369,45 +437,57 @@ export default function AdminDashboard() {
       )}
 
       {/* ── Recents ─────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Derniers biens */}
-        <div className="bg-card border border-border">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-            <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground">
-              5 derniers biens
-            </p>
+        <div className="admin-card rounded-xl overflow-hidden">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-border/40">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-primary/8 flex items-center justify-center">
+                <Building2 size={13} strokeWidth={1.5} className="text-primary" />
+              </div>
+              <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground font-sans">
+                Derniers biens
+              </p>
+            </div>
             <Link
               to="/manage-xk92p/biens"
-              className="flex items-center gap-1 text-[10px] tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-1.5 text-[10px] tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors group"
             >
-              Voir tout <ArrowRight size={12} />
+              Voir tout 
+              <ArrowUpRight size={12} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </Link>
           </div>
-          <div className="divide-y divide-border">
+          <div className="divide-y divide-border/30 px-2">
             {recentBiens.length > 0
               ? recentBiens.map(b => <RecentBienRow key={b.id} bien={b} />)
-              : <p className="py-8 text-center text-sm text-muted-foreground font-light">Aucun bien</p>
+              : <p className="py-10 text-center text-sm text-muted-foreground font-light">Aucun bien</p>
             }
           </div>
         </div>
 
         {/* Derniers articles */}
-        <div className="bg-card border border-border">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-            <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground">
-              5 derniers articles
-            </p>
+        <div className="admin-card rounded-xl overflow-hidden">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-border/40">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-accent/8 flex items-center justify-center">
+                <FileText size={13} strokeWidth={1.5} className="text-accent" />
+              </div>
+              <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground font-sans">
+                Derniers articles
+              </p>
+            </div>
             <Link
               to="/manage-xk92p/blog"
-              className="flex items-center gap-1 text-[10px] tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-1.5 text-[10px] tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors group"
             >
-              Voir tout <ArrowRight size={12} />
+              Voir tout 
+              <ArrowUpRight size={12} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </Link>
           </div>
-          <div className="divide-y divide-border">
+          <div className="divide-y divide-border/30 px-2">
             {recentArticles.length > 0
               ? recentArticles.map(a => <RecentArticleRow key={a.id} article={a} />)
-              : <p className="py-8 text-center text-sm text-muted-foreground font-light">Aucun article</p>
+              : <p className="py-10 text-center text-sm text-muted-foreground font-light">Aucun article</p>
             }
           </div>
         </div>
