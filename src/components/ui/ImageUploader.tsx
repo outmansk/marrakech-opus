@@ -262,11 +262,12 @@ export function ImageUploader({
 
           uploaded.push(img);
           onImageUploaded?.(img);
-        } catch (err: any) {
+        } catch (err: unknown) {
+          const message = err instanceof Error ? err.message : 'Erreur inconnue';
           setFiles((prev) =>
             prev.map((f) =>
               f.id === entry.id
-                ? { ...f, status: 'error', error: err?.message ?? 'Erreur inconnue' }
+                ? { ...f, status: 'error', error: message }
                 : f
             )
           );

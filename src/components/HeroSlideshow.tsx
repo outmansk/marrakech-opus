@@ -1,226 +1,91 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { EASE_LUXURY, SplitText } from "@/components/motion/Animations";
+import { type FormEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ChevronDown, MapPin, MessageCircle } from "lucide-react";
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import heroImage from "@/assets/hero-marrakech.jpg";
+import { QUARTIERS, type BienService } from "@/types/property";
 
-import slide1 from "@/assets/slide1_koutoubia.png";
-import slide2 from "@/assets/slide2.jpg";
-import slide4 from "@/assets/slide4.jpg";
-
-/* ── Slide data ─────────────────────────────────────────────────────────────── */
-const SLIDES = [
-  {
-    image: slide1,
-    titleKey: "hero.slide1_title",
-  },
-  {
-    image: slide2,
-    titleKey: "hero.slide2_title",
-  },
-  {
-    image: slide4,
-    titleKey: "hero.slide4_title",
-  },
-];
-
-const AUTOPLAY_MS = 6000;
+type Intent = Extract<BienService, "vente" | "location-longue-duree" | "location-courte-duree">;
 
 const HeroSlideshow = () => {
-  const { t, i18n } = useTranslation();
-  const [current, setCurrent] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const navigate = useNavigate();
+  const { i18n } = useTranslation();
+  const [intent, setIntent] = useState<Intent>("vente");
+  const [quartier, setQuartier] = useState("all");
 
   const tL = (fr: string, en: string, es: string) => {
-    const lang = i18n.language?.slice(0, 2) ?? 'fr';
-    if (lang === 'en') return en;
-    if (lang === 'es') return es;
-    return fr;
+    const language = i18n.language?.slice(0, 2) ?? "fr";
+    return language === "en" ? en : language === "es" ? es : fr;
   };
 
-  /* Touch swipe support */
-  const touchStartX = useRef(0);
-  const touchEndX = useRef(0);
+  const tabs: Array<{ value: Intent; label: string }> = [
+    { value: "vente", label: tL("Acheter", "Buy", "Comprar") },
+    { value: "location-longue-duree", label: tL("Louer à l’année", "Long-term rent", "Alquiler anual") },
+    { value: "location-courte-duree", label: tL("Séjourner", "Stay", "Estancia") },
+  ];
 
-  const goTo = useCallback((index: number) => {
-    setCurrent((index + SLIDES.length) % SLIDES.length);
-  }, []);
-
-  const goNext = useCallback(() => goTo(current + 1), [current, goTo]);
-  const goPrev = useCallback(() => goTo(current - 1), [current, goTo]);
-
-  /* Autoplay with pause */
-  useEffect(() => {
-    if (isPaused) return;
-    intervalRef.current = setInterval(goNext, AUTOPLAY_MS);
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [goNext, isPaused]);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.changedTouches[0].screenX;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    touchEndX.current = e.changedTouches[0].screenX;
-    const diff = touchStartX.current - touchEndX.current;
-    if (Math.abs(diff) > 50) {
-      diff > 0 ? goNext() : goPrev();
-    }
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    const params = new URLSearchParams({ type: intent });
+    if (quartier !== "all") params.set("quartier", quartier);
+    navigate(`/catalogue?${params.toString()}`);
   };
 
   return (
-    <section
-      className="relative h-[92vh] md:h-[95vh] lg:h-[90vh] min-h-[640px] overflow-hidden bg-black"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-    >
-      {/* ── Background slides with crossfade ──────────────────────── */}
-      {SLIDES.map((slide, i) => (
-        <div
-          key={i}
-          className="absolute inset-0 ease-in-out"
-          style={{ opacity: i === current ? 1 : 0, zIndex: i === current ? 10 : 0, transition: 'opacity 1200ms ease-in-out' }}
-        >
-          <img
-            src={slide.image}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover scale-105"
-            loading={i === 0 ? "eager" : "lazy"}
-          />
-          {/* Gradient overlay - elegant bottom vignette vignette */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.85) 100%)",
-            }}
-          />
-        </div>
-      ))}
+    <section className="bg-[#f6f1e8] pt-16">
+      <div className="mx-auto grid max-w-[1440px] lg:min-h-[470px] lg:grid-cols-[43%_57%]">
+        <div className="order-2 flex items-center px-5 py-9 sm:px-8 md:px-12 lg:order-1 lg:items-start lg:px-12 lg:pb-0 lg:pt-14 xl:px-16">
+          <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65 }} className="w-full max-w-[510px]">
+            <p className="mb-4 text-[9px] font-medium uppercase tracking-[0.24em] text-[#a4573e] sm:text-[10px] lg:hidden">
+              {tL("Immobilier d’exception à Marrakech", "Exceptional real estate in Marrakech", "Inmuebles excepcionales en Marrakech")}
+            </p>
+            <h1 className="max-w-[510px] text-[44px] leading-[0.95] tracking-[-0.035em] text-[#211f1b] sm:text-[50px] lg:text-[50px] xl:text-[54px]">
+              {tL("Trouvez votre adresse à Marrakech", "Find your place in Marrakech", "Encuentre su hogar en Marrakech")}
+            </h1>
+            <p className="mt-5 max-w-[470px] text-[14px] leading-6 text-[#655f56] sm:text-[15px] sm:leading-7">
+              {tL(
+                "Achat, location à l’année ou séjour — nous trouvons le bien qui vous correspond.",
+                "Purchase, long-term rental or stay — we find the property that fits you.",
+                "Compra, alquiler anual o estancia: encontramos la propiedad que le corresponde."
+              )}
+            </p>
 
-      {/* ── Four Seasons inspired Grid layout ──────────────────────── */}
-      <div className="absolute inset-0 z-20 container mx-auto px-6 md:px-12 flex flex-col pb-0 pt-24 md:py-24">
-        {/* Top Spacer */}
-        <div className="hidden md:block flex-1" />
-
-        {/* Bottom Section: Left Column (Text) & Right Column (Floating Card) */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-end justify-between w-full flex-1 md:flex-none">
-          {/* Left Column: Brand & Title */}
-          <div className="text-left max-w-lg md:max-w-2xl text-white space-y-3 mt-auto md:mt-0 mb-12 md:mb-0">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: EASE_LUXURY }}
-            >
-              <p className="font-serif italic text-white/90 text-base md:text-xl tracking-[0.05em] mb-1 font-light">
-                {tL("Collection Privée", "Private Collection", "Colección Privada")}
-              </p>
-              <h1 className="text-white font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extralight tracking-[0.25em] uppercase leading-none mt-2">
-                <SplitText text="MARRAKECH" delay={0.4} />
-              </h1>
-              <p className="text-[10px] md:text-xs tracking-[0.35em] uppercase text-white/80 font-sans mt-3">
-                {tL("1 BOULEVARD DE LA MENARA, MARRAKECH", "1 BOULEVARD DE LA MENARA, MARRAKECH", "1 BOULEVARD DE LA MENARA, MARRAKECH")}
-              </p>
-              <div className="w-16 h-[1px] bg-white/30 my-4" />
-              <div className="text-[9px] md:text-[10px] tracking-[0.2em] uppercase text-white/70 font-sans flex flex-wrap gap-x-4 gap-y-1.5 items-center">
-                <a href="tel:+212605387041" className="hover:text-white transition-colors underline decoration-white/20 underline-offset-4 font-medium">+212 6 05 38 70 41</a>
-                <span>|</span>
-                <span className="underline decoration-white/20 underline-offset-4">{tL("EMPLACEMENT EXCLUSIF", "EXCLUSIVE LOCATION", "UBICACIÓN EXCLUSIVA")}</span>
-                <span>|</span>
-                <Link to="/contact" className="hover:text-white transition-colors underline decoration-white/20 underline-offset-4 font-medium">{tL("NOUS CONTACTER", "CONTACT US", "CONTACTAR")}</Link>
+            <form onSubmit={submit} className="mt-6" aria-label="Recherche de propriétés">
+              <div className="grid grid-cols-3 border-b border-[#2b2722]/20">
+                {tabs.map((tab) => (
+                  <button type="button" key={tab.value} onClick={() => setIntent(tab.value)} className={`relative min-h-11 px-2 text-[9px] font-medium uppercase tracking-[0.12em] transition-colors duration-200 sm:text-[10px] ${intent === tab.value ? "text-[#211f1b]" : "text-[#777065] hover:text-[#211f1b]"}`}>
+                    {tab.label}
+                    {intent === tab.value && <span className="absolute inset-x-0 bottom-[-1px] h-[2px] bg-[#a4573e]" />}
+                  </button>
+                ))}
               </div>
-            </motion.div>
-          </div>
 
-          {/* Right Column: Floating Welcome Card */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.98, y: 30 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.3, ease: EASE_LUXURY }}
-            className="w-full md:w-[400px] bg-white p-8 md:p-10 shadow-2xl relative z-30 text-left border border-white/10 mt-auto md:mt-0 mb-0 md:mb-0"
-          >
-            <h2 className="font-serif text-lg sm:text-xl md:text-2xl font-light text-[#0A0A0A] leading-relaxed mb-8">
-              {tL("Bienvenue, votre prochaine destination vous attend.", "Welcome, your next destination awaits.", "Bienvenido, su próximo destino le espera.")}
-            </h2>
+              <label className="relative mt-4 flex h-[52px] items-center border border-[#2b2722]/15 bg-white/65 px-4">
+                <MapPin size={17} strokeWidth={1.4} className="mr-3 shrink-0 text-[#a4573e]" />
+                <span className="sr-only">Quartier</span>
+                <select value={quartier} onChange={(event) => setQuartier(event.target.value)} className="h-full w-full appearance-none bg-transparent pr-8 text-sm text-[#413d37] outline-none">
+                  <option value="all">{tL("Tous les quartiers", "All neighborhoods", "Todos los barrios")}</option>
+                  {QUARTIERS.map((item) => <option key={item} value={item}>{item}</option>)}
+                </select>
+                <ChevronDown size={16} strokeWidth={1.3} className="pointer-events-none absolute right-4 text-[#777065]" />
+              </label>
 
-            <div className="space-y-4">
-              <Link
-                to="/catalogue"
-                className="bg-[#0A0A0A] text-white w-full py-4 text-[10px] tracking-[0.22em] uppercase font-sans font-medium 
-                  hover:bg-[#0A0A0A]/90 transition-all duration-300 shadow-md inline-block text-center"
-              >
-                {tL("VOIR LE CATALOGUE", "VIEW CATALOGUE", "VER CATÁLOGO")}
-              </Link>
-
-              <button
-                onClick={() => {
-                  window.open(`https://wa.me/212605387041?text=${encodeURIComponent("Bonjour, je souhaite planifier une visite privée.")}`, '_blank');
-                }}
-                className="w-full border border-[#0A0A0A] text-[#0A0A0A] py-4 text-[10px] tracking-[0.22em] uppercase font-sans font-medium 
-                  hover:bg-[#0A0A0A] hover:text-white transition-all duration-300 text-center"
-              >
-                {tL("CONTACTEZ-NOUS PAR CHAT", "CONTACT US VIA CHAT", "CONTÁCTENOS POR CHAT")}
+              <button className="mt-3 h-[52px] w-full bg-[#a4573e] px-6 text-[10px] font-semibold uppercase tracking-[0.19em] text-white transition-colors duration-200 hover:bg-[#8f4732]">
+                {tL("Voir les propriétés", "View properties", "Ver propiedades")}
               </button>
-            </div>
+            </form>
 
-            <div className="mt-6 text-center">
-              <Link
-                to="/contact"
-                className="text-[9px] tracking-[0.2em] uppercase font-sans font-medium text-[#0A0A0A]/60 hover:text-[#0A0A0A] transition-colors border-b border-[#0A0A0A]/20 pb-0.5"
-              >
-                {tL("PLANIFIER UNE VISITE PRIVÉE", "PLAN A PRIVATE VISIT", "PLANIFICAR VISITA PRIVADA")}
-              </Link>
-            </div>
+            <a href="https://wa.me/212605387041?text=Bonjour%2C%20je%20souhaite%20%C3%AAtre%20conseill%C3%A9%20pour%20un%20bien%20%C3%A0%20Marrakech." target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 border-b border-[#5f6746]/35 pb-1 text-[10px] font-medium uppercase tracking-[0.16em] text-[#5f6746] transition-colors hover:text-[#41482f]">
+              <MessageCircle size={15} strokeWidth={1.4} /> {tL("Parler à un conseiller", "Talk to an advisor", "Hablar con un asesor")}
+            </a>
           </motion.div>
         </div>
-      </div>
 
-      {/* ── Bullets navigation (Bottom right) ──────────────────────── */}
-      <div className="absolute bottom-8 right-12 z-20 hidden md:flex gap-3">
-        {SLIDES.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => goTo(i)}
-            className={`w-2 h-2 rounded-full border border-white/40 transition-all duration-300 ${
-              i === current ? "bg-white scale-110" : "bg-transparent hover:bg-white/40"
-            }`}
-            aria-label={`Slide ${i + 1}`}
-          />
-        ))}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }} className="order-1 h-[285px] overflow-hidden sm:h-[380px] lg:order-2 lg:h-auto lg:min-h-[470px] lg:[clip-path:polygon(10%_0,100%_0,100%_100%,0_100%)]">
+          <img src={heroImage} alt="Villa de prestige avec piscine à Marrakech" className="h-full w-full object-cover" />
+        </motion.div>
       </div>
-
-      {/* ── Scroll indicator ──────────────────────────────────────── */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 hidden md:flex flex-col items-center gap-1">
-        <span className="text-[8px] tracking-[0.25em] text-white/50 uppercase font-sans font-medium">
-          {tL("FAITES DÉFILER POUR DÉCOUVRIR LA SUITE", "SCROLL TO DISCOVER MORE", "DESPLACE HACIA ABAJO PARA DESCUBRIR MÁS")}
-        </span>
-        <div className="w-[1px] h-6 bg-white/30 animate-pulse" />
-      </div>
-
-      {/* ── Arrow navigation (desktop only) ──────────────────────── */}
-      <button
-        onClick={goPrev}
-        className="hidden md:flex absolute left-6 top-[40%] -translate-y-1/2 z-20
-          w-12 h-12 items-center justify-center text-white/40 hover:text-white
-          transition-colors duration-300"
-        aria-label="Previous slide"
-      >
-        <ChevronLeft size={24} strokeWidth={1} />
-      </button>
-      <button
-        onClick={goNext}
-        className="hidden md:flex absolute right-6 top-[40%] -translate-y-1/2 z-20
-          w-12 h-12 items-center justify-center text-white/40 hover:text-white
-          transition-colors duration-300"
-        aria-label="Next slide"
-      >
-        <ChevronRight size={24} strokeWidth={1} />
-      </button>
     </section>
   );
 };

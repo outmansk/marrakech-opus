@@ -66,7 +66,7 @@ export function BienCard({ bien, onEdit }: BienCardProps) {
   const typeConfig = TYPE_CONFIG[bien.type] ?? { label: bien.type, className: '' };
   const serviceLabel = (bien.services && bien.services.length > 0)
     ? bien.services.map(s => SERVICE_LABELS[s] || s).join(', ')
-    : (SERVICE_LABELS[bien.service] || bien.service);
+    : (bien.service ? SERVICE_LABELS[bien.service] : '—');
 
   const formatPrix = () => {
     const prices: string[] = [];

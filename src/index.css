@@ -6,8 +6,8 @@
 
 @layer base {
   :root {
-    --background: 40 20% 98%;
-    --foreground: 0 0% 10%;
+    --background: 39 43% 97%;
+    --foreground: 35 13% 13%;
 
     --card: 40 20% 98%;
     --card-foreground: 0 0% 10%;
@@ -15,7 +15,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
 
-    --primary: 82 15% 37%;
+    --primary: 70 19% 34%;
     --primary-foreground: 40 20% 98%;
 
     --secondary: 30 15% 90%;
@@ -24,7 +24,7 @@
     --muted: 30 10% 94%;
     --muted-foreground: 0 0% 40%;
 
-    --accent: 30 30% 45%;
+    --accent: 15 39% 44%;
     --accent-foreground: 40 20% 98%;
 
     --destructive: 0 84.2% 60.2%;
@@ -40,7 +40,7 @@
     --olive-foreground: 40 20% 98%;
     --bronze: 30 30% 45%;
     --bronze-foreground: 40 20% 98%;
-    --terracotta: 15 40% 55%;
+    --terracotta: 15 39% 44%;
 
     --font-serif: 'Cormorant Garamond', Georgia, serif;
     --font-sans: 'Montserrat', -apple-system, sans-serif;
@@ -64,6 +64,15 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-weight: 300;
+    text-rendering: optimizeLegibility;
+  }
+
+  html {
+    scroll-padding-top: 88px;
+  }
+
+  button, a, input, select {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a4573e] focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
 
   h1, h2, h3 {

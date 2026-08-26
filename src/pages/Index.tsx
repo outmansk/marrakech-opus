@@ -1,212 +1,62 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import { Search, Home, Key, BarChart3, ArrowRight } from "lucide-react";
+import { ArrowUpRight, Home, Key, ShieldCheck } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroSlideshow from "@/components/HeroSlideshow";
 import PropertiesCarousel from "@/components/PropertiesCarousel";
-import slide5 from "@/assets/slide2.jpg";
-import { useTranslation } from "react-i18next";
+import lifestyleImage from "@/assets/slide4.jpg";
 import SEOHead from "@/components/SEOHead";
-import { motion } from "framer-motion";
-import { Reveal, PageTransition, EASE_LUXURY } from "@/components/motion/Animations";
+import { PageTransition, Reveal } from "@/components/motion/Animations";
 
 const Index = () => {
-  const { t, i18n } = useTranslation();
-  const [searchType, setSearchType] = useState<"vente" | "location-courte-duree" | "location-longue-duree">("vente");
-
+  const { i18n } = useTranslation();
   const tL = (fr: string, en: string, es: string) => {
-    const lang = i18n.language?.slice(0, 2) ?? 'fr';
-    if (lang === 'en') return en;
-    if (lang === 'es') return es;
-    return fr;
+    const language = i18n.language?.slice(0, 2) ?? "fr";
+    return language === "en" ? en : language === "es" ? es : fr;
   };
+
+  const services = [
+    { icon: Home, title: tL("Acheter", "Buy", "Comprar"), text: tL("Une sélection précise, des visites privées et une négociation maîtrisée.", "A precise selection, private viewings and expert negotiation.", "Una selección precisa, visitas privadas y negociación experta."), to: "/catalogue?type=vente" },
+    { icon: Key, title: tL("Louer", "Rent", "Alquilar"), text: tL("Des adresses adaptées à votre rythme de vie, pour un mois ou une année.", "Homes adapted to your lifestyle, for a month or a year.", "Hogares adaptados a su estilo de vida, por un mes o un año."), to: "/catalogue?type=location-longue-duree" },
+    { icon: ShieldCheck, title: tL("Être accompagné", "Be advised", "Ser asesorado"), text: tL("Un interlocuteur unique, du premier échange jusqu’à la remise des clés.", "One dedicated advisor, from the first call to the key handover.", "Un asesor dedicado, desde la primera llamada hasta la entrega de llaves."), to: "/contact" },
+  ];
 
   return (
     <PageTransition>
-      <div className="min-h-screen">
-        <SEOHead
-          title={tL("Immobilier de Luxe à Marrakech — Villas, Riads & Appartements", "Luxury Real Estate in Marrakech — Villas, Riads & Apartments", "Inmuebles de Lujo en Marrakech — Villas, Riads y Apartamentos")}
-          description={tL("Découvrez nos propriétés d'exception à Marrakech. Villas, riads, appartements en vente et location. Votre partenaire immobilier de confiance.", "Discover our exceptional properties in Marrakech. Villas, riads, apartments for sale and rent. Your trusted real estate partner.", "Descubra nuestras propiedades excepcionales en Marrakech. Villas, riads, apartamentos en venta y alquiler. Su socio inmobiliario de confianza.")}
-        />
-
+      <div className="min-h-screen overflow-hidden">
+        <SEOHead title={tL("Immobilier de luxe à Marrakech", "Luxury real estate in Marrakech", "Inmuebles de lujo en Marrakech")} description={tL("Villas, riads et appartements sélectionnés à Marrakech pour acheter, louer ou séjourner.", "Selected villas, riads and apartments in Marrakech to buy, rent or stay.", "Villas, riads y apartamentos seleccionados en Marrakech para comprar, alquilar o alojarse.")} />
         <Header />
-
-        {/* ═══════════════════════ SECTION 1 — Hero Slideshow ═══════════════════════ */}
         <HeroSlideshow />
-
-        {/* ═══════════════════════ SECTION 2 — Four Seasons Style Search ═══════════════════════ */}
-        <section className="hidden md:block bg-[#FAF8F3] py-12 relative z-20">
-          <div className="container mx-auto px-6 md:px-12">
-            
-            {/* ── Luxury Search Interface ── */}
-            <div className="max-w-3xl mx-auto">
-              {/* Premium Segmented Service tabs with Framer Motion liquid animation */}
-              <div className="bg-[#F5F0E8] border border-[#0A0A0A]/5 p-1 flex w-full max-w-lg mx-auto rounded-full mb-8 relative">
-                {([
-                  { key: "vente" as const, label: t("hero.acheter") },
-                  { key: "location-courte-duree" as const, label: t("hero.louer_court") },
-                  { key: "location-longue-duree" as const, label: t("hero.louer_long") },
-                ]).map((tab) => {
-                  const isActive = searchType === tab.key;
-                  return (
-                    <button
-                      key={tab.key}
-                      onClick={() => setSearchType(tab.key)}
-                      className={`flex-1 py-3 text-[9px] sm:text-[10px] tracking-[0.18em] uppercase font-sans font-medium
-                        transition-colors duration-300 relative z-10 text-center rounded-full whitespace-nowrap ${
-                        isActive ? "text-white" : "text-[#0A0A0A]/60 hover:text-[#0A0A0A]"
-                      }`}
-                    >
-                      {isActive && (
-                        <motion.div
-                          layoutId="activeSearchTab"
-                          className="absolute inset-0 bg-[#0A0A0A] rounded-full -z-10 shadow-sm"
-                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                        />
-                      )}
-                      {tab.label}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Luxury Search input + button */}
-              <div className="flex flex-col sm:flex-row gap-3 items-stretch max-w-2xl mx-auto w-full">
-                <div className="flex-1 relative">
-                  <Search size={16} strokeWidth={1.25} className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
-                  <input
-                    type="text"
-                    placeholder={tL("Rechercher par quartier, type...", "Search by neighborhood, type...", "Buscar por barrio, tipo...")}
-                    className="w-full h-14 pl-12 pr-6 bg-white border border-[#0A0A0A]/5 shadow-sm rounded-full text-sm font-sans font-light
-                      placeholder:text-muted-foreground/40 focus:outline-none focus:border-[#0A0A0A]/20 transition-all duration-300"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        window.location.href = `/catalogue?type=${searchType}`;
-                      }
-                    }}
-                  />
-                </div>
-                <Link
-                  to={`/catalogue?type=${searchType}`}
-                  className="h-14 px-8 bg-[#0A0A0A] text-white flex items-center justify-center gap-2
-                    text-[10px] tracking-[0.2em] uppercase font-sans font-medium rounded-full
-                    hover:bg-[#0A0A0A]/90 transition-all duration-300 shadow-md hover:shadow-lg shrink-0 text-center"
-                >
-                  <span>{tL("Rechercher", "Search", "Buscar")}</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════ SECTION 3 — Properties Carousel ═══════════════════════ */}
         <PropertiesCarousel />
 
-        {/* ═══════════════════════ SECTION 4 — L'Expérience Marrakech ═══════════════════════ */}
-        <section className="bg-[#FAF8F3] py-20 md:py-28 overflow-hidden">
-          <div className="container mx-auto px-6 md:px-12">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-              {/* Left — Image */}
-              <Reveal direction="left">
-                <div className="relative aspect-[4/5] overflow-hidden">
-                  <img
-                    src={slide5}
-                    alt="L'expérience Marrakech"
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                  {/* Decorative border */}
-                  <div className="absolute inset-4 border border-white/30 pointer-events-none" />
-                </div>
-              </Reveal>
-
-              {/* Right — Text */}
-              <Reveal direction="right">
-                <div className="space-y-8">
-                  <div>
-                    <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-4 font-sans">
-                      {tL("NOS SERVICES", "OUR SERVICES", "NUESTROS SERVICIOS")}
-                    </p>
-                    <h2 className="font-serif mb-4">
-                      {t("homepage.services_titre")}
-                    </h2>
-                    <p className="text-muted-foreground font-light leading-relaxed max-w-md">
-                      {tL(
-                        "Bénéficiez d'un accompagnement personnalisé tout au long de votre projet immobilier à Marrakech. De l'acquisition à la gestion, nous assurons l'excellence à chaque étape.",
-                        "Benefit from personalized support throughout your real estate project in Marrakech. From acquisition to management, we ensure excellence at every stage.",
-                        "Benefíciese de un acompañamiento personalizado a lo largo de su proyecto inmobiliario en Marrakech. Desde la adquisición hasta la gestión, garantizamos la excelencia en cada etapa."
-                      )}
-                    </p>
-                  </div>
-
-                  {/* 3 service items */}
-                  <div className="space-y-6">
-                    {[
-                      {
-                        icon: Home,
-                        title: t("homepage.service_vente_titre"),
-                        desc: t("homepage.service_vente_desc"),
-                        link: "/catalogue?type=vente",
-                      },
-                      {
-                        icon: Key,
-                        title: t("homepage.service_location_titre"),
-                        desc: t("homepage.service_location_desc"),
-                        link: "/catalogue?type=location-longue-duree",
-                      },
-                      {
-                        icon: BarChart3,
-                        title: t("homepage.service_gestion_titre"),
-                        desc: t("homepage.service_gestion_desc"),
-                        link: "/contact",
-                      },
-                    ].map((service, i) => (
-                      <Link
-                        key={i}
-                        to={service.link}
-                        className="group flex items-start gap-5 p-4 -mx-4 transition-colors duration-300 hover:bg-white/60 rounded-sm"
-                      >
-                        <div className="w-11 h-11 shrink-0 border border-[#0A0A0A]/15 flex items-center justify-center
-                          group-hover:bg-[#0A0A0A] group-hover:text-white group-hover:border-[#0A0A0A] transition-all duration-400">
-                          <service.icon size={18} strokeWidth={1.25} />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-serif text-lg mb-1">{service.title}</h4>
-                          <p className="text-muted-foreground text-sm font-light leading-relaxed">{service.desc}</p>
-                        </div>
-                        <ArrowRight
-                          size={16}
-                          strokeWidth={1.25}
-                          className="mt-1 text-muted-foreground/40 group-hover:text-[#0A0A0A] group-hover:translate-x-1 transition-all duration-300 shrink-0"
-                        />
-                      </Link>
-                    ))}
-                  </div>
-
-                  {/* CTA */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 15 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.3, ease: EASE_LUXURY }}
-                  >
-                    <Link
-                      to="/contact"
-                      className="inline-block border border-[#0A0A0A] text-[#0A0A0A] px-10 py-3.5
-                        text-[10px] tracking-[0.25em] uppercase font-sans font-medium
-                        hover:bg-[#0A0A0A] hover:text-white transition-all duration-300"
-                    >
-                      {t("contact.nous_contacter")}
+        <section className="bg-[#ede5d8] py-20 md:py-28">
+          <div className="mx-auto grid max-w-[1320px] gap-12 px-5 md:px-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center xl:px-16">
+            <Reveal direction="left">
+              <div className="relative aspect-[4/5] overflow-hidden">
+                <img src={lifestyleImage} alt="Intérieur contemporain ouvert sur un jardin à Marrakech" loading="lazy" className="h-full w-full object-cover" />
+                <div className="absolute inset-5 border border-white/35" />
+              </div>
+            </Reveal>
+            <Reveal direction="right">
+              <div>
+                <p className="text-[10px] font-medium uppercase tracking-[0.26em] text-[#a4573e]">{tL("Notre approche", "Our approach", "Nuestro enfoque")}</p>
+                <h2 className="mt-4 max-w-[620px] text-[42px] leading-none tracking-[-0.02em] text-[#211f1b] md:text-[56px]">{tL("L’immobilier, avec plus d’écoute et moins de bruit.", "Real estate, with more attention and less noise.", "Inmuebles, con más atención y menos ruido.")}</h2>
+                <p className="mt-6 max-w-[580px] text-[15px] leading-7 text-[#655f56]">{tL("Nous prenons le temps de comprendre votre projet, puis nous vous présentons uniquement les adresses qui ont du sens. Une expérience claire, confidentielle et profondément locale.", "We take time to understand your project, then show only the addresses that truly fit. A clear, confidential and deeply local experience.", "Nos tomamos el tiempo de comprender su proyecto y mostramos solo las propiedades que encajan. Una experiencia clara, confidencial y local.")}</p>
+                <div className="mt-10 grid gap-px border-y border-[#2b2722]/15 bg-[#2b2722]/15 md:grid-cols-3">
+                  {services.map(({ icon: Icon, title, text, to }) => (
+                    <Link key={title} to={to} className="group bg-[#ede5d8] px-5 py-7 transition-colors duration-200 hover:bg-[#f6f1e8]">
+                      <Icon size={21} strokeWidth={1.2} className="text-[#5f6746]" />
+                      <h3 className="mt-5 text-2xl text-[#211f1b]">{title}</h3>
+                      <p className="mt-3 text-xs leading-6 text-[#655f56]">{text}</p>
+                      <ArrowUpRight size={16} className="mt-5 text-[#a4573e] transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                     </Link>
-                  </motion.div>
+                  ))}
                 </div>
-              </Reveal>
-            </div>
+              </div>
+            </Reveal>
           </div>
         </section>
-
-        {/* ═══════════════════════ SECTION 5 — Footer ═══════════════════════ */}
         <Footer />
       </div>
     </PageTransition>

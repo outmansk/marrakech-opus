@@ -248,7 +248,7 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
         reference: bien.reference ?? '',
         type: bien.type ?? 'villa',
         statut: bien.statut ?? 'brouillon',
-        services: bien.services ?? (bien.service ? [bien.service] : []),
+        services: bien.services?.length ? bien.services : (bien.service ? [bien.service] : []),
         prix_vente: bien.prix_vente,
         prix_location_longue: bien.prix_location_longue,
         prix_location_courte: bien.prix_location_courte,
@@ -267,7 +267,7 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
         equipements: bien.equipements ?? [],
         photos: bien.photos ?? [],
         photo_principale: bien.photo_principale,
-        proximites: (bien.proximites as any) ?? [],
+        proximites: bien.proximites ?? [],
       });
     } else {
       form.reset({
@@ -333,8 +333,8 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
       if (!form.getValues('photo_principale') && newPhotos.length > 0) {
         form.setValue('photo_principale', newPhotos[0]);
       }
-    } catch (error: any) {
-      console.error('Erreur Cloudinary:', error.message);
+    } catch (error: unknown) {
+      console.error('Erreur Cloudinary:', error instanceof Error ? error.message : 'Erreur inconnue');
     } finally {
       setUploading(false);
       setUploadProgress(0);
@@ -427,7 +427,7 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
       equipements: values.equipements,
       photos: values.photos,
       photo_principale: values.photo_principale ?? null,
-      proximites: values.proximites,
+      proximites: values.proximites.map(({ place, time }) => ({ place, time })),
     };
 
     if (isEditing && bien) {

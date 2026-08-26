@@ -1,225 +1,128 @@
-import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { ArrowLeft, ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { supabase } from "@/lib/supabase";
-import type { Bien } from "@/types/property";
-import DOMPurify from 'dompurify';
-import { motion, AnimatePresence } from "framer-motion";
-import { PageTransition, Reveal, StaggerContainer, staggerItemVariants, EASE_LUXURY } from "@/components/motion/Animations";
+import { BIEN_TYPES, QUARTIERS, type Bien } from "@/types/property";
 import SEOHead from "@/components/SEOHead";
+import { PageTransition } from "@/components/motion/Animations";
 
 const Catalogue = () => {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [properties, setProperties] = useState<Bien[]>([]);
   const [loading, setLoading] = useState(true);
-  const activeType = DOMPurify.sanitize(searchParams.get("type") || "all");
-  const activeKind = DOMPurify.sanitize(searchParams.get("kind") || "all");
+  const [mobileFilters, setMobileFilters] = useState(false);
+
+  const activeType = searchParams.get("type") || "all";
+  const activeKind = searchParams.get("kind") || "all";
+  const activeQuartier = searchParams.get("quartier") || "all";
+  const queryText = searchParams.get("q") || "";
 
   const tL = (fr: string, en: string, es: string) => {
-    const lang = i18n.language?.slice(0, 2) ?? 'fr';
-    if (lang === 'en') return en;
-    if (lang === 'es') return es;
-    return fr;
+    const language = i18n.language?.slice(0, 2) ?? "fr";
+    return language === "en" ? en : language === "es" ? es : fr;
   };
 
   useEffect(() => {
-    const fetch = async () => {
+    let mounted = true;
+    const fetchProperties = async () => {
       setLoading(true);
-      let query = supabase
-        .from("properties_v2")
-        .select("*")
-        .eq("statut", "publie")
-        .order("created_at", { ascending: false });
-
-      if (activeType !== "all") {
-        query = query.contains("services", [activeType]);
+      let request = supabase.from("properties_v2").select("*").eq("statut", "publie").order("created_at", { ascending: false });
+      if (activeType !== "all") request = request.contains("services", [activeType]);
+      if (activeKind !== "all") request = request.eq("type", activeKind);
+      if (activeQuartier !== "all") request = request.eq("quartier", activeQuartier);
+      const { data } = await request;
+      if (mounted) {
+        setProperties((data as Bien[]) ?? []);
+        setLoading(false);
       }
-
-      if (activeKind !== "all") {
-        query = query.eq("type", activeKind);
-      }
-
-      const { data } = await query;
-      setProperties((data as Bien[]) || []);
-      setLoading(false);
     };
-    fetch();
-  }, [activeType, activeKind]);
+    fetchProperties();
+    return () => { mounted = false; };
+  }, [activeType, activeKind, activeQuartier]);
 
-  const serviceFilters = [
-    { key: "all", label: tL("Tous", "All", "Todos") },
-    { key: "vente", label: t("services.vente") },
-    { key: "location-longue-duree", label: t("services.location_longue") },
-    { key: "location-courte-duree", label: t("services.location_courte") },
-  ];
+  const visibleProperties = useMemo(() => {
+    const needle = queryText.trim().toLocaleLowerCase("fr");
+    if (!needle) return properties;
+    return properties.filter((property) => [property.titre, property.quartier, property.type, property.description_courte].filter(Boolean).join(" ").toLocaleLowerCase("fr").includes(needle));
+  }, [properties, queryText]);
 
-  const kindFilters = [
-    { key: "all", label: tL("Tous types", "All types", "Todos los tipos") },
-    { key: "villa", label: "Villas" },
-    { key: "riad", label: "Riads" },
-    { key: "appartement", label: tL("Appartements", "Apartments", "Apartamentos") },
-    { key: "maison", label: tL("Maisons", "Houses", "Casas") },
-    { key: "terrain", label: tL("Terrains", "Land", "Terrenos") },
-  ];
-
-  const setFilter = (key: string, value: string) => {
+  const update = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams);
-    if (value === "all") {
-      params.delete(key);
-    } else {
-      params.set(key, value);
-    }
-    setSearchParams(params);
+    if (!value || value === "all") params.delete(key); else params.set(key, value);
+    setSearchParams(params, { replace: true });
   };
+
+  const clear = () => setSearchParams({}, { replace: true });
+  const countFilters = [activeType, activeKind, activeQuartier].filter((value) => value !== "all").length + (queryText ? 1 : 0);
+
+  const FilterFields = () => (
+    <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr_1fr_1fr_auto] lg:items-end">
+      <label className="block">
+        <span className="mb-2 block text-[9px] font-semibold uppercase tracking-[0.17em] text-[#777065]">{tL("Recherche", "Search", "Buscar")}</span>
+        <span className="flex h-12 items-center border border-[#2b2722]/15 bg-white px-4">
+          <Search size={16} strokeWidth={1.4} className="mr-3 text-[#a4573e]" />
+          <input value={queryText} onChange={(event) => update("q", event.target.value)} placeholder={tL("Quartier, riad, villa…", "Area, riad, villa…", "Barrio, riad, villa…")} className="w-full bg-transparent text-sm outline-none placeholder:text-[#918b82]" />
+        </span>
+      </label>
+      {[
+        { label: tL("Projet", "Project", "Proyecto"), key: "type", value: activeType, options: [["all", tL("Tous", "All", "Todos")], ["vente", tL("Acheter", "Buy", "Comprar")], ["location-longue-duree", tL("Louer à l’année", "Long-term rent", "Alquiler anual")], ["location-courte-duree", tL("Séjourner", "Stay", "Estancia")]] },
+        { label: tL("Type de bien", "Property type", "Tipo"), key: "kind", value: activeKind, options: [["all", tL("Tous les types", "All types", "Todos los tipos")], ...BIEN_TYPES.map((type) => [type, type.charAt(0).toUpperCase() + type.slice(1)])] },
+        { label: tL("Quartier", "Neighborhood", "Barrio"), key: "quartier", value: activeQuartier, options: [["all", tL("Tous les quartiers", "All neighborhoods", "Todos los barrios")], ...QUARTIERS.map((quartier) => [quartier, quartier])] },
+      ].map((field) => (
+        <label key={field.key} className="block">
+          <span className="mb-2 block text-[9px] font-semibold uppercase tracking-[0.17em] text-[#777065]">{field.label}</span>
+          <span className="relative flex h-12 items-center border border-[#2b2722]/15 bg-white px-4">
+            <select value={field.value} onChange={(event) => update(field.key, event.target.value)} className="h-full w-full appearance-none bg-transparent pr-7 text-sm capitalize outline-none">
+              {field.options.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+            </select>
+            <ChevronDown size={15} className="pointer-events-none absolute right-4 text-[#777065]" />
+          </span>
+        </label>
+      ))}
+      <button type="button" onClick={clear} className="h-12 px-3 text-[9px] font-semibold uppercase tracking-[0.15em] text-[#777065] transition-colors hover:text-[#a4573e]">{tL("Effacer", "Clear", "Borrar")}</button>
+    </div>
+  );
 
   return (
     <PageTransition>
-    <SEOHead
-      title="Nos Biens — Villas, Riads & Appartements à Marrakech"
-      description="Explorez notre collection de biens immobiliers de luxe à Marrakech. Villas, riads, appartements en vente et location."
-    />
-    <div className="min-h-screen">
-      <Header />
-      <div className="pt-32 pb-24">
-        <div className="container mx-auto px-6 md:px-12">
-          <Reveal>
-            <Link to="/" className="inline-flex items-center gap-2 text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors font-sans mb-8">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-              {tL("Retour à l'accueil", "Back to home", "Volver al inicio")}
-            </Link>
-            <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-3 font-sans">
-              {tL("Notre collection", "Our collection", "Nuestra colección")}
-            </p>
-            <div className="w-12 h-[1px] bg-foreground/20 mb-4" />
-            <h1 className="mb-4">{t("nav.catalogue")}</h1>
-            <p className="text-muted-foreground font-light text-base max-w-xl mb-8">
-              {tL(
-                "Découvrez notre sélection de biens d'exception à Marrakech. Villas, riads, appartements — chaque propriété est soigneusement sélectionnée.",
-                "Discover our selection of exceptional properties in Marrakech. Villas, riads, apartments — each property is carefully selected.",
-                "Descubra nuestra selección de propiedades excepcionales en Marrakech. Villas, riads, apartamentos — cada propiedad es cuidadosamente seleccionada."
-              )}
-            </p>
-          </Reveal>
-
-          {/* ── Service filter tabs ─────────────────────────────────── */}
-          <Reveal delay={0.15}>
-            <div className="relative mb-4">
-              <p className="text-[9px] tracking-[0.2em] uppercase text-muted-foreground font-sans font-medium mb-2">
-                {tL("Service", "Service", "Servicio")}
-              </p>
-              <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
-                {serviceFilters.map((f) => (
-                  <motion.button
-                    key={f.key}
-                    onClick={() => setFilter("type", f.key)}
-                    className={`px-5 py-2 text-[10px] tracking-[0.18em] uppercase font-sans font-medium transition-all whitespace-nowrap border rounded-sm ${
-                      activeType === f.key
-                        ? "bg-foreground text-background border-foreground shadow-sm"
-                        : "bg-transparent text-muted-foreground border-border/60 hover:border-foreground/40 hover:text-foreground"
-                    }`}
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    layout
-                  >
-                    {f.label}
-                  </motion.button>
-                ))}
+      <div className="min-h-screen bg-[#fbf8f2]">
+        <SEOHead title={tL("Catalogue immobilier Marrakech", "Marrakech property catalogue", "Catálogo inmobiliario Marrakech")} description={tL("Découvrez nos villas, riads et appartements disponibles à Marrakech.", "Discover our available villas, riads and apartments in Marrakech.", "Descubra nuestras villas, riads y apartamentos disponibles en Marrakech.")} />
+        <Header />
+        <main className="pt-16">
+          <section className="border-b border-[#2b2722]/12 bg-[#ede5d8] py-12 md:py-16">
+            <div className="mx-auto max-w-[1320px] px-5 md:px-10 xl:px-16">
+              <Link to="/" className="inline-flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.17em] text-[#777065] hover:text-[#a4573e]"><ArrowLeft size={14} />{tL("Accueil", "Home", "Inicio")}</Link>
+              <div className="mt-7 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <div><p className="text-[10px] font-medium uppercase tracking-[0.26em] text-[#a4573e]">{tL("Notre collection", "Our collection", "Nuestra colección")}</p><h1 className="mt-3 text-[48px] leading-none tracking-[-0.03em] text-[#211f1b] md:text-[64px]">{tL("Des adresses choisies", "Chosen addresses", "Direcciones elegidas")}</h1></div>
+                <p className="max-w-md text-sm leading-6 text-[#655f56]">{tL("Une sélection courte de biens vérifiés, à acheter, louer ou habiter le temps d’un séjour.", "A concise selection of verified homes to buy, rent or enjoy for a stay.", "Una selección de propiedades verificadas para comprar, alquilar o disfrutar durante una estancia.")}</p>
               </div>
             </div>
-          </Reveal>
+          </section>
 
-          {/* ── Type filter tabs ────────────────────────────────────── */}
-          <Reveal delay={0.25}>
-            <div className="relative mb-6">
-              <p className="text-[9px] tracking-[0.2em] uppercase text-muted-foreground font-sans font-medium mb-2">
-                {tL("Type de bien", "Property type", "Tipo de propiedad")}
-              </p>
-              <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
-                {kindFilters.map((f) => (
-                  <motion.button
-                    key={f.key}
-                    onClick={() => setFilter("kind", f.key)}
-                    className={`px-5 py-2 text-[10px] tracking-[0.18em] uppercase font-sans font-medium transition-all whitespace-nowrap border rounded-sm ${
-                      activeKind === f.key
-                        ? "bg-accent text-accent-foreground border-accent shadow-sm"
-                        : "bg-transparent text-muted-foreground border-border/60 hover:border-accent/40 hover:text-foreground"
-                    }`}
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    layout
-                  >
-                    {f.label}
-                  </motion.button>
-                ))}
-              </div>
-              <div className="absolute right-0 top-6 bottom-3 w-12 bg-gradient-to-l from-background to-transparent pointer-events-none md:hidden" />
+          <section className="sticky top-16 z-30 border-b border-[#2b2722]/12 bg-[#f6f1e8]/95 backdrop-blur-xl">
+            <div className="mx-auto max-w-[1320px] px-5 py-4 md:px-10 xl:px-16">
+              <div className="hidden lg:block"><FilterFields /></div>
+              <button type="button" onClick={() => setMobileFilters(true)} className="flex h-12 w-full items-center justify-between border border-[#2b2722]/15 bg-white px-4 text-[10px] font-semibold uppercase tracking-[0.16em] lg:hidden"><span className="flex items-center gap-2"><SlidersHorizontal size={16} />{tL("Filtres", "Filters", "Filtros")}</span>{countFilters > 0 && <span className="grid h-6 w-6 place-items-center rounded-full bg-[#a4573e] text-white">{countFilters}</span>}</button>
             </div>
-          </Reveal>
+          </section>
 
-          {/* ── Results counter ─────────────────────────────────────── */}
-          {!loading && (
-            <Reveal delay={0.3}>
-              <div className="mb-8 flex items-center gap-3">
-                <div className="w-8 h-[1px] bg-accent/40" />
-                <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground font-sans font-medium">
-                  {properties.length} {properties.length > 1 ? tL("biens trouvés", "properties found", "propiedades encontradas") : tL("bien trouvé", "property found", "propiedad encontrada")}
-                </p>
-                <div className="flex-1 h-[1px] bg-border/40" />
-              </div>
-            </Reveal>
-          )}
+          <div className="mx-auto max-w-[1320px] px-5 py-10 md:px-10 md:py-14 xl:px-16">
+            {!loading && <div className="mb-8 flex items-center gap-4"><p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#655f56]">{visibleProperties.length} {tL(visibleProperties.length > 1 ? "biens" : "bien", visibleProperties.length > 1 ? "properties" : "property", visibleProperties.length > 1 ? "propiedades" : "propiedad")}</p><span className="h-px flex-1 bg-[#2b2722]/12" /></div>}
+            {loading ? <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">{[0,1,2,3,4,5].map((item) => <div key={item} className="animate-pulse"><div className="aspect-[4/3] bg-[#e9e1d5]" /><div className="mt-4 h-6 w-2/3 bg-[#e9e1d5]" /></div>)}</div> : visibleProperties.length > 0 ? <div className="grid gap-x-7 gap-y-12 md:grid-cols-2 lg:grid-cols-3">{visibleProperties.map((property, index) => <PropertyCard key={property.id} property={property} activeType={activeType} revealDelay={index * 50} />)}</div> : <div className="border-y border-[#2b2722]/12 py-20 text-center"><h2 className="text-4xl">{tL("Aucun bien trouvé", "No property found", "No se encontró ninguna propiedad")}</h2><p className="mt-3 text-sm text-[#655f56]">{tL("Essayez de modifier ou d’effacer vos filtres.", "Try changing or clearing your filters.", "Pruebe a cambiar o borrar los filtros.")}</p><button onClick={clear} className="mt-7 bg-[#a4573e] px-7 py-4 text-[10px] font-semibold uppercase tracking-[0.17em] text-white">{tL("Effacer les filtres", "Clear filters", "Borrar filtros")}</button></div>}
+          </div>
+        </main>
+        <Footer />
 
-          <AnimatePresence mode="wait">
-            {loading ? (
-              <motion.div
-                key="skeleton"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12"
-              >
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="aspect-[4/3] bg-muted" />
-                    <div className="pt-5 space-y-3">
-                       <div className="h-3 w-24 bg-muted rounded" />
-                       <div className="h-5 w-48 bg-muted rounded" />
-                       <div className="h-4 w-32 bg-muted rounded" />
-                    </div>
-                  </div>
-                ))}
-              </motion.div>
-            ) : properties.length > 0 ? (
-              <motion.div
-                key="results"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12"
-              >
-                {properties.map((property) => (
-                  <PropertyCard key={property.id} property={property} activeType={activeType} />
-                ))}
-              </motion.div>
-            ) : (
-              <motion.div
-                key="empty"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center py-20"
-              >
-                <p className="text-muted-foreground font-light text-lg">{t("biens.aucun_bien")}</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+        <AnimatePresence>
+          {mobileFilters && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[90] bg-[#f6f1e8] px-5 pb-8 pt-6 lg:hidden"><div className="mb-8 flex items-center justify-between"><h2 className="text-4xl">{tL("Affiner", "Refine", "Filtrar")}</h2><button onClick={() => setMobileFilters(false)} className="grid h-11 w-11 place-items-center" aria-label="Fermer"><X /></button></div><FilterFields /><button onClick={() => setMobileFilters(false)} className="mt-8 h-14 w-full bg-[#a4573e] text-[10px] font-semibold uppercase tracking-[0.17em] text-white">{tL(`Voir ${visibleProperties.length} biens`, `View ${visibleProperties.length} properties`, `Ver ${visibleProperties.length} propiedades`)}</button></motion.div>}
+        </AnimatePresence>
       </div>
-      <Footer />
-    </div>
     </PageTransition>
   );
 };

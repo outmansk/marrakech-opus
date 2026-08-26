@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import SEOHead from "@/components/SEOHead";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { type Components } from "react-markdown";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, Calendar, Share2, ArrowRight } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -19,34 +19,37 @@ const BlogPost = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchArticle();
-    window.scrollTo(0, 0);
-  }, [slug]);
-
-  const fetchArticle = async () => {
-    setLoading(true);
-    const { data } = await supabase
-      .from("articles")
-      .select("*")
-      .eq("slug", slug)
-      .eq("est_publie", true)
-      .single();
-
-    if (data) {
-      setArticle(data as Article);
-      
-      const { data: similar } = await supabase
+    const fetchArticle = async () => {
+      setLoading(true);
+      const { data } = await supabase
         .from("articles")
         .select("*")
-        .eq("category", data.category)
+        .eq("slug", slug)
         .eq("est_publie", true)
-        .neq("id", data.id)
-        .limit(3);
-        
-      if (similar) setSimilarArticles(similar as Article[]);
-    }
-    setLoading(false);
-  };
+        .single();
+
+      if (data) {
+        setArticle(data as Article);
+
+        const { data: similar } = await supabase
+          .from("articles")
+          .select("*")
+          .eq("category", data.category)
+          .eq("est_publie", true)
+          .neq("id", data.id)
+          .limit(3);
+
+        if (similar) setSimilarArticles(similar as Article[]);
+      } else {
+        setArticle(null);
+        setSimilarArticles([]);
+      }
+      setLoading(false);
+    };
+
+    void fetchArticle();
+    window.scrollTo(0, 0);
+  }, [slug]);
 
   const extractTOC = (content: string) => {
     const regex = /^(##|###)\s+(.+)$/gm;
@@ -91,19 +94,19 @@ const BlogPost = () => {
 
   const toc = extractTOC(article.content);
   
-  const MarkdownComponents = {
-    h2: ({ node, ...props }: any) => {
-      const id = props.children[0]?.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
-      return <h2 id={id} className="mt-16 mb-8 pb-4 border-b border-border" {...props} />;
+  const MarkdownComponents: Components = {
+    h2: ({ node: _node, children, ...props }) => {
+      const id = String(children).toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+      return <h2 id={id} className="mt-16 mb-8 pb-4 border-b border-border" {...props}>{children}</h2>;
     },
-    h3: ({ node, ...props }: any) => {
-      const id = props.children[0]?.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
-      return <h3 id={id} className="mt-12 mb-6" {...props} />;
+    h3: ({ node: _node, children, ...props }) => {
+      const id = String(children).toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+      return <h3 id={id} className="mt-12 mb-6" {...props}>{children}</h3>;
     },
-    p: ({ node, ...props }: any) => <p className="text-muted-foreground font-light leading-relaxed mb-6 text-lg" {...props} />,
-    ul: ({ node, ...props }: any) => <ul className="list-disc list-outside ml-6 text-muted-foreground font-light mb-8 space-y-3" {...props} />,
-    ol: ({ node, ...props }: any) => <ol className="list-decimal list-outside ml-6 text-muted-foreground font-light mb-8 space-y-3" {...props} />,
-    strong: ({ node, ...props }: any) => <strong className="text-foreground font-medium" {...props} />,
+    p: ({ node: _node, ...props }) => <p className="text-muted-foreground font-light leading-relaxed mb-6 text-lg" {...props} />,
+    ul: ({ node: _node, ...props }) => <ul className="list-disc list-outside ml-6 text-muted-foreground font-light mb-8 space-y-3" {...props} />,
+    ol: ({ node: _node, ...props }) => <ol className="list-decimal list-outside ml-6 text-muted-foreground font-light mb-8 space-y-3" {...props} />,
+    strong: ({ node: _node, ...props }) => <strong className="text-foreground font-medium" {...props} />,
   };
 
   const jsonLd = {

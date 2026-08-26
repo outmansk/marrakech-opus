@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
+import type { Session } from "@supabase/supabase-js";
 
 // ─── Nav item type ────────────────────────────────────────────────────────────
 interface NavItem {
@@ -95,7 +96,7 @@ function UserAvatar({ email, size = 'md' }: { email: string; size?: 'sm' | 'md' 
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function AdminLayout() {
-  const [session, setSession] = useState<any>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { t } = useTranslation();
@@ -103,7 +104,7 @@ export default function AdminLayout() {
   const location = useLocation();
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       if (!session) navigate("/manage-xk92p/login", { replace: true });
     });
@@ -111,6 +112,7 @@ export default function AdminLayout() {
       setSession(session);
       if (!session) navigate("/manage-xk92p/login", { replace: true });
     });
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   const handleLogout = async () => {

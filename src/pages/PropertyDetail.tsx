@@ -280,9 +280,10 @@ const PropertyDetail = () => {
           )}
         </div>
 
-        {/* Desktop Gallery — contained with padding */}
+        {/* Desktop Gallery — editorial mosaic */}
         <div className="hidden md:block container mx-auto px-6 md:px-12">
-          <div className="relative aspect-[21/9] overflow-hidden mb-4 bg-muted group rounded-sm">
+          <div className="grid h-[410px] grid-cols-[2fr_1fr] gap-2 overflow-hidden bg-muted">
+          <div className="relative overflow-hidden bg-muted group">
             <OptimizedImage
               src={images[selectedImage]}
               alt={property.titre}
@@ -306,47 +307,38 @@ const PropertyDetail = () => {
                   <ChevronRight size={24} />
                 </button>
 
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                  {images.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setSelectedImage(idx)}
-                      className={`w-2 h-2 rounded-full transition-all ${selectedImage === idx ? "bg-white scale-125" : "bg-white/50"}`}
-                      aria-label={`Aller à l'image ${idx + 1}`}
-                    />
-                  ))}
-                </div>
+                <div className="absolute bottom-4 right-4 bg-black/45 px-3 py-1.5 text-[10px] font-medium tracking-[0.14em] text-white backdrop-blur-sm">{selectedImage + 1} / {images.length}</div>
               </>
             )}
           </div>
-          {images.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              {images.map((url, i) => (
+          <div className="grid grid-rows-2 gap-2 overflow-hidden">
+            {[images[1] || images[0], images[2] || images[0]].map((url, offset) => {
+              const index = Math.min(offset + 1, images.length - 1);
+              return (
                 <button
-                  key={i}
-                  onClick={() => setSelectedImage(i)}
-                  className={`flex-shrink-0 w-24 h-16 overflow-hidden rounded-sm transition-all ${
-                    selectedImage === i ? "opacity-100 ring-2 ring-accent" : "opacity-40 hover:opacity-70"
-                  }`}
+                  key={`${url}-${offset}`}
+                  onClick={() => setSelectedImage(index)}
+                  className={`relative overflow-hidden transition-opacity ${selectedImage === index ? "opacity-100" : "opacity-80 hover:opacity-100"}`}
                 >
                   <OptimizedImage
                     src={url}
-                    alt=""
-                    size="thumb"
+                    alt={`${property.titre} — vue ${index + 1}`}
+                    size="card"
                     className="w-full h-full object-cover"
                     wrapperClassName="w-full h-full"
                   />
                 </button>
-              ))}
-            </div>
-          )}
+              );
+            })}
+          </div>
+          </div>
         </div>
         </Reveal>
 
         {/* ══════════════════════════════════════════════════════════════════
             CONTENT — Mobile-first reorganized layout
            ══════════════════════════════════════════════════════════════════ */}
-        <div className="container mx-auto px-5 md:px-12 py-8 md:py-16">
+        <div className="container mx-auto px-5 md:px-12 py-8 md:py-10">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 md:gap-16">
             <div className="lg:col-span-2 space-y-6 md:space-y-10">
 
@@ -439,7 +431,7 @@ const PropertyDetail = () => {
                       <span className="text-[10px] tracking-wider uppercase text-muted-foreground font-sans mt-0.5">Sdb</span>
                     </div>
                   )}
-                  {property.surface_terrain !== null && (
+                  {property.surface_terrain !== null && property.surface_terrain > 0 && (
                     <div className="flex flex-col items-center justify-center py-4 px-3 bg-muted/40 border border-border/40 rounded-lg">
                       <Maximize size={22} strokeWidth={1} className="text-accent mb-2" />
                       <span className="text-lg font-serif text-foreground">{property.surface_terrain}</span>
@@ -469,7 +461,7 @@ const PropertyDetail = () => {
                       <span className="font-light tracking-wide">{property.salles_de_bain} Sdb</span>
                     </div>
                   )}
-                  {property.surface_terrain !== null && (
+                  {property.surface_terrain !== null && property.surface_terrain > 0 && (
                     <div className="flex items-center gap-3">
                       <Maximize size={22} strokeWidth={1} className="text-muted-foreground" />
                       <span className="font-light tracking-wide">{property.surface_terrain} {t('biens.surface')}</span>
@@ -576,7 +568,7 @@ const PropertyDetail = () => {
 
       {/* ── Mobile sticky bottom CTA ── */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40">
-        <div className="bg-background/95 backdrop-blur-xl border-t border-border/60 px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+        <div className="bg-background/95 backdrop-blur-xl border-t border-border/60 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
           <div className="flex gap-2.5 max-w-lg mx-auto">
             <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex-1">
               <Button variant="luxury" className="w-full h-[46px] gap-2 text-[10px] tracking-[0.15em] rounded-lg px-3">

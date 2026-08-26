@@ -59,6 +59,27 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id: string
+          role?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       properties_v2: {
         Row: {
           chambres: number | null
@@ -81,6 +102,7 @@ export type Database = {
           quartier: string | null
           reference: string | null
           salles_de_bain: number | null
+          service: string | null
           services: string[]
           statut: string
           surface_habitable: number | null
@@ -110,6 +132,7 @@ export type Database = {
           quartier?: string | null
           reference?: string | null
           salles_de_bain?: number | null
+          service?: string | null
           services: string[]
           statut?: string
           surface_habitable?: number | null
@@ -139,6 +162,7 @@ export type Database = {
           quartier?: string | null
           reference?: string | null
           salles_de_bain?: number | null
+          service?: string | null
           services?: string[]
           statut?: string
           surface_habitable?: number | null
@@ -206,7 +230,8 @@ export type Database = {
           client_phone: string
           created_at: string
           id: string
-          property_id: string
+          property_id: string | null
+          property_v2_id: string | null
           requested_date: string
           status: string
         }
@@ -215,7 +240,8 @@ export type Database = {
           client_phone: string
           created_at?: string
           id?: string
-          property_id: string
+          property_id?: string | null
+          property_v2_id?: string | null
           requested_date: string
           status?: string
         }
@@ -224,7 +250,8 @@ export type Database = {
           client_phone?: string
           created_at?: string
           id?: string
-          property_id?: string
+          property_id?: string | null
+          property_v2_id?: string | null
           requested_date?: string
           status?: string
         }
@@ -234,6 +261,13 @@ export type Database = {
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_requests_property_v2_id_fkey"
+            columns: ["property_v2_id"]
+            isOneToOne: false
+            referencedRelation: "properties_v2"
             referencedColumns: ["id"]
           },
         ]

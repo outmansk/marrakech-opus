@@ -19,4 +19,19 @@ export default defineConfig(({ mode }) => ({
     },
     dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime", "@tanstack/react-query", "@tanstack/query-core"],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+          if (id.includes("framer-motion") || id.includes("lenis")) return "motion";
+          if (id.includes("@tanstack")) return "query";
+          if (id.includes("i18next")) return "i18n";
+          if (id.includes("lucide-react")) return "icons";
+          if (id.includes("@radix-ui")) return "radix-ui";
+          if (id.includes("react") || id.includes("scheduler")) return "react-core";
+        },
+      },
+    },
+  },
 }));

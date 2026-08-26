@@ -1,16 +1,9 @@
 import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import type { Bien, BienService } from "@/types/property";
-import { MessageCircle, MapPin } from "lucide-react";
-import OptimizedImage from "@/components/ui/OptimizedImage";
+import { Bath, Bed, MapPin, Maximize } from "lucide-react";
 import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import { EASE_LUXURY } from "@/components/motion/Animations";
-import { ServiceTag, TypeBadge, PhotoCount, SoldBanner, SpecsBar, EquipmentMicroTags, QuartierTag } from "@/components/PropertyTags";
-
-const formatPrice = (price: number) => {
-  return new Intl.NumberFormat("fr-MA").format(price) + " MAD";
-};
+import { useTranslation } from "react-i18next";
+import type { Bien } from "@/types/property";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 
 interface PropertyCardProps {
   property: Bien;
@@ -18,156 +11,53 @@ interface PropertyCardProps {
   activeType?: string;
 }
 
+const formatPrice = (price: number) => new Intl.NumberFormat("fr-MA").format(price) + " MAD";
+
 const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardProps) => {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
+  const language = i18n.language?.slice(0, 2) ?? "fr";
+  const tL = (fr: string, en: string, es: string) => language === "en" ? en : language === "es" ? es : fr;
 
-  const tL = (fr: string, en: string, es: string) => {
-    const lang = i18n.language?.slice(0, 2) ?? 'fr';
-    if (lang === 'en') return en;
-    if (lang === 'es') return es;
-    return fr;
-  };
+  const price = (() => {
+    if (activeType === "vente" && property.prix_vente) return formatPrice(property.prix_vente);
+    if (activeType === "location-longue-duree" && property.prix_location_longue) return `${formatPrice(property.prix_location_longue)} ${tL("/ mois", "/ month", "/ mes")}`;
+    if (activeType === "location-courte-duree" && property.prix_location_courte) return `${formatPrice(property.prix_location_courte)} ${tL("/ nuit", "/ night", "/ noche")}`;
+    if (property.prix_vente) return formatPrice(property.prix_vente);
+    if (property.prix_location_longue) return `${formatPrice(property.prix_location_longue)} ${tL("/ mois", "/ month", "/ mes")}`;
+    if (property.prix_location_courte) return `${formatPrice(property.prix_location_courte)} ${tL("/ nuit", "/ night", "/ noche")}`;
+    return property.prix ? formatPrice(property.prix) : tL("Prix sur demande", "Price on request", "Precio bajo petición");
+  })();
 
-  const getDisplayPrice = (bien: Bien, activeService?: string) => {
-    if (activeService === 'vente' && bien.prix_vente) 
-      return `${formatPrice(bien.prix_vente)}`;
-    
-    if (activeService === 'location-longue-duree' && bien.prix_location_longue) 
-      return `${formatPrice(bien.prix_location_longue)} ${tL("/ mois", "/ month", "/ mes")}`;
-      
-    if (activeService === 'location-courte-duree' && bien.prix_location_courte) 
-      return `${formatPrice(bien.prix_location_courte)} ${tL("/ nuit", "/ night", "/ noche")}`;
-
-    if (bien.services.includes('vente') && bien.prix_vente) 
-      return `${formatPrice(bien.prix_vente)}`;
-      
-    if (bien.services.includes('location-longue-duree') && bien.prix_location_longue) 
-      return `${formatPrice(bien.prix_location_longue)} ${tL("/ mois", "/ month", "/ mes")}`;
-      
-    if (bien.services.includes('location-courte-duree') && bien.prix_location_courte) 
-      return `${formatPrice(bien.prix_location_courte)} ${tL("/ nuit", "/ night", "/ noche")}`;
-
-    return bien.prix ? `${formatPrice(bien.prix)}` : tL("Prix sur demande", "Price on request", "Precio bajo petición");
-  };
-
-  const image = property.photos?.length ? property.photos[0] : "/placeholder.svg";
-
-  const { ref: cardRef, inView } = useInView({ triggerOnce: true, threshold: 0.12 });
+  const image = property.photo_principale || property.photos?.[0] || "/placeholder.svg";
+  const surface = property.surface_habitable || property.surface_terrain;
+  const service = property.services?.[0];
+  const serviceLabel = service === "vente" ? tL("À vendre", "For sale", "En venta") : service === "location-longue-duree" ? tL("Location annuelle", "Long-term rent", "Alquiler anual") : tL("Séjour", "Stay", "Estancia");
 
   return (
-    <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, y: 40 }}
-      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-      transition={{ duration: 0.7, delay: revealDelay * 0.001, ease: EASE_LUXURY }}
-      whileHover={{ y: -6 }}
-      className="group"
-      style={{ contain: 'layout' }}
-    >
-    <Link
-      to={`/bien/${property.id}`}
-      className="block h-full flex flex-col overflow-hidden bg-white shadow-md hover:shadow-2xl transition-shadow duration-500"
-    >
-      {/* ═══ IMAGE SECTION — Infos superposées ═══════════════════════════════ */}
-      <div className="overflow-hidden aspect-[16/11] relative bg-muted shrink-0">
-        <OptimizedImage
-          src={image}
-          alt={property.titre}
-          eager={false}
-          size="card"
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          wrapperClassName="absolute inset-0"
-          style={{ willChange: 'none' }}
-        />
-
-        {/* Gradient overlay pour lisibilité */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent z-10 pointer-events-none" />
-
-        {/* Sold Banner */}
-        {property.statut === 'vendu-loue' && <SoldBanner />}
-
-        {/* ── Top Left: Service tags + New badge ──────────────────────────── */}
-        <div className="absolute top-3 left-3 z-30 flex flex-wrap items-start gap-1.5">
-          {property.services.map((s) => (
-            <ServiceTag key={s} service={s} variant="overlay" />
-          ))}
-
+    <motion.article initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.45, delay: revealDelay / 1000 }} className="group">
+      <Link to={`/bien/${property.id}`} className="block">
+        <div className="relative aspect-[4/3] overflow-hidden bg-[#e9e1d5]">
+          <OptimizedImage src={image} alt={property.titre} size="card" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]" wrapperClassName="h-full w-full" />
+          <div className="absolute left-4 top-4 bg-[#f6f1e8]/95 px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.15em] text-[#4d493f]">{serviceLabel}</div>
+          {property.statut === "vendu-loue" && <div className="absolute inset-0 grid place-items-center bg-[#211f1b]/50 text-xs font-semibold uppercase tracking-[0.2em] text-white">{tL("Vendu / Loué", "Sold / Rented", "Vendido / Alquilado")}</div>}
         </div>
-
-        {/* ── Top Right: Type badge + WhatsApp + Photo count ──────────────── */}
-        <div className="absolute top-3 right-3 z-30 flex flex-col gap-2 items-end">
-          <TypeBadge type={property.type} variant="overlay" />
-          <button 
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              window.open(`https://wa.me/212605387041?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien : ${property.titre} (Ref: ${property.reference || property.id})`)}`, '_blank');
-            }}
-            className="bg-[#25D366] hover:bg-[#20b858] text-white p-2 rounded-full shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center opacity-0 group-hover:opacity-100"
-            title="Contacter par WhatsApp"
-          >
-            <MessageCircle size={16} />
-          </button>
-        </div>
-
-        {/* ── Bottom: Photo count ─────────────────────────────────────────── */}
-        {property.photos?.length > 1 && (
-          <div className="absolute bottom-3 right-3 z-30">
-            <PhotoCount count={property.photos.length} />
+        <div className="border-b border-[#2b2722]/15 py-5">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <p className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.14em] text-[#777065]"><MapPin size={13} strokeWidth={1.4} />{property.quartier || "Marrakech"}</p>
+              <h3 className="mt-2 line-clamp-2 text-[27px] leading-[1.02] tracking-[-0.02em] text-[#211f1b] transition-colors group-hover:text-[#a4573e]">{property.titre}</h3>
+            </div>
+            <span className="shrink-0 pt-1 text-[9px] font-medium uppercase tracking-[0.14em] text-[#a4573e]">{property.type}</span>
           </div>
-        )}
-
-        {/* ── Bottom Left: Prix overlay ───────────────────────────────────── */}
-        <div className="absolute bottom-3 left-3 z-30">
-          <div className="backdrop-blur-md bg-black/40 border border-white/15 px-3 py-1.5 rounded-[3px]">
-            <span className="text-white font-serif text-lg font-medium tracking-wide">
-              {getDisplayPrice(property, activeType)}
-            </span>
+          <p className="mt-4 font-serif text-[22px] text-[#211f1b]">{price}</p>
+          <div className="mt-4 flex min-h-5 flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[#655f56]">
+            {property.chambres != null && property.chambres > 0 && <span className="flex items-center gap-1.5"><Bed size={15} strokeWidth={1.3} />{property.chambres} {tL("ch.", "beds", "hab.")}</span>}
+            {property.salles_de_bain != null && property.salles_de_bain > 0 && <span className="flex items-center gap-1.5"><Bath size={15} strokeWidth={1.3} />{property.salles_de_bain} {tL("sdb", "baths", "baños")}</span>}
+            {surface != null && surface > 0 && <span className="flex items-center gap-1.5"><Maximize size={15} strokeWidth={1.3} />{surface} m²</span>}
           </div>
         </div>
-      </div>
-
-      {/* ═══ CONTENT SECTION — Titre, Specs, Équipements ═════════════════════ */}
-      <div className="px-4 pt-4 pb-3 flex flex-col flex-1">
-        {/* Titre */}
-        <h3 className="text-lg font-serif mb-2 leading-tight line-clamp-1 group-hover:text-accent transition-colors duration-300">
-          {property.titre}
-        </h3>
-
-        {/* Quartier */}
-        {property.quartier && (
-          <div className="mb-3">
-            <QuartierTag quartier={property.quartier} />
-          </div>
-        )}
-
-        {/* Specs bar — Chambres, SdB, Surface, Parking */}
-        <div className="mb-3 pb-3 border-b border-border/30">
-          <SpecsBar
-            chambres={property.chambres}
-            sallesDeBain={property.salles_de_bain}
-            surface={property.surface_terrain}
-            hasParking={property.equipements?.includes('Parking') ?? false}
-          />
-        </div>
-
-        {/* Equipment micro tags */}
-        {property.equipements && property.equipements.length > 0 && (
-          <div className="mb-3">
-            <EquipmentMicroTags equipements={property.equipements} max={3} />
-          </div>
-        )}
-
-        {/* CTA Button */}
-        <div className="mt-auto">
-          <div className="w-full text-center border border-foreground/80 py-2.5 text-[9px] tracking-[0.2em] uppercase font-sans font-medium
-            hover:bg-foreground hover:text-background transition-all duration-300 group-hover:bg-foreground group-hover:text-background">
-            {tL("Voir les détails", "View details", "Ver detalles")}
-          </div>
-        </div>
-      </div>
-    </Link>
-    </motion.div>
+      </Link>
+    </motion.article>
   );
 };
 

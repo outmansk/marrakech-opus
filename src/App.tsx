@@ -1,43 +1,36 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { HelmetProvider } from "react-helmet-async";
-import { AnimatePresence } from "framer-motion";
+import { lazy, Suspense } from "react";
 
 // Animation infrastructure
 import SmoothScroll from "@/components/SmoothScroll";
 import ScrollProgress from "@/components/ScrollProgress";
-import { SplashGuard } from "@/components/SplashScreen";
 
-// Public pages
-import Index from "./pages/Index";
-import Catalogue from "./pages/Catalogue";
-import PropertyDetail from "./pages/PropertyDetail";
-import NotFound from "./pages/NotFound";
-import Blog from "./pages/Blog";
-import BlogPost from "./pages/BlogPost";
-import Contact from "./pages/Contact";
-
-// Admin pages
-import AdminLayout from "./components/admin/AdminLayout";
-import AdminLogin from "./pages/admin/AdminLogin";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminBiens from "./pages/admin/AdminBiens";
-import AdminBlog from "./pages/admin/AdminBlog";
-import AdminVisites from "./pages/admin/AdminVisites";
-import ProtectedRoute from "./components/ProtectedRoute";
+const Index = lazy(() => import("./pages/Index"));
+const Catalogue = lazy(() => import("./pages/Catalogue"));
+const PropertyDetail = lazy(() => import("./pages/PropertyDetail"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
+const Contact = lazy(() => import("./pages/Contact"));
+const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
+const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminBiens = lazy(() => import("./pages/admin/AdminBiens"));
+const AdminBlog = lazy(() => import("./pages/admin/AdminBlog"));
+const AdminVisites = lazy(() => import("./pages/admin/AdminVisites"));
+const ProtectedRoute = lazy(() => import("./components/ProtectedRoute"));
 
 const queryClient = new QueryClient();
 
-/** Animated route wrapper that provides AnimatePresence with location key */
 const AnimatedRoutes = () => {
-  const location = useLocation();
-
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
+    <Suspense fallback={<div className="min-h-screen bg-background" aria-label="Chargement" />}>
+      <Routes>
         {/* ── Public ─────────────────────────────────────────────── */}
         <Route path="/" element={<Index />} />
         <Route path="/catalogue" element={<Catalogue />} />
@@ -68,7 +61,7 @@ const AnimatedRoutes = () => {
         {/* ── 404 ─────────────────────────────────────────────── */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </AnimatePresence>
+    </Suspense>
   );
 };
 
@@ -78,12 +71,10 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <SplashGuard>
-            <SmoothScroll />
-            <ScrollProgress />
-            <AnimatedRoutes />
-          </SplashGuard>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <SmoothScroll />
+          <ScrollProgress />
+          <AnimatedRoutes />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

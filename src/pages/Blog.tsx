@@ -24,25 +24,25 @@ const Blog = () => {
   ];
 
   useEffect(() => {
-    fetchArticles();
+    const fetchArticles = async () => {
+      setLoading(true);
+      let query = supabase
+        .from('articles')
+        .select('*')
+        .eq('est_publie', true)
+        .order('created_at', { ascending: false });
+
+      if (activeCategory !== 'all') {
+        query = query.eq('category', activeCategory);
+      }
+
+      const { data } = await query;
+      if (data) setArticles(data as Article[]);
+      setLoading(false);
+    };
+
+    void fetchArticles();
   }, [activeCategory]);
-
-  const fetchArticles = async () => {
-    setLoading(true);
-    let query = supabase
-      .from('articles')
-      .select('*')
-      .eq('est_publie', true)
-      .order('created_at', { ascending: false });
-
-    if (activeCategory !== 'all') {
-      query = query.eq('category', activeCategory);
-    }
-
-    const { data } = await query;
-    if (data) setArticles(data as Article[]);
-    setLoading(false);
-  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">

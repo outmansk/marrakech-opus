@@ -27,7 +27,7 @@ const VisitModal = ({ open, onOpenChange, propertyId, propertyTitle }: VisitModa
 
     setLoading(true);
     const { error } = await supabase.from("visit_requests").insert({
-      property_id: propertyId,
+      property_v2_id: propertyId,
       client_name: DOMPurify.sanitize(name.trim()),
       client_phone: DOMPurify.sanitize(phone.trim()),
       requested_date: DOMPurify.sanitize(date),

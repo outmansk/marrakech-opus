@@ -21,7 +21,8 @@ export interface Property {
 
 export interface VisitRequest {
   id: string;
-  property_id: string;
+  property_id: string | null;
+  property_v2_id: string | null;
   client_name: string;
   client_phone: string;
   requested_date: string;
@@ -78,6 +79,8 @@ export interface Bien {
   titre: string;
   type: BienType;
   services: BienService[];
+  /** Legacy single-service value kept while old records are migrated. */
+  service: BienService | null;
   prix_vente: number | null;
   prix_location_longue: number | null;
   prix_location_courte: number | null;

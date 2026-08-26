@@ -2,6 +2,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Article } from '@/types/article';
 import { toast } from 'sonner';
+import type { TablesInsert, TablesUpdate } from '@/integrations/supabase/types';
+
+type ArticleInsert = TablesInsert<'articles'>;
+type ArticleUpdate = TablesUpdate<'articles'>;
+
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : 'Erreur inconnue';
 
 export function useArticles() {
   return useQuery({
@@ -22,10 +29,10 @@ export function useCreateArticle() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (article: Partial<Article>) => {
+    mutationFn: async (article: ArticleInsert) => {
       const { data, error } = await supabase
         .from('articles')
-        .insert([article])
+        .insert(article)
         .select()
         .single();
 
@@ -37,8 +44,8 @@ export function useCreateArticle() {
       queryClient.invalidateQueries({ queryKey: ['articles'] });
       toast.success('Article créé avec succès');
     },
-    onError: (error: any) => {
-      toast.error('Erreur lors de la création : ' + error.message);
+    onError: (error: unknown) => {
+      toast.error('Erreur lors de la création : ' + getErrorMessage(error));
     },
   });
 }
@@ -47,7 +54,7 @@ export function useUpdateArticle() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, ...article }: Partial<Article> & { id: string }) => {
+    mutationFn: async ({ id, ...article }: ArticleUpdate & { id: string }) => {
       const { data, error } = await supabase
         .from('articles')
         .update(article)
@@ -63,8 +70,8 @@ export function useUpdateArticle() {
       queryClient.invalidateQueries({ queryKey: ['articles'] });
       toast.success('Article mis à jour');
     },
-    onError: (error: any) => {
-      toast.error('Erreur lors de la mise à jour : ' + error.message);
+    onError: (error: unknown) => {
+      toast.error('Erreur lors de la mise à jour : ' + getErrorMessage(error));
     },
   });
 }
@@ -82,8 +89,8 @@ export function useDeleteArticle() {
       queryClient.invalidateQueries({ queryKey: ['articles'] });
       toast.success('Article supprimé');
     },
-    onError: (error: any) => {
-      toast.error('Erreur lors de la suppression : ' + error.message);
+    onError: (error: unknown) => {
+      toast.error('Erreur lors de la suppression : ' + getErrorMessage(error));
     },
   });
 }

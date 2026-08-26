@@ -27,8 +27,12 @@ import {
 import { useToast } from "@/hooks/useToast";
 import { cn } from "@/lib/utils";
 
+type VisitWithProperty = VisitRequest & {
+  properties_v2: { titre: string; reference: string | null } | null;
+};
+
 export default function AdminVisites() {
-  const [visits, setVisits] = useState<(VisitRequest & { properties_v2?: { titre: string, reference: string }, properties?: any })[]>([]);
+  const [visits, setVisits] = useState<VisitWithProperty[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -43,7 +47,7 @@ export default function AdminVisites() {
       .select("*, properties_v2(titre, reference)")
       .order("created_at", { ascending: false });
     
-    if (data) setVisits(data as any);
+    if (data) setVisits(data as VisitWithProperty[]);
     setLoading(false);
   };
 

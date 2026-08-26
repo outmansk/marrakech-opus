@@ -35,11 +35,11 @@ const GalleryCarousel = () => {
 
       if (data) {
         const imgs = data
-          .filter((p: any) => p.photo_principale || (p.photos && p.photos.length > 0))
-          .map((p: any) => ({
-            src: p.photo_principale || p.photos[0],
-            caption: p.titre,
-            subtitle: p.quartier || "Marrakech",
+          .filter((property) => property.photo_principale || (property.photos?.length ?? 0) > 0)
+          .map((property) => ({
+            src: property.photo_principale ?? property.photos![0],
+            caption: property.titre,
+            subtitle: property.quartier || "Marrakech",
           }));
         setPropertyImages(imgs);
       }
@@ -123,4 +123,3 @@ const GalleryCarousel = () => {
 };
 
 export default GalleryCarousel;
-

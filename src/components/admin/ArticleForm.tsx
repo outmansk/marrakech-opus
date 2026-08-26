@@ -6,6 +6,7 @@ import { Article } from '@/types/article';
 import { useCreateArticle, useUpdateArticle } from '@/hooks/useArticles';
 import { Button } from '@/components/ui/button';
 import DOMPurify from 'dompurify';
+import type { TablesInsert } from '@/integrations/supabase/types';
 import {
   Form,
   FormControl,
@@ -120,10 +121,22 @@ export function ArticleForm({ article, onSuccess }: ArticleFormProps) {
   };
 
   const onSubmit = async (data: ArticleFormValues) => {
+    const payload: TablesInsert<'articles'> = {
+      title: data.title!,
+      slug: data.slug!,
+      category: data.category!,
+      content: data.content!,
+      excerpt: data.excerpt || null,
+      image_url: data.image_url || null,
+      meta_title: data.meta_title || null,
+      meta_description: data.meta_description || null,
+      est_publie: data.est_publie ?? false,
+    };
+
     if (article) {
-      await updateArticle.mutateAsync({ id: article.id, ...data });
+      await updateArticle.mutateAsync({ id: article.id, ...payload });
     } else {
-      await createArticle.mutateAsync(data);
+      await createArticle.mutateAsync(payload);
     }
     onSuccess();
   };

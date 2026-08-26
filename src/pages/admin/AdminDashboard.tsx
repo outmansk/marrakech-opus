@@ -20,6 +20,7 @@ import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import type { Bien } from '@/types/property';
 import type { Article } from '@/types/article';
+import type { Tables } from '@/integrations/supabase/types';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 import {
   BarChart,
@@ -201,7 +202,18 @@ function RecentArticleRow({ article }: { article: Article }) {
 }
 
 // ─── Custom Tooltip ──────────────────────────────────────────────────────────
-function CustomTooltip({ active, payload, label }: any) {
+interface TooltipEntry {
+  name?: string;
+  value?: number;
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: TooltipEntry[];
+  label?: string;
+}
+
+function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
   return (
     <div className="admin-tooltip px-4 py-3">
@@ -219,7 +231,7 @@ export default function AdminDashboard() {
 
   const [biens, setBiens] = useState<Bien[]>([]);
   const [articles, setArticles] = useState<Article[]>([]);
-  const [visites, setVisites] = useState<any[]>([]);
+  const [visites, setVisites] = useState<Pick<Tables<'visit_requests'>, 'id' | 'status'>[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
