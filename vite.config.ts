@@ -26,9 +26,12 @@ export default defineConfig(({ mode }) => ({
           if (!id.includes("node_modules")) return;
           if (id.includes("framer-motion") || id.includes("lenis")) return "motion";
           if (id.includes("@tanstack")) return "query";
-          if (id.includes("i18next")) return "i18n";
           if (id.includes("lucide-react")) return "icons";
           if (id.includes("@radix-ui")) return "radix-ui";
+          // IMPORTANT: react-i18next contains "react" AND "i18next" in its path.
+          // It must go into react-core (with React) so createContext is available.
+          if (id.includes("react-i18next")) return "react-core";
+          if (id.includes("i18next")) return "i18n";
           if (id.includes("react") || id.includes("scheduler")) return "react-core";
         },
       },
