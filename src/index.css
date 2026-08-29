@@ -128,6 +128,22 @@
   }
 }
 
+@media (max-width: 1023px) {
+  html {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobile-property-visible {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* ── Shimmer skeleton animation (used by OptimizedImage) ── */
 @keyframes shimmer {
   0%   { transform: translateX(-100%); }

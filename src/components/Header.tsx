@@ -6,11 +6,19 @@ import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const Header = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => setOpen(false), [location.pathname]);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 28);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const links = [
     { to: "/", label: t("nav.accueil") },
@@ -20,12 +28,15 @@ const Header = () => {
   ];
 
   const active = (to: string) => to === "/" ? location.pathname === "/" : location.pathname.startsWith(to);
+  const currentLanguage = i18n.language?.slice(0, 2) ?? "fr";
+  const nextLanguage = currentLanguage === "fr" ? "en" : currentLanguage === "en" ? "es" : "fr";
+  const overHomeHero = location.pathname === "/" && !scrolled && !open;
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-[70] h-16 border-b border-[#2b2722]/10 bg-[#f6f1e8]/95 backdrop-blur-xl">
+      <header className={`fixed inset-x-0 top-0 z-[70] h-16 transition-colors duration-300 lg:border-b lg:border-[#2b2722]/10 lg:bg-[#f6f1e8]/95 lg:backdrop-blur-xl ${overHomeHero ? "border-transparent bg-transparent" : "border-b border-[#2b2722]/10 bg-[#f6f1e8]/95 backdrop-blur-xl"}`}>
         <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between px-5 md:px-10">
-          <Link to="/" className="font-serif text-[22px] tracking-[-0.02em] text-[#211f1b] md:text-[26px]">
+          <Link to="/" className={`font-serif text-[22px] tracking-[-0.02em] transition-colors md:text-[26px] lg:text-[#211f1b] ${overHomeHero ? "text-white" : "text-[#211f1b]"}`}>
             Live In Marrakech
           </Link>
 
@@ -53,15 +64,25 @@ const Header = () => {
             </a>
           </div>
 
-          <button
-            type="button"
-            className="grid h-11 w-11 place-items-center text-[#211f1b] lg:hidden"
-            onClick={() => setOpen((value) => !value)}
-            aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
-            aria-expanded={open}
-          >
-            {open ? <X size={23} strokeWidth={1.4} /> : <Menu size={23} strokeWidth={1.4} />}
-          </button>
+          <div className="flex items-center gap-1 lg:hidden">
+            <button
+              type="button"
+              onClick={() => i18n.changeLanguage(nextLanguage)}
+              className={`grid min-h-11 min-w-11 place-items-center text-[13px] font-medium uppercase tracking-[0.16em] transition-colors ${overHomeHero ? "text-white" : "text-[#211f1b]"}`}
+              aria-label={`Changer la langue, langue actuelle ${currentLanguage.toUpperCase()}`}
+            >
+              {currentLanguage.toUpperCase()}
+            </button>
+            <button
+              type="button"
+              className={`grid h-11 w-11 place-items-center transition-colors ${overHomeHero ? "text-white" : "text-[#211f1b]"}`}
+              onClick={() => setOpen((value) => !value)}
+              aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
+              aria-expanded={open}
+            >
+              {open ? <X size={25} strokeWidth={1.25} /> : <Menu size={25} strokeWidth={1.25} />}
+            </button>
+          </div>
         </div>
       </header>
 

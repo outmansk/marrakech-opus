@@ -34,9 +34,9 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
   const serviceLabel = service === "vente" ? tL("À vendre", "For sale", "En venta") : service === "location-longue-duree" ? tL("Location annuelle", "Long-term rent", "Alquiler anual") : tL("Séjour", "Stay", "Estancia");
 
   return (
-    <motion.article initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.45, delay: revealDelay / 1000 }} className="group">
+    <motion.article initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.45, delay: revealDelay / 1000 }} className="mobile-property-visible group">
       <Link to={`/bien/${property.id}`} className="block">
-        <div className="relative aspect-[4/3] overflow-hidden bg-[#e9e1d5]">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-[10px] bg-[#e9e1d5] md:rounded-none">
           <OptimizedImage src={image} alt={property.titre} size="card" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]" wrapperClassName="h-full w-full" />
           <div className="absolute left-4 top-4 bg-[#f6f1e8]/95 px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.15em] text-[#4d493f]">{serviceLabel}</div>
           {property.statut === "vendu-loue" && <div className="absolute inset-0 grid place-items-center bg-[#211f1b]/50 text-xs font-semibold uppercase tracking-[0.2em] text-white">{tL("Vendu / Loué", "Sold / Rented", "Vendido / Alquilado")}</div>}
