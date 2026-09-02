@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import VisitModal from "@/components/VisitModal";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/lib/supabase";
+import { useProperty } from "@/hooks/useBiens";
 import type { Bien } from "@/types/property";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import SEOHead from "@/components/SEOHead";
@@ -22,21 +22,10 @@ const formatPrice = (price: number) => {
 const PropertyDetail = () => {
   const { t } = useTranslation();
   const { id } = useParams();
-  const [property, setProperty] = useState<Bien | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: property, isLoading: loading } = useProperty(id ?? null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [visitOpen, setVisitOpen] = useState(false);
   const thumbsRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const fetchProperty = async () => {
-      if (!id) return;
-      const { data } = await supabase.from("properties_v2").select("*").eq("id", id).single();
-      if (data) setProperty(data as Bien);
-      setLoading(false);
-    };
-    fetchProperty();
-  }, [id]);
 
   // Scroll thumbnail into view when selecting an image
   useEffect(() => {
@@ -205,6 +194,7 @@ const PropertyDetail = () => {
             {/* Share button */}
             <button
               onClick={() => navigator.share?.({ title: property.titre, url: propertyUrl }).catch(() => {})}
+              aria-label="Partager ce bien"
               className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white active:scale-95 transition-transform"
             >
               <Share2 size={16} strokeWidth={1.5} />

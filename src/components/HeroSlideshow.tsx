@@ -6,19 +6,17 @@ import { useTranslation } from "react-i18next";
 import heroImage from "@/assets/hero-marrakech.jpg";
 import mobileHeroImage from "@/assets/hero-marrakech-mobile-v2.webp";
 import { QUARTIERS, type BienService } from "@/types/property";
+import { useLocalizedText } from "@/hooks/useLocalizedText";
 
 type Intent = Extract<BienService, "vente" | "location-longue-duree" | "location-courte-duree">;
 
 const HeroSlideshow = () => {
   const navigate = useNavigate();
   const { i18n } = useTranslation();
+  const tL = useLocalizedText();
   const [intent, setIntent] = useState<Intent>("vente");
   const [quartier, setQuartier] = useState("all");
   const language = i18n.language?.slice(0, 2) ?? "fr";
-
-  const tL = (fr: string, en: string, es: string) => {
-    return language === "en" ? en : language === "es" ? es : fr;
-  };
 
   const tabs: Array<{ value: Intent; label: string }> = [
     { value: "vente", label: tL("Acheter", "Buy", "Comprar") },
@@ -156,7 +154,7 @@ const HeroSlideshow = () => {
         </div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }} className="order-1 h-[285px] overflow-hidden sm:h-[380px] lg:order-2 lg:h-auto lg:min-h-[470px] lg:[clip-path:polygon(10%_0,100%_0,100%_100%,0_100%)]">
-          <img src={heroImage} alt="Villa de prestige avec piscine à Marrakech" className="h-full w-full object-cover" />
+          <img src={heroImage} alt="Villa de prestige avec piscine à Marrakech" fetchPriority="high" className="h-full w-full object-cover" />
         </motion.div>
       </div>
       </section>

@@ -17,6 +17,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import type { Bien } from '@/types/property';
 import type { Article } from '@/types/article';
@@ -235,18 +236,27 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetch = async () => {
-      const [{ data: b }, { data: a }, { data: v }] = await Promise.all([
-        supabase.from('properties_v2').select('*').order('created_at', { ascending: false }),
-        supabase.from('articles').select('*').order('created_at', { ascending: false }),
-        supabase.from('visit_requests').select('id, status').order('created_at', { ascending: false }),
-      ]);
-      if (b) setBiens(b as Bien[]);
-      if (a) setArticles(a as Article[]);
-      if (v) setVisites(v);
-      setLoading(false);
+    const fetchData = async () => {
+      try {
+        const [{ data: b, error: bErr }, { data: a, error: aErr }, { data: v, error: vErr }] = await Promise.all([
+          supabase.from('properties_v2').select('*').order('created_at', { ascending: false }),
+          supabase.from('articles').select('*').order('created_at', { ascending: false }),
+          supabase.from('visit_requests').select('id, status').order('created_at', { ascending: false }),
+        ]);
+        if (bErr) throw bErr;
+        if (aErr) throw aErr;
+        if (vErr) throw vErr;
+        if (b) setBiens(b as Bien[]);
+        if (a) setArticles(a as Article[]);
+        if (v) setVisites(v);
+      } catch (err) {
+        console.error('Dashboard fetch error:', err);
+        toast.error('Erreur lors du chargement des données.');
+      } finally {
+        setLoading(false);
+      }
     };
-    fetch();
+    fetchData();
   }, []);
 
   // ── Stats ──────────────────────────────────────────────────────────────────

@@ -19,6 +19,7 @@ export function useProperties(filters?: {
   type?: string;
   service?: string;
   statut?: string;
+  quartier?: string;
 }) {
   return useQuery<Bien[]>({
     queryKey: [QUERY_KEY, filters],
@@ -28,6 +29,7 @@ export function useProperties(filters?: {
       if (filters?.type) query = query.eq('type', filters.type);
       if (filters?.service) query = query.contains('services', [filters.service]);
       if (filters?.statut) query = query.eq('statut', filters.statut);
+      if (filters?.quartier) query = query.eq('quartier', filters.quartier);
 
       const { data, error } = await query;
       if (error) throw error;

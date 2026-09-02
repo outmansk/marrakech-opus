@@ -8,19 +8,15 @@ import SEOHead from "@/components/SEOHead";
 import { motion } from "framer-motion";
 import { Reveal, PageTransition, EASE_LUXURY } from "@/components/motion/Animations";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
 import slide3 from "@/assets/slide2.jpg";
+import { useLocalizedText } from "@/hooks/useLocalizedText";
 
 const Contact = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const tL = useLocalizedText();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-
-  const tL = (fr: string, en: string, es: string) => {
-    const lang = i18n.language?.slice(0, 2) ?? 'fr';
-    if (lang === 'en') return en;
-    if (lang === 'es') return es;
-    return fr;
-  };
 
   const [formData, setFormData] = useState({
     name: "",
@@ -44,9 +40,17 @@ const Contact = () => {
     }
 
     setLoading(true);
-    // Simulate premium message submission
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      // @ts-expect-error - contact_messages not yet in generated types
+      const { error } = await (supabase as any).from("contact_messages").insert({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || null,
+        message: formData.message,
+      });
+
+      if (error) throw error;
+
       setSubmitted(true);
       toast.success(
         tL(
@@ -56,7 +60,17 @@ const Contact = () => {
         )
       );
       setFormData({ name: "", email: "", phone: "", message: "" });
-    }, 1500);
+    } catch (err) {
+      toast.error(
+        tL(
+          "Une erreur est survenue. Veuillez réessayer ou nous contacter par WhatsApp.",
+          "An error occurred. Please try again or contact us via WhatsApp.",
+          "Ocurrió un error. Inténtelo de nuevo o contáctenos por WhatsApp."
+        )
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

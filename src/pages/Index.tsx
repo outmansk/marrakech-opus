@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Home, Key, ShieldCheck } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroSlideshow from "@/components/HeroSlideshow";
@@ -8,13 +7,10 @@ import PropertiesCarousel from "@/components/PropertiesCarousel";
 import lifestyleImage from "@/assets/slide4.jpg";
 import SEOHead from "@/components/SEOHead";
 import { PageTransition, Reveal } from "@/components/motion/Animations";
+import { useLocalizedText } from "@/hooks/useLocalizedText";
 
 const Index = () => {
-  const { i18n } = useTranslation();
-  const tL = (fr: string, en: string, es: string) => {
-    const language = i18n.language?.slice(0, 2) ?? "fr";
-    return language === "en" ? en : language === "es" ? es : fr;
-  };
+  const tL = useLocalizedText();
 
   const services = [
     { icon: Home, title: tL("Acheter", "Buy", "Comprar"), text: tL("Une sélection précise, des visites privées et une négociation maîtrisée.", "A precise selection, private viewings and expert negotiation.", "Una selección precisa, visitas privadas y negociación experta."), to: "/catalogue?type=vente" },

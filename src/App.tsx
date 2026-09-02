@@ -25,7 +25,16 @@ const AdminBlog = lazy(() => import("./pages/admin/AdminBlog"));
 const AdminVisites = lazy(() => import("./pages/admin/AdminVisites"));
 const ProtectedRoute = lazy(() => import("./components/ProtectedRoute"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,      // 5 min before data is considered stale
+      gcTime: 10 * 60 * 1000,         // 10 min garbage collection
+      retry: 2,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const AnimatedRoutes = () => {
   return (

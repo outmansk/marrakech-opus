@@ -13,6 +13,12 @@ const Header = () => {
 
   useEffect(() => setOpen(false), [location.pathname]);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [open]);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 28);
     onScroll();

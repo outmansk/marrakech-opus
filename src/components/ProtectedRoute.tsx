@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 
@@ -9,38 +10,20 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { session, loading: authLoading } = useAuth();
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [checkingRole, setCheckingRole] = useState(true);
-
-  useEffect(() => {
-    if (!authLoading) {
-      if (session) {
-        checkAdminRole(session.user.id);
-      } else {
-        setCheckingRole(false);
-      }
-    }
-  }, [session, authLoading]);
-
-  const checkAdminRole = async (userId: string) => {
-    try {
+  const { data: isAdmin, isLoading: checkingRole } = useQuery({
+    queryKey: ['adminRole', session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return false;
       const { data, error } = await supabase
         .from('profiles')
         .select('role')
-        .eq('id', userId)
+        .eq('id', session.user.id)
         .single();
-        
-      if (!error && data && data.role === 'admin') {
-        setIsAdmin(true);
-      } else {
-        setIsAdmin(false);
-      }
-    } catch (err) {
-      setIsAdmin(false);
-    } finally {
-      setCheckingRole(false);
-    }
-  };
+      
+      return !error && data && data.role === 'admin';
+    },
+    enabled: !!session?.user?.id,
+  });
 
   if (authLoading || checkingRole) {
     return (

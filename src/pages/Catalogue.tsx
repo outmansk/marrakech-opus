@@ -1,21 +1,19 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ArrowLeft, ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useTranslation } from "react-i18next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
-import { supabase } from "@/lib/supabase";
-import { BIEN_TYPES, QUARTIERS, type Bien } from "@/types/property";
+import { useProperties } from "@/hooks/useBiens";
+import { BIEN_TYPES, QUARTIERS } from "@/types/property";
 import SEOHead from "@/components/SEOHead";
 import { PageTransition } from "@/components/motion/Animations";
+import { useLocalizedText } from "@/hooks/useLocalizedText";
 
 const Catalogue = () => {
-  const { i18n } = useTranslation();
+  const tL = useLocalizedText();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [properties, setProperties] = useState<Bien[]>([]);
-  const [loading, setLoading] = useState(true);
   const [mobileFilters, setMobileFilters] = useState(false);
 
   const activeType = searchParams.get("type") || "all";
@@ -23,28 +21,13 @@ const Catalogue = () => {
   const activeQuartier = searchParams.get("quartier") || "all";
   const queryText = searchParams.get("q") || "";
 
-  const tL = (fr: string, en: string, es: string) => {
-    const language = i18n.language?.slice(0, 2) ?? "fr";
-    return language === "en" ? en : language === "es" ? es : fr;
-  };
-
-  useEffect(() => {
-    let mounted = true;
-    const fetchProperties = async () => {
-      setLoading(true);
-      let request = supabase.from("properties_v2").select("*").eq("statut", "publie").order("created_at", { ascending: false });
-      if (activeType !== "all") request = request.contains("services", [activeType]);
-      if (activeKind !== "all") request = request.eq("type", activeKind);
-      if (activeQuartier !== "all") request = request.eq("quartier", activeQuartier);
-      const { data } = await request;
-      if (mounted) {
-        setProperties((data as Bien[]) ?? []);
-        setLoading(false);
-      }
-    };
-    fetchProperties();
-    return () => { mounted = false; };
-  }, [activeType, activeKind, activeQuartier]);
+  // Use React Query via the shared hook — cached, retried, deduped
+  const { data: properties = [], isLoading: loading } = useProperties({
+    service: activeType !== "all" ? activeType : undefined,
+    type: activeKind !== "all" ? activeKind : undefined,
+    quartier: activeQuartier !== "all" ? activeQuartier : undefined,
+    statut: "publie",
+  });
 
   const visibleProperties = useMemo(() => {
     const needle = queryText.trim().toLocaleLowerCase("fr");
@@ -71,7 +54,7 @@ const Catalogue = () => {
         </span>
       </label>
       {[
-        { label: tL("Projet", "Project", "Proyecto"), key: "type", value: activeType, options: [["all", tL("Tous", "All", "Todos")], ["vente", tL("Acheter", "Buy", "Comprar")], ["location-longue-duree", tL("Louer à l’année", "Long-term rent", "Alquiler anual")], ["location-courte-duree", tL("Séjourner", "Stay", "Estancia")]] },
+        { label: tL("Projet", "Project", "Proyecto"), key: "type", value: activeType, options: [["all", tL("Tous", "All", "Todos")], ["vente", tL("Acheter", "Buy", "Comprar")], ["location-longue-duree", tL("Louer à l'année", "Long-term rent", "Alquiler anual")], ["location-courte-duree", tL("Séjourner", "Stay", "Estancia")]] },
         { label: tL("Type de bien", "Property type", "Tipo"), key: "kind", value: activeKind, options: [["all", tL("Tous les types", "All types", "Todos los tipos")], ...BIEN_TYPES.map((type) => [type, type.charAt(0).toUpperCase() + type.slice(1)])] },
         { label: tL("Quartier", "Neighborhood", "Barrio"), key: "quartier", value: activeQuartier, options: [["all", tL("Tous les quartiers", "All neighborhoods", "Todos los barrios")], ...QUARTIERS.map((quartier) => [quartier, quartier])] },
       ].map((field) => (
@@ -100,7 +83,7 @@ const Catalogue = () => {
               <Link to="/" className="inline-flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.17em] text-[#777065] hover:text-[#a4573e]"><ArrowLeft size={14} />{tL("Accueil", "Home", "Inicio")}</Link>
               <div className="mt-7 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <div><p className="text-[10px] font-medium uppercase tracking-[0.26em] text-[#a4573e]">{tL("Notre collection", "Our collection", "Nuestra colección")}</p><h1 className="mt-3 text-[48px] leading-none tracking-[-0.03em] text-[#211f1b] md:text-[64px]">{tL("Des adresses choisies", "Chosen addresses", "Direcciones elegidas")}</h1></div>
-                <p className="max-w-md text-sm leading-6 text-[#655f56]">{tL("Une sélection courte de biens vérifiés, à acheter, louer ou habiter le temps d’un séjour.", "A concise selection of verified homes to buy, rent or enjoy for a stay.", "Una selección de propiedades verificadas para comprar, alquilar o disfrutar durante una estancia.")}</p>
+                <p className="max-w-md text-sm leading-6 text-[#655f56]">{tL("Une sélection courte de biens vérifiés, à acheter, louer ou habiter le temps d'un séjour.", "A concise selection of verified homes to buy, rent or enjoy for a stay.", "Una selección de propiedades verificadas para comprar, alquilar o disfrutar durante una estancia.")}</p>
               </div>
             </div>
           </section>
@@ -114,7 +97,7 @@ const Catalogue = () => {
 
           <div className="mx-auto max-w-[1320px] px-5 py-10 md:px-10 md:py-14 xl:px-16">
             {!loading && <div className="mb-8 flex items-center gap-4"><p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#655f56]">{visibleProperties.length} {tL(visibleProperties.length > 1 ? "biens" : "bien", visibleProperties.length > 1 ? "properties" : "property", visibleProperties.length > 1 ? "propiedades" : "propiedad")}</p><span className="h-px flex-1 bg-[#2b2722]/12" /></div>}
-            {loading ? <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">{[0,1,2,3,4,5].map((item) => <div key={item} className="animate-pulse"><div className="aspect-[4/3] bg-[#e9e1d5]" /><div className="mt-4 h-6 w-2/3 bg-[#e9e1d5]" /></div>)}</div> : visibleProperties.length > 0 ? <div className="grid gap-x-7 gap-y-12 md:grid-cols-2 lg:grid-cols-3">{visibleProperties.map((property, index) => <PropertyCard key={property.id} property={property} activeType={activeType} revealDelay={index * 50} />)}</div> : <div className="border-y border-[#2b2722]/12 py-20 text-center"><h2 className="text-4xl">{tL("Aucun bien trouvé", "No property found", "No se encontró ninguna propiedad")}</h2><p className="mt-3 text-sm text-[#655f56]">{tL("Essayez de modifier ou d’effacer vos filtres.", "Try changing or clearing your filters.", "Pruebe a cambiar o borrar los filtros.")}</p><button onClick={clear} className="mt-7 bg-[#a4573e] px-7 py-4 text-[10px] font-semibold uppercase tracking-[0.17em] text-white">{tL("Effacer les filtres", "Clear filters", "Borrar filtros")}</button></div>}
+            {loading ? <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">{[0,1,2,3,4,5].map((item) => <div key={item} className="animate-pulse"><div className="aspect-[4/3] bg-[#e9e1d5]" /><div className="mt-4 h-6 w-2/3 bg-[#e9e1d5]" /></div>)}</div> : visibleProperties.length > 0 ? <div className="grid gap-x-7 gap-y-12 md:grid-cols-2 lg:grid-cols-3">{visibleProperties.map((property, index) => <PropertyCard key={property.id} property={property} activeType={activeType} revealDelay={index * 50} />)}</div> : <div className="border-y border-[#2b2722]/12 py-20 text-center"><h2 className="text-4xl">{tL("Aucun bien trouvé", "No property found", "No se encontró ninguna propiedad")}</h2><p className="mt-3 text-sm text-[#655f56]">{tL("Essayez de modifier ou d'effacer vos filtres.", "Try changing or clearing your filters.", "Pruebe a cambiar o borrar los filtros.")}</p><button onClick={clear} className="mt-7 bg-[#a4573e] px-7 py-4 text-[10px] font-semibold uppercase tracking-[0.17em] text-white">{tL("Effacer les filtres", "Clear filters", "Borrar filtros")}</button></div>}
           </div>
         </main>
         <Footer />
