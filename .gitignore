@@ -43,3 +43,4 @@ output.png
 
 # Supabase local dev
 supabase/.temp
+tmp/
