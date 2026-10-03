@@ -7,6 +7,8 @@ import {
   Building2,
   FileText,
   CalendarCheck,
+  UsersRound,
+  Files,
   LogOut,
   Menu,
   X,
@@ -144,6 +146,18 @@ export default function AdminLayout() {
       label: t("admin.visites"),
       icon: CalendarCheck,
       active: location.pathname.includes("/manage-xk92p/visites"),
+    },
+    {
+      path: "/manage-xk92p/clients",
+      label: "Clients & demandes",
+      icon: UsersRound,
+      active: location.pathname.includes("/manage-xk92p/clients"),
+    },
+    {
+      path: "/manage-xk92p/documents",
+      label: "Contrats & reçus",
+      icon: Files,
+      active: location.pathname.includes("/manage-xk92p/documents"),
     },
   ];
 

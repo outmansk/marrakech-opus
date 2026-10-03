@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, CSSProperties } from 'react';
+import { useState, useRef, useEffect, useCallback, CSSProperties } from 'react';
 import { cn } from '@/lib/utils';
 import { getImageUrl, getSrcSet, type ImageSize } from '@/lib/cloudinary';
 
@@ -63,8 +63,15 @@ export function OptimizedImage({
   ...props
 }: OptimizedImageProps) {
   const [loaded, setLoaded] = useState(false);
+  const [errored, setErrored] = useState(false);
   const [inView, setInView] = useState(eager);
   const imgRef = useRef<HTMLImageElement>(null);
+
+  // Reset error state when src changes
+  useEffect(() => {
+    setErrored(false);
+    setLoaded(false);
+  }, [src]);
 
   // ── Intersection Observer for lazy loading ──────────────────────────────────
   useEffect(() => {
@@ -86,9 +93,24 @@ export function OptimizedImage({
     return () => observer.disconnect();
   }, [eager]);
 
+  // ── Error handler — fallback to placeholder ─────────────────────────────────
+  const handleError = useCallback(() => {
+    if (!errored) {
+      setErrored(true);
+      setLoaded(true); // Stop the shimmer
+      if (import.meta.env.DEV) {
+        console.warn(`[OptimizedImage] Failed to load: "${src}" → resolved to "${getImageUrl(src, size)}"`);
+      }
+    }
+  }, [errored, src, size]);
+
   // ── Derived URLs ────────────────────────────────────────────────────────────
-  const resolvedSrc = inView ? getImageUrl(src, size) : undefined;
-  const srcSet = inView ? (getSrcSet(src, { crop: 'fill', gravity: 'auto' }) ?? undefined) : undefined;
+  const resolvedSrc = errored
+    ? '/placeholder.svg'
+    : inView ? getImageUrl(src, size) : undefined;
+  const srcSet = errored
+    ? undefined
+    : inView ? (getSrcSet(src, { crop: 'fill', gravity: 'auto' }) ?? undefined) : undefined;
 
   // Default sizes attribute for responsive images
   const defaultSizes =
@@ -106,6 +128,17 @@ export function OptimizedImage({
       {/* Shimmer skeleton */}
       {!loaded && <Shimmer />}
 
+      {/* Error placeholder overlay */}
+      {errored && (
+        <div className="absolute inset-0 flex items-center justify-center bg-muted text-muted-foreground/40">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <polyline points="21 15 16 10 5 21" />
+          </svg>
+        </div>
+      )}
+
       <img
         ref={imgRef}
         src={resolvedSrc}
@@ -115,9 +148,11 @@ export function OptimizedImage({
         loading={eager ? 'eager' : 'lazy'}
         decoding="async"
         onLoad={() => setLoaded(true)}
+        onError={handleError}
         className={cn(
           'transition-opacity duration-500 ease-in-out',
           loaded ? 'opacity-100' : 'opacity-0',
+          errored && 'hidden',
           className
         )}
         {...props}

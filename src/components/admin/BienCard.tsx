@@ -184,7 +184,7 @@ export function BienCard({ bien, onEdit }: BienCardProps) {
           </Button>
 
           <a
-            href={`/catalogue/${bien.id}`}
+            href={`/bien/${bien.id}`}
             target="_blank"
             rel="noreferrer"
             className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground opacity-60 hover:opacity-100 transition-opacity"

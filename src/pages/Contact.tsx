@@ -41,8 +41,7 @@ const Contact = () => {
 
     setLoading(true);
     try {
-      // @ts-expect-error - contact_messages not yet in generated types
-      const { error } = await (supabase as any).from("contact_messages").insert({
+      const { error } = await supabase.from("contact_messages").insert({
         name: formData.name,
         email: formData.email,
         phone: formData.phone || null,

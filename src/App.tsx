@@ -17,12 +17,15 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const Contact = lazy(() => import("./pages/Contact"));
+const PropertyRequest = lazy(() => import("./pages/PropertyRequest"));
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminBiens = lazy(() => import("./pages/admin/AdminBiens"));
 const AdminBlog = lazy(() => import("./pages/admin/AdminBlog"));
 const AdminVisites = lazy(() => import("./pages/admin/AdminVisites"));
+const AdminClients = lazy(() => import("./pages/admin/AdminClients"));
+const AdminDocuments = lazy(() => import("./pages/admin/AdminDocuments"));
 const ProtectedRoute = lazy(() => import("./components/ProtectedRoute"));
 
 const queryClient = new QueryClient({
@@ -47,6 +50,7 @@ const AnimatedRoutes = () => {
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/demande" element={<PropertyRequest />} />
 
         {/* ── Admin (login public) ─────────────────────────────── */}
         <Route path="/manage-xk92p/login" element={<AdminLogin />} />
@@ -65,6 +69,8 @@ const AnimatedRoutes = () => {
           <Route path="biens" element={<AdminBiens />} />
           <Route path="blog" element={<AdminBlog />} />
           <Route path="visites" element={<AdminVisites />} />
+          <Route path="clients" element={<AdminClients />} />
+          <Route path="documents" element={<AdminDocuments />} />
         </Route>
 
         {/* ── 404 ─────────────────────────────────────────────── */}

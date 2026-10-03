@@ -15,8 +15,8 @@ import { motion } from "framer-motion";
 import { PageTransition, Reveal, EASE_LUXURY } from "@/components/motion/Animations";
 import { ServiceTag, TypeBadge } from "@/components/PropertyTags";
 
-const formatPrice = (price: number) => {
-  return new Intl.NumberFormat("fr-MA").format(price) + " MAD";
+const formatPrice = (price: number, devise: string = 'MAD') => {
+  return new Intl.NumberFormat("fr-MA").format(price) + " " + devise;
 };
 
 const PropertyDetail = () => {
@@ -359,24 +359,24 @@ const PropertyDetail = () => {
                 <div className="flex flex-col gap-2">
                   {property.services.includes('vente') && property.prix_vente && (
                     <div className="flex items-baseline gap-3 flex-wrap">
-                      <p className="text-2xl md:text-3xl font-serif text-foreground">{formatPrice(property.prix_vente)}</p>
+                      <p className="text-2xl md:text-3xl font-serif text-foreground">{formatPrice(property.prix_vente, property.devise)}</p>
                       <span className="text-[9px] md:text-[10px] tracking-widest uppercase text-muted-foreground font-sans bg-background/80 border border-border px-2 py-0.5 rounded">{t('services.vente')}</span>
                     </div>
                   )}
                   {property.services.includes('location-longue-duree') && property.prix_location_longue && (
                     <div className="flex items-baseline gap-3 flex-wrap">
-                      <p className="text-2xl md:text-3xl font-serif text-foreground">{formatPrice(property.prix_location_longue)}<span className="text-base text-muted-foreground font-sans"> / mois</span></p>
+                      <p className="text-2xl md:text-3xl font-serif text-foreground">{formatPrice(property.prix_location_longue, property.devise)}<span className="text-base text-muted-foreground font-sans"> / mois</span></p>
                       <span className="text-[9px] md:text-[10px] tracking-widest uppercase text-muted-foreground font-sans bg-background/80 border border-border px-2 py-0.5 rounded">{t('services.location_longue')}</span>
                     </div>
                   )}
                   {property.services.includes('location-courte-duree') && property.prix_location_courte && (
                     <div className="flex items-baseline gap-3 flex-wrap">
-                      <p className="text-2xl md:text-3xl font-serif text-foreground">{formatPrice(property.prix_location_courte)}<span className="text-base text-muted-foreground font-sans"> / nuit</span></p>
+                      <p className="text-2xl md:text-3xl font-serif text-foreground">{formatPrice(property.prix_location_courte, property.devise)}<span className="text-base text-muted-foreground font-sans"> / nuit</span></p>
                       <span className="text-[9px] md:text-[10px] tracking-widest uppercase text-muted-foreground font-sans bg-background/80 border border-border px-2 py-0.5 rounded">{t('services.location_courte')}</span>
                     </div>
                   )}
                   {!property.prix_vente && !property.prix_location_longue && !property.prix_location_courte && property.prix && (
-                    <p className="text-2xl md:text-3xl font-serif text-foreground">{formatPrice(property.prix)}</p>
+                    <p className="text-2xl md:text-3xl font-serif text-foreground">{formatPrice(property.prix, property.devise)}</p>
                   )}
                 </div>
               </motion.div>

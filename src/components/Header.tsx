@@ -4,9 +4,11 @@ import { Mail, Menu, MessageCircle, Phone, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useLocalizedText } from "@/hooks/useLocalizedText";
 
 const Header = () => {
   const { t, i18n } = useTranslation();
+  const tL = useLocalizedText();
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -29,6 +31,7 @@ const Header = () => {
   const links = [
     { to: "/", label: t("nav.accueil") },
     { to: "/catalogue", label: t("nav.catalogue") },
+    { to: "/demande", label: tL("Décrire ma recherche", "Tell us what you need", "Cuéntenos qué busca") },
     { to: "/blog", label: t("nav.blog") },
     { to: "/contact", label: t("nav.contact") },
   ];

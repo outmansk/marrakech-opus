@@ -1,34 +1,23 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check, MessageCircle, ShieldCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { supabase } from "@/lib/supabase";
 import type { Bien } from "@/types/property";
 import PropertyCard from "@/components/PropertyCard";
 import { Reveal } from "@/components/motion/Animations";
+import { useProperties } from "@/hooks/useBiens";
 
 const PropertiesCarousel = () => {
   const { i18n } = useTranslation();
-  const [properties, setProperties] = useState<Bien[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  // Use React Query via the shared hook — cached, retried, deduped
+  const { data: allProperties = [], isLoading: loading } = useProperties({ statut: "publie" });
+  // Only show the 3 most recent
+  const properties = allProperties.slice(0, 3);
 
   const tL = (fr: string, en: string, es: string) => {
     const language = i18n.language?.slice(0, 2) ?? "fr";
     return language === "en" ? en : language === "es" ? es : fr;
   };
-
-  useEffect(() => {
-    let active = true;
-    const fetchProperties = async () => {
-      const { data } = await supabase.from("properties_v2").select("*").eq("statut", "publie").order("created_at", { ascending: false }).limit(3);
-      if (active) {
-        setProperties((data as Bien[]) ?? []);
-        setLoading(false);
-      }
-    };
-    fetchProperties();
-    return () => { active = false; };
-  }, []);
 
   return (
     <section className="bg-[#f6f1e8] pb-20 pt-0 md:bg-[#fbf8f2] md:pb-24 md:pt-8">

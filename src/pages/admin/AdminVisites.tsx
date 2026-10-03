@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { CalendarCheck, Phone, Trash2, CheckCircle, XCircle, Clock, Inbox } from "lucide-react";
+import { CalendarCheck, Phone, Trash2, CheckCircle, XCircle, Clock, Inbox, MessageCircle } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -82,6 +82,7 @@ export default function AdminVisites() {
   const getStatusBadge = (status: string) => {
     const config: Record<string, { bg: string; text: string; dot: string; label: string; pulse?: boolean }> = {
       'en-attente': { bg: 'bg-amber-500/10', text: 'text-amber-600', dot: 'bg-amber-500', label: 'En attente', pulse: true },
+      'pending': { bg: 'bg-amber-500/10', text: 'text-amber-600', dot: 'bg-amber-500', label: 'En attente', pulse: true },
       confirmee: { bg: 'bg-emerald-500/10', text: 'text-emerald-600', dot: 'bg-emerald-500', label: 'Confirmée' },
       annulee: { bg: 'bg-rose-500/10', text: 'text-rose-600', dot: 'bg-rose-500', label: 'Annulée' },
     };
@@ -97,7 +98,7 @@ export default function AdminVisites() {
     );
   };
 
-  const pendingCount = visits.filter(v => v.status === 'en-attente').length;
+  const pendingCount = visits.filter(v => v.status === 'en-attente' || v.status === 'pending').length;
 
   return (
     <main className="container mx-auto px-6 md:px-10 py-8 space-y-6 flex-1 overflow-y-auto">
@@ -174,12 +175,23 @@ export default function AdminVisites() {
                 </TableCell>
                 
                 <TableCell>
-                  <a href={`tel:${visit.client_phone}`} className="flex items-center gap-2 text-sm hover:text-primary transition-colors group/phone">
-                    <div className="w-7 h-7 rounded-lg bg-primary/5 flex items-center justify-center group-hover/phone:bg-primary/10 transition-colors">
-                      <Phone size={12} className="text-primary/60" />
-                    </div>
-                    <span className="tabular-nums">{visit.client_phone}</span>
-                  </a>
+                  <div className="flex items-center gap-2">
+                    <a href={`tel:${visit.client_phone}`} className="flex items-center gap-2 text-sm hover:text-primary transition-colors group/phone">
+                      <div className="w-7 h-7 rounded-lg bg-primary/5 flex items-center justify-center group-hover/phone:bg-primary/10 transition-colors">
+                        <Phone size={12} className="text-primary/60" />
+                      </div>
+                      <span className="tabular-nums">{visit.client_phone}</span>
+                    </a>
+                    <a
+                      href={`https://wa.me/${visit.client_phone?.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Bonjour ${visit.client_name}, concernant votre demande de visite${visit.properties_v2?.titre ? ` pour "${visit.properties_v2.titre}"` : ''}.`)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center hover:bg-emerald-500/20 transition-colors"
+                      title="Contacter via WhatsApp"
+                    >
+                      <MessageCircle size={12} className="text-emerald-600" />
+                    </a>
+                  </div>
                 </TableCell>
 
                 <TableCell className="max-w-[200px]">

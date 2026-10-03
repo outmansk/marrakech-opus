@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
  *   const tL = useLocalizedText();
  *   tL("Bonjour", "Hello", "Hola")
  */
+
 export function useLocalizedText() {
   const { i18n } = useTranslation();
   const lang = i18n.language?.slice(0, 2) ?? "fr";

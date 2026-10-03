@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { Bath, Bed, MapPin, Maximize } from "lucide-react";
-import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import type { Bien } from "@/types/property";
 import OptimizedImage from "@/components/ui/OptimizedImage";
@@ -11,7 +10,7 @@ interface PropertyCardProps {
   activeType?: string;
 }
 
-const formatPrice = (price: number) => new Intl.NumberFormat("fr-MA").format(price) + " MAD";
+const formatPrice = (price: number, devise: string = 'MAD') => new Intl.NumberFormat("fr-MA").format(price) + " " + devise;
 
 const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardProps) => {
   const { i18n } = useTranslation();
@@ -19,13 +18,14 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
   const tL = (fr: string, en: string, es: string) => language === "en" ? en : language === "es" ? es : fr;
 
   const price = (() => {
-    if (activeType === "vente" && property.prix_vente) return formatPrice(property.prix_vente);
-    if (activeType === "location-longue-duree" && property.prix_location_longue) return `${formatPrice(property.prix_location_longue)} ${tL("/ mois", "/ month", "/ mes")}`;
-    if (activeType === "location-courte-duree" && property.prix_location_courte) return `${formatPrice(property.prix_location_courte)} ${tL("/ nuit", "/ night", "/ noche")}`;
-    if (property.prix_vente) return formatPrice(property.prix_vente);
-    if (property.prix_location_longue) return `${formatPrice(property.prix_location_longue)} ${tL("/ mois", "/ month", "/ mes")}`;
-    if (property.prix_location_courte) return `${formatPrice(property.prix_location_courte)} ${tL("/ nuit", "/ night", "/ noche")}`;
-    return property.prix ? formatPrice(property.prix) : tL("Prix sur demande", "Price on request", "Precio bajo petición");
+    const d = property.devise || 'MAD';
+    if (activeType === "vente" && property.prix_vente) return formatPrice(property.prix_vente, d);
+    if (activeType === "location-longue-duree" && property.prix_location_longue) return `${formatPrice(property.prix_location_longue, d)} ${tL("/ mois", "/ month", "/ mes")}`;
+    if (activeType === "location-courte-duree" && property.prix_location_courte) return `${formatPrice(property.prix_location_courte, d)} ${tL("/ nuit", "/ night", "/ noche")}`;
+    if (property.prix_vente) return formatPrice(property.prix_vente, d);
+    if (property.prix_location_longue) return `${formatPrice(property.prix_location_longue, d)} ${tL("/ mois", "/ month", "/ mes")}`;
+    if (property.prix_location_courte) return `${formatPrice(property.prix_location_courte, d)} ${tL("/ nuit", "/ night", "/ noche")}`;
+    return property.prix ? formatPrice(property.prix, d) : tL("Prix sur demande", "Price on request", "Precio bajo petición");
   })();
 
   const image = property.photo_principale || property.photos?.[0] || "/placeholder.svg";
@@ -34,7 +34,7 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
   const serviceLabel = service === "vente" ? tL("À vendre", "For sale", "En venta") : service === "location-longue-duree" ? tL("Location annuelle", "Long-term rent", "Alquiler anual") : tL("Séjour", "Stay", "Estancia");
 
   return (
-    <motion.article initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.45, delay: revealDelay / 1000 }} className="mobile-property-visible group">
+    <article className="mobile-property-visible group">
       <Link to={`/bien/${property.id}`} className="block">
         <div className="relative aspect-[4/3] overflow-hidden rounded-[10px] bg-[#e9e1d5] md:rounded-none">
           <OptimizedImage src={image} alt={property.titre} size="card" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]" wrapperClassName="h-full w-full" />
@@ -57,7 +57,7 @@ const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardPro
           </div>
         </div>
       </Link>
-    </motion.article>
+    </article>
   );
 };
 

@@ -264,7 +264,7 @@ export default function AdminDashboard() {
   const publies       = biens.filter(b => b.statut === 'publie').length;
   const totalArticles = articles.length;
   const articlesPubl  = articles.filter(a => a.est_publie).length;
-  const visitesEnAttente = visites.filter(v => v.status === 'en-attente').length;
+  const visitesEnAttente = visites.filter(v => v.status === 'en-attente' || v.status === 'pending').length;
 
   // ── Chart data: répartition par type ───────────────────────────────────────
   const typeCount: Record<string, number> = {};

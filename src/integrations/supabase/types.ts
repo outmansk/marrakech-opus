@@ -59,6 +59,111 @@ export type Database = {
         }
         Relationships: []
       }
+      client_leads: {
+        Row: {
+          id: string
+          name: string
+          phone: string
+          email: string | null
+          source: string
+          transaction_type: string
+          property_types: string[]
+          budget_min: number | null
+          budget_max: number | null
+          preferred_areas: string[]
+          bedrooms_min: number | null
+          furnishing: string
+          available_from: string | null
+          reference_location: string | null
+          max_distance_km: number | null
+          profession: string | null
+          client_profile: string | null
+          status: string
+          next_follow_up_at: string | null
+          notes: string | null
+          created_at: string
+          updated_at: string
+          created_by: string | null
+        }
+        Insert: {
+          id?: string
+          name: string
+          phone: string
+          email?: string | null
+          source?: string
+          transaction_type?: string
+          property_types?: string[]
+          budget_min?: number | null
+          budget_max?: number | null
+          preferred_areas?: string[]
+          bedrooms_min?: number | null
+          furnishing?: string
+          available_from?: string | null
+          reference_location?: string | null
+          max_distance_km?: number | null
+          profession?: string | null
+          client_profile?: string | null
+          status?: string
+          next_follow_up_at?: string | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string
+          phone?: string
+          email?: string | null
+          source?: string
+          transaction_type?: string
+          property_types?: string[]
+          budget_min?: number | null
+          budget_max?: number | null
+          preferred_areas?: string[]
+          bedrooms_min?: number | null
+          furnishing?: string
+          available_from?: string | null
+          reference_location?: string | null
+          max_distance_km?: number | null
+          profession?: string | null
+          client_profile?: string | null
+          status?: string
+          next_follow_up_at?: string | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Relationships: []
+      }
+      contact_messages: {
+        Row: {
+          id: string
+          name: string
+          email: string
+          phone: string | null
+          message: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          email: string
+          phone?: string | null
+          message: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string
+          phone?: string | null
+          message?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null

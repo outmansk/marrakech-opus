@@ -32,7 +32,7 @@ const Catalogue = () => {
   const visibleProperties = useMemo(() => {
     const needle = queryText.trim().toLocaleLowerCase("fr");
     if (!needle) return properties;
-    return properties.filter((property) => [property.titre, property.quartier, property.type, property.description_courte].filter(Boolean).join(" ").toLocaleLowerCase("fr").includes(needle));
+    return properties.filter((property) => [property.titre, property.quartier, property.type, property.description_courte, property.reference].filter(Boolean).join(" ").toLocaleLowerCase("fr").includes(needle));
   }, [properties, queryText]);
 
   const update = (key: string, value: string) => {

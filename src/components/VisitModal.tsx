@@ -31,6 +31,7 @@ const VisitModal = ({ open, onOpenChange, propertyId, propertyTitle }: VisitModa
       client_name: DOMPurify.sanitize(name.trim()),
       client_phone: DOMPurify.sanitize(phone.trim()),
       requested_date: DOMPurify.sanitize(date),
+      status: 'en-attente',
     });
     setLoading(false);
 
