@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
-import { Bath, Bed, MapPin, Maximize } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { ArrowRight, Bath, Bed, MapPin, Maximize, MessageCircle } from "lucide-react";
 import type { Bien } from "@/types/property";
 import OptimizedImage from "@/components/ui/OptimizedImage";
+import { useLocalizedText } from "@/hooks/useLocalizedText";
+import { getServices } from "@/lib/propertyServices";
 
 interface PropertyCardProps {
   property: Bien;
@@ -10,54 +11,120 @@ interface PropertyCardProps {
   activeType?: string;
 }
 
+type PriceKind = "vente" | "location-longue-duree" | "location-courte-duree";
+
 const formatPrice = (price: number, devise: string = 'MAD') => new Intl.NumberFormat("fr-MA").format(price) + " " + devise;
 
-const PropertyCard = ({ property, revealDelay = 0, activeType }: PropertyCardProps) => {
-  const { i18n } = useTranslation();
-  const language = i18n.language?.slice(0, 2) ?? "fr";
-  const tL = (fr: string, en: string, es: string) => language === "en" ? en : language === "es" ? es : fr;
+const priceFor = (property: Bien, kind: PriceKind) =>
+  kind === "vente" ? property.prix_vente : kind === "location-longue-duree" ? property.prix_location_longue : property.prix_location_courte;
 
-  const price = (() => {
-    const d = property.devise || 'MAD';
-    if (activeType === "vente" && property.prix_vente) return formatPrice(property.prix_vente, d);
-    if (activeType === "location-longue-duree" && property.prix_location_longue) return `${formatPrice(property.prix_location_longue, d)} ${tL("/ mois", "/ month", "/ mes")}`;
-    if (activeType === "location-courte-duree" && property.prix_location_courte) return `${formatPrice(property.prix_location_courte, d)} ${tL("/ nuit", "/ night", "/ noche")}`;
-    if (property.prix_vente) return formatPrice(property.prix_vente, d);
-    if (property.prix_location_longue) return `${formatPrice(property.prix_location_longue, d)} ${tL("/ mois", "/ month", "/ mes")}`;
-    if (property.prix_location_courte) return `${formatPrice(property.prix_location_courte, d)} ${tL("/ nuit", "/ night", "/ noche")}`;
-    return property.prix ? formatPrice(property.prix, d) : tL("Prix sur demande", "Price on request", "Precio bajo petición");
-  })();
+const resolvePrice = (property: Bien, activeType?: string): { kind: PriceKind; amount: number | null } => {
+  const kinds: PriceKind[] = ["vente", "location-longue-duree", "location-courte-duree"];
+  const active = kinds.find((kind) => kind === activeType);
+  if (active && priceFor(property, active)) return { kind: active, amount: priceFor(property, active) };
+  const priced = kinds.find((kind) => priceFor(property, kind));
+  if (priced) return { kind: priced, amount: priceFor(property, priced) };
+
+  // No dedicated price: fall back to the listing's service and the legacy price.
+  const services = getServices(property);
+  const rents = services.includes("location-longue-duree") || services.includes("sous-location");
+  const kind = active ?? (services.includes("vente") ? "vente" : rents ? "location-longue-duree" : services.includes("location-courte-duree") ? "location-courte-duree" : "vente");
+  return { kind, amount: property.prix || null };
+};
+
+const PropertyCard = ({ property, activeType }: PropertyCardProps) => {
+  const tL = useLocalizedText();
+
+  const devise = property.devise || 'MAD';
+  const { kind, amount } = resolvePrice(property, activeType);
+  const isSale = kind === "vente";
+  const isSublet = !isSale && getServices(property).includes("sous-location");
+
+  const badge = isSale
+    ? tL("À vendre", "For sale", "En venta")
+    : kind === "location-longue-duree"
+      ? tL("Location longue durée", "Long-term rent", "Alquiler de larga duración")
+      : tL("Séjour", "Stay", "Estancia");
+  const priceLabel = isSale
+    ? tL("Prix de vente", "Sale price", "Precio de venta")
+    : kind === "location-longue-duree"
+      ? tL("Loyer mensuel", "Monthly rent", "Alquiler mensual")
+      : tL("Prix par nuit", "Price per night", "Precio por noche");
+  const priceSuffix = kind === "location-longue-duree" ? tL("/ mois", "/ month", "/ mes") : kind === "location-courte-duree" ? tL("/ nuit", "/ night", "/ noche") : null;
 
   const image = property.photo_principale || property.photos?.[0] || "/placeholder.svg";
   const surface = property.surface_habitable || property.surface_terrain;
-  const service = property.services?.[0];
-  const serviceLabel = service === "vente" ? tL("À vendre", "For sale", "En venta") : service === "location-longue-duree" ? tL("Location annuelle", "Long-term rent", "Alquiler anual") : tL("Séjour", "Stay", "Estancia");
+  const typeLabel = property.type ? property.type.charAt(0).toUpperCase() + property.type.slice(1) : null;
+  const href = `/bien/${property.id}`;
+  const viewLabel = tL("Voir le bien", "View property", "Ver la propiedad");
+  const whatsappUrl = `https://wa.me/212605387041?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien : ${property.titre}${property.reference ? ` (Ref: ${property.reference})` : ""}`)}`;
+
+  const specs = [
+    property.chambres != null && property.chambres > 0 && { icon: Bed, value: String(property.chambres), label: property.chambres > 1 ? tL("Chambres", "Bedrooms", "Habitaciones") : tL("Chambre", "Bedroom", "Habitación") },
+    property.salles_de_bain != null && property.salles_de_bain > 0 && { icon: Bath, value: String(property.salles_de_bain), label: property.salles_de_bain > 1 ? tL("Salles de bain", "Bathrooms", "Baños") : tL("Salle de bain", "Bathroom", "Baño") },
+    surface != null && surface > 0 && { icon: Maximize, value: `${surface} m²`, label: tL("Surface", "Area", "Superficie") },
+  ].filter(Boolean) as { icon: typeof Bed; value: string; label: string }[];
 
   return (
-    <article className="mobile-property-visible group">
-      <Link to={`/bien/${property.id}`} className="block">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-[10px] bg-[#e9e1d5] md:rounded-none">
+    <div className="mobile-property-visible h-full w-full [container-type:inline-size]">
+      <article className="group flex h-full flex-col border border-[#e6ddd0] bg-[#fffdf9] text-[#211f1b] transition-[box-shadow,border-color] duration-300 hover:border-[#d6c9b6] hover:shadow-[0_24px_44px_-30px_rgba(33,31,27,0.45)]">
+        <Link to={href} tabIndex={-1} aria-hidden="true" className="relative block aspect-[4/3] flex-none overflow-hidden bg-[#e9e1d5]">
           <OptimizedImage src={image} alt={property.titre} size="card" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]" wrapperClassName="h-full w-full" />
-          <div className="absolute left-4 top-4 bg-[#f6f1e8]/95 px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.15em] text-[#4d493f]">{serviceLabel}</div>
-          {property.statut === "vendu-loue" && <div className="absolute inset-0 grid place-items-center bg-[#211f1b]/50 text-xs font-semibold uppercase tracking-[0.2em] text-white">{tL("Vendu / Loué", "Sold / Rented", "Vendido / Alquilado")}</div>}
-        </div>
-        <div className="border-b border-[#2b2722]/15 py-5">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <p className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.14em] text-[#777065]"><MapPin size={13} strokeWidth={1.4} />{property.quartier || "Marrakech"}</p>
-              <h3 className="mt-2 line-clamp-2 text-[27px] leading-[1.02] tracking-[-0.02em] text-[#211f1b] transition-colors group-hover:text-[#a4573e]">{property.titre}</h3>
+          <span className={`pointer-events-none absolute left-3.5 top-3.5 z-[1] px-3 pb-2 pt-[9px] text-xs font-medium uppercase leading-none tracking-[0.12em] ${isSale ? "bg-[#211f1b] text-[#fbf8f2]" : "bg-[#a4573e] text-white"}`}>{badge}</span>
+          {property.statut === "vendu-loue" && <span className="absolute inset-0 z-[2] grid place-items-center bg-[#211f1b]/50 text-xs font-semibold uppercase tracking-[0.2em] text-white">{tL("Vendu / Loué", "Sold / Rented", "Vendido / Alquilado")}</span>}
+        </Link>
+
+        <div className="flex flex-1 flex-col gap-5 p-[clamp(18px,6cqi,26px)]">
+          <div className="flex flex-col gap-2.5">
+            <p className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs font-medium uppercase leading-[1.35] tracking-[0.12em]">
+              {typeLabel && <span className="text-[#a4573e]">{typeLabel}</span>}
+              <span className="flex items-center gap-[5px] text-[#655f56]"><MapPin size={14} strokeWidth={1.6} className="flex-none" aria-hidden="true" />{property.quartier || "Marrakech"}</span>
+            </p>
+            <h3 className="m-0 text-[clamp(25px,7.4cqi,29px)] font-medium leading-[1.12] tracking-[-0.005em] [text-wrap:pretty]">
+              <Link to={href} className="text-[#211f1b] transition-colors duration-200 hover:text-[#a4573e]">{property.titre}</Link>
+            </h3>
+          </div>
+
+          <div className="mt-auto flex flex-col gap-[18px]">
+            <div className="flex flex-col gap-1.5">
+              <span className="text-xs font-medium uppercase leading-[1.35] tracking-[0.1em] text-[#655f56]">
+                {isSublet ? `${priceLabel} · ${tL("Sous-location autorisée", "Subletting allowed", "Subarriendo permitido")}` : priceLabel}
+              </span>
+              {amount ? (
+                <p className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                  <span className="whitespace-nowrap font-serif text-[31px] font-medium leading-[1.05]">{formatPrice(amount, devise)}</span>
+                  {priceSuffix && <span className="text-[15px] leading-[1.2] text-[#655f56]">{priceSuffix}</span>}
+                </p>
+              ) : (
+                <p className="font-serif text-[27px] font-medium leading-[1.1]">{tL("Prix sur demande", "Price on request", "Precio bajo petición")}</p>
+              )}
             </div>
-            <span className="shrink-0 pt-1 text-[9px] font-medium uppercase tracking-[0.14em] text-[#a4573e]">{property.type}</span>
-          </div>
-          <p className="mt-4 font-serif text-[22px] text-[#211f1b]">{price}</p>
-          <div className="mt-4 flex min-h-5 flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[#655f56]">
-            {property.chambres != null && property.chambres > 0 && <span className="flex items-center gap-1.5"><Bed size={15} strokeWidth={1.3} />{property.chambres} {tL("ch.", "beds", "hab.")}</span>}
-            {property.salles_de_bain != null && property.salles_de_bain > 0 && <span className="flex items-center gap-1.5"><Bath size={15} strokeWidth={1.3} />{property.salles_de_bain} {tL("sdb", "baths", "baños")}</span>}
-            {surface != null && surface > 0 && <span className="flex items-center gap-1.5"><Maximize size={15} strokeWidth={1.3} />{surface} m²</span>}
+
+            {specs.length > 0 && (
+              <ul className="flex flex-wrap gap-x-[26px] gap-y-3.5 border-t border-[#ece4d8] pt-4">
+                {specs.map(({ icon: Icon, value, label }) => (
+                  <li key={label} className="flex flex-col gap-1">
+                    <span className="flex items-center gap-[7px] whitespace-nowrap text-base font-medium leading-[1.1]"><Icon size={18} strokeWidth={1.5} className="flex-none text-[#8b6f5c]" aria-hidden="true" />{value}</span>
+                    <span className="text-xs leading-[1.2] text-[#655f56]">{label}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <div className="flex flex-wrap gap-2">
+              <Link to={href} aria-label={`${viewLabel} : ${property.titre}`} className="flex min-h-[50px] flex-[1_1_150px] items-center justify-between gap-2.5 whitespace-nowrap bg-[#211f1b] px-[15px] text-sm font-medium leading-none tracking-[0.02em] text-[#fbf8f2] transition-colors duration-200 hover:bg-[#a4573e] hover:text-white">
+                <span>{viewLabel}</span>
+                <ArrowRight size={18} strokeWidth={1.5} className="flex-none" aria-hidden="true" />
+              </Link>
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label={`${tL("Se renseigner sur WhatsApp", "Ask on WhatsApp", "Consultar por WhatsApp")} : ${property.titre}`} className="flex min-h-[50px] flex-[1_1_110px] items-center justify-center gap-2 whitespace-nowrap border border-[#211f1b] px-3.5 text-sm font-medium leading-none tracking-[0.02em] text-[#211f1b] transition-colors duration-200 hover:bg-[#211f1b] hover:text-[#fbf8f2]">
+                <MessageCircle size={18} strokeWidth={1.5} className="flex-none" aria-hidden="true" />
+                <span>WhatsApp</span>
+              </a>
+            </div>
           </div>
         </div>
-      </Link>
-    </article>
+      </article>
+    </div>
   );
 };
 
