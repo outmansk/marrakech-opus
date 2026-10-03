@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { ArrowLeft, ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { ChevronDown, Search, SlidersHorizontal, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -43,6 +43,7 @@ const Catalogue = () => {
 
   const clear = () => setSearchParams({}, { replace: true });
   const countFilters = [activeType, activeKind, activeQuartier].filter((value) => value !== "all").length + (queryText ? 1 : 0);
+  const resultCount = `${visibleProperties.length} ${tL(visibleProperties.length > 1 ? "biens" : "bien", visibleProperties.length > 1 ? "properties" : "property", visibleProperties.length > 1 ? "propiedades" : "propiedad")}`;
 
   const FilterFields = () => (
     <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr_1fr_1fr_auto] lg:items-end">
@@ -78,25 +79,24 @@ const Catalogue = () => {
         <SEOHead title={tL("Catalogue immobilier Marrakech", "Marrakech property catalogue", "Catálogo inmobiliario Marrakech")} description={tL("Découvrez nos villas, riads et appartements disponibles à Marrakech.", "Discover our available villas, riads and apartments in Marrakech.", "Descubra nuestras villas, riads y apartamentos disponibles en Marrakech.")} />
         <Header />
         <main className="pt-16">
-          <section className="border-b border-[#2b2722]/12 bg-[#ede5d8] py-12 md:py-16">
+          <section className="border-b border-[#2b2722]/12 bg-[#ede5d8] py-5 md:py-8">
             <div className="mx-auto max-w-[1320px] px-5 md:px-10 xl:px-16">
-              <Link to="/" className="inline-flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.17em] text-[#777065] hover:text-[#a4573e]"><ArrowLeft size={14} />{tL("Accueil", "Home", "Inicio")}</Link>
-              <div className="mt-7 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <div><p className="text-[10px] font-medium uppercase tracking-[0.2em] sm:tracking-[0.26em] text-[#a4573e]">{tL("Notre collection", "Our collection", "Nuestra colección")}</p><h1 className="mt-3 text-[38px] leading-[0.98] tracking-[-0.03em] text-[#211f1b] sm:text-[48px] md:text-[64px]">{tL("Des adresses choisies", "Chosen addresses", "Direcciones elegidas")}</h1></div>
-                <p className="max-w-md text-sm leading-6 text-[#655f56]">{tL("Une sélection courte de biens vérifiés, à acheter, louer ou habiter le temps d'un séjour.", "A concise selection of verified homes to buy, rent or enjoy for a stay.", "Una selección de propiedades verificadas para comprar, alquilar o disfrutar durante una estancia.")}</p>
-              </div>
+              <h1 className="text-[32px] leading-tight tracking-[-0.025em] text-[#211f1b] md:text-[44px]">{tL("Nos biens", "Properties", "Propiedades")}</h1>
             </div>
           </section>
 
           <section className="sticky top-16 z-30 border-b border-[#2b2722]/12 bg-[#f6f1e8]/95 backdrop-blur-xl">
-            <div className="mx-auto max-w-[1320px] px-5 py-4 md:px-10 xl:px-16">
+            <div className="mx-auto max-w-[1320px] px-5 py-3 md:px-10 lg:py-4 xl:px-16">
               <div className="hidden lg:block"><FilterFields /></div>
-              <button type="button" onClick={() => setMobileFilters(true)} className="flex h-12 w-full items-center justify-between border border-[#2b2722]/15 bg-white px-4 text-[10px] font-semibold uppercase tracking-[0.16em] lg:hidden"><span className="flex items-center gap-2"><SlidersHorizontal size={16} />{tL("Filtres", "Filters", "Filtros")}</span>{countFilters > 0 && <span className="grid h-6 w-6 place-items-center rounded-full bg-[#a4573e] text-white">{countFilters}</span>}</button>
+              <div className="flex items-center justify-between gap-4 lg:hidden">
+                <p aria-live="polite" className="text-xs font-medium text-[#655f56]">{loading ? tL("Chargement…", "Loading…", "Cargando…") : resultCount}</p>
+                <button type="button" onClick={() => setMobileFilters(true)} aria-expanded={mobileFilters} className="flex min-h-11 shrink-0 items-center justify-between gap-3 border border-[#2b2722]/15 bg-white px-4 text-xs font-medium"><span className="flex items-center gap-2"><SlidersHorizontal size={16} />{tL("Filtres", "Filters", "Filtros")}</span>{countFilters > 0 && <span className="grid h-6 w-6 place-items-center rounded-full bg-[#a4573e] text-white">{countFilters}</span>}</button>
+              </div>
             </div>
           </section>
 
-          <div className="mx-auto max-w-[1320px] px-5 py-10 md:px-10 md:py-14 xl:px-16">
-            {!loading && <div className="mb-8 flex items-center gap-4"><p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#655f56]">{visibleProperties.length} {tL(visibleProperties.length > 1 ? "biens" : "bien", visibleProperties.length > 1 ? "properties" : "property", visibleProperties.length > 1 ? "propiedades" : "propiedad")}</p><span className="h-px flex-1 bg-[#2b2722]/12" /></div>}
+          <div className="mx-auto max-w-[1320px] px-5 pb-10 pt-5 md:px-10 lg:py-8 xl:px-16">
+            {!loading && <div className="mb-5 hidden items-center gap-4 lg:flex"><p aria-live="polite" className="text-xs font-medium text-[#655f56]">{resultCount}</p><span className="h-px flex-1 bg-[#2b2722]/12" /></div>}
             {loading ? <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">{[0,1,2,3,4,5].map((item) => <div key={item} className="animate-pulse"><div className="aspect-[4/3] bg-[#e9e1d5]" /><div className="mt-4 h-6 w-2/3 bg-[#e9e1d5]" /></div>)}</div> : visibleProperties.length > 0 ? <div className="grid gap-x-7 gap-y-12 md:grid-cols-2 lg:grid-cols-3">{visibleProperties.map((property, index) => <PropertyCard key={property.id} property={property} activeType={activeType} revealDelay={index * 50} />)}</div> : <div className="border-y border-[#2b2722]/12 py-20 text-center"><h2 className="text-4xl">{tL("Aucun bien trouvé", "No property found", "No se encontró ninguna propiedad")}</h2><p className="mt-3 text-sm text-[#655f56]">{tL("Essayez de modifier ou d'effacer vos filtres.", "Try changing or clearing your filters.", "Pruebe a cambiar o borrar los filtros.")}</p><button onClick={clear} className="mt-7 bg-[#a4573e] px-7 py-4 text-[10px] font-semibold uppercase tracking-[0.17em] text-white">{tL("Effacer les filtres", "Clear filters", "Borrar filtros")}</button></div>}
           </div>
         </main>
