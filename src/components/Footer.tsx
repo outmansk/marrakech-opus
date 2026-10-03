@@ -7,7 +7,7 @@ const Footer = () => {
   const currentLang = i18n.language;
 
   return (
-    <footer className="bg-[#0A0A0A] text-white">
+    <footer className="bg-[#211f1b] text-white">
       {/* ── Main footer grid ────────────────────────────────────────── */}
       <div className="container mx-auto px-6 md:px-12 py-20 md:py-24">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">

@@ -43,9 +43,9 @@ const Header = () => {
 
   return (
     <>
-      <header className={`fixed inset-x-0 top-0 z-[70] h-16 transition-colors duration-300 lg:border-b lg:border-[#2b2722]/10 lg:bg-[#f6f1e8]/95 lg:backdrop-blur-xl ${overHomeHero ? "border-transparent bg-transparent" : "border-b border-[#2b2722]/10 bg-[#f6f1e8]/95 backdrop-blur-xl"}`}>
+      <header className={`fixed inset-x-0 top-0 z-[70] h-16 transition-colors duration-300 ${overHomeHero ? "border-transparent bg-transparent" : "border-b border-[#2b2722]/10 bg-[#f6f1e8]/95 backdrop-blur-xl"}`}>
         <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between px-5 md:px-10">
-          <Link to="/" className={`font-serif text-[22px] tracking-[-0.02em] transition-colors md:text-[26px] lg:text-[#211f1b] ${overHomeHero ? "text-white" : "text-[#211f1b]"}`}>
+          <Link to="/" className={`font-serif text-[22px] tracking-[-0.02em] transition-colors md:text-[26px] ${overHomeHero ? "text-white" : "text-[#211f1b]"}`}>
             Live In Marrakech
           </Link>
 
@@ -54,21 +54,21 @@ const Header = () => {
               <Link
                 key={to}
                 to={to}
-                className={`relative py-2 text-[10px] font-medium uppercase tracking-[0.2em] transition-colors duration-200 ${active(to) ? "text-[#a4573e]" : "text-[#5c574f] hover:text-[#211f1b]"}`}
+                className={`relative py-2 text-[10px] font-medium uppercase tracking-[0.2em] transition-colors duration-200 ${overHomeHero ? (active(to) ? "text-white" : "text-white/80 hover:text-white") : active(to) ? "text-[#a4573e]" : "text-[#5c574f] hover:text-[#211f1b]"}`}
               >
                 {label}
-                {active(to) && <span className="absolute inset-x-0 -bottom-1 h-px bg-[#a4573e]" />}
+                {active(to) && <span className={`absolute inset-x-0 -bottom-1 h-px ${overHomeHero ? "bg-[#e7b39f]" : "bg-[#a4573e]"}`} />}
               </Link>
             ))}
           </nav>
 
           <div className="hidden items-center gap-4 lg:flex">
-            <LanguageSwitcher variant="dark" />
-            <span className="h-5 w-px bg-[#2b2722]/15" />
-            <a href="tel:+212605387041" aria-label="Téléphoner" className="text-[#5c574f] transition-colors hover:text-[#a4573e]">
+            <LanguageSwitcher variant={overHomeHero ? "light" : "dark"} />
+            <span className={`h-5 w-px transition-colors ${overHomeHero ? "bg-white/30" : "bg-[#2b2722]/15"}`} />
+            <a href="tel:+212605387041" aria-label="Téléphoner" className={`transition-colors hover:text-[#a4573e] ${overHomeHero ? "text-white/85" : "text-[#5c574f]"}`}>
               <Phone size={17} strokeWidth={1.4} />
             </a>
-            <a href="mailto:contact@liveinmarrakech.com" aria-label="Envoyer un e-mail" className="text-[#5c574f] transition-colors hover:text-[#a4573e]">
+            <a href="mailto:contact@liveinmarrakech.com" aria-label="Envoyer un e-mail" className={`transition-colors hover:text-[#a4573e] ${overHomeHero ? "text-white/85" : "text-[#5c574f]"}`}>
               <Mail size={17} strokeWidth={1.4} />
             </a>
           </div>

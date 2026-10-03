@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Check, ChevronDown, ChevronLeft, ChevronRight, MessageCircle, ShieldCheck } from "lucide-react";
+import { ArrowRight, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Bien } from "@/types/property";
 import PropertyCard from "@/components/PropertyCard";
 import { useProperties } from "@/hooks/useBiens";
@@ -222,18 +222,6 @@ const PropertiesCarousel = () => {
             <ArrowRight size={18} strokeWidth={1.5} className="flex-none" aria-hidden="true" />
           </Link>
         </div>
-
-        <ul className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))] gap-px border-y border-[#e3d9ca] bg-[#e3d9ca]">
-          {[
-            { icon: ShieldCheck, text: tL("Biens vérifiés", "Verified properties", "Propiedades verificadas") },
-            { icon: Check, text: tL("Accompagnement sur mesure", "Tailored support", "Atención personalizada") },
-            { icon: MessageCircle, text: tL("Réponse rapide sur WhatsApp", "Fast WhatsApp reply", "Respuesta rápida por WhatsApp") },
-          ].map(({ icon: Icon, text }) => (
-            <li key={text} className="flex items-center gap-3 bg-[#fbf8f2] px-1 py-[18px] text-xs font-medium uppercase leading-[1.3] tracking-[0.12em] text-[#4f4a43]">
-              <Icon size={18} strokeWidth={1.4} className="flex-none text-[#a4573e]" aria-hidden="true" />{text}
-            </li>
-          ))}
-        </ul>
       </div>
     </section>
   );
