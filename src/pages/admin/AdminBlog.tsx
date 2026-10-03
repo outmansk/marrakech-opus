@@ -80,7 +80,7 @@ export default function AdminBlog() {
 
   if (isLoading) {
     return (
-      <main className="container mx-auto px-6 md:px-10 py-8 space-y-6 flex-1 overflow-y-auto">
+      <main className="container mx-auto w-full min-w-0 px-3 sm:px-6 md:px-10 py-4 sm:py-6 md:py-8 space-y-5 md:space-y-6 flex-1">
         <div className="flex justify-between items-center">
           <div className="h-10 w-48 rounded-lg shimmer-admin" />
           <div className="h-10 w-32 rounded-lg shimmer-admin" />
@@ -95,7 +95,7 @@ export default function AdminBlog() {
   }
 
   return (
-    <main className="container mx-auto px-6 md:px-10 py-8 space-y-6 flex-1 overflow-y-auto">
+    <main className="container mx-auto w-full min-w-0 px-3 sm:px-6 md:px-10 py-4 sm:py-6 md:py-8 space-y-5 md:space-y-6 flex-1">
       {/* ── Header ── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
@@ -103,7 +103,7 @@ export default function AdminBlog() {
             <div className="w-8 h-8 rounded-lg bg-accent/8 flex items-center justify-center">
               <FileText className="h-4 w-4 text-accent" strokeWidth={1.5} />
             </div>
-            <h2 className="font-serif text-2xl md:text-3xl">Gestion du Blog</h2>
+            <h2 className="font-serif text-xl sm:text-2xl md:text-3xl">Gestion du Blog</h2>
           </div>
           <p className="text-sm text-muted-foreground font-light ml-[42px]">
             Créez et gérez vos articles SEO pour Live In Marrakech.
@@ -120,7 +120,7 @@ export default function AdminBlog() {
               <span className="text-[12px] tracking-wide">Nouvel Article</span>
             </Button>
           </SheetTrigger>
-          <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
+          <SheetContent className="w-full max-w-none sm:max-w-2xl overflow-y-auto">
             <SheetHeader className="mb-6">
               <SheetTitle>
                 {editingArticle ? 'Modifier l\'article' : 'Créer un nouvel article'}
@@ -160,7 +160,25 @@ export default function AdminBlog() {
       </div>
 
       {/* ── Table ── */}
-      <div className="admin-card rounded-xl overflow-hidden">
+      <div className="space-y-3 md:hidden">
+        {filteredArticles?.length === 0 ? <div className="admin-card rounded-xl p-8 text-center text-sm text-muted-foreground">Aucun article trouvé.</div> : filteredArticles?.map((article) => (
+          <article key={article.id} className="admin-card min-w-0 space-y-3 rounded-xl p-4">
+            <div className="flex min-w-0 items-start gap-3">
+              <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-muted/40">{article.image_url ? <OptimizedImage src={article.image_url} alt={article.title} size="thumb" className="h-full w-full object-cover" wrapperClassName="h-full w-full" /> : <div className="grid h-full w-full place-items-center"><FileText className="h-5 w-5 text-muted-foreground/40" /></div>}</div>
+              <div className="min-w-0 flex-1"><h3 className="line-clamp-2 font-medium text-sm">{article.title}</h3><p className="mt-1 truncate text-[11px] text-muted-foreground">/{article.slug}</p><p className="mt-1 text-[11px] text-muted-foreground">{new Date(article.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}</p></div>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border/40 pt-3"><Badge variant="outline" className="max-w-full truncate capitalize text-[10px]">{article.category?.replace(/-/g, ' ')}</Badge><span className={cn("rounded-full px-2.5 py-1 text-[9px] font-medium uppercase tracking-wide", article.est_publie ? 'bg-emerald-500/10 text-emerald-600' : 'bg-muted text-muted-foreground')}>{article.est_publie ? "Publié" : "Brouillon"}</span></div>
+            <div className="grid grid-cols-[1fr_1fr_44px_44px] gap-1.5 sm:gap-2">
+              <Button type="button" variant="outline" aria-label={article.est_publie ? "Passer en brouillon" : "Publier l’article"} className="min-h-11 min-w-0 gap-1 px-1.5 text-[10px] sm:gap-1.5 sm:px-2 sm:text-xs" onClick={() => handleToggleStatus(article.id, article.est_publie)}>{article.est_publie ? <EyeOff size={14} /> : <Eye size={14} />}<span className="hidden min-[380px]:inline">{article.est_publie ? "Brouillon" : "Publier"}</span></Button>
+              <Button type="button" variant="outline" aria-label="Modifier l’article" className="min-h-11 min-w-0 gap-1 px-1.5 text-[10px] sm:gap-1.5 sm:px-2 sm:text-xs" onClick={() => handleEdit(article)}><Edit size={14} /><span className="hidden min-[380px]:inline">Modifier</span></Button>
+              <Button type="button" variant="outline" size="icon" className="h-11 w-11" asChild><a aria-label="Voir l’article" href={`/blog/${article.slug}`} target="_blank" rel="noopener noreferrer"><ExternalLink size={15} /></a></Button>
+              <AlertDialog><AlertDialogTrigger asChild><Button type="button" variant="outline" size="icon" className="h-11 w-11 text-destructive" aria-label="Supprimer l’article"><Trash2 size={15} /></Button></AlertDialogTrigger><AlertDialogContent className="w-[calc(100vw-1.5rem)] max-w-lg rounded-xl"><AlertDialogHeader><AlertDialogTitle>Supprimer l'article ?</AlertDialogTitle><AlertDialogDescription>Cette action est irréversible. L'article "{article.title}" sera supprimé de la base de données.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel className="min-h-11 rounded-lg">Annuler</AlertDialogCancel><AlertDialogAction className="min-h-11 rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => deleteArticle.mutate(article.id)}>Supprimer</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div className="hidden md:block admin-card rounded-xl overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/30 hover:bg-muted/30 border-b border-border/40">

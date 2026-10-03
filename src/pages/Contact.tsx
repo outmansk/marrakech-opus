@@ -102,7 +102,7 @@ const Contact = () => {
             />
           </div>
 
-          <div className="relative z-10 text-center px-6">
+          <div className="relative z-10 text-center px-4 sm:px-6">
             <motion.p
               className="text-white/60 text-[10px] md:text-xs tracking-[0.3em] uppercase font-sans font-light mb-4"
               initial={{ opacity: 0, y: 15 }}
@@ -124,7 +124,7 @@ const Contact = () => {
 
         {/* ─── Main Content ────────────────────────────────────────── */}
         <section className="py-20 md:py-28">
-          <div className="container mx-auto px-6 md:px-12">
+          <div className="container mx-auto px-4 sm:px-6 md:px-12">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20">
               
               {/* Left Column — Contact Information (5 cols) */}

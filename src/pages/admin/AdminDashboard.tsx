@@ -99,22 +99,23 @@ function StatCard({
 
   return (
     <div
-      className="admin-card admin-stat rounded-xl p-5 flex items-start gap-4"
+      className="admin-card admin-stat rounded-xl p-3 sm:p-5 flex items-center sm:items-start gap-2.5 sm:gap-4"
       style={{ animationDelay: `${delay}ms` }}
     >
       <div className={cn(
-        "w-11 h-11 rounded-xl flex items-center justify-center shrink-0 admin-icon-glow",
+        "w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0 admin-icon-glow",
         bgGlow[color]
       )}>
-        <div className={cn("w-8 h-8 rounded-lg bg-gradient-to-br flex items-center justify-center", gradients[color])}>
-          <Icon size={16} strokeWidth={1.5} className="text-white" />
+        <div className={cn("w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br flex items-center justify-center", gradients[color])}>
+          <Icon size={14} strokeWidth={1.5} className="text-white sm:hidden" />
+          <Icon size={16} strokeWidth={1.5} className="hidden text-white sm:block" />
         </div>
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-1.5 font-sans">{label}</p>
-        <p className="font-serif text-3xl leading-none admin-count-up">{value}</p>
+        <p className="mb-1 sm:mb-1.5 text-[8px] sm:text-[10px] tracking-[0.1em] sm:tracking-[0.25em] uppercase text-muted-foreground font-sans leading-tight">{label}</p>
+        <p className="font-serif text-2xl sm:text-3xl leading-none admin-count-up">{value}</p>
         {sub && (
-          <p className="text-[11px] text-muted-foreground mt-1.5 font-light flex items-center gap-1">
+          <p className="text-[9px] sm:text-[11px] text-muted-foreground mt-1 sm:mt-1.5 font-light flex items-center gap-1 leading-tight">
             {sub}
           </p>
         )}
@@ -137,9 +138,9 @@ function RecentBienRow({ bien }: { bien: Bien }) {
   return (
     <Link
       to="/manage-xk92p/biens"
-      className="flex items-center gap-4 p-3.5 hover:bg-muted/30 transition-all duration-200 group rounded-lg"
+      className="flex min-w-0 items-center gap-2.5 sm:gap-4 p-2.5 sm:p-3.5 hover:bg-muted/30 transition-all duration-200 group rounded-lg"
     >
-      <div className="w-14 h-11 bg-muted/50 shrink-0 overflow-hidden rounded-lg ring-1 ring-border/50">
+      <div className="w-11 h-11 sm:w-14 sm:h-11 bg-muted/50 shrink-0 overflow-hidden rounded-lg ring-1 ring-border/50">
         {bien.photo_principale ? (
           <OptimizedImage src={bien.photo_principale} alt={bien.titre} size="thumb" className="w-full h-full object-cover" wrapperClassName="w-full h-full" />
         ) : (
@@ -150,21 +151,25 @@ function RecentBienRow({ bien }: { bien: Bien }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">{bien.titre}</p>
-        <p className="text-xs text-muted-foreground capitalize">{bien.type} · {bien.quartier}</p>
+        <p className="truncate text-[11px] sm:text-xs text-muted-foreground capitalize">{bien.type} · {bien.quartier}</p>
+        <div className="mt-1 flex min-w-0 flex-wrap items-center gap-1.5 sm:hidden">
+          {main && <span className="text-[10px] font-medium tabular-nums">{main.toLocaleString('fr-MA')} {bien.devise}</span>}
+          <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-medium", status.bg, status.text)}><span className={cn("h-1.5 w-1.5 rounded-full", status.dot)} />{bien.statut === 'vendu-loue' ? 'Vendu' : bien.statut}</span>
+        </div>
       </div>
       {main && (
-        <p className="text-xs font-medium shrink-0 tabular-nums">
+        <p className="hidden text-xs font-medium shrink-0 tabular-nums sm:block">
           {main.toLocaleString('fr-MA')} {bien.devise}
         </p>
       )}
       <span className={cn(
-        "text-[10px] tracking-widest uppercase px-2.5 py-1 shrink-0 rounded-full flex items-center gap-1.5 font-medium",
+        "hidden text-[10px] tracking-widest uppercase px-2.5 py-1 shrink-0 rounded-full sm:flex items-center gap-1.5 font-medium",
         status.bg, status.text
       )}>
         <span className={cn("w-1.5 h-1.5 rounded-full", status.dot)} />
         {bien.statut === 'vendu-loue' ? 'Vendu' : bien.statut}
       </span>
-      <ArrowRight size={14} className="text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+      <ArrowRight size={14} className="hidden text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0 sm:block" />
     </Link>
   );
 }
@@ -173,9 +178,9 @@ function RecentArticleRow({ article }: { article: Article }) {
   return (
     <Link
       to="/manage-xk92p/blog"
-      className="flex items-center gap-4 p-3.5 hover:bg-muted/30 transition-all duration-200 group rounded-lg"
+      className="flex min-w-0 items-center gap-2.5 sm:gap-4 p-2.5 sm:p-3.5 hover:bg-muted/30 transition-all duration-200 group rounded-lg"
     >
-      <div className="w-14 h-11 bg-muted/50 shrink-0 overflow-hidden rounded-lg ring-1 ring-border/50">
+      <div className="w-11 h-11 sm:w-14 sm:h-11 bg-muted/50 shrink-0 overflow-hidden rounded-lg ring-1 ring-border/50">
         {article.image_url ? (
           <OptimizedImage src={article.image_url} alt={article.title} size="thumb" className="w-full h-full object-cover" wrapperClassName="w-full h-full" />
         ) : (
@@ -186,10 +191,11 @@ function RecentArticleRow({ article }: { article: Article }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">{article.title}</p>
-        <p className="text-xs text-muted-foreground capitalize">{article.category}</p>
+        <p className="text-[11px] sm:text-xs text-muted-foreground capitalize">{article.category}</p>
+        <span className={cn("mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-medium sm:hidden", article.est_publie ? 'bg-emerald-500/10 text-emerald-600' : 'bg-muted text-muted-foreground')}><span className={cn("h-1.5 w-1.5 rounded-full", article.est_publie ? 'bg-emerald-500' : 'bg-muted-foreground/40')} />{article.est_publie ? 'Publié' : 'Brouillon'}</span>
       </div>
       <span className={cn(
-        "text-[10px] tracking-widest uppercase px-2.5 py-1 shrink-0 rounded-full flex items-center gap-1.5 font-medium",
+        "hidden text-[10px] tracking-widest uppercase px-2.5 py-1 shrink-0 rounded-full sm:flex items-center gap-1.5 font-medium",
         article.est_publie
           ? 'bg-emerald-500/10 text-emerald-600'
           : 'bg-muted text-muted-foreground'
@@ -197,7 +203,7 @@ function RecentArticleRow({ article }: { article: Article }) {
         <span className={cn("w-1.5 h-1.5 rounded-full", article.est_publie ? 'bg-emerald-500' : 'bg-muted-foreground/40')} />
         {article.est_publie ? 'Publié' : 'Brouillon'}
       </span>
-      <ArrowRight size={14} className="text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+      <ArrowRight size={14} className="hidden text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0 sm:block" />
     </Link>
   );
 }
@@ -301,7 +307,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <main className="container mx-auto px-6 md:px-10 py-8 space-y-8 flex-1 overflow-y-auto">
+    <main className="container mx-auto w-full min-w-0 px-3 sm:px-6 md:px-10 py-4 sm:py-6 md:py-8 space-y-6 md:space-y-8 flex-1">
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
@@ -318,29 +324,29 @@ export default function AdminDashboard() {
             Voici un aperçu de votre activité
           </p>
         </div>
-        <div className="flex gap-2.5">
+        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:gap-2.5">
           <Button
             size="sm"
-            className="gap-2 rounded-lg h-9 px-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-sm hover:shadow-md transition-all"
+            className="min-w-0 gap-1.5 rounded-lg h-11 sm:h-9 px-2 sm:px-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-sm hover:shadow-md transition-all"
             onClick={() => navigate('/manage-xk92p/biens')}
           >
             <Plus size={14} />
-            <span className="text-[11px] tracking-wide">{t('admin.ajouter_bien')}</span>
+            <span className="truncate text-[10px] sm:text-[11px] tracking-wide">{t('admin.ajouter_bien')}</span>
           </Button>
           <Button
             variant="outline"
             size="sm"
-            className="gap-2 rounded-lg h-9 px-4 border-border/60 hover:bg-muted/50 hover:border-primary/30 transition-all"
+            className="min-w-0 gap-1.5 rounded-lg h-11 sm:h-9 px-2 sm:px-4 border-border/60 hover:bg-muted/50 hover:border-primary/30 transition-all"
             onClick={() => navigate('/manage-xk92p/blog')}
           >
             <Sparkles size={14} />
-            <span className="text-[11px] tracking-wide">{t('admin.generer_article')}</span>
+            <span className="truncate text-[10px] sm:text-[11px] tracking-wide">{t('admin.generer_article')}</span>
           </Button>
         </div>
       </div>
 
       {/* ── Stats Cards ─────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-4">
         <StatCard
           icon={Building2}
           label={t('admin.stats.total_biens')}
@@ -383,16 +389,16 @@ export default function AdminDashboard() {
 
       {/* ── Charts ──────────────────────────────────────────────────────── */}
       {biens.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div className="grid min-w-0 grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-5">
           {/* Donut: types de biens */}
-          <div className="admin-card rounded-xl p-6">
+          <div className="admin-card min-w-0 rounded-xl p-3.5 sm:p-6">
             <div className="flex items-center justify-between mb-6">
               <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground font-sans">
                 Répartition par type
               </p>
               <span className="text-[10px] text-muted-foreground/60 tabular-nums">{totalBiens} biens</span>
             </div>
-            <ResponsiveContainer width="100%" height={240}>
+            <ResponsiveContainer width="100%" height={200}>
               <PieChart>
                 <Pie
                   data={typeData}
@@ -404,10 +410,7 @@ export default function AdminDashboard() {
                   innerRadius={50}
                   paddingAngle={4}
                   strokeWidth={0}
-                  label={({ name, percent }) =>
-                    `${name} ${(percent * 100).toFixed(0)}%`
-                  }
-                  labelLine={false}
+                  label={false}
                 >
                   {typeData.map((entry) => (
                     <Cell
@@ -419,17 +422,18 @@ export default function AdminDashboard() {
                 <Tooltip content={<CustomTooltip />} />
               </PieChart>
             </ResponsiveContainer>
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-[10px] text-muted-foreground">{typeData.map((entry) => <span key={entry.name} className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full" style={{ backgroundColor: TYPE_COLORS[entry.name] ?? COLORS.muted }} />{entry.name} · {entry.value}</span>)}</div>
           </div>
 
           {/* Bar: services */}
-          <div className="admin-card rounded-xl p-6">
+          <div className="admin-card min-w-0 rounded-xl p-3.5 sm:p-6">
             <div className="flex items-center justify-between mb-6">
               <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground font-sans">
                 Répartition par service
               </p>
               <span className="text-[10px] text-muted-foreground/60 tabular-nums">{Object.values(serviceCount).reduce((a, b) => a + b, 0)} total</span>
             </div>
-            <ResponsiveContainer width="100%" height={240}>
+            <ResponsiveContainer width="100%" height={200}>
               <BarChart data={serviceData} margin={{ left: -20, right: 10, top: 5, bottom: 5 }}>
                 <XAxis
                   dataKey="name"
@@ -459,21 +463,21 @@ export default function AdminDashboard() {
       )}
 
       {/* ── Recents ─────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <div className="grid min-w-0 grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-5">
         {/* Derniers biens */}
         <div className="admin-card rounded-xl overflow-hidden">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-border/40">
+          <div className="flex items-center justify-between gap-2 px-3 sm:px-6 py-3 sm:py-4 border-b border-border/40">
             <div className="flex items-center gap-2.5">
               <div className="w-7 h-7 rounded-lg bg-primary/8 flex items-center justify-center">
                 <Building2 size={13} strokeWidth={1.5} className="text-primary" />
               </div>
-              <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground font-sans">
+              <p className="text-[9px] sm:text-[10px] tracking-[0.15em] sm:tracking-[0.25em] uppercase text-muted-foreground font-sans">
                 Derniers biens
               </p>
             </div>
             <Link
               to="/manage-xk92p/biens"
-              className="flex items-center gap-1.5 text-[10px] tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors group"
+              className="flex shrink-0 items-center gap-1 text-[9px] sm:text-[10px] tracking-wide sm:tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors group"
             >
               Voir tout 
               <ArrowUpRight size={12} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -489,18 +493,18 @@ export default function AdminDashboard() {
 
         {/* Derniers articles */}
         <div className="admin-card rounded-xl overflow-hidden">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-border/40">
+          <div className="flex items-center justify-between gap-2 px-3 sm:px-6 py-3 sm:py-4 border-b border-border/40">
             <div className="flex items-center gap-2.5">
               <div className="w-7 h-7 rounded-lg bg-accent/8 flex items-center justify-center">
                 <FileText size={13} strokeWidth={1.5} className="text-accent" />
               </div>
-              <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground font-sans">
+              <p className="text-[9px] sm:text-[10px] tracking-[0.15em] sm:tracking-[0.25em] uppercase text-muted-foreground font-sans">
                 Derniers articles
               </p>
             </div>
             <Link
               to="/manage-xk92p/blog"
-              className="flex items-center gap-1.5 text-[10px] tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors group"
+              className="flex shrink-0 items-center gap-1 text-[9px] sm:text-[10px] tracking-wide sm:tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors group"
             >
               Voir tout 
               <ArrowUpRight size={12} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />

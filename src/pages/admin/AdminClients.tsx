@@ -187,16 +187,16 @@ export default function AdminClients() {
   };
 
   return (
-    <main className="container mx-auto flex-1 space-y-6 overflow-y-auto px-5 py-8 md:px-10">
+    <main className="container mx-auto w-full min-w-0 flex-1 space-y-5 px-3 py-4 sm:px-5 sm:py-6 md:px-10 md:py-8">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <div className="mb-1 flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-bronze/10"><UsersRound className="h-4 w-4 text-[hsl(30_30%_45%)]" /></div>
-            <h2 className="font-serif text-2xl md:text-3xl">Clients & demandes</h2>
+            <h2 className="font-serif text-xl sm:text-2xl md:text-3xl">Clients & demandes</h2>
           </div>
           <p className="ml-[42px] text-sm font-light text-muted-foreground">{leads.length} dossier{leads.length !== 1 ? "s" : ""} · {followUps} relance{followUps !== 1 ? "s" : ""} à faire</p>
         </div>
-        <div className="flex flex-wrap gap-2"><Button variant="outline" onClick={() => void copyRequestLink()} className="gap-2"><Link2 size={15} /> Lien du formulaire</Button><Button onClick={openNew} className="gap-2"><Plus size={16} /> Ajouter un client</Button></div>
+        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto"><Button variant="outline" onClick={() => void copyRequestLink()} className="min-w-0 min-h-11 gap-1.5 px-2 sm:px-3 text-[10px] sm:text-xs"><Link2 size={15} className="shrink-0" /><span className="truncate">Lien du formulaire</span></Button><Button onClick={openNew} className="min-w-0 min-h-11 gap-1.5 px-2 sm:px-3 text-[10px] sm:text-xs"><Plus size={16} className="shrink-0" /><span className="truncate">Ajouter un client</span></Button></div>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-[1fr_220px]">
@@ -217,7 +217,7 @@ export default function AdminClients() {
             const matches = matchingProperties(lead, properties);
             const whatsappUrl = `https://wa.me/${lead.phone.replace(/\D/g, "")}`;
             return (
-              <article key={lead.id} className="admin-card space-y-4 rounded-xl p-5">
+              <article key={lead.id} className="admin-card min-w-0 space-y-4 rounded-xl p-4 sm:p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <h3 className="truncate font-serif text-xl">{lead.name}</h3>
@@ -255,7 +255,7 @@ export default function AdminClients() {
       )}
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-h-[92vh] max-w-3xl overflow-y-auto">
+        <DialogContent className="max-h-[90svh] w-[calc(100vw-1rem)] max-w-3xl overflow-y-auto rounded-xl sm:w-full">
           <DialogHeader><DialogTitle>{editingLead ? "Modifier le dossier client" : "Nouveau dossier client"}</DialogTitle><DialogDescription>Note les critères et le profil pour retrouver plus vite les biens adaptés.</DialogDescription></DialogHeader>
           <form onSubmit={saveLead} className="space-y-5">
             <section className="grid gap-3 sm:grid-cols-2">

@@ -101,7 +101,7 @@ export default function AdminVisites() {
   const pendingCount = visits.filter(v => v.status === 'en-attente' || v.status === 'pending').length;
 
   return (
-    <main className="container mx-auto px-6 md:px-10 py-8 space-y-6 flex-1 overflow-y-auto">
+    <main className="container mx-auto w-full min-w-0 px-3 sm:px-6 md:px-10 py-4 sm:py-6 md:py-8 space-y-5 md:space-y-6 flex-1">
       {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
@@ -109,7 +109,7 @@ export default function AdminVisites() {
             <div className="w-8 h-8 rounded-lg bg-bronze/8 flex items-center justify-center">
               <CalendarCheck className="h-4 w-4 text-[hsl(30_30%_45%)]" strokeWidth={1.5} />
             </div>
-            <h2 className="font-serif text-2xl md:text-3xl">Demandes de visite</h2>
+            <h2 className="font-serif text-xl sm:text-2xl md:text-3xl">Demandes de visite</h2>
           </div>
           <div className="flex items-center gap-3 ml-[42px]">
             <p className="text-sm text-muted-foreground font-light">
@@ -126,7 +126,7 @@ export default function AdminVisites() {
       </div>
 
       {/* ── Table ── */}
-      <div className="admin-card rounded-xl overflow-hidden">
+      <div className="hidden md:block admin-card rounded-xl overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/30 hover:bg-muted/30 border-b border-border/40">
@@ -277,6 +277,31 @@ export default function AdminVisites() {
             ))}
           </TableBody>
         </Table>
+      </div>
+
+      <div className="space-y-3 md:hidden">
+        {loading && <div className="admin-card rounded-xl p-6 text-center text-sm text-muted-foreground">Chargement des demandes...</div>}
+        {!loading && visits.length === 0 && <div className="admin-card rounded-xl p-8 text-center text-sm text-muted-foreground">Aucune demande de visite pour le moment.</div>}
+        {!loading && visits.map((visit) => (
+          <article key={visit.id} className="admin-card min-w-0 rounded-xl p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0"><h3 className="truncate font-medium text-sm">{visit.client_name}</h3><p className="mt-1 text-[11px] text-muted-foreground">Reçu le {format(new Date(visit.created_at), 'dd MMM yyyy à HH:mm', { locale: fr })}</p></div>
+              {getStatusBadge(visit.status)}
+            </div>
+            <div className="mt-3 space-y-2 border-t border-border/40 pt-3">
+              <p className="truncate text-sm font-medium">{visit.properties_v2?.titre || 'Bien supprimé'}</p>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <a href={`tel:${visit.client_phone}`} className="inline-flex min-h-11 items-center gap-2 text-sm tabular-nums"><span className="grid h-8 w-8 place-items-center rounded-lg bg-primary/5 text-primary"><Phone size={14} /></span>{visit.client_phone}</a>
+                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground"><Clock size={13} />{visit.requested_date ? format(new Date(visit.requested_date), 'dd MMM yyyy', { locale: fr }) : 'Date à préciser'}</span>
+              </div>
+              <div className="flex gap-2 pt-1">
+                {visit.status !== 'confirmee' && <Button type="button" variant="outline" className="min-h-11 flex-1 gap-2 px-2 text-xs text-emerald-700" onClick={() => updateStatus(visit.id, 'confirmee')}><CheckCircle size={15} />Confirmer</Button>}
+                {visit.status !== 'annulee' && <Button type="button" variant="outline" className="min-h-11 flex-1 gap-2 px-2 text-xs text-rose-700" onClick={() => updateStatus(visit.id, 'annulee')}><XCircle size={15} />Annuler</Button>}
+                <a aria-label="Contacter sur WhatsApp" href={`https://wa.me/${visit.client_phone?.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Bonjour ${visit.client_name}, concernant votre demande de visite${visit.properties_v2?.titre ? ` pour "${visit.properties_v2.titre}"` : ''}.`)}`} target="_blank" rel="noreferrer" className="grid min-h-11 min-w-11 place-items-center rounded-md border border-emerald-600/20 bg-emerald-500/10 text-emerald-700"><MessageCircle size={16} /></a>
+              </div>
+            </div>
+          </article>
+        ))}
       </div>
     </main>
   );

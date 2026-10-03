@@ -158,45 +158,378 @@ export default function PropertyRequest() {
     ? `السلام عليكم، أرسلت طلب عقار عبر الموقع. أبحث عن ${form.intent === "vente" ? "شراء" : "كراء طويل الأمد"} في مراكش.`
     : `Bonjour, je viens d'envoyer ma recherche immobilière. Je cherche ${form.intent === "vente" ? "à acheter" : "une location longue durée"} à Marrakech.`);
 
-  return <div className="min-h-screen bg-[#f6f3ed] text-[#292720]" dir={rtl ? "rtl" : "ltr"}>
-    <Header />
-    <main className="mx-auto grid min-h-[calc(100vh-80px)] max-w-[1280px] items-center gap-12 px-5 pb-16 pt-28 md:px-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16 lg:pt-32">
-      <section className="max-w-lg">
-        <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#7a8060]/20 bg-white/70 px-3 py-2 text-[10px] font-medium uppercase tracking-[0.16em] text-[#656d4d]"><Sparkles size={13} />{t.eyebrow}</div>
-        <h1 className="font-serif text-4xl leading-[1.04] tracking-[-0.03em] sm:text-5xl lg:text-[58px]">{submitted ? t.success : t.title}</h1>
-        <p className="mt-5 max-w-md text-sm leading-7 text-[#6a675d] sm:text-base">{submitted ? t.successText : t.intro}</p>
-        {!submitted && <div className="mt-8 space-y-4"><p className="flex items-center gap-2 text-xs text-[#777367]"><ShieldCheck size={15} className="text-[#69704f]" />{t.privacy}</p><div className="border-t border-[#d8d3c9] pt-5"><p className="font-serif text-xl">{t.rationale}</p><p className="mt-2 text-sm leading-6 text-[#777367]">{t.rationaleText}</p></div></div>}
-        <div className="mt-8 flex gap-2" aria-label="Language">{(["fr", "ar", "en"] as const).map((code) => <button key={code} type="button" onClick={() => setLanguage(code)} className={`rounded-full px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider ${language === code ? "bg-[#5d6647] text-white" : "border border-[#d8d3c9] text-[#706d63] hover:bg-white"}`}>{code}</button>)}</div>
-      </section>
+  return (
+    <div className="min-h-screen bg-[#f6f3ed] text-[#292720] font-sans selection:bg-[#5d6647] selection:text-white" dir={rtl ? "rtl" : "ltr"}>
+      <Header />
+      <main className="mx-auto grid min-h-[calc(100vh-80px)] max-w-[1280px] items-start gap-12 px-5 pb-20 pt-28 md:px-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20 lg:pt-36">
+        <section className="max-w-lg sticky top-32">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#7a8060]/20 bg-white/60 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#5d6647] shadow-sm backdrop-blur-sm">
+            <Sparkles size={14} />
+            {t.eyebrow}
+          </div>
+          <h1 className="font-serif text-[2.5rem] leading-[1.1] tracking-tight sm:text-5xl lg:text-[64px] text-[#2a2924]">
+            {submitted ? t.success : t.title}
+          </h1>
+          <p className="mt-6 max-w-md text-base leading-relaxed text-[#6a675d] sm:text-lg">
+            {submitted ? t.successText : t.intro}
+          </p>
+          {!submitted && (
+            <div className="mt-10 space-y-6">
+              <p className="flex items-center gap-3 text-sm font-medium text-[#777367]">
+                <ShieldCheck size={18} className="text-[#69704f]" />
+                {t.privacy}
+              </p>
+              <div className="border-t border-[#d8d3c9]/60 pt-6">
+                <p className="font-serif text-2xl text-[#3d3b35]">{t.rationale}</p>
+                <p className="mt-3 text-base leading-relaxed text-[#777367]">
+                  {t.rationaleText}
+                </p>
+              </div>
+            </div>
+          )}
+          <div className="mt-10 flex gap-3" aria-label="Language">
+            {(["fr", "ar", "en"] as const).map((code) => (
+              <button
+                key={code}
+                type="button"
+                onClick={() => setLanguage(code)}
+                className={`flex h-10 w-12 items-center justify-center rounded-full text-[11px] font-semibold uppercase tracking-wider transition-all duration-300 ${
+                  language === code
+                    ? "bg-[#5d6647] text-white shadow-md"
+                    : "border border-[#d8d3c9] text-[#706d63] hover:border-[#5d6647] hover:text-[#5d6647] bg-white/50"
+                }`}
+              >
+                {code}
+              </button>
+            ))}
+          </div>
+        </section>
 
-      {submitted ? <section className="rounded-2xl border border-[#e6e1d7] bg-white p-6 shadow-xl sm:p-9">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#edf0e5] text-[#5d6647]"><Check size={26} /></div>
-        <div className="mt-6 grid gap-3 sm:grid-cols-2"><a href={`https://wa.me/212605387041?text=${whatsappText}`} target="_blank" rel="noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 bg-[#5d6647] px-5 text-xs font-medium uppercase tracking-wider text-white"><MessageCircle size={16} />{t.whatsapp}</a><Link to="/catalogue" className="inline-flex min-h-12 items-center justify-center gap-2 border border-[#d8d3c9] px-5 text-xs font-medium uppercase tracking-wider text-[#514f47]"><Home size={16} />{t.catalogue}</Link></div>
-      </section> : <form onSubmit={submit} className="rounded-2xl border border-[#e6e1d7] bg-white p-5 shadow-xl sm:p-8">
-        <div className="mb-7 flex items-center gap-3"><div className="flex h-2 flex-1 gap-1"><span className="flex-1 rounded-full bg-[#65704b]" /><span className={`flex-1 rounded-full ${step === 2 ? "bg-[#65704b]" : "bg-[#e6e2d9]"}`} /></div><span className="text-[10px] font-medium uppercase tracking-wider text-[#737064]">{step} / 2</span></div>
-        <h2 className="font-serif text-2xl">{step === 1 ? t.search : t.contact}</h2>
-        {step === 1 ? <div className="mt-5 space-y-5">
-          <fieldset><legend className="mb-2 text-xs font-medium">{t.intent}</legend><div className="grid grid-cols-2 gap-2">{([["location-longue-duree", t.rent], ["vente", t.buy]] as const).map(([value, label]) => <button key={value} type="button" onClick={() => change("intent", value)} aria-pressed={form.intent === value} className={`min-h-11 border px-3 text-xs ${form.intent === value ? "border-[#65704b] bg-[#f0f2e9] text-[#495236]" : "border-[#e6e1d7]"}`}>{label}</button>)}</div></fieldset>
-          <fieldset><legend className="mb-2 text-xs font-medium">{t.type}</legend><div className="flex flex-wrap gap-2">{propertyTypes.map((type) => { const selected = form.types.includes(type); return <button key={type} type="button" onClick={() => change("types", selected ? form.types.filter((item) => item !== type) : [...form.types, type])} aria-pressed={selected} className={`rounded-full border px-3 py-2 text-xs ${selected ? "border-[#65704b] bg-[#f0f2e9] text-[#495236]" : "border-[#e6e1d7]"}`}>{typeLabel[type]}</button>; })}</div></fieldset>
-          <div><label className="mb-2 block text-xs font-medium">{form.intent === "vente" ? t.buyBudget : t.rentBudget}</label><div className="grid grid-cols-2 gap-2"><Input type="number" min="0" value={form.budgetMin} onChange={(e) => change("budgetMin", e.target.value)} placeholder={t.min} aria-label={t.min} /><Input type="number" min="0" value={form.budgetMax} onChange={(e) => change("budgetMax", e.target.value)} placeholder={t.max} aria-label={t.max} /></div></div>
-          <label className="block text-xs font-medium">{t.areas}<Input value={form.areas} onChange={(e) => change("areas", e.target.value)} placeholder={t.areasHint} className="mt-2" /></label>
-          <div className="grid grid-cols-2 gap-3"><label className="space-y-2 text-xs font-medium">{t.bedrooms}<Input type="number" min="0" value={form.bedrooms} onChange={(e) => change("bedrooms", e.target.value)} /></label><label className="space-y-2 text-xs font-medium">{t.furnished}<select value={form.furnishing} onChange={(e) => change("furnishing", e.target.value as RequestForm["furnishing"])} className="h-10 w-full rounded-md border bg-white px-3 text-xs"><option value="any">{t.either}</option><option value="furnished">{t.yes}</option><option value="unfurnished">{t.no}</option></select></label></div>
-          <div className="grid grid-cols-2 gap-3"><label className="space-y-2 text-xs font-medium">{t.date}<Input type="date" value={form.availableFrom} onChange={(e) => change("availableFrom", e.target.value)} /></label><label className="space-y-2 text-xs font-medium">{t.distance}<Input type="number" min="0" value={form.distance} onChange={(e) => change("distance", e.target.value)} /></label></div>
-          <label className="block text-xs font-medium">{t.reference}<span className="mt-1 block text-[10px] font-normal text-[#888477]">{t.referenceHint}</span><Input value={form.referenceLocation} onChange={(e) => change("referenceLocation", e.target.value)} className="mt-2" /></label>
-          <Button type="button" onClick={nextStep} className="h-12 w-full gap-2 bg-[#5d6647]">{t.next}{rtl ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}</Button>
-        </div> : <div className="mt-5 space-y-4">
-          <label className="block space-y-2 text-xs font-medium">{t.name}<Input required maxLength={120} value={form.name} onChange={(e) => change("name", e.target.value)} /></label>
-          <label className="block space-y-2 text-xs font-medium">{t.phone}<Input required type="tel" maxLength={40} placeholder="+212…" value={form.phone} onChange={(e) => change("phone", e.target.value)} /></label>
-          <label className="block space-y-2 text-xs font-medium">{t.email}<Input type="email" maxLength={254} value={form.email} onChange={(e) => change("email", e.target.value)} /></label>
-          <label className="block space-y-2 text-xs font-medium">{t.profession}<Input maxLength={120} value={form.profession} onChange={(e) => change("profession", e.target.value)} /></label>
-          <label className="block space-y-2 text-xs font-medium">{t.profile}<Input maxLength={250} placeholder={t.profileHint} value={form.profile} onChange={(e) => change("profile", e.target.value)} /></label>
-          <label className="block space-y-2 text-xs font-medium">{t.notes}<Textarea maxLength={1500} placeholder={t.notesHint} value={form.notes} onChange={(e) => change("notes", e.target.value)} /></label>
-          <input aria-hidden="true" tabIndex={-1} autoComplete="off" value={form.website} onChange={(e) => change("website", e.target.value)} className="pointer-events-none absolute h-px w-px opacity-0" />
-          <label className="flex cursor-pointer items-start gap-2.5 text-xs leading-5 text-[#625f55]"><input required type="checkbox" checked={form.consent} onChange={(e) => change("consent", e.target.checked)} className="mt-1 accent-[#5d6647]" /><span>{t.consent}</span></label>
-          <div className="flex gap-2 pt-2"><Button type="button" variant="outline" onClick={() => setStep(1)} className="h-12 gap-2"><ArrowLeft size={15} />{t.back}</Button><Button type="submit" disabled={loading} className="h-12 flex-1 gap-2 bg-[#5d6647]">{loading ? t.sending : t.send}{!loading && <Check size={16} />}</Button></div>
-        </div>}
-      </form>}
-    </main>
-    <Footer />
-  </div>;
+        {submitted ? (
+          <section className="rounded-3xl border border-[#e6e1d7]/50 bg-white/80 p-8 shadow-2xl backdrop-blur-xl sm:p-12 mt-4 lg:mt-0">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#edf0e5] text-[#5d6647] shadow-inner">
+              <Check size={36} strokeWidth={2.5} />
+            </div>
+            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+              <a
+                href={`https://wa.me/212605387041?text=${whatsappText}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex min-h-[3.5rem] flex-1 items-center justify-center gap-3 rounded-xl bg-[#5d6647] px-6 text-sm font-medium uppercase tracking-wider text-white shadow-lg transition-transform hover:-translate-y-0.5 hover:bg-[#4a5238] active:translate-y-0"
+              >
+                <MessageCircle size={18} />
+                {t.whatsapp}
+              </a>
+              <Link
+                to="/catalogue"
+                className="inline-flex min-h-[3.5rem] flex-1 items-center justify-center gap-3 rounded-xl border border-[#d8d3c9] bg-white px-6 text-sm font-medium uppercase tracking-wider text-[#514f47] shadow-sm transition-colors hover:border-[#5d6647] hover:text-[#5d6647]"
+              >
+                <Home size={18} />
+                {t.catalogue}
+              </Link>
+            </div>
+          </section>
+        ) : (
+          <form
+            onSubmit={submit}
+            className="rounded-3xl border border-[#e6e1d7]/50 bg-white/90 p-6 shadow-2xl shadow-[#5d6647]/5 backdrop-blur-xl sm:p-10 mt-4 lg:mt-0"
+          >
+            <div className="mb-10 flex items-center gap-4">
+              <div className="flex h-1.5 flex-1 gap-2">
+                <span className="flex-1 rounded-full bg-[#5d6647] transition-all duration-500" />
+                <span
+                  className={`flex-1 rounded-full transition-all duration-500 ${
+                    step === 2 ? "bg-[#5d6647]" : "bg-[#e6e2d9]"
+                  }`}
+                />
+              </div>
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#737064]">
+                {step} / 2
+              </span>
+            </div>
+
+            <h2 className="mb-8 font-serif text-3xl text-[#2a2924]">
+              {step === 1 ? t.search : t.contact}
+            </h2>
+
+            {step === 1 ? (
+              <div className="space-y-8">
+                <fieldset>
+                  <legend className="mb-3 text-sm font-medium text-[#495236]">
+                    {t.intent}
+                  </legend>
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    {([
+                      ["location-longue-duree", t.rent],
+                      ["vente", t.buy],
+                    ] as const).map(([value, label]) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => change("intent", value)}
+                        aria-pressed={form.intent === value}
+                        className={`flex min-h-[3.25rem] flex-1 items-center justify-center rounded-xl border px-5 text-sm font-medium transition-all duration-200 ${
+                          form.intent === value
+                            ? "border-[#5d6647] bg-[#f0f2e9] text-[#495236] shadow-inner"
+                            : "border-[#e6e1d7] bg-white text-[#6b685e] hover:border-[#c5c0b5]"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
+
+                <fieldset>
+                  <legend className="mb-3 text-sm font-medium text-[#495236]">
+                    {t.type}
+                  </legend>
+                  <div className="flex flex-wrap gap-2.5">
+                    {propertyTypes.map((type) => {
+                      const selected = form.types.includes(type);
+                      return (
+                        <button
+                          key={type}
+                          type="button"
+                          onClick={() =>
+                            change(
+                              "types",
+                              selected
+                                ? form.types.filter((item) => item !== type)
+                                : [...form.types, type]
+                            )
+                          }
+                          aria-pressed={selected}
+                          className={`rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
+                            selected
+                              ? "border-[#5d6647] bg-[#f0f2e9] text-[#495236] shadow-inner"
+                              : "border-[#e6e1d7] bg-white text-[#6b685e] hover:border-[#c5c0b5]"
+                          }`}
+                        >
+                          {typeLabel[type]}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+
+                <div>
+                  <label className="mb-3 block text-sm font-medium text-[#495236]">
+                    {form.intent === "vente" ? t.buyBudget : t.rentBudget}
+                  </label>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <Input
+                      type="number"
+                      min="0"
+                      value={form.budgetMin}
+                      onChange={(e) => change("budgetMin", e.target.value)}
+                      placeholder={t.min}
+                      aria-label={t.min}
+                      className="h-12 rounded-xl border-[#e6e1d7] bg-white/50 text-base focus:border-[#5d6647] focus:ring-[#5d6647]"
+                    />
+                    <Input
+                      type="number"
+                      min="0"
+                      value={form.budgetMax}
+                      onChange={(e) => change("budgetMax", e.target.value)}
+                      placeholder={t.max}
+                      aria-label={t.max}
+                      className="h-12 rounded-xl border-[#e6e1d7] bg-white/50 text-base focus:border-[#5d6647] focus:ring-[#5d6647]"
+                    />
+                  </div>
+                </div>
+
+                <label className="block text-sm font-medium text-[#495236]">
+                  {t.areas}
+                  <Input
+                    value={form.areas}
+                    onChange={(e) => change("areas", e.target.value)}
+                    placeholder={t.areasHint}
+                    className="mt-3 h-12 rounded-xl border-[#e6e1d7] bg-white/50 text-base focus:border-[#5d6647] focus:ring-[#5d6647]"
+                  />
+                </label>
+
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <label className="space-y-3 text-sm font-medium text-[#495236]">
+                    {t.bedrooms}
+                    <Input
+                      type="number"
+                      min="0"
+                      value={form.bedrooms}
+                      onChange={(e) => change("bedrooms", e.target.value)}
+                      className="h-12 rounded-xl border-[#e6e1d7] bg-white/50 text-base focus:border-[#5d6647] focus:ring-[#5d6647]"
+                    />
+                  </label>
+                  <label className="space-y-3 text-sm font-medium text-[#495236]">
+                    {t.furnished}
+                    <select
+                      value={form.furnishing}
+                      onChange={(e) =>
+                        change("furnishing", e.target.value as RequestForm["furnishing"])
+                      }
+                      className="flex h-12 w-full rounded-xl border border-[#e6e1d7] bg-white/50 px-4 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus:border-[#5d6647] focus:outline-none focus:ring-2 focus:ring-[#5d6647] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <option value="any">{t.either}</option>
+                      <option value="furnished">{t.yes}</option>
+                      <option value="unfurnished">{t.no}</option>
+                    </select>
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <label className="space-y-3 text-sm font-medium text-[#495236]">
+                    {t.date}
+                    <Input
+                      type="date"
+                      value={form.availableFrom}
+                      onChange={(e) => change("availableFrom", e.target.value)}
+                      className="h-12 rounded-xl border-[#e6e1d7] bg-white/50 text-base focus:border-[#5d6647] focus:ring-[#5d6647]"
+                    />
+                  </label>
+                  <label className="space-y-3 text-sm font-medium text-[#495236]">
+                    {t.distance}
+                    <Input
+                      type="number"
+                      min="0"
+                      value={form.distance}
+                      onChange={(e) => change("distance", e.target.value)}
+                      className="h-12 rounded-xl border-[#e6e1d7] bg-white/50 text-base focus:border-[#5d6647] focus:ring-[#5d6647]"
+                    />
+                  </label>
+                </div>
+
+                <label className="block text-sm font-medium text-[#495236]">
+                  <span className="flex items-center gap-2">
+                    {t.reference}
+                  </span>
+                  <span className="mt-1 block text-[11px] font-normal text-[#888477]">
+                    {t.referenceHint}
+                  </span>
+                  <Input
+                    value={form.referenceLocation}
+                    onChange={(e) => change("referenceLocation", e.target.value)}
+                    className="mt-3 h-12 rounded-xl border-[#e6e1d7] bg-white/50 text-base focus:border-[#5d6647] focus:ring-[#5d6647]"
+                  />
+                </label>
+
+                <Button
+                  type="button"
+                  onClick={nextStep}
+                  className="mt-4 h-14 w-full gap-3 rounded-xl bg-[#5d6647] text-[15px] font-semibold tracking-wide hover:bg-[#4a5238] shadow-lg shadow-[#5d6647]/20 transition-all hover:shadow-xl"
+                >
+                  {t.next}
+                  {rtl ? <ArrowLeft size={18} /> : <ArrowRight size={18} />}
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <label className="block space-y-3 text-sm font-medium text-[#495236]">
+                  {t.name}
+                  <Input
+                    required
+                    maxLength={120}
+                    value={form.name}
+                    onChange={(e) => change("name", e.target.value)}
+                    className="h-12 rounded-xl border-[#e6e1d7] bg-white/50 text-base focus:border-[#5d6647] focus:ring-[#5d6647]"
+                  />
+                </label>
+                <label className="block space-y-3 text-sm font-medium text-[#495236]">
+                  {t.phone}
+                  <Input
+                    required
+                    type="tel"
+                    maxLength={40}
+                    placeholder="+212…"
+                    value={form.phone}
+                    onChange={(e) => change("phone", e.target.value)}
+                    className="h-12 rounded-xl border-[#e6e1d7] bg-white/50 text-base focus:border-[#5d6647] focus:ring-[#5d6647]"
+                  />
+                </label>
+                <label className="block space-y-3 text-sm font-medium text-[#495236]">
+                  {t.email}
+                  <Input
+                    type="email"
+                    maxLength={254}
+                    value={form.email}
+                    onChange={(e) => change("email", e.target.value)}
+                    className="h-12 rounded-xl border-[#e6e1d7] bg-white/50 text-base focus:border-[#5d6647] focus:ring-[#5d6647]"
+                  />
+                </label>
+                <label className="block space-y-3 text-sm font-medium text-[#495236]">
+                  {t.profession}
+                  <Input
+                    maxLength={120}
+                    value={form.profession}
+                    onChange={(e) => change("profession", e.target.value)}
+                    className="h-12 rounded-xl border-[#e6e1d7] bg-white/50 text-base focus:border-[#5d6647] focus:ring-[#5d6647]"
+                  />
+                </label>
+                <label className="block space-y-3 text-sm font-medium text-[#495236]">
+                  {t.profile}
+                  <Input
+                    maxLength={250}
+                    placeholder={t.profileHint}
+                    value={form.profile}
+                    onChange={(e) => change("profile", e.target.value)}
+                    className="h-12 rounded-xl border-[#e6e1d7] bg-white/50 text-base focus:border-[#5d6647] focus:ring-[#5d6647] placeholder:text-[#a09e93]"
+                  />
+                </label>
+                <label className="block space-y-3 text-sm font-medium text-[#495236]">
+                  {t.notes}
+                  <Textarea
+                    maxLength={1500}
+                    placeholder={t.notesHint}
+                    value={form.notes}
+                    onChange={(e) => change("notes", e.target.value)}
+                    className="min-h-[120px] rounded-xl border-[#e6e1d7] bg-white/50 p-4 text-base focus:border-[#5d6647] focus:ring-[#5d6647] placeholder:text-[#a09e93]"
+                  />
+                </label>
+
+                <input
+                  aria-hidden="true"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={form.website}
+                  onChange={(e) => change("website", e.target.value)}
+                  className="pointer-events-none absolute h-px w-px opacity-0"
+                />
+
+                <label className="mt-8 flex cursor-pointer items-start gap-4 text-sm leading-6 text-[#625f55]">
+                  <input
+                    required
+                    type="checkbox"
+                    checked={form.consent}
+                    onChange={(e) => change("consent", e.target.checked)}
+                    className="mt-1 h-5 w-5 rounded border-[#c5c0b5] text-[#5d6647] focus:ring-[#5d6647]"
+                  />
+                  <span>{t.consent}</span>
+                </label>
+
+                <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setStep(1)}
+                    className="h-14 w-full gap-2 rounded-xl border-[#d8d3c9] text-base hover:bg-[#f6f3ed] sm:w-auto sm:px-8"
+                  >
+                    <ArrowLeft size={18} />
+                    {t.back}
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="h-14 flex-1 gap-3 rounded-xl bg-[#5d6647] text-[15px] font-semibold tracking-wide hover:bg-[#4a5238] shadow-lg shadow-[#5d6647]/20 transition-all hover:shadow-xl"
+                  >
+                    {loading ? t.sending : t.send}
+                    {!loading && <Check size={18} />}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </form>
+        )}
+      </main>
+      <Footer />
+    </div>
+  );
 }

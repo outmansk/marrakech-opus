@@ -82,7 +82,7 @@ const Catalogue = () => {
             <div className="mx-auto max-w-[1320px] px-5 md:px-10 xl:px-16">
               <Link to="/" className="inline-flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.17em] text-[#777065] hover:text-[#a4573e]"><ArrowLeft size={14} />{tL("Accueil", "Home", "Inicio")}</Link>
               <div className="mt-7 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <div><p className="text-[10px] font-medium uppercase tracking-[0.26em] text-[#a4573e]">{tL("Notre collection", "Our collection", "Nuestra colección")}</p><h1 className="mt-3 text-[48px] leading-none tracking-[-0.03em] text-[#211f1b] md:text-[64px]">{tL("Des adresses choisies", "Chosen addresses", "Direcciones elegidas")}</h1></div>
+                <div><p className="text-[10px] font-medium uppercase tracking-[0.2em] sm:tracking-[0.26em] text-[#a4573e]">{tL("Notre collection", "Our collection", "Nuestra colección")}</p><h1 className="mt-3 text-[38px] leading-[0.98] tracking-[-0.03em] text-[#211f1b] sm:text-[48px] md:text-[64px]">{tL("Des adresses choisies", "Chosen addresses", "Direcciones elegidas")}</h1></div>
                 <p className="max-w-md text-sm leading-6 text-[#655f56]">{tL("Une sélection courte de biens vérifiés, à acheter, louer ou habiter le temps d'un séjour.", "A concise selection of verified homes to buy, rent or enjoy for a stay.", "Una selección de propiedades verificadas para comprar, alquilar o disfrutar durante una estancia.")}</p>
               </div>
             </div>

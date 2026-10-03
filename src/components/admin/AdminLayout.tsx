@@ -36,7 +36,7 @@ function SidebarLink({ item, collapsed, onClick }: { item: NavItem; collapsed: b
       onClick={() => { navigate(item.path); onClick?.(); }}
       title={collapsed ? item.label : undefined}
       className={cn(
-        "relative w-full flex items-center gap-3 px-3 py-2.5 text-left transition-all duration-300 group rounded-lg",
+        "relative min-h-11 w-full flex items-center gap-3 px-3 py-2.5 text-left transition-all duration-300 group rounded-lg",
         item.active
           ? "bg-primary/8 text-primary font-medium"
           : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -160,6 +160,7 @@ export default function AdminLayout() {
       active: location.pathname.includes("/manage-xk92p/documents"),
     },
   ];
+  const currentPage = navItems.find((item) => item.active)?.label ?? "Administration";
 
   if (!session) return null;
 
@@ -258,7 +259,7 @@ export default function AdminLayout() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20 flex">
+    <div className="min-h-[100svh] bg-gradient-to-br from-muted/30 via-background to-muted/20 flex">
 
       {/* ── Desktop Sidebar ── */}
       <aside
@@ -291,13 +292,13 @@ export default function AdminLayout() {
       )}
       <aside
         className={cn(
-          "fixed top-0 left-0 h-full w-[272px] admin-sidebar border-r border-border/50 z-50 flex flex-col transition-transform duration-300 md:hidden shadow-2xl",
+          "fixed inset-y-0 left-0 h-[100svh] w-[min(86vw,20rem)] admin-sidebar border-r border-border/50 z-50 flex flex-col transition-transform duration-300 md:hidden shadow-2xl",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         <div className="flex items-center justify-between px-4 h-14 border-b border-border/40 shrink-0">
           <span className="font-serif text-sm">Menu Admin</span>
-          <button onClick={() => setSidebarOpen(false)} className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted/50 transition-colors">
+          <button type="button" aria-label="Fermer le menu" onClick={() => setSidebarOpen(false)} className="grid h-11 w-11 place-items-center text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/50 transition-colors">
             <X size={18} />
           </button>
         </div>
@@ -310,18 +311,18 @@ export default function AdminLayout() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
         {/* Top bar — mobile only */}
-        <header className="md:hidden sticky top-0 bg-background/90 backdrop-blur-lg border-b border-border/50 z-20 px-4 h-14 flex items-center justify-between shrink-0">
-          <button onClick={() => setSidebarOpen(true)} className="text-muted-foreground hover:text-foreground p-1.5 rounded-lg hover:bg-muted/50 transition-colors">
+        <header className="md:hidden sticky top-0 bg-background/95 backdrop-blur-lg border-b border-border/50 z-20 px-3 h-14 grid grid-cols-[44px_minmax(0,1fr)_44px] items-center gap-2 shrink-0">
+          <button type="button" aria-label="Ouvrir le menu" aria-expanded={sidebarOpen} onClick={() => setSidebarOpen(true)} className="grid h-11 w-11 place-items-center text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/50 transition-colors">
             <Menu size={20} />
           </button>
-          <span className="font-serif text-base">Live In Marrakech</span>
-          <button onClick={handleLogout} className="text-muted-foreground hover:text-destructive p-1.5 rounded-lg hover:bg-destructive/5 transition-colors">
+          <div className="min-w-0 text-center leading-tight"><span className="block truncate font-serif text-sm">Live In Marrakech</span><span className="block truncate text-[9px] uppercase tracking-[0.14em] text-muted-foreground">{currentPage}</span></div>
+          <button type="button" aria-label={t("auth.deconnexion")} onClick={handleLogout} className="grid h-11 w-11 place-items-center text-muted-foreground hover:text-destructive rounded-lg hover:bg-destructive/5 transition-colors">
             <LogOut size={16} />
           </button>
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="min-w-0 flex-1 overflow-y-auto overscroll-y-contain">
           <Outlet />
         </main>
       </div>

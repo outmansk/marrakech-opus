@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Plus, SlidersHorizontal, LayoutGrid, Search, X } from 'lucide-react';
+import { Plus, SlidersHorizontal, LayoutGrid, Search, X, Pencil, Eye, EyeOff, Trash2, ExternalLink } from 'lucide-react';
 
 import { useProperties } from '@/hooks/useBiens';
 import { BienCard } from '@/components/admin/BienCard';
+import { useDeleteProperty, useToggleStatus } from '@/hooks/useBiens';
 import { BienForm } from '@/components/admin/BienForm';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +24,44 @@ import {
 } from '@/components/ui/table';
 import type { Bien, BienType, BienService, BienStatut } from '@/types/property';
 import { cn } from '@/lib/utils';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+
+function MobilePropertyCard({ bien, onEdit }: { bien: Bien; onEdit: (bien: Bien) => void }) {
+  const deleteMutation = useDeleteProperty();
+  const toggleMutation = useToggleStatus();
+  const price = bien.prix_location_longue ?? bien.prix_vente ?? bien.prix_location_courte ?? bien.prix;
+  const priceSuffix = bien.prix_location_longue != null ? "/mois" : bien.prix_location_courte != null ? "/nuit" : "";
+  const status = bien.statut === 'publie' ? 'Publié' : bien.statut === 'vendu-loue' ? 'Vendu / Loué' : 'Brouillon';
+  const statusTone = bien.statut === 'publie' ? 'bg-emerald-500/10 text-emerald-700' : bien.statut === 'vendu-loue' ? 'bg-rose-500/10 text-rose-700' : 'bg-amber-500/10 text-amber-700';
+
+  return <article className="admin-card min-w-0 rounded-xl p-3.5">
+    <div className="flex min-w-0 items-start gap-3">
+      <div className="h-[76px] w-[88px] shrink-0 overflow-hidden rounded-lg bg-muted/50">{(bien.photo_principale || bien.photos?.[0]) ? <img src={bien.photo_principale || bien.photos[0]} alt={bien.titre} className="h-full w-full object-cover" loading="lazy" /> : <div className="grid h-full place-items-center text-xs text-muted-foreground">Photo</div>}</div>
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-1.5"><span className="font-mono text-[10px] text-muted-foreground">{bien.reference || "Sans réf."}</span><span className={cn("rounded-full px-2 py-0.5 text-[9px] font-medium", statusTone)}>{status}</span></div>
+        <h3 className="mt-1 line-clamp-2 text-sm font-medium leading-5">{bien.titre}</h3>
+        <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{bien.type} · {bien.quartier || "Marrakech"}</p>
+        <p className="mt-1 text-xs font-semibold tabular-nums">{price == null ? "Prix à préciser" : `${price.toLocaleString('fr-MA')} ${bien.devise}${priceSuffix}`}</p>
+      </div>
+    </div>
+    <div className="mt-3 flex gap-2 border-t border-border/40 pt-3">
+      <Button type="button" variant="outline" className="min-h-11 flex-1 gap-1.5 px-2 text-xs" onClick={() => onEdit(bien)}><Pencil size={14} />Modifier</Button>
+      <Button type="button" variant="outline" className="min-h-11 flex-1 gap-1.5 px-2 text-xs" disabled={toggleMutation.isPending} onClick={() => toggleMutation.mutate({ id: bien.id, statut: bien.statut })}>{bien.statut === 'publie' ? <><EyeOff size={14} />Dépublier</> : <><Eye size={14} />Publier</>}</Button>
+      <Button type="button" variant="outline" size="icon" className="h-11 w-11 shrink-0" asChild><a aria-label="Voir le bien sur le site" href={`/bien/${bien.id}`} target="_blank" rel="noreferrer"><ExternalLink size={15} /></a></Button>
+      <AlertDialog><AlertDialogTrigger asChild><Button type="button" variant="outline" size="icon" className="h-11 w-11 shrink-0 text-destructive" aria-label="Supprimer ce bien"><Trash2 size={15} /></Button></AlertDialogTrigger><AlertDialogContent className="w-[calc(100vw-1.5rem)] max-w-lg rounded-xl"><AlertDialogHeader><AlertDialogTitle>Supprimer ce bien ?</AlertDialogTitle><AlertDialogDescription>Cette action supprimera « {bien.titre} ».</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel className="min-h-11">Annuler</AlertDialogCancel><AlertDialogAction className="min-h-11 bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => deleteMutation.mutate(bien.id)}>Supprimer</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+    </div>
+  </article>;
+}
 
 // ─── Skeleton Rows ────────────────────────────────────────────────────────────
 function SkeletonRows() {
@@ -79,7 +118,7 @@ export default function AdminBiens() {
   const hasActiveFilters = filterType !== 'all' || filterService !== 'all' || filterStatut !== 'all';
 
   return (
-    <main className="container mx-auto px-6 md:px-10 py-8 space-y-6 flex-1 overflow-y-auto">
+    <main className="container mx-auto w-full min-w-0 px-3 sm:px-6 md:px-10 py-4 sm:py-6 md:py-8 space-y-5 md:space-y-6 flex-1">
       <BienForm open={sheetOpen} onOpenChange={setSheetOpen} bien={selectedBien} />
 
       {/* ── Page Header ── */}
@@ -89,7 +128,7 @@ export default function AdminBiens() {
             <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center">
               <LayoutGrid className="h-4 w-4 text-primary" strokeWidth={1.5} />
             </div>
-            <h2 className="font-serif text-2xl md:text-3xl">Gestion des biens</h2>
+            <h2 className="font-serif text-xl sm:text-2xl md:text-3xl">Gestion des biens</h2>
           </div>
           <p className="text-sm text-muted-foreground font-light ml-[42px]">
             {isLoading ? '...' : `${biens.length} bien${biens.length !== 1 ? 's' : ''} trouvé${biens.length !== 1 ? 's' : ''}`}
@@ -98,7 +137,7 @@ export default function AdminBiens() {
 
         <Button
           onClick={handleAddNew}
-          className="gap-2 shrink-0 rounded-lg h-10 px-5 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-sm hover:shadow-md transition-all"
+          className="w-full sm:w-auto gap-2 shrink-0 rounded-lg h-11 sm:h-10 px-4 sm:px-5 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-sm hover:shadow-md transition-all"
         >
           <Plus className="h-4 w-4" />
           <span className="text-[12px] tracking-wide">Ajouter un bien</span>
@@ -106,14 +145,14 @@ export default function AdminBiens() {
       </div>
 
       {/* ── Filtres ── */}
-      <div className="admin-card rounded-xl p-4 flex flex-wrap items-center gap-3">
+      <div className="admin-card rounded-xl p-3 sm:p-4 flex flex-wrap items-center gap-2 sm:gap-3">
         <div className="flex items-center gap-2 mr-1">
           <SlidersHorizontal className="h-4 w-4 text-muted-foreground shrink-0" strokeWidth={1.5} />
           <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground font-sans hidden sm:inline">Filtres</span>
         </div>
 
         <Select value={filterType} onValueChange={(v) => setFilterType(v as BienType | 'all')}>
-          <SelectTrigger className="w-40 h-9 text-sm rounded-lg border-border/50 bg-background/50">
+          <SelectTrigger className="w-full sm:w-40 h-11 sm:h-9 text-sm rounded-lg border-border/50 bg-background/50">
             <SelectValue placeholder="Type de bien" />
           </SelectTrigger>
           <SelectContent>
@@ -127,7 +166,7 @@ export default function AdminBiens() {
         </Select>
 
         <Select value={filterService} onValueChange={(v) => setFilterService(v as BienService | 'all')}>
-          <SelectTrigger className="w-48 h-9 text-sm rounded-lg border-border/50 bg-background/50">
+          <SelectTrigger className="w-full sm:w-48 h-11 sm:h-9 text-sm rounded-lg border-border/50 bg-background/50">
             <SelectValue placeholder="Service" />
           </SelectTrigger>
           <SelectContent>
@@ -140,7 +179,7 @@ export default function AdminBiens() {
         </Select>
 
         <Select value={filterStatut} onValueChange={(v) => setFilterStatut(v as BienStatut | 'all')}>
-          <SelectTrigger className="w-40 h-9 text-sm rounded-lg border-border/50 bg-background/50">
+          <SelectTrigger className="w-full sm:w-40 h-11 sm:h-9 text-sm rounded-lg border-border/50 bg-background/50">
             <SelectValue placeholder="Statut" />
           </SelectTrigger>
           <SelectContent>
@@ -172,7 +211,14 @@ export default function AdminBiens() {
       </div>
 
       {/* ── Table ── */}
-      <div className="admin-card rounded-xl overflow-hidden">
+      <div className="space-y-3 md:hidden">
+        {isLoading && <div className="admin-card rounded-xl p-6 text-center text-sm text-muted-foreground">Chargement des biens...</div>}
+        {!isLoading && error && <div className="admin-card rounded-xl p-6 text-center text-sm text-destructive">Erreur lors du chargement des biens. Vérifiez la connexion.</div>}
+        {!isLoading && !error && biens.length === 0 && <div className="admin-card rounded-xl p-8 text-center"><p className="text-sm text-muted-foreground">Aucun bien trouvé.</p><Button type="button" variant="outline" className="mt-4 min-h-11 gap-2" onClick={handleAddNew}><Plus size={15} />Ajouter un bien</Button></div>}
+        {!isLoading && !error && biens.map((bien) => <MobilePropertyCard key={bien.id} bien={bien} onEdit={handleEdit} />)}
+      </div>
+
+      <div className="hidden md:block admin-card rounded-xl overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/30 hover:bg-muted/30 border-b border-border/40">
