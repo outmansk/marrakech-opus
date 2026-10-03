@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Check, Home, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, ChevronRight, Home, KeyRound, LockKeyhole, MapPin, MessageCircle, Palmtree, ShieldCheck, Luggage } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -8,10 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { QUARTIERS } from "@/types/property";
+import "./PropertyRequest.css";
 
 type Language = "fr" | "ar" | "en";
 type RequestForm = {
-  intent: "location-longue-duree" | "vente";
+  intent: "location-longue-duree" | "location-courte-duree" | "vente";
   types: string[];
   budgetMin: string;
   budgetMax: string;
@@ -40,7 +42,11 @@ const emptyForm: RequestForm = {
 const copy = {
   fr: {
     eyebrow: "Votre projet immobilier à Marrakech", title: "Parlons du bien qui vous correspond.",
-    intro: "Quelques réponses suffisent pour comprendre votre recherche et vous proposer une sélection adaptée.",
+    intro: "Quelques réponses suffisent pour vous proposer une sélection adaptée.",
+    stay: "Séjourner", stayBudget: "Budget par nuit (MAD)", arrival: "Date d’arrivée souhaitée",
+    idealArea: "Le quartier idéal", allAreas: "Tous les quartiers", start: "Commencer",
+    chooseProject: "Choisissez votre projet pour continuer.", areaLocked: "Choisissez d’abord votre projet pour débloquer les quartiers.",
+    details: "Précisons votre recherche", editProject: "Modifier mon projet", nameError: "Indiquez votre nom (2 caractères minimum).",
     privacy: "Vos informations restent confidentielles.", search: "Votre recherche", contact: "Pour vous répondre",
     intent: "Quel est votre projet ?", rent: "Louer longue durée", buy: "Acheter", type: "Type de bien",
     villa: "Villa", apartment: "Appartement", riad: "Riad", house: "Maison", other: "Autre / terrain",
@@ -62,6 +68,10 @@ const copy = {
   ar: {
     eyebrow: "مشروعك العقاري في مراكش", title: "نبحث معك عن العقار المناسب.",
     intro: "أجب عن بعض الأسئلة لنفهم طلبك ونقترح عليك عقارات تناسب احتياجاتك.",
+    stay: "إقامة قصيرة", stayBudget: "الميزانية لكل ليلة (درهم)", arrival: "تاريخ الوصول المطلوب",
+    idealArea: "الحي المثالي", allAreas: "جميع الأحياء", start: "ابدأ",
+    chooseProject: "اختر مشروعك للمتابعة.", areaLocked: "اختر مشروعك أولاً لعرض الأحياء.",
+    details: "تفاصيل بحثك", editProject: "تعديل مشروعي", nameError: "أدخل اسماً من حرفين على الأقل.",
     privacy: "معلوماتك تبقى سرية.", search: "طلبك العقاري", contact: "معلومات التواصل",
     intent: "ما هو مشروعك؟", rent: "كراء طويل الأمد", buy: "شراء", type: "نوع العقار",
     villa: "فيلا", apartment: "شقة", riad: "رياض", house: "منزل", other: "نوع آخر / أرض",
@@ -83,6 +93,10 @@ const copy = {
   en: {
     eyebrow: "Your property search in Marrakech", title: "Let’s find a place that fits.",
     intro: "A few answers help us understand what you need and share a focused selection.",
+    stay: "Short stay", stayBudget: "Nightly budget (MAD)", arrival: "Preferred arrival date",
+    idealArea: "Your ideal neighbourhood", allAreas: "All neighbourhoods", start: "Get started",
+    chooseProject: "Choose your project to continue.", areaLocked: "Choose your project first to unlock the neighbourhoods.",
+    details: "Refine your search", editProject: "Edit my project", nameError: "Enter your name (at least 2 characters).",
     privacy: "Your information stays private.", search: "Your search", contact: "How to reach you",
     intent: "What are you looking for?", rent: "Long-term rental", buy: "To buy", type: "Property type",
     villa: "Villa", apartment: "Apartment", riad: "Riad", house: "House", other: "Other / land",
@@ -107,24 +121,53 @@ const propertyTypes = ["villa", "appartement", "riad", "maison", "other"] as con
 
 export default function PropertyRequest() {
   const [language, setLanguage] = useState<Language>("fr");
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<0 | 1 | 2>(0);
+  const [projectChosen, setProjectChosen] = useState(false);
+  const [projectError, setProjectError] = useState(false);
   const [form, setForm] = useState<RequestForm>(emptyForm);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const firstProjectRef = useRef<HTMLInputElement>(null);
   const t = copy[language];
   const rtl = language === "ar";
   const change = <K extends keyof RequestForm>(key: K, value: RequestForm[K]) => setForm((old) => ({ ...old, [key]: value }));
   const typeLabel = { villa: t.villa, appartement: t.apartment, riad: t.riad, maison: t.house, other: t.other };
+  const projects = [
+    { value: "vente", label: t.buy, icon: Home },
+    { value: "location-longue-duree", label: t.rent, icon: KeyRound },
+    { value: "location-courte-duree", label: t.stay, icon: Luggage },
+  ] as const;
+  const projectLabel = projects.find((project) => project.value === form.intent)?.label;
+
+  useEffect(() => {
+    if (step > 0) contentRef.current?.focus({ preventScroll: true });
+  }, [step]);
+
+  const goToStep = (value: 0 | 1 | 2) => {
+    setStep(value);
+    window.scrollTo({ top: 0, behavior: "instant" });
+  };
+
+  const startSearch = () => {
+    if (!projectChosen) {
+      setProjectError(true);
+      firstProjectRef.current?.focus();
+      return;
+    }
+    goToStep(1);
+  };
 
   const nextStep = () => {
     if (!form.types.length) return void toast.error(t.typesError);
     if (form.budgetMin && form.budgetMax && Number(form.budgetMax) < Number(form.budgetMin)) return void toast.error(t.budgetError);
-    setStep(2);
+    goToStep(2);
   };
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (form.website) return;
+    if (form.website || loading || step !== 2) return;
+    if (form.name.trim().length < 2) return void toast.error(t.nameError);
     const digits = form.phone.replace(/\D/g, "");
     if (digits.length < 8 || digits.length > 15) return void toast.error(t.phoneError);
     setLoading(true);
@@ -155,57 +198,85 @@ export default function PropertyRequest() {
   };
 
   const whatsappText = encodeURIComponent(language === "ar"
-    ? `السلام عليكم، أرسلت طلب عقار عبر الموقع. أبحث عن ${form.intent === "vente" ? "شراء" : "كراء طويل الأمد"} في مراكش.`
-    : `Bonjour, je viens d'envoyer ma recherche immobilière. Je cherche ${form.intent === "vente" ? "à acheter" : "une location longue durée"} à Marrakech.`);
+    ? `السلام عليكم، أرسلت طلب عقار عبر الموقع. مشروعي: ${projectLabel} في مراكش.`
+    : language === "en"
+      ? `Hello, I just submitted my property search. My project: ${projectLabel} in Marrakech.`
+      : `Bonjour, je viens d'envoyer ma recherche immobilière. Mon projet : ${projectLabel} à Marrakech.`);
 
   return (
-    <div className="min-h-screen bg-[#f6f3ed] text-[#292720] font-sans selection:bg-[#5d6647] selection:text-white" dir={rtl ? "rtl" : "ltr"}>
+    <div className="request-page min-h-screen font-sans selection:bg-[#5d6647] selection:text-white" lang={language} dir={rtl ? "rtl" : "ltr"}>
       <Header />
-      <main className="mx-auto grid min-h-[calc(100vh-80px)] max-w-[1280px] items-start gap-12 px-5 pb-20 pt-28 md:px-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20 lg:pt-36">
-        <section className="max-w-lg sticky top-32">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#7a8060]/20 bg-white/60 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#5d6647] shadow-sm backdrop-blur-sm">
-            <Sparkles size={14} />
+      <main className={`request-layout ${step > 0 && !submitted ? "request-layout--details" : ""}`}>
+        <section className="request-intro">
+          <div className="request-eyebrow">
+            <Palmtree size={18} strokeWidth={1.7} aria-hidden="true" />
             {t.eyebrow}
           </div>
-          <h1 className="font-serif text-[2.5rem] leading-[1.1] tracking-tight sm:text-5xl lg:text-[64px] text-[#2a2924]">
+          <h1 className="request-title">
             {submitted ? t.success : t.title}
           </h1>
-          <p className="mt-6 max-w-md text-base leading-relaxed text-[#6a675d] sm:text-lg">
+          <p className="request-description">
             {submitted ? t.successText : t.intro}
           </p>
-          {!submitted && (
-            <div className="mt-10 space-y-6">
-              <p className="flex items-center gap-3 text-sm font-medium text-[#777367]">
-                <ShieldCheck size={18} className="text-[#69704f]" />
-                {t.privacy}
-              </p>
-              <div className="border-t border-[#d8d3c9]/60 pt-6">
-                <p className="font-serif text-2xl text-[#3d3b35]">{t.rationale}</p>
-                <p className="mt-3 text-base leading-relaxed text-[#777367]">
-                  {t.rationaleText}
-                </p>
-              </div>
-            </div>
-          )}
-          <div className="mt-10 flex gap-3" aria-label="Language">
-            {(["fr", "ar", "en"] as const).map((code) => (
-              <button
-                key={code}
-                type="button"
-                onClick={() => setLanguage(code)}
-                className={`flex h-10 w-12 items-center justify-center rounded-full text-[11px] font-semibold uppercase tracking-wider transition-all duration-300 ${
-                  language === code
-                    ? "bg-[#5d6647] text-white shadow-md"
-                    : "border border-[#d8d3c9] text-[#706d63] hover:border-[#5d6647] hover:text-[#5d6647] bg-white/50"
-                }`}
-              >
-                {code}
-              </button>
-            ))}
-          </div>
         </section>
 
-        {submitted ? (
+        <div className="request-content" ref={contentRef} tabIndex={-1}>
+        {step === 0 && !submitted ? (
+          <section aria-label={t.search}>
+            <ol className="request-timeline">
+              <li className="request-timeline-step">
+                <span className="request-step-number request-step-number--active" aria-hidden="true">01</span>
+                <div className="request-step-body">
+                  <h2 id="project-heading" className="request-step-title">{t.search}</h2>
+                  <fieldset className="request-projects" aria-labelledby="project-heading" aria-describedby={projectError ? "project-error" : undefined}>
+                    {projects.map(({ value, label, icon: Icon }, index) => {
+                      const selected = projectChosen && form.intent === value;
+                      return (
+                        <label key={value} className={`request-project ${selected ? "request-project--selected" : ""}`}>
+                          <input
+                            ref={index === 0 ? firstProjectRef : undefined}
+                            type="radio" name="project" value={value} checked={selected}
+                            onChange={() => {
+                              setForm((old) => ({ ...old, intent: value, budgetMin: old.intent === value ? old.budgetMin : "", budgetMax: old.intent === value ? old.budgetMax : "" }));
+                              setProjectChosen(true);
+                              setProjectError(false);
+                            }}
+                            className="sr-only"
+                          />
+                          <Icon className="request-project-icon" size={25} strokeWidth={1.6} aria-hidden="true" />
+                          <span>{label}</span>
+                          {selected ? <Check className="request-project-chevron" size={18} aria-hidden="true" /> : <ChevronRight className="request-project-chevron" size={19} aria-hidden="true" />}
+                        </label>
+                      );
+                    })}
+                  </fieldset>
+                  {projectError && <p id="project-error" role="alert" className="mt-3 text-sm text-[#a44d30]">{t.chooseProject}</p>}
+                </div>
+              </li>
+              <li className={`request-timeline-step ${!projectChosen ? "request-timeline-step--locked" : ""}`}>
+                <span className={`request-step-number ${projectChosen ? "request-step-number--active" : ""}`} aria-hidden="true">02</span>
+                <div className="request-step-body">
+                  <h2 className="request-step-title"><label htmlFor="request-area">{t.idealArea}</label></h2>
+                  <div className="request-area">
+                    <MapPin size={24} strokeWidth={1.6} aria-hidden="true" />
+                    <select id="request-area" value={form.areas} disabled={!projectChosen} onChange={(event) => change("areas", event.target.value)} aria-describedby={!projectChosen ? "area-locked-hint" : undefined}>
+                      <option value="">{projectChosen ? t.allAreas : ""}</option>
+                      {form.areas && !QUARTIERS.includes(form.areas) && <option value={form.areas}>{form.areas}</option>}
+                      {QUARTIERS.map((area) => <option key={area} value={area}>{area}</option>)}
+                    </select>
+                    {projectChosen ? <ChevronRight size={19} className="request-area-arrow" aria-hidden="true" /> : <LockKeyhole size={20} aria-hidden="true" />}
+                  </div>
+                  {!projectChosen && <span id="area-locked-hint" className="sr-only">{t.areaLocked}</span>}
+                </div>
+              </li>
+            </ol>
+            <button type="button" className="request-start" onClick={startSearch}>
+              <span>{t.start}</span>
+              {rtl ? <ArrowLeft size={24} aria-hidden="true" /> : <ArrowRight size={24} aria-hidden="true" />}
+            </button>
+            <p className="request-privacy"><ShieldCheck size={21} strokeWidth={1.6} aria-hidden="true" />{t.privacy}</p>
+          </section>
+        ) : submitted ? (
           <section className="rounded-3xl border border-[#e6e1d7]/50 bg-white/80 p-8 shadow-2xl backdrop-blur-xl sm:p-12 mt-4 lg:mt-0">
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#edf0e5] text-[#5d6647] shadow-inner">
               <Check size={36} strokeWidth={2.5} />
@@ -232,10 +303,11 @@ export default function PropertyRequest() {
         ) : (
           <form
             onSubmit={submit}
-            className="rounded-3xl border border-[#e6e1d7]/50 bg-white/90 p-6 shadow-2xl shadow-[#5d6647]/5 backdrop-blur-xl sm:p-10 mt-4 lg:mt-0"
+            className="request-details rounded-3xl border border-[#e6e1d7] bg-white/90 p-5 sm:p-8"
           >
             <div className="mb-10 flex items-center gap-4">
               <div className="flex h-1.5 flex-1 gap-2">
+                <span className="flex-1 rounded-full bg-[#5d6647]" />
                 <span className="flex-1 rounded-full bg-[#5d6647] transition-all duration-500" />
                 <span
                   className={`flex-1 rounded-full transition-all duration-500 ${
@@ -244,41 +316,20 @@ export default function PropertyRequest() {
                 />
               </div>
               <span className="text-xs font-semibold uppercase tracking-widest text-[#737064]">
-                {step} / 2
+                {step + 1} / 3
               </span>
             </div>
 
             <h2 className="mb-8 font-serif text-3xl text-[#2a2924]">
-              {step === 1 ? t.search : t.contact}
+              {step === 1 ? t.details : t.contact}
             </h2>
 
             {step === 1 ? (
               <div className="space-y-8">
-                <fieldset>
-                  <legend className="mb-3 text-sm font-medium text-[#495236]">
-                    {t.intent}
-                  </legend>
-                  <div className="flex flex-col gap-3 sm:flex-row">
-                    {([
-                      ["location-longue-duree", t.rent],
-                      ["vente", t.buy],
-                    ] as const).map(([value, label]) => (
-                      <button
-                        key={value}
-                        type="button"
-                        onClick={() => change("intent", value)}
-                        aria-pressed={form.intent === value}
-                        className={`flex min-h-[3.25rem] flex-1 items-center justify-center rounded-xl border px-5 text-sm font-medium transition-all duration-200 ${
-                          form.intent === value
-                            ? "border-[#5d6647] bg-[#f0f2e9] text-[#495236] shadow-inner"
-                            : "border-[#e6e1d7] bg-white text-[#6b685e] hover:border-[#c5c0b5]"
-                        }`}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                </fieldset>
+                <div className="request-summary">
+                  <span>{projectLabel}</span>
+                  <button type="button" onClick={() => goToStep(0)}>{t.editProject}</button>
+                </div>
 
                 <fieldset>
                   <legend className="mb-3 text-sm font-medium text-[#495236]">
@@ -315,12 +366,13 @@ export default function PropertyRequest() {
 
                 <div>
                   <label className="mb-3 block text-sm font-medium text-[#495236]">
-                    {form.intent === "vente" ? t.buyBudget : t.rentBudget}
+                    {form.intent === "vente" ? t.buyBudget : form.intent === "location-courte-duree" ? t.stayBudget : t.rentBudget}
                   </label>
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <Input
                       type="number"
                       min="0"
+                      max="100000000"
                       value={form.budgetMin}
                       onChange={(e) => change("budgetMin", e.target.value)}
                       placeholder={t.min}
@@ -330,6 +382,7 @@ export default function PropertyRequest() {
                     <Input
                       type="number"
                       min="0"
+                      max="100000000"
                       value={form.budgetMax}
                       onChange={(e) => change("budgetMax", e.target.value)}
                       placeholder={t.max}
@@ -355,6 +408,7 @@ export default function PropertyRequest() {
                     <Input
                       type="number"
                       min="0"
+                      max="20"
                       value={form.bedrooms}
                       onChange={(e) => change("bedrooms", e.target.value)}
                       className="h-12 rounded-xl border-[#e6e1d7] bg-white/50 text-base focus:border-[#5d6647] focus:ring-[#5d6647]"
@@ -378,7 +432,7 @@ export default function PropertyRequest() {
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <label className="space-y-3 text-sm font-medium text-[#495236]">
-                    {t.date}
+                    {form.intent === "location-courte-duree" ? t.arrival : t.date}
                     <Input
                       type="date"
                       value={form.availableFrom}
@@ -391,6 +445,7 @@ export default function PropertyRequest() {
                     <Input
                       type="number"
                       min="0"
+                      max="500"
                       value={form.distance}
                       onChange={(e) => change("distance", e.target.value)}
                       className="h-12 rounded-xl border-[#e6e1d7] bg-white/50 text-base focus:border-[#5d6647] focus:ring-[#5d6647]"
@@ -406,6 +461,7 @@ export default function PropertyRequest() {
                     {t.referenceHint}
                   </span>
                   <Input
+                    maxLength={200}
                     value={form.referenceLocation}
                     onChange={(e) => change("referenceLocation", e.target.value)}
                     className="mt-3 h-12 rounded-xl border-[#e6e1d7] bg-white/50 text-base focus:border-[#5d6647] focus:ring-[#5d6647]"
@@ -427,6 +483,8 @@ export default function PropertyRequest() {
                   {t.name}
                   <Input
                     required
+                    minLength={2}
+                    autoComplete="name"
                     maxLength={120}
                     value={form.name}
                     onChange={(e) => change("name", e.target.value)}
@@ -438,6 +496,7 @@ export default function PropertyRequest() {
                   <Input
                     required
                     type="tel"
+                    autoComplete="tel"
                     maxLength={40}
                     placeholder="+212…"
                     value={form.phone}
@@ -449,6 +508,7 @@ export default function PropertyRequest() {
                   {t.email}
                   <Input
                     type="email"
+                    autoComplete="email"
                     maxLength={254}
                     value={form.email}
                     onChange={(e) => change("email", e.target.value)}
@@ -509,10 +569,10 @@ export default function PropertyRequest() {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => setStep(1)}
+                    onClick={() => goToStep(1)}
                     className="h-14 w-full gap-2 rounded-xl border-[#d8d3c9] text-base hover:bg-[#f6f3ed] sm:w-auto sm:px-8"
                   >
-                    <ArrowLeft size={18} />
+                    {rtl ? <ArrowRight size={18} /> : <ArrowLeft size={18} />}
                     {t.back}
                   </Button>
                   <Button
@@ -528,6 +588,14 @@ export default function PropertyRequest() {
             )}
           </form>
         )}
+        </div>
+        <div className="request-languages" aria-label="Language">
+          {(["fr", "ar", "en"] as const).map((code) => (
+            <button key={code} type="button" onClick={() => setLanguage(code)} aria-pressed={language === code} lang={code}>
+              {code.toUpperCase()}
+            </button>
+          ))}
+        </div>
       </main>
       <Footer />
     </div>

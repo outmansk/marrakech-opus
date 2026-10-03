@@ -22,7 +22,7 @@ type ClientLead = {
   phone: string;
   email: string | null;
   source: string;
-  transaction_type: "location-longue-duree" | "vente";
+  transaction_type: "location-longue-duree" | "location-courte-duree" | "vente";
   property_types: string[];
   budget_min: number | null;
   budget_max: number | null;
@@ -66,7 +66,9 @@ const typeLabels: Record<string, string> = {
 };
 
 const priceOf = (property: Bien, transaction: ClientLead["transaction_type"]) =>
-  transaction === "vente" ? (property.prix_vente ?? property.prix) : (property.prix_location_longue ?? property.prix);
+  transaction === "vente" ? (property.prix_vente ?? property.prix)
+    : transaction === "location-courte-duree" ? (property.prix_location_courte ?? property.prix)
+      : (property.prix_location_longue ?? property.prix);
 
 function matchingProperties(lead: ClientLead, properties: Bien[]) {
   const service = lead.transaction_type as BienService;
@@ -229,7 +231,7 @@ export default function AdminClients() {
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-1.5 text-xs">
-                  <span className="rounded-md bg-muted px-2 py-1">{lead.transaction_type === "vente" ? "Vente" : "Location longue durée"}</span>
+                  <span className="rounded-md bg-muted px-2 py-1">{lead.transaction_type === "vente" ? "Vente" : lead.transaction_type === "location-courte-duree" ? "Séjour / courte durée" : "Location longue durée"}</span>
                   {(lead.property_types ?? []).map((type) => <span key={type} className="rounded-md bg-muted px-2 py-1">{typeLabels[type] ?? type}</span>)}
                   {lead.budget_max != null && <span className="rounded-md bg-muted px-2 py-1">Budget max {lead.budget_max.toLocaleString("fr-FR")} MAD</span>}
                   {lead.preferred_areas.length > 0 && <span className="rounded-md bg-muted px-2 py-1">{lead.preferred_areas.join(", ")}</span>}
@@ -268,7 +270,7 @@ export default function AdminClients() {
             <section className="space-y-3 rounded-lg border border-border/60 p-4">
               <h3 className="text-sm font-medium">Ce que le client cherche</h3>
               <div className="grid gap-3 sm:grid-cols-2">
-                <div className={fieldClass}><label className={labelClass}>Projet</label><Select value={form.transaction_type} onValueChange={(value) => setForm({ ...form, transaction_type: value as LeadForm["transaction_type"] })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="location-longue-duree">Location longue durée</SelectItem><SelectItem value="vente">Achat</SelectItem></SelectContent></Select></div>
+                <div className={fieldClass}><label className={labelClass}>Projet</label><Select value={form.transaction_type} onValueChange={(value) => setForm({ ...form, transaction_type: value as LeadForm["transaction_type"] })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="location-longue-duree">Location longue durée</SelectItem><SelectItem value="vente">Achat</SelectItem><SelectItem value="location-courte-duree">Séjour / courte durée</SelectItem></SelectContent></Select></div>
                 <div className={fieldClass}><label className={labelClass}>Types de bien</label><div className="flex flex-wrap gap-2">{Object.entries(typeLabels).map(([value, label]) => <label key={value} className="flex items-center gap-1.5 rounded-md border px-2 py-1.5 text-xs"><input type="checkbox" checked={form.property_types.includes(value)} onChange={(e) => setForm({ ...form, property_types: e.target.checked ? [...form.property_types, value] : form.property_types.filter((type) => type !== value) })} />{label}</label>)}</div></div>
                 <div className={fieldClass}><label className={labelClass}>Budget minimum (MAD)</label><Input type="number" min="0" value={form.budget_min ?? ""} onChange={(e) => setForm({ ...form, budget_min: e.target.value ? Number(e.target.value) : null })} /></div>
                 <div className={fieldClass}><label className={labelClass}>Budget maximum (MAD)</label><Input type="number" min="0" value={form.budget_max ?? ""} onChange={(e) => setForm({ ...form, budget_max: e.target.value ? Number(e.target.value) : null })} /></div>
