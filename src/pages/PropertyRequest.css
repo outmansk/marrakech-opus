@@ -8,7 +8,7 @@
 .request-layout {
   max-width: 580px;
   margin-inline: auto;
-  padding: 96px 24px 48px;
+  padding: 92px 28px 48px;
 }
 
 .request-eyebrow {
@@ -16,12 +16,13 @@
   align-items: center;
   gap: 10px;
   min-height: 36px;
+  width: 100%;
   padding: 8px 12px;
   border: 1px solid #cdd0bf;
   border-radius: 999px;
   background: #f5f6ee;
   color: var(--request-olive);
-  font-size: clamp(8px, 2.22vw, 11px);
+  font-size: clamp(8px, 2.55vw, 11px);
   font-weight: 600;
   letter-spacing: .12em;
   line-height: 1.5;
@@ -31,23 +32,23 @@
 .request-eyebrow svg { flex: none; }
 
 .request-title {
-  margin-top: 26px;
+  margin-top: 24px;
   font-family: var(--font-serif);
-  font-size: clamp(38px, 11.8vw, 58px);
+  font-size: clamp(36px, 11vw, 58px);
   font-weight: 500;
   letter-spacing: -.035em;
   line-height: 1.06;
 }
 
 .request-description {
-  margin-top: 24px;
+  margin-top: 22px;
   color: #4d4c46;
   font-size: clamp(15px, 4.35vw, 19px);
   font-weight: 300;
-  line-height: 1.65;
+  line-height: 1.6;
 }
 
-.request-content { min-width: 0; margin-top: 32px; outline: none; }
+.request-content { min-width: 0; margin-top: 30px; outline: none; }
 .request-timeline { list-style: none; margin: 0; padding: 0; }
 
 .request-timeline-step {
@@ -86,7 +87,7 @@
 
 .request-step-number--active { background: var(--request-clay); color: #fff; }
 .request-step-body { min-width: 0; }
-.request-step-title { margin: 7px 0 14px; font-size: 28px; line-height: 1.15; letter-spacing: -.015em; }
+.request-step-title { margin: 7px 0 12px; font-size: 28px; line-height: 1.15; letter-spacing: -.015em; }
 
 .request-projects {
   overflow: hidden;
@@ -101,11 +102,11 @@
   position: relative;
   align-items: center;
   gap: 15px;
-  min-height: 60px;
+  min-height: 58px;
   padding: 12px 17px;
   cursor: pointer;
   font-family: var(--font-serif);
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 500;
   line-height: 1.2;
   transition: background-color .2s, color .2s;
@@ -161,7 +162,7 @@
   position: relative;
   min-height: 58px;
   width: 100%;
-  margin-top: 28px;
+  margin-top: 24px;
   padding: 10px 48px;
   border: 1px solid var(--request-clay);
   border-radius: 13px;

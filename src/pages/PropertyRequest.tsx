@@ -470,7 +470,9 @@ export default function PropertyRequest() {
 
                 <Button
                   type="button"
-                  onClick={nextStep}
+                  onClick={(event) => {
+                    if (event.currentTarget.form?.reportValidity()) nextStep();
+                  }}
                   className="mt-4 h-14 w-full gap-3 rounded-xl bg-[#5d6647] text-[15px] font-semibold tracking-wide hover:bg-[#4a5238] shadow-lg shadow-[#5d6647]/20 transition-all hover:shadow-xl"
                 >
                   {t.next}
