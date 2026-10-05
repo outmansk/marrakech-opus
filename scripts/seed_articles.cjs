@@ -1,7 +1,8 @@
 const fs = require('fs');
 
 const PROJECT_ID = 'djrdqhetzqleygfhccco';
-const MGMT_TOKEN = 'sbp_c1ed51d259f9290d347cf182fff0dfaeb31a9045';
+const MGMT_TOKEN = process.env.SUPABASE_ACCESS_TOKEN;
+if (!MGMT_TOKEN) throw new Error('Set SUPABASE_ACCESS_TOKEN before running this script.');
 
 const articles = [
   {

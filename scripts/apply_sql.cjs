@@ -1,12 +1,15 @@
 const fs = require('fs');
 
+const MGMT_TOKEN = process.env.SUPABASE_ACCESS_TOKEN;
+if (!MGMT_TOKEN) throw new Error('Set SUPABASE_ACCESS_TOKEN before running this script.');
+
 async function runSql(filePath) {
   try {
     const query = fs.readFileSync(filePath, 'utf8');
     const response = await fetch('https://api.supabase.com/v1/projects/djrdqhetzqleygfhccco/sql', {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer sbp_c1ed51d259f9290d347cf182fff0dfaeb31a9045',
+        'Authorization': `Bearer ${MGMT_TOKEN}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ query })
