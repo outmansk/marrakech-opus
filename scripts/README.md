@@ -1,52 +1,13 @@
-# Scripts Utilitaires
+# Scripts
 
-Ce dossier contient des scripts Node.js pour la maintenance et le seeding de la base de données.
+## `generate-sitemap.cjs`
 
-> ⚠️ Ces scripts nécessitent les variables d'environnement Supabase dans `.env` à la racine du projet.
-
----
-
-## Scripts Disponibles
-
-### `apply_sql.cjs`
-Applique un fichier SQL arbitraire sur la base Supabase via l'API REST.
+Génère `public/sitemap.xml` (pages statiques, biens publiés, articles publiés) depuis Supabase.
+Il est lancé automatiquement par `npm run build` ; pour le lancer à la main :
 
 ```bash
-node scripts/apply_sql.cjs
+npm run generate:sitemap
 ```
 
----
-
-### `generate_sql.cjs`
-Génère des fichiers SQL d'insertion à partir de données structurées (propriétés, articles).
-
-```bash
-node scripts/generate_sql.cjs
-```
-
----
-
-### `insert.cjs`
-Insère directement des données en base via le client Supabase JS.
-
-```bash
-node scripts/insert.cjs
-```
-
----
-
-### `seed_articles.cjs`
-Insère les articles de blog initiaux dans la table `articles`.
-
-```bash
-node scripts/seed_articles.cjs
-```
-
----
-
-### `seed_blog.js`
-Version ES Module du seeder d'articles — utilisé pour les mises à jour ultérieures.
-
-```bash
-node scripts/seed_blog.js
-```
+Variables lues (depuis l'environnement ou `.env`) : `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_CLOUDINARY_CLOUD_NAME`.
+Sans les variables Supabase (ex. CI), le script affiche un avertissement et n'échoue pas.

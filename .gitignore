@@ -44,3 +44,6 @@ output.png
 # Supabase local dev
 supabase/.temp
 tmp/
+
+# Generated at build time
+public/sitemap.xml

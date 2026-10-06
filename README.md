@@ -59,11 +59,10 @@ npm run build
 
 ```
 marrakech-opus/
-├── scripts/                  # Utilitaires Node.js (seeding, SQL generation)
+├── scripts/                  # generate-sitemap.cjs (lancé au build)
 ├── supabase/
-│   ├── migrations/           # Migrations SQL (ordonnées par timestamp)
-│   ├── seeds/                # Données de départ SQL
-│   └── tools/                # Requêtes de diagnostic/vérification
+│   ├── schema.sql            # Schéma complet de la base (tables + RLS)
+│   └── functions/            # Edge functions
 └── src/
     ├── components/           # Composants React réutilisables
     │   ├── admin/            # Interface d'administration
@@ -81,30 +80,18 @@ marrakech-opus/
 
 ## Base de Données
 
-Les migrations Supabase se trouvent dans `supabase/migrations/` et sont ordonnées chronologiquement.
+Le schéma complet (tables, règles RLS, triggers) est dans `supabase/schema.sql`.
 
-### Appliquer les Migrations
+Pour créer une nouvelle base : Supabase → **SQL Editor** → coller `supabase/schema.sql` → **Run**.
+Ensuite, créer un utilisateur (Authentication → Users) et lui donner le rôle admin :
 
-Via la CLI Supabase :
-```bash
-supabase db push
+```sql
+INSERT INTO public.profiles (id, role)
+SELECT id, 'admin' FROM auth.users WHERE email = 'votre@email.com'
+ON CONFLICT (id) DO UPDATE SET role = 'admin';
 ```
 
-Ou via le script utilitaire :
-```bash
-node scripts/apply_sql.cjs
-```
-
-### Seeding de Données
-
-```bash
-# Propriétés de démonstration
-# (appliquer le fichier SQL directement dans Supabase Studio)
-psql -f supabase/seeds/seed_properties.sql
-
-# Articles de blog
-node scripts/seed_blog.js
-```
+Le `sitemap.xml` est généré automatiquement depuis la base à chaque `npm run build`.
 
 ---
 

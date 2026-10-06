@@ -15,32 +15,38 @@
 const fs = require('fs');
 const path = require('path');
 
-// ── Load .env ──────────────────────────────────────────────
+// ── Load .env (process env wins, e.g. on Vercel) ───────────
 function loadEnv() {
-  const envPath = path.resolve(__dirname, '..', '.env');
-  if (!fs.existsSync(envPath)) {
-    console.error('❌  .env file not found. Copy .env.example → .env');
-    process.exit(1);
-  }
-  const content = fs.readFileSync(envPath, 'utf-8');
   const vars = {};
-  for (const line of content.split('\n')) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) continue;
-    const [key, ...rest] = trimmed.split('=');
-    vars[key.trim()] = rest.join('=').trim();
+  const envPath = path.resolve(__dirname, '..', '.env');
+  if (fs.existsSync(envPath)) {
+    const content = fs.readFileSync(envPath, 'utf-8');
+    for (const line of content.split(/\r?\n/)) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      const [key, ...rest] = trimmed.split('=');
+      vars[key.trim()] = rest.join('=').trim().replace(/^(["'])(.*)\1$/, '$2');
+    }
   }
-  return vars;
+  return { ...vars, ...process.env };
 }
 
 const env = loadEnv();
 const SUPABASE_URL = env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = env.VITE_SUPABASE_ANON_KEY;
 const SITE_URL = 'https://liveinmarrakech.com';
+const CLOUD_NAME = env.VITE_CLOUDINARY_CLOUD_NAME;
+
+// Photos are stored as Cloudinary public_ids (legacy rows may hold full URLs).
+function imageUrl(idOrUrl) {
+  if (/^https?:\/\//.test(idOrUrl)) return idOrUrl;
+  return CLOUD_NAME ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${idOrUrl}` : null;
+}
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  console.error('❌  Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY in .env');
-  process.exit(1);
+  // Not fatal: CI builds run without Supabase credentials.
+  console.warn('⚠️  VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY missing — sitemap not generated.');
+  process.exit(0);
 }
 
 // ── Supabase REST fetch ────────────────────────────────────
@@ -110,8 +116,8 @@ async function main() {
 
   // Fetch dynamic data
   const [properties, articles] = await Promise.all([
-    supabaseQuery('properties_v2', 'id,titre,updated_at,images', '&statut=eq.publie'),
-    supabaseQuery('articles', 'slug,updated_at', '&published=eq.true'),
+    supabaseQuery('properties_v2', 'id,titre,updated_at,photo_principale,photos', '&statut=eq.publie'),
+    supabaseQuery('articles', 'slug,updated_at', '&est_publie=eq.true'),
   ]);
 
   console.log(`  📦  ${properties.length} propriétés publiées`);
@@ -130,9 +136,12 @@ async function main() {
     const lastmod = prop.updated_at
       ? new Date(prop.updated_at).toISOString().split('T')[0]
       : today;
-    const images = Array.isArray(prop.images)
-      ? prop.images.slice(0, 3).map((url) => ({ url, title: prop.titre || '' }))
-      : [];
+    const images = [prop.photo_principale, ...(prop.photos || [])]
+      .filter(Boolean)
+      .filter((id, i, all) => all.indexOf(id) === i)
+      .slice(0, 3)
+      .map((id) => ({ url: imageUrl(id), title: prop.titre || '' }))
+      .filter((img) => img.url);
     entries.push(
       urlEntry({
         loc: `/bien/${prop.id}`,
