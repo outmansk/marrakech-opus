@@ -231,4 +231,66 @@ GRANT SELECT ON public.properties_v2, public.articles TO anon;
 GRANT INSERT ON public.visit_requests, public.contact_messages, public.client_leads TO anon;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
 
+
+-- ─── Agenda & carnet de contacts (propriétaires, agences, clients, partenaires)
+
+CREATE TABLE IF NOT EXISTS public.contacts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  nom TEXT NOT NULL CHECK (length(btrim(nom)) BETWEEN 1 AND 120),
+  telephone TEXT CHECK (telephone IS NULL OR length(telephone) <= 40),
+  email TEXT CHECK (email IS NULL OR length(email) <= 254),
+  role TEXT NOT NULL DEFAULT 'proprietaire'
+    CHECK (role IN ('proprietaire', 'agence', 'client', 'partenaire', 'autre')),
+  societe TEXT CHECK (societe IS NULL OR length(societe) <= 120),
+  bien_id UUID REFERENCES public.properties_v2(id) ON DELETE SET NULL,
+  notes TEXT CHECK (notes IS NULL OR length(notes) <= 5000),
+  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS public.taches (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  type TEXT NOT NULL DEFAULT 'appel'
+    CHECK (type IN ('appel', 'rendez-vous', 'visite', 'relance', 'prospection', 'note')),
+  titre TEXT NOT NULL CHECK (length(btrim(titre)) BETWEEN 1 AND 200),
+  echeance TIMESTAMPTZ,            -- vide = note / à faire sans date
+  fait BOOLEAN NOT NULL DEFAULT false,
+  fait_le TIMESTAMPTZ,
+  contact_id UUID REFERENCES public.contacts(id) ON DELETE SET NULL,
+  bien_id UUID REFERENCES public.properties_v2(id) ON DELETE SET NULL,
+  lead_id UUID REFERENCES public.client_leads(id) ON DELETE SET NULL,
+  lieu TEXT CHECK (lieu IS NULL OR length(lieu) <= 200),
+  notes TEXT CHECK (notes IS NULL OR length(notes) <= 5000),
+  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS contacts_role_idx ON public.contacts(role);
+CREATE INDEX IF NOT EXISTS taches_echeance_idx ON public.taches(fait, echeance);
+CREATE INDEX IF NOT EXISTS taches_contact_idx ON public.taches(contact_id);
+CREATE INDEX IF NOT EXISTS taches_lead_idx ON public.taches(lead_id);
+
+ALTER TABLE public.contacts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.taches ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Admins manage contacts" ON public.contacts;
+CREATE POLICY "Admins manage contacts" ON public.contacts
+  FOR ALL TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
+
+DROP POLICY IF EXISTS "Admins manage tasks" ON public.taches;
+CREATE POLICY "Admins manage tasks" ON public.taches
+  FOR ALL TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.contacts, public.taches TO authenticated;
+
+DROP TRIGGER IF EXISTS contacts_updated_at ON public.contacts;
+CREATE TRIGGER contacts_updated_at BEFORE UPDATE ON public.contacts
+  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+DROP TRIGGER IF EXISTS taches_updated_at ON public.taches;
+CREATE TRIGGER taches_updated_at BEFORE UPDATE ON public.taches
+  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
 NOTIFY pgrst, 'reload schema';

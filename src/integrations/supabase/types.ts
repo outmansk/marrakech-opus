@@ -137,6 +137,48 @@ export type Database = {
         }
         Relationships: []
       }
+      contacts: {
+        Row: {
+          id: string
+          nom: string
+          telephone: string | null
+          email: string | null
+          role: string
+          societe: string | null
+          bien_id: string | null
+          notes: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          nom: string
+          telephone?: string | null
+          email?: string | null
+          role?: string
+          societe?: string | null
+          bien_id?: string | null
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          nom?: string
+          telephone?: string | null
+          email?: string | null
+          role?: string
+          societe?: string | null
+          bien_id?: string | null
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           id: string
@@ -325,6 +367,57 @@ export type Database = {
           secure_parking?: boolean | null
           title?: string
           transaction_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      taches: {
+        Row: {
+          id: string
+          type: string
+          titre: string
+          echeance: string | null
+          fait: boolean
+          fait_le: string | null
+          contact_id: string | null
+          bien_id: string | null
+          lead_id: string | null
+          lieu: string | null
+          notes: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          type?: string
+          titre: string
+          echeance?: string | null
+          fait?: boolean
+          fait_le?: string | null
+          contact_id?: string | null
+          bien_id?: string | null
+          lead_id?: string | null
+          lieu?: string | null
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          type?: string
+          titre?: string
+          echeance?: string | null
+          fait?: boolean
+          fait_le?: string | null
+          contact_id?: string | null
+          bien_id?: string | null
+          lead_id?: string | null
+          lieu?: string | null
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
           updated_at?: string
         }
         Relationships: []

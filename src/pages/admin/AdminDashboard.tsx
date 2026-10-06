@@ -12,6 +12,7 @@ import OptimizedImage from "@/components/ui/OptimizedImage";
 import StatusBadge, { CountBadge } from "@/components/admin/StatusBadge";
 import { endOfToday } from "@/hooks/useAdminCounts";
 import { telHref, whatsappHref } from "@/lib/contact";
+import { TACHE_TYPE, echeanceLabel, isLate, type Contact, type Tache } from "@/lib/agenda";
 import {
   LEAD_LABELS,
   SERVICE_SHORT_LABELS,
@@ -37,11 +38,13 @@ function useDashboardData() {
   return useQuery({
     queryKey: ["admin-dashboard"],
     queryFn: async () => {
-      const [biens, articles, visits, leads] = await Promise.all([
+      const [biens, articles, visits, leads, taches, contacts] = await Promise.all([
         supabase.from("properties_v2").select("*").order("updated_at", { ascending: false }),
         supabase.from("articles").select("*").order("created_at", { ascending: false }),
         supabase.from("visit_requests").select("id, client_name, client_phone, requested_date, status, property_v2_id, created_at").order("requested_date", { ascending: true }),
         supabase.from("client_leads").select("id, name, phone, status, next_follow_up_at, created_at, transaction_type, budget_min, budget_max, preferred_areas").order("created_at", { ascending: false }),
+        supabase.from("taches").select("*").eq("fait", false).not("echeance", "is", null).lte("echeance", endOfToday().toISOString()).order("echeance"),
+        supabase.from("contacts").select("id, nom, telephone"),
       ]);
       if (biens.error) throw biens.error;
       return {
@@ -50,6 +53,9 @@ function useDashboardData() {
         visits: (visits.data ?? []) as Visit[],
         // Le CRM peut ne pas être encore activé : on affiche simplement 0.
         leads: (leads.data ?? []) as Lead[],
+        // Idem pour l'agenda.
+        taches: (taches.data ?? []) as Tache[],
+        contacts: (contacts.data ?? []) as Pick<Contact, "id" | "nom" | "telephone">[],
       };
     },
   });
@@ -70,7 +76,7 @@ function budget(lead: Lead) {
 }
 
 type TodoItem = {
-  key: string; kind: "Visite" | "Relance" | "Nouvelle demande"; name: string; detail: string; phone?: string;
+  key: string; kind: string; name: string; detail: string; phone?: string; late?: boolean;
   action: { label: string; to?: string; run?: () => void };
 };
 
@@ -163,7 +169,16 @@ export default function AdminDashboard() {
     void queryClient.invalidateQueries({ queryKey: ["admin-counts"] });
   };
 
+  const contactById = new Map(data!.contacts.map((c) => [c.id, c]));
   const todo: TodoItem[] = [
+    ...data!.taches.map((t) => {
+      const contact = t.contact_id ? contactById.get(t.contact_id) : undefined;
+      return {
+        key: `t-${t.id}`, kind: TACHE_TYPE[t.type]?.label ?? "Tâche", name: t.titre, phone: contact?.telephone ?? undefined, late: isLate(t),
+        detail: [isLate(t) ? `En retard · ${echeanceLabel(t.echeance)}` : echeanceLabel(t.echeance), contact?.nom].filter(Boolean).join(" · "),
+        action: { label: "Ouvrir", to: `${BASE}/agenda?edit=${t.id}` },
+      };
+    }),
     ...view.pending.map((v) => ({
       key: `v-${v.id}`, kind: "Visite" as const, name: v.client_name, phone: v.client_phone,
       detail: [view.bienById.get(v.property_v2_id ?? "")?.titre, formatVisitDate(v.requested_date)].filter(Boolean).join(" · "),
@@ -219,12 +234,12 @@ export default function AdminDashboard() {
             <CountBadge count={todo.length} />
           </div>
           {todo.length === 0 ? (
-            <p className="m-0 border-t border-[hsl(20_47%_85%)] bg-card px-4 py-6 text-center text-sm text-muted-foreground lg:px-5">Tout est à jour : aucune visite à confirmer ni relance prévue.</p>
+            <p className="m-0 border-t border-[hsl(20_47%_85%)] bg-card px-4 py-6 text-center text-sm text-muted-foreground lg:px-5">Tout est à jour : aucune tâche, visite ou relance prévue aujourd’hui.</p>
           ) : (
             <ul className="m-0 list-none p-0">
               {todo.map((item) => (
                 <li key={item.key} className="flex flex-col gap-2.5 border-t border-[hsl(25_38%_90%)] bg-card px-4 py-3 lg:grid lg:grid-cols-[130px_minmax(0,1fr)_auto] lg:items-center lg:gap-4 lg:px-5">
-                  <span className={cn("text-xs font-semibold uppercase tracking-[0.06em]", item.kind === "Visite" ? "text-warning-foreground" : item.kind === "Relance" ? "text-accent" : "text-[hsl(72_19%_23%)]")}>{item.kind}</span>
+                  <span className={cn("text-xs font-semibold uppercase tracking-[0.06em]", item.late ? "text-destructive" : item.kind === "Visite" ? "text-warning-foreground" : item.kind === "Relance" ? "text-accent" : "text-[hsl(72_19%_23%)]")}>{item.kind}</span>
                   <span className="flex min-w-0 flex-col gap-0.5">
                     <span className="text-[15px] font-semibold leading-snug">{item.name}</span>
                     {item.detail && <span className="text-[13px] leading-snug text-muted-foreground">{item.detail}</span>}

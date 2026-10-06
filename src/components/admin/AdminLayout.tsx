@@ -4,11 +4,13 @@ import type { Session } from "@supabase/supabase-js";
 import {
   Building2,
   CalendarCheck,
+  CalendarClock,
   ExternalLink,
   FileText,
   Files,
   Home,
   LayoutDashboard,
+  ListTodo,
   LogOut,
   Menu,
   PanelLeftClose,
@@ -90,6 +92,7 @@ export default function AdminLayout() {
 
   const nav: NavItem[] = [
     { path: `${BASE}/dashboard`, label: "Tableau de bord", short: "Accueil", icon: LayoutDashboard },
+    { path: `${BASE}/agenda`, label: "Agenda & contacts", short: "Agenda", icon: CalendarClock, count: counts?.tasksDue },
     { path: `${BASE}/biens`, label: "Biens", short: "Biens", icon: Building2 },
     { path: `${BASE}/blog`, label: "Blog", short: "Blog", icon: FileText },
     { path: `${BASE}/visites`, label: "Demandes de visite", short: "Visites", icon: CalendarCheck, count: counts?.pendingVisits },
@@ -98,10 +101,13 @@ export default function AdminLayout() {
   ];
   const isActive = (path: string) => location.pathname.startsWith(path);
   const current = nav.find((item) => isActive(item.path));
-  const tabs = [nav[0], nav[1], nav[4], nav[3]];
+  // nav : 0 accueil, 1 agenda, 2 biens, 3 blog, 4 visites, 5 clients, 6 contrats
+  const tabs = [nav[0], nav[1], nav[2], nav[5]];
   const moreActive = !tabs.some((item) => isActive(item.path));
 
   const addActions = [
+    { label: "Nouvelle tâche", icon: ListTodo, to: `${BASE}/agenda?new=1` },
+    { label: "Nouveau contact", icon: UserPlus, to: `${BASE}/agenda?vue=contacts&contact=new` },
     { label: "Ajouter un bien", icon: Building2, to: `${BASE}/biens?new=1` },
     { label: "Ajouter un client", icon: UserPlus, to: `${BASE}/clients?new=1` },
     { label: "Nouvel article", icon: PenLine, to: `${BASE}/blog?new=1` },
@@ -181,7 +187,7 @@ export default function AdminLayout() {
       </div>
 
       {/* ── Mobile : bouton « + » (masqué sur les contrats, qui ont leur propre barre) ── */}
-      {!location.pathname.startsWith(`${BASE}/documents`) && <button
+      {!location.pathname.startsWith(`${BASE}/documents`) && !location.pathname.startsWith(`${BASE}/agenda`) && <button
         type="button"
         onClick={() => setSheet("add")}
         aria-label="Ajouter"
@@ -203,7 +209,11 @@ export default function AdminLayout() {
           );
         })}
         <button type="button" onClick={() => setSheet("more")} aria-expanded={sheet === "more"} className={cn("flex h-16 flex-col items-center justify-center gap-1 text-xs", moreActive ? "font-semibold text-primary" : "font-medium text-muted-foreground")}>
-          <Menu size={22} strokeWidth={1.7} aria-hidden="true" />Plus
+          <span className="relative">
+            <Menu size={22} strokeWidth={1.7} aria-hidden="true" />
+            {!!counts?.pendingVisits && <span className="absolute -right-1.5 -top-1 h-2.5 w-2.5 rounded-full bg-accent ring-2 ring-card" aria-label={`${counts.pendingVisits} visites en attente`} />}
+          </span>
+          Plus
         </button>
       </nav>
 
@@ -223,9 +233,9 @@ export default function AdminLayout() {
             ))}
             {sheet === "more" && (
               <>
-                {[nav[2], nav[5]].map((item) => (
+                {[nav[4], nav[3], nav[6]].map((item) => (
                   <Link key={item.path} to={item.path} className={cn("flex min-h-[52px] items-center gap-3 rounded-md px-3 text-[15px] hover:bg-muted", isActive(item.path) ? "font-semibold text-primary" : "font-medium")}>
-                    <item.icon size={20} strokeWidth={1.7} aria-hidden="true" />{item.label}
+                    <item.icon size={20} strokeWidth={1.7} aria-hidden="true" /><span className="flex-1">{item.label}</span><CountBadge count={item.count ?? 0} />
                   </Link>
                 ))}
                 <a href="/" target="_blank" rel="noopener noreferrer" className="flex min-h-[52px] items-center gap-3 rounded-md px-3 text-[15px] font-medium hover:bg-muted">
