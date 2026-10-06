@@ -1,7 +1,7 @@
 import { CalendarClock, Handshake, Home, Megaphone, NotebookPen, Phone, RotateCcw } from "lucide-react";
 
 export type TacheType = "appel" | "rendez-vous" | "visite" | "relance" | "prospection" | "note";
-export type ContactRole = "proprietaire" | "agence" | "client" | "partenaire" | "autre";
+export type ContactRole = "proprietaire" | "intermediaire" | "agence" | "client" | "partenaire" | "autre";
 
 export interface Contact {
   id: string;
@@ -45,6 +45,7 @@ export const TACHE_TYPE = Object.fromEntries(TACHE_TYPES.map((t) => [t.value, t]
 
 export const CONTACT_ROLES: { value: ContactRole; label: string; plural: string; icon: React.ElementType }[] = [
   { value: "proprietaire", label: "Propriétaire", plural: "Propriétaires", icon: Home },
+  { value: "intermediaire", label: "Intermédiaire", plural: "Intermédiaires", icon: Handshake },
   { value: "agence", label: "Agence", plural: "Agences", icon: Handshake },
   { value: "client", label: "Client", plural: "Clients", icon: Phone },
   { value: "partenaire", label: "Partenaire", plural: "Partenaires", icon: Handshake },

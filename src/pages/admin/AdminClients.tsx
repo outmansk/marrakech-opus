@@ -7,6 +7,7 @@ import { useProperties } from "@/hooks/useBiens";
 import type { Bien, BienService } from "@/types/property";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import OptimizedImage from "@/components/ui/OptimizedImage";
+import LeadTasks from "@/components/admin/LeadTasks";
 import { CountBadge } from "@/components/admin/StatusBadge";
 import { EmptyState, PageHeader, SelectField } from "@/components/admin/ui";
 import { btn, field } from "@/components/admin/styles";
@@ -399,6 +400,8 @@ function ClientSheet({ lead, form, properties, onClose, onEdit, onCancelEdit, on
                   </span>
                 </div>
               </section>
+
+              <LeadTasks leadId={lead.id} />
 
               <section className="flex flex-col gap-2.5">
                 <div className="flex items-center justify-between">

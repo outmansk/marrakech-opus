@@ -240,7 +240,7 @@ CREATE TABLE IF NOT EXISTS public.contacts (
   telephone TEXT CHECK (telephone IS NULL OR length(telephone) <= 40),
   email TEXT CHECK (email IS NULL OR length(email) <= 254),
   role TEXT NOT NULL DEFAULT 'proprietaire'
-    CHECK (role IN ('proprietaire', 'agence', 'client', 'partenaire', 'autre')),
+    CHECK (role IN ('proprietaire', 'intermediaire', 'agence', 'client', 'partenaire', 'autre')),
   societe TEXT CHECK (societe IS NULL OR length(societe) <= 120),
   bien_id UUID REFERENCES public.properties_v2(id) ON DELETE SET NULL,
   notes TEXT CHECK (notes IS NULL OR length(notes) <= 5000),

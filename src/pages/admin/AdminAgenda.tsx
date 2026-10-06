@@ -106,8 +106,14 @@ export default function AdminAgenda() {
       changed = true;
     }
     if (searchParams.get("contact") === "new") {
-      setContactForm({ values: contactToForm() });
-      next.delete("contact");
+      setContactForm({ values: contactToForm({ bien_id: searchParams.get("bien"), role: (searchParams.get("role") as ContactRole) || undefined }) });
+      ["contact", "bien", "role"].forEach((k) => next.delete(k));
+      changed = true;
+    }
+    const contactId = searchParams.get("fiche");
+    if (contactId) {
+      setContactSheet(contactId);
+      next.delete("fiche");
       changed = true;
     }
     const editId = searchParams.get("edit");

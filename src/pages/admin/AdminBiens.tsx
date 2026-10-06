@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { Home, Pencil, Plus, Search, SlidersHorizontal, X } from "lucide-react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Home, Pencil, Phone, Plus, Search, SlidersHorizontal, UserPlus, X } from "lucide-react";
+import { useContacts } from "@/hooks/useAgenda";
+import { CONTACT_ROLE, type Contact } from "@/lib/agenda";
+import { telHref } from "@/lib/contact";
 import { supabase } from "@/lib/supabase";
 import { useDeleteProperty, useProperties, useSetStatut } from "@/hooks/useBiens";
 import { BienForm } from "@/components/admin/BienForm";
@@ -27,6 +30,35 @@ function Thumb({ bien, className }: { bien: Bien; className: string }) {
   );
 }
 
+const BASE = "/manage-xk92p";
+
+/** Propriétaire(s) et intermédiaire(s) liés au bien — visibles uniquement dans l'admin. */
+function OwnerLine({ bien, contacts }: { bien: Bien; contacts: Contact[] }) {
+  if (!contacts.length) {
+    return (
+      <Link to={`${BASE}/agenda?vue=contacts&contact=new&role=proprietaire&bien=${bien.id}`} onClick={(e) => e.stopPropagation()}
+        className="inline-flex min-h-9 items-center gap-1.5 self-start text-[13px] font-semibold text-accent hover:underline">
+        <UserPlus size={15} aria-hidden="true" />Ajouter le propriétaire
+      </Link>
+    );
+  }
+  return (
+    <span className="flex flex-col gap-1">
+      {contacts.map((c) => (
+        <span key={c.id} className="flex items-center gap-2 text-[13px]">
+          <Link to={`${BASE}/agenda?vue=contacts&fiche=${c.id}`} onClick={(e) => e.stopPropagation()} className="min-w-0 truncate hover:underline">
+            <span className="font-semibold">{CONTACT_ROLE[c.role]?.label ?? "Contact"} :</span> {c.nom}{c.telephone ? ` · ${c.telephone}` : ""}
+          </Link>
+          {c.telephone && (
+            <a href={telHref(c.telephone)} onClick={(e) => e.stopPropagation()} aria-label={`Appeler ${c.nom}`}
+              className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-primary-soft text-[hsl(72_19%_23%)]"><Phone size={15} aria-hidden="true" /></a>
+          )}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 function useBienActions(onEdit: (bien: Bien) => void) {
   const setStatut = useSetStatut();
   const remove = useDeleteProperty();
@@ -34,7 +66,10 @@ function useBienActions(onEdit: (bien: Bien) => void) {
 
   const toggleLabel = (bien: Bien) => (bien.statut === "publie" ? "Dépublier" : bien.statut === "vendu-loue" ? "Republier" : "Publier");
   const toggle = (bien: Bien) => setStatut.mutate({ id: bien.id, statut: bien.statut === "publie" ? "brouillon" : "publie" });
-  const menu = (bien: Bien) => [
+  const navigate = useNavigate();
+  const menu = (bien: Bien, owner?: Contact) => [
+    { label: "Ajouter un propriétaire / intermédiaire", onSelect: () => navigate(`${BASE}/agenda?vue=contacts&contact=new&role=proprietaire&bien=${bien.id}`) },
+    { label: owner ? `Planifier un appel à ${owner.nom}` : "Planifier une tâche pour ce bien", onSelect: () => navigate(`${BASE}/agenda?new=1&type=appel&bien=${bien.id}${owner ? `&avec=${owner.id}` : ""}`) },
     bien.statut === "vendu-loue"
       ? { label: "Remettre en brouillon", onSelect: () => setStatut.mutate({ id: bien.id, statut: "brouillon" }) }
       : { label: "Marquer « Déjà loué / vendu »", onSelect: () => setStatut.mutate({ id: bien.id, statut: "vendu-loue" }) },
@@ -56,6 +91,17 @@ function useBienActions(onEdit: (bien: Bien) => void) {
 
 export default function AdminBiens() {
   const { data: biens = [], isLoading, error, refetch } = useProperties();
+  // Le carnet peut ne pas être encore activé : aucun propriétaire affiché dans ce cas.
+  const { data: contacts = [] } = useContacts();
+  const ownersByBien = useMemo(() => {
+    const map = new Map<string, Contact[]>();
+    const rank = (c: Contact) => (c.role === "proprietaire" ? 0 : c.role === "intermediaire" ? 1 : 2);
+    for (const c of [...contacts].sort((a, b) => rank(a) - rank(b))) {
+      if (!c.bien_id) continue;
+      map.set(c.bien_id, [...(map.get(c.bien_id) ?? []), c]);
+    }
+    return map;
+  }, [contacts]);
   const [search, setSearch] = useState("");
   const [statut, setStatut] = useState<StatutFilter>("all");
   const [type, setType] = useState("all");
@@ -100,8 +146,8 @@ export default function AdminBiens() {
       (type === "all" || b.type === type) &&
       (service === "all" || (b.services ?? []).includes(service as Bien["services"][number])) &&
       (quartier === "all" || b.quartier === quartier) &&
-      (!needle || [b.titre, b.reference, b.quartier].filter(Boolean).join(" ").toLocaleLowerCase("fr").includes(needle)));
-  }, [biens, search, statut, type, service, quartier]);
+      (!needle || [b.titre, b.reference, b.quartier, ...(ownersByBien.get(b.id) ?? []).flatMap((c) => [c.nom, c.telephone])].filter(Boolean).join(" ").toLocaleLowerCase("fr").includes(needle)));
+  }, [biens, search, statut, type, service, quartier, ownersByBien]);
 
   const extraFilters = [type, service, quartier].filter((v) => v !== "all").length;
   const clearAll = () => { setSearch(""); setStatut("all"); setType("all"); setService("all"); setQuartier("all"); };
@@ -120,7 +166,7 @@ export default function AdminBiens() {
         <div className="flex gap-2">
           <label className="flex h-11 min-w-0 flex-1 items-center gap-2 rounded-md border border-input bg-white px-3 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/25">
             <Search size={18} className="shrink-0 text-muted-foreground" aria-hidden="true" />
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Titre, référence ou quartier…" aria-label="Rechercher un bien" className="min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-[hsl(36_8%_50%)] lg:text-sm" />
+            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Titre, référence, quartier ou propriétaire…" aria-label="Rechercher un bien" className="min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-[hsl(36_8%_50%)] lg:text-sm" />
             {search && <button type="button" onClick={() => setSearch("")} aria-label="Effacer la recherche" className="grid h-8 w-8 place-items-center rounded text-muted-foreground"><X size={16} aria-hidden="true" /></button>}
           </label>
           <button type="button" onClick={() => setShowFilters((v) => !v)} aria-expanded={showFilters} className={cn(btn.outline, "px-3 lg:hidden")}>
@@ -191,10 +237,11 @@ export default function AdminBiens() {
                     <span className="text-sm font-semibold">{mainPrice(bien)}</span>
                   </span>
                 </button>
+                <div className="px-3 pb-2"><OwnerLine bien={bien} contacts={ownersByBien.get(bien.id) ?? []} /></div>
                 <div className="flex gap-2 px-3 pb-3">
                   <button type="button" onClick={() => handleEdit(bien)} className={cn(btn.soft, "flex-1 px-2")}><Pencil size={16} aria-hidden="true" />Modifier</button>
                   <button type="button" onClick={() => actions.toggle(bien)} disabled={actions.busy} className={cn(btn.outline, "flex-1 px-2")}>{actions.toggleLabel(bien)}</button>
-                  <ActionMenu label={`Plus d’actions pour ${bien.titre}`} items={actions.menu(bien)} />
+                  <ActionMenu label={`Plus d’actions pour ${bien.titre}`} items={actions.menu(bien, ownersByBien.get(bien.id)?.[0])} />
                 </div>
               </li>
             ))}
@@ -225,6 +272,7 @@ export default function AdminBiens() {
                         <span className="text-[15px] font-semibold leading-snug hover:text-primary">{bien.titre}</span>
                         <span className="text-[13px] text-muted-foreground">{bien.quartier || "Marrakech"}</span>
                       </button>
+                      <div className="mt-1.5"><OwnerLine bien={bien} contacts={ownersByBien.get(bien.id) ?? []} /></div>
                     </td>
                     <td className="px-3 py-3 text-sm font-medium">{TYPE_LABELS[bien.type] ?? bien.type}</td>
                     <td className="px-3 py-3">
@@ -238,7 +286,7 @@ export default function AdminBiens() {
                       <span className="flex justify-end gap-1.5">
                         <button type="button" onClick={() => handleEdit(bien)} className={cn(btn.soft, "h-10 px-3 text-[13px]")}>Modifier</button>
                         <button type="button" onClick={() => actions.toggle(bien)} disabled={actions.busy} className={cn(btn.outline, "h-10 px-3 text-[13px]")}>{actions.toggleLabel(bien)}</button>
-                        <ActionMenu label={`Plus d’actions pour ${bien.titre}`} items={actions.menu(bien)} />
+                        <ActionMenu label={`Plus d’actions pour ${bien.titre}`} items={actions.menu(bien, ownersByBien.get(bien.id)?.[0])} />
                       </span>
                     </td>
                   </tr>
