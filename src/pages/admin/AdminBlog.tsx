@@ -1,340 +1,165 @@
-import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
-import { useArticles, useDeleteArticle, useToggleArticleStatus } from '@/hooks/useArticles';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ArticleForm } from '@/components/admin/ArticleForm';
-import { Article } from '@/types/article';
-import { 
-  Plus, 
-  Search, 
-  Edit, 
-  Trash2, 
-  ExternalLink, 
-  FileText,
-  Eye,
-  EyeOff,
-  LayoutGrid
-} from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import OptimizedImage from '@/components/ui/OptimizedImage';
-import { cn } from '@/lib/utils';
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { FileText, Pencil, Plus, Search, X } from "lucide-react";
+import { useArticles, useDeleteArticle, useToggleArticleStatus } from "@/hooks/useArticles";
+import { ArticleForm } from "@/components/admin/ArticleForm";
+import type { Article } from "@/types/article";
+import OptimizedImage from "@/components/ui/OptimizedImage";
+import StatusBadge from "@/components/admin/StatusBadge";
+import { ActionMenu, Chips, ConfirmDialog, EmptyState, PageHeader, SelectField } from "@/components/admin/ui";
+import { btn } from "@/components/admin/styles";
+import { ARTICLE_CATEGORY_LABELS } from "@/lib/labels";
+import { cn } from "@/lib/utils";
+
+type StatusFilter = "all" | "published" | "draft";
+
+const dateFr = (iso: string) => new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
+const categoryLabel = (c: string | null | undefined) => (c ? ARTICLE_CATEGORY_LABELS[c as keyof typeof ARTICLE_CATEGORY_LABELS] ?? c : "—");
+
+function Cover({ article, className }: { article: Article; className: string }) {
+  return (
+    <span className={cn("block shrink-0 overflow-hidden bg-[hsl(38_30%_91%)]", className)}>
+      {article.image_url ? <OptimizedImage src={article.image_url} alt="" size="thumb" className="h-full w-full object-cover" wrapperClassName="h-full w-full" /> : <FileText size={18} className="m-auto mt-[30%] text-muted-foreground" aria-hidden="true" />}
+    </span>
+  );
+}
 
 export default function AdminBlog() {
-  const { data: articles, isLoading } = useArticles();
+  const { data: articles = [], isLoading } = useArticles();
   const deleteArticle = useDeleteArticle();
   const toggleStatus = useToggleArticleStatus();
-  
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [editingArticle, setEditingArticle] = useState<Article | undefined>(undefined);
 
-  const filteredArticles = articles?.filter(article => {
-    const searchLower = (searchTerm || '').toLowerCase();
-    return (
-      (article.title?.toLowerCase() || '').includes(searchLower) ||
-      (article.category?.toLowerCase() || '').includes(searchLower)
-    );
-  }) || [];
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("all");
+  const [status, setStatus] = useState<StatusFilter>("all");
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [editing, setEditing] = useState<Article | undefined>(undefined);
+  const [toDelete, setToDelete] = useState<Article | null>(null);
 
-  const handleEdit = (article: Article) => {
-    setEditingArticle(article);
-    setIsSheetOpen(true);
-  };
+  const openNew = () => { setEditing(undefined); setSheetOpen(true); };
+  const openEdit = (a: Article) => { setEditing(a); setSheetOpen(true); };
 
   // Liens directs : ?new=1 ou ?edit=<id>
   const [searchParams, setSearchParams] = useSearchParams();
   useEffect(() => {
-    const editId = searchParams.get('edit');
-    if (searchParams.get('new') === '1') {
-      setEditingArticle(undefined);
-      setIsSheetOpen(true);
+    const editId = searchParams.get("edit");
+    if (searchParams.get("new") === "1") {
+      openNew();
       setSearchParams({}, { replace: true });
-    } else if (editId && articles) {
-      const article = articles.find((a) => a.id === editId);
-      if (article) handleEdit(article);
+    } else if (editId && !isLoading) {
+      const a = articles.find((x) => x.id === editId);
+      if (a) openEdit(a);
       setSearchParams({}, { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, articles]);
+  }, [searchParams, isLoading, articles]);
 
-  const handleClose = () => {
-    setEditingArticle(undefined);
-    setIsSheetOpen(false);
-  };
+  const visible = useMemo(() => {
+    const needle = search.trim().toLocaleLowerCase("fr");
+    return articles.filter((a) =>
+      (!needle || `${a.title} ${a.slug}`.toLocaleLowerCase("fr").includes(needle)) &&
+      (category === "all" || a.category === category) &&
+      (status === "all" || (status === "published" ? a.est_publie : !a.est_publie)));
+  }, [articles, search, category, status]);
 
-  const handleToggleStatus = (id: string, currentStatus: boolean) => {
-    toggleStatus.mutate({ id, est_publie: !currentStatus });
-  };
-
-  if (isLoading) {
-    return (
-      <main className="container mx-auto w-full min-w-0 px-3 sm:px-6 md:px-10 py-4 sm:py-6 md:py-8 space-y-5 md:space-y-6 flex-1">
-        <div className="flex justify-between items-center">
-          <div className="h-10 w-48 rounded-lg shimmer-admin" />
-          <div className="h-10 w-32 rounded-lg shimmer-admin" />
-        </div>
-        <div className="admin-card rounded-xl p-4 space-y-4">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-16 w-full rounded-lg shimmer-admin" />
-          ))}
-        </div>
-      </main>
-    );
-  }
+  const published = articles.filter((a) => a.est_publie).length;
+  const menu = (a: Article) => [
+    { label: "Voir sur le site", onSelect: () => undefined, href: `/blog/${a.slug}` },
+    { label: "Supprimer…", danger: true, onSelect: () => setToDelete(a) },
+  ];
+  const toggle = (a: Article) => toggleStatus.mutate({ id: a.id, est_publie: !a.est_publie });
 
   return (
-    <main className="container mx-auto w-full min-w-0 px-3 sm:px-6 md:px-10 py-4 sm:py-6 md:py-8 space-y-5 md:space-y-6 flex-1">
-      {/* ── Header ── */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5 mb-1">
-            <div className="w-8 h-8 rounded-lg bg-accent/8 flex items-center justify-center">
-              <FileText className="h-4 w-4 text-accent" strokeWidth={1.5} />
-            </div>
-            <h2 className="font-serif text-xl sm:text-2xl md:text-3xl">Gestion du Blog</h2>
+    <div className="mx-auto flex max-w-[1240px] flex-col gap-4 px-4 py-4 lg:gap-5 lg:px-10 lg:py-8">
+      <ArticleForm open={sheetOpen} onOpenChange={setSheetOpen} article={editing} />
+      <ConfirmDialog
+        open={!!toDelete}
+        onOpenChange={(o) => !o && setToDelete(null)}
+        title="Supprimer cet article ?"
+        description={toDelete ? `« ${toDelete.title} » sera supprimé définitivement du blog.` : ""}
+        onConfirm={() => toDelete && deleteArticle.mutate(toDelete.id)}
+      />
+
+      <PageHeader title="Blog" count={isLoading ? undefined : `${published} publiés · ${articles.length - published} brouillons`}>
+        <button type="button" onClick={openNew} className={btn.primary}><Plus size={18} aria-hidden="true" />Nouvel article</button>
+      </PageHeader>
+
+      <div className="flex flex-col gap-2.5 lg:flex-row lg:items-center">
+        <label className="flex h-11 min-w-0 flex-1 items-center gap-2 rounded-md border border-input bg-white px-3 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/25 lg:max-w-[420px]">
+          <Search size={18} className="shrink-0 text-muted-foreground" aria-hidden="true" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Rechercher un article…" aria-label="Rechercher un article" className="min-w-0 flex-1 bg-transparent text-base outline-none lg:text-sm" />
+          {search && <button type="button" onClick={() => setSearch("")} aria-label="Effacer la recherche" className="grid h-8 w-8 place-items-center text-muted-foreground"><X size={16} aria-hidden="true" /></button>}
+        </label>
+        <SelectField label="Catégorie" value={category} onChange={setCategory} className="lg:w-[230px]">
+          <option value="all">Toutes les catégories</option>
+          {Object.entries(ARTICLE_CATEGORY_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+        </SelectField>
+        <Chips<StatusFilter> label="Statut" value={status} onChange={setStatus} options={[{ value: "all", label: "Tous" }, { value: "published", label: "Publiés" }, { value: "draft", label: "Brouillons" }]} />
+      </div>
+
+      {isLoading && <div className="flex flex-col gap-3" aria-busy="true">{[0, 1, 2].map((i) => <div key={i} className="h-24 rounded-[10px] border border-border bg-card" />)}</div>}
+      {!isLoading && articles.length === 0 && <EmptyState title="Aucun article pour l’instant" text="Rédigez votre premier article : il restera en brouillon tant que vous ne le publiez pas." action={<button type="button" onClick={openNew} className={btn.primary}><Plus size={18} aria-hidden="true" />Nouvel article</button>} />}
+      {!isLoading && articles.length > 0 && visible.length === 0 && <EmptyState title="Aucun article ne correspond" text="Essayez un autre mot ou retirez un filtre." />}
+
+      {!isLoading && visible.length > 0 && (
+        <>
+          <ul className="m-0 flex list-none flex-col gap-3 p-0 lg:hidden">
+            {visible.map((a) => (
+              <li key={a.id} className="flex flex-col rounded-[10px] border border-border bg-card">
+                <button type="button" onClick={() => openEdit(a)} className="flex gap-3 p-3 pb-2.5 text-left">
+                  <Cover article={a} className="h-[72px] w-[72px] rounded-md" />
+                  <span className="flex min-w-0 flex-1 flex-col gap-1">
+                    <span className="flex items-center justify-between gap-2"><span className="truncate text-xs font-medium text-muted-foreground">{categoryLabel(a.category)}</span><StatusBadge tone={a.est_publie ? "success" : "warning"}>{a.est_publie ? "Publié" : "Brouillon"}</StatusBadge></span>
+                    <span className="font-serif text-[17px] font-semibold leading-tight">{a.title}</span>
+                    <span className="text-xs text-muted-foreground">{dateFr(a.created_at)}</span>
+                  </span>
+                </button>
+                <div className="flex gap-2 px-3 pb-3">
+                  <button type="button" onClick={() => openEdit(a)} className={cn(btn.soft, "flex-1 px-2")}><Pencil size={16} aria-hidden="true" />Modifier</button>
+                  <button type="button" onClick={() => toggle(a)} className={cn(btn.outline, "flex-1 px-2")}>{a.est_publie ? "Dépublier" : "Publier"}</button>
+                  <ActionMenu label={`Plus d’actions pour ${a.title}`} items={menu(a)} />
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <div className="hidden overflow-hidden rounded-[10px] border border-border bg-card lg:block">
+            <table className="w-full border-collapse text-left">
+              <thead>
+                <tr className="border-b border-border bg-muted text-xs font-semibold tracking-[0.04em] text-muted-foreground">
+                  <th scope="col" className="px-4 py-3 font-semibold">Article</th>
+                  <th scope="col" className="px-3 py-3 font-semibold">Catégorie</th>
+                  <th scope="col" className="px-3 py-3 font-semibold">Statut</th>
+                  <th scope="col" className="px-3 py-3 font-semibold">Date</th>
+                  <th scope="col" className="px-4 py-3 text-right font-semibold">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {visible.map((a) => (
+                  <tr key={a.id} className="border-b border-[hsl(37_32%_90%)] last:border-b-0 hover:bg-[hsl(40_60%_98%)]">
+                    <td className="px-4 py-3">
+                      <button type="button" onClick={() => openEdit(a)} className="flex items-center gap-3 text-left">
+                        <Cover article={a} className="h-12 w-16 rounded" />
+                        <span className="flex flex-col gap-0.5"><span className="text-[15px] font-semibold hover:text-primary">{a.title}</span><span className="text-xs text-muted-foreground">/blog/{a.slug}</span></span>
+                      </button>
+                    </td>
+                    <td className="px-3 py-3 text-sm font-medium">{categoryLabel(a.category)}</td>
+                    <td className="px-3 py-3"><StatusBadge tone={a.est_publie ? "success" : "warning"}>{a.est_publie ? "Publié" : "Brouillon"}</StatusBadge></td>
+                    <td className="whitespace-nowrap px-3 py-3 text-sm text-muted-foreground">{dateFr(a.created_at)}</td>
+                    <td className="px-4 py-3">
+                      <span className="flex justify-end gap-1.5">
+                        <button type="button" onClick={() => openEdit(a)} className={cn(btn.soft, "h-10 px-3 text-[13px]")}>Modifier</button>
+                        <button type="button" onClick={() => toggle(a)} className={cn(btn.outline, "h-10 px-3 text-[13px]")}>{a.est_publie ? "Dépublier" : "Publier"}</button>
+                        <ActionMenu label={`Plus d’actions pour ${a.title}`} items={menu(a)} />
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          <p className="text-sm text-muted-foreground font-light ml-[42px]">
-            Créez et gérez vos articles SEO pour Live In Marrakech.
-          </p>
-        </div>
-
-        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-          <SheetTrigger asChild>
-            <Button
-              onClick={() => setEditingArticle(undefined)}
-              className="w-full md:w-auto h-10 px-5 rounded-lg bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-sm hover:shadow-md transition-all gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              <span className="text-[12px] tracking-wide">Nouvel Article</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent className="w-full max-w-none sm:max-w-2xl overflow-y-auto">
-            <SheetHeader className="mb-6">
-              <SheetTitle>
-                {editingArticle ? 'Modifier l\'article' : 'Créer un nouvel article'}
-              </SheetTitle>
-            </SheetHeader>
-            <ScrollArea className="h-[calc(100vh-120px)] pr-4">
-              <ArticleForm 
-                article={editingArticle} 
-                onSuccess={handleClose} 
-              />
-            </ScrollArea>
-          </SheetContent>
-        </Sheet>
-      </div>
-
-      {/* ── Search ── */}
-      <div className="admin-card rounded-xl p-1.5 flex items-center">
-        <div className="flex items-center gap-2.5 px-3 flex-1">
-          <Search className="h-4 w-4 text-muted-foreground shrink-0" />
-          <Input
-            placeholder="Rechercher par titre ou catégorie..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="border-0 bg-transparent focus-visible:ring-0 shadow-none h-10 text-sm"
-          />
-        </div>
-        {searchTerm && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 rounded-lg mr-1 text-muted-foreground hover:text-foreground"
-            onClick={() => setSearchTerm('')}
-          >
-            <span className="text-xs">✕</span>
-          </Button>
-        )}
-      </div>
-
-      {/* ── Table ── */}
-      <div className="space-y-3 md:hidden">
-        {filteredArticles?.length === 0 ? <div className="admin-card rounded-xl p-8 text-center text-sm text-muted-foreground">Aucun article trouvé.</div> : filteredArticles?.map((article) => (
-          <article key={article.id} className="admin-card min-w-0 space-y-3 rounded-xl p-4">
-            <div className="flex min-w-0 items-start gap-3">
-              <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-muted/40">{article.image_url ? <OptimizedImage src={article.image_url} alt={article.title} size="thumb" className="h-full w-full object-cover" wrapperClassName="h-full w-full" /> : <div className="grid h-full w-full place-items-center"><FileText className="h-5 w-5 text-muted-foreground/40" /></div>}</div>
-              <div className="min-w-0 flex-1"><h3 className="line-clamp-2 font-medium text-sm">{article.title}</h3><p className="mt-1 truncate text-[11px] text-muted-foreground">/{article.slug}</p><p className="mt-1 text-[11px] text-muted-foreground">{new Date(article.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}</p></div>
-            </div>
-            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border/40 pt-3"><Badge variant="outline" className="max-w-full truncate capitalize text-[10px]">{article.category?.replace(/-/g, ' ')}</Badge><span className={cn("rounded-full px-2.5 py-1 text-[9px] font-medium uppercase tracking-wide", article.est_publie ? 'bg-emerald-500/10 text-emerald-600' : 'bg-muted text-muted-foreground')}>{article.est_publie ? "Publié" : "Brouillon"}</span></div>
-            <div className="grid grid-cols-[1fr_1fr_44px_44px] gap-1.5 sm:gap-2">
-              <Button type="button" variant="outline" aria-label={article.est_publie ? "Passer en brouillon" : "Publier l’article"} className="min-h-11 min-w-0 gap-1 px-1.5 text-[10px] sm:gap-1.5 sm:px-2 sm:text-xs" onClick={() => handleToggleStatus(article.id, article.est_publie)}>{article.est_publie ? <EyeOff size={14} /> : <Eye size={14} />}<span className="hidden min-[380px]:inline">{article.est_publie ? "Brouillon" : "Publier"}</span></Button>
-              <Button type="button" variant="outline" aria-label="Modifier l’article" className="min-h-11 min-w-0 gap-1 px-1.5 text-[10px] sm:gap-1.5 sm:px-2 sm:text-xs" onClick={() => handleEdit(article)}><Edit size={14} /><span className="hidden min-[380px]:inline">Modifier</span></Button>
-              <Button type="button" variant="outline" size="icon" className="h-11 w-11" asChild><a aria-label="Voir l’article" href={`/blog/${article.slug}`} target="_blank" rel="noopener noreferrer"><ExternalLink size={15} /></a></Button>
-              <AlertDialog><AlertDialogTrigger asChild><Button type="button" variant="outline" size="icon" className="h-11 w-11 text-destructive" aria-label="Supprimer l’article"><Trash2 size={15} /></Button></AlertDialogTrigger><AlertDialogContent className="w-[calc(100vw-1.5rem)] max-w-lg rounded-xl"><AlertDialogHeader><AlertDialogTitle>Supprimer l'article ?</AlertDialogTitle><AlertDialogDescription>Cette action est irréversible. L'article "{article.title}" sera supprimé de la base de données.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel className="min-h-11 rounded-lg">Annuler</AlertDialogCancel><AlertDialogAction className="min-h-11 rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => deleteArticle.mutate(article.id)}>Supprimer</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
-            </div>
-          </article>
-        ))}
-      </div>
-
-      <div className="hidden md:block admin-card rounded-xl overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/30 hover:bg-muted/30 border-b border-border/40">
-              <TableHead className="w-[450px] text-[10px] tracking-[0.2em] uppercase font-sans py-3.5">Article</TableHead>
-              <TableHead className="text-[10px] tracking-[0.2em] uppercase font-sans">Catégorie</TableHead>
-              <TableHead className="text-[10px] tracking-[0.2em] uppercase font-sans">Statut</TableHead>
-              <TableHead className="text-[10px] tracking-[0.2em] uppercase font-sans">Date</TableHead>
-              <TableHead className="text-right text-[10px] tracking-[0.2em] uppercase font-sans pr-6">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredArticles?.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="h-32 text-center">
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-muted/50 flex items-center justify-center">
-                      <FileText className="h-5 w-5 text-muted-foreground/40" strokeWidth={1.5} />
-                    </div>
-                    <p className="text-muted-foreground font-light text-sm">Aucun article trouvé.</p>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredArticles?.map((article) => (
-                <TableRow key={article.id} className="hover:bg-muted/20 transition-colors group border-b border-border/30">
-                  <TableCell>
-                    <div className="flex items-center space-x-4">
-                      <div className="w-14 h-14 rounded-xl bg-muted/30 flex-shrink-0 overflow-hidden ring-1 ring-border/40 group-hover:ring-primary/20 transition-all">
-                        {article.image_url ? (
-                          <OptimizedImage 
-                            src={article.image_url} 
-                            alt={article.title} 
-                            size="thumb"
-                            className="w-full h-full object-cover"
-                            wrapperClassName="w-full h-full"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <FileText className="w-5 h-5 text-muted-foreground/30" strokeWidth={1.5} />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex flex-col py-1">
-                        <span className="font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">{article.title}</span>
-                        <span className="text-[11px] text-muted-foreground font-mono mt-0.5">/{article.slug}</span>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="capitalize font-medium text-[10px] h-6 px-2.5 rounded-full border-border/40">
-                      {article.category?.replace(/-/g, ' ')}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <span className={cn(
-                      "text-[10px] tracking-widest uppercase px-2.5 py-1 rounded-full inline-flex items-center gap-1.5 font-medium",
-                      article.est_publie
-                        ? 'bg-emerald-500/10 text-emerald-600'
-                        : 'bg-muted text-muted-foreground'
-                    )}>
-                      <span className={cn("w-1.5 h-1.5 rounded-full", article.est_publie ? 'bg-emerald-500' : 'bg-muted-foreground/40')} />
-                      {article.est_publie ? "Publié" : "Brouillon"}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground tabular-nums">
-                    {new Date(article.created_at).toLocaleDateString('fr-FR', {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric'
-                    })}
-                  </TableCell>
-                  <TableCell className="text-right pr-4">
-                    <div className="flex justify-end items-center gap-0.5">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-lg"
-                        onClick={() => handleToggleStatus(article.id, article.est_publie)}
-                        title={article.est_publie ? "Passer en brouillon" : "Publier"}
-                      >
-                        {article.est_publie ? <EyeOff className="h-4 w-4" strokeWidth={1.5} /> : <Eye className="h-4 w-4" strokeWidth={1.5} />}
-                      </Button>
-                      
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-lg"
-                        onClick={() => handleEdit(article)}
-                      >
-                        <Edit className="h-4 w-4" strokeWidth={1.5} />
-                      </Button>
-
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-lg"
-                        asChild
-                      >
-                        <a href={`/blog/${article.slug}`} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-4 w-4" strokeWidth={1.5} />
-                        </a>
-                      </Button>
-
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-8 w-8 text-destructive/50 hover:text-destructive hover:bg-destructive/8 rounded-lg"
-                          >
-                            <Trash2 className="h-4 w-4" strokeWidth={1.5} />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className="rounded-xl">
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Supprimer l'article ?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Cette action est irréversible. L'article "{article.title}" sera définitivement supprimé de la base de données.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel className="rounded-lg">Annuler</AlertDialogCancel>
-                            <AlertDialogAction
-                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-lg"
-                              onClick={() => deleteArticle.mutate(article.id)}
-                            >
-                              Supprimer
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
-    </main>
+        </>
+      )}
+    </div>
   );
 }

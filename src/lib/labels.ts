@@ -90,3 +90,10 @@ export function mainPrice(bien: {
   if (bien.prix_location_courte) return formatPrix(bien.prix_location_courte, bien.devise, "location-courte-duree");
   return formatPrix(bien.prix, bien.devise, bien.services?.[0] ?? null);
 }
+
+export const ARTICLE_CATEGORY_LABELS: Record<"location-longue-duree" | "sous-location" | "vente" | "terrain", string> = {
+  "location-longue-duree": "Location longue durée",
+  "sous-location": "Sous-location",
+  vente: "Vente",
+  terrain: "Terrain",
+};

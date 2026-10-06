@@ -96,12 +96,13 @@
     "blog": "Blog",
     "visites": "Solicitudes de visita",
     "ajouter_bien": "+ Añadir propiedad",
-    "generer_article": "✨ Generar artículo",
+    "generer_article": "Generar artículo",
     "stats": {
       "total_biens": "Total de propiedades",
       "biens_publies": "Propiedades publicadas",
       "total_articles": "Total de artículos",
-      "articles_publies": "Artículos publicados"
+      "articles_publies": "Artículos publicados",
+      "visites": "Visitas pendientes"
     }
   }
 }

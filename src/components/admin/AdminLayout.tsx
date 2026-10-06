@@ -180,15 +180,15 @@ export default function AdminLayout() {
         </main>
       </div>
 
-      {/* ── Mobile : bouton « + » ── */}
-      <button
+      {/* ── Mobile : bouton « + » (masqué sur les contrats, qui ont leur propre barre) ── */}
+      {!location.pathname.startsWith(`${BASE}/documents`) && <button
         type="button"
         onClick={() => setSheet("add")}
         aria-label="Ajouter"
         className="fixed bottom-[calc(80px+env(safe-area-inset-bottom))] right-4 z-40 grid h-14 w-14 place-items-center rounded-full bg-primary text-white shadow-[0_10px_24px_-10px_rgba(61,70,40,0.7)] lg:hidden"
       >
         <Plus size={24} strokeWidth={2} aria-hidden="true" />
-      </button>
+      </button>}
 
       {/* ── Mobile : barre d'onglets ── */}
       <nav aria-label="Navigation principale" className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] lg:hidden">

@@ -111,12 +111,13 @@
     "blog": "Blog",
     "visites": "Demandes de Visite",
     "ajouter_bien": "+ Ajouter un bien",
-    "generer_article": "✨ Générer un article",
+    "generer_article": "Générer un article",
     "stats": {
       "total_biens": "Total des biens",
       "biens_publies": "Biens publiés",
       "total_articles": "Total des articles",
-      "articles_publies": "Articles publiés"
+      "articles_publies": "Articles publiés",
+      "visites": "Visites en attente"
     }
   }
 }

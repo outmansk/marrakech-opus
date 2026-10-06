@@ -14,6 +14,16 @@ function generateReference(): string {
   return `DP-${year}-${rand}`;
 }
 
+function friendlyError(err: Error) {
+  if (/fetch|network/i.test(err.message)) return "Connexion impossible. Vérifiez internet puis réessayez.";
+  return `L’opération n’a pas abouti. Réessayez. (${err.message})`;
+}
+
+function invalidateAll(queryClient: ReturnType<typeof useQueryClient>) {
+  queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
+  queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
+}
+
 // ─── useProperties ─────────────────────────────────────────────────────────
 export function useProperties(filters?: {
   type?: string;
@@ -67,11 +77,11 @@ export function useCreateProperty() {
       return data as Bien;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
-      toast.success('Bien créé avec succès !');
+      invalidateAll(queryClient);
+      toast.success('Bien enregistré.');
     },
     onError: (err: Error) => {
-      toast.error(`Erreur : ${err.message}`);
+      toast.error(friendlyError(err));
     },
   });
 }
@@ -87,11 +97,11 @@ export function useUpdateProperty() {
       return data as Bien;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
-      toast.success('Bien mis à jour !');
+      invalidateAll(queryClient);
+      toast.success('Modifications enregistrées.');
     },
     onError: (err: Error) => {
-      toast.error(`Erreur : ${err.message}`);
+      toast.error(friendlyError(err));
     },
   });
 }
@@ -106,11 +116,11 @@ export function useDeleteProperty() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
+      invalidateAll(queryClient);
       toast.success('Bien supprimé.');
     },
     onError: (err: Error) => {
-      toast.error(`Erreur : ${err.message}`);
+      toast.error(friendlyError(err));
     },
   });
 }
@@ -127,12 +137,32 @@ export function useToggleStatus() {
       return data as Bien;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
+      invalidateAll(queryClient);
       const label = data.statut === 'publie' ? 'publié' : 'dépublié';
-      toast.success(`Bien ${label} avec succès.`);
+      toast.success(`Bien ${label}.`);
     },
     onError: (err: Error) => {
-      toast.error(`Erreur : ${err.message}`);
+      toast.error(friendlyError(err));
+    },
+  });
+}
+
+// ─── useSetStatut ──────────────────────────────────────────────────────────
+export function useSetStatut() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, statut }: { id: string; statut: Bien['statut'] }) => {
+      const { data, error } = await supabase.from(TABLE).update({ statut }).eq('id', id).select().single();
+      if (error) throw error;
+      return data as Bien;
+    },
+    onSuccess: (data) => {
+      invalidateAll(queryClient);
+      toast.success(data.statut === 'vendu-loue' ? 'Bien marqué « Déjà loué / vendu ».' : data.statut === 'publie' ? 'Bien publié.' : 'Bien passé en brouillon.');
+    },
+    onError: (err: Error) => {
+      toast.error(friendlyError(err));
     },
   });
 }

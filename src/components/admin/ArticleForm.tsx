@@ -1,367 +1,216 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Article } from '@/types/article';
-import { useCreateArticle, useUpdateArticle } from '@/hooks/useArticles';
-import { Button } from '@/components/ui/button';
-import DOMPurify from 'dompurify';
-import type { TablesInsert } from '@/integrations/supabase/types';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Loader2, Save, Code } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { useState } from 'react';
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import DOMPurify from "dompurify";
+import ReactMarkdown from "react-markdown";
+import { toast } from "sonner";
+import { Code, X } from "lucide-react";
+import type { Article } from "@/types/article";
+import type { TablesInsert } from "@/integrations/supabase/types";
+import { useCreateArticle, useUpdateArticle } from "@/hooks/useArticles";
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { btn, field } from "@/components/admin/styles";
+import { ARTICLE_CATEGORY_LABELS } from "@/lib/labels";
+import { cn } from "@/lib/utils";
 
 const articleSchema = z.object({
-  title: z.string().min(5, 'Le titre doit faire au moins 5 caractères').transform(v => DOMPurify.sanitize(v)),
-  slug: z.string().min(3, 'Le slug est requis (ex: mon-bel-article)').transform(v => DOMPurify.sanitize(v)),
-  category: z.enum(['location-longue-duree', 'sous-location', 'vente', 'terrain']),
-  content: z.string().min(20, 'Le contenu est trop court').transform(v => DOMPurify.sanitize(v)),
-  excerpt: z.string().optional().transform(v => v ? DOMPurify.sanitize(v) : v),
-  image_url: z.string().url('URL d\'image invalide').optional().or(z.literal('')).transform(v => v ? DOMPurify.sanitize(v) : v),
-  meta_title: z.string().optional().transform(v => v ? DOMPurify.sanitize(v) : v),
-  meta_description: z.string().optional().transform(v => v ? DOMPurify.sanitize(v) : v),
+  title: z.string().trim().min(5, "Le titre doit faire au moins 5 caractères.").transform((v) => DOMPurify.sanitize(v)),
+  slug: z.string().trim().min(3, "Indiquez l’adresse de l’article (ex. louer-a-marrakech).").regex(/^[a-z0-9-]+$/, "Lettres minuscules, chiffres et tirets uniquement.").transform((v) => DOMPurify.sanitize(v)),
+  category: z.enum(["location-longue-duree", "sous-location", "vente", "terrain"]),
+  content: z.string().min(20, "Le contenu est trop court (20 caractères minimum).").transform((v) => DOMPurify.sanitize(v)),
+  excerpt: z.string().optional().transform((v) => (v ? DOMPurify.sanitize(v) : v)),
+  image_url: z.string().url("Collez une adresse d’image complète (https://…).").optional().or(z.literal("")).transform((v) => (v ? DOMPurify.sanitize(v) : v)),
+  meta_title: z.string().optional().transform((v) => (v ? DOMPurify.sanitize(v) : v)),
+  meta_description: z.string().optional().transform((v) => (v ? DOMPurify.sanitize(v) : v)),
   est_publie: z.boolean().default(false),
 });
-
 type ArticleFormValues = z.infer<typeof articleSchema>;
 
-interface ArticleFormProps {
-  article?: Article;
-  onSuccess: () => void;
+const slugify = (title: string) => title.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+function Counter({ value, max }: { value: number; max: number }) {
+  return <span className={cn("text-xs font-semibold tabular-nums", value > max ? "text-destructive" : value > max * 0.9 ? "text-warning-foreground" : "text-muted-foreground")}>{value} / {max}</span>;
 }
 
-export function ArticleForm({ article, onSuccess }: ArticleFormProps) {
+interface ArticleFormProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  article?: Article;
+}
+
+export function ArticleForm({ open, onOpenChange, article }: ArticleFormProps) {
   const createArticle = useCreateArticle();
   const updateArticle = useUpdateArticle();
-  const [isJsonImportOpen, setIsJsonImportOpen] = useState(false);
-  const [jsonInput, setJsonInput] = useState('');
+  const isPending = createArticle.isPending || updateArticle.isPending;
+  const [tab, setTab] = useState<"write" | "preview">("write");
+  const [jsonOpen, setJsonOpen] = useState(false);
+  const [jsonInput, setJsonInput] = useState("");
+
+  const form = useForm<ArticleFormValues>({ resolver: zodResolver(articleSchema) });
+  const { register, watch, setValue, formState: { errors, isDirty } } = form;
+  const v = watch();
+
+  useEffect(() => {
+    if (!open) return;
+    form.reset({
+      title: article?.title || "", slug: article?.slug || "", category: article?.category || "vente", content: article?.content || "",
+      excerpt: article?.excerpt || "", image_url: article?.image_url || "", meta_title: article?.meta_title || "",
+      meta_description: article?.meta_description || "", est_publie: article?.est_publie || false,
+    });
+    setTab("write");
+  }, [article, open, form]);
+
+  const titleField = register("title");
+  const onSubmit = async (data: ArticleFormValues) => {
+    const payload: TablesInsert<"articles"> = {
+      title: data.title, slug: data.slug, category: data.category, content: data.content,
+      excerpt: data.excerpt || null, image_url: data.image_url || null, meta_title: data.meta_title || null,
+      meta_description: data.meta_description || null, est_publie: data.est_publie ?? false,
+    };
+    if (article) await updateArticle.mutateAsync({ id: article.id, ...payload });
+    else await createArticle.mutateAsync(payload);
+    onOpenChange(false);
+  };
+  const submit = form.handleSubmit(onSubmit, () => { setTab("write"); toast.error("Certains champs sont à compléter."); });
 
   const handleJsonImport = () => {
     try {
-      const parsed = JSON.parse(jsonInput);
-      form.reset({
-        ...form.getValues(),
-        ...parsed
-      });
-      setIsJsonImportOpen(false);
-      setJsonInput('');
-    } catch (e) {
-      alert("JSON invalide. Veuillez vérifier le format.");
+      form.reset({ ...form.getValues(), ...JSON.parse(jsonInput) }, { keepDefaultValues: true });
+      setJsonOpen(false);
+      setJsonInput("");
+      toast.success("Article rempli à partir du code.");
+    } catch {
+      toast.error("Ce code n’est pas un JSON valide. Vérifiez les accolades et les guillemets.");
     }
   };
 
-  const articleTemplate = JSON.stringify({
-    title: "Comment bien vendre son bien à Marrakech",
-    slug: "comment-vendre-bien-marrakech",
-    category: "vente",
-    excerpt: "Découvrez nos conseils d'experts pour vendre rapidement.",
-    content: "Voici les étapes clés pour réussir votre vente immobilière...\n\n1. Estimation\n2. Mise en valeur\n3. Visites",
-    image_url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750",
-    meta_title: "Conseils Vente Immobilière Marrakech | Live In Marrakech",
-    meta_description: "Guide complet pour vendre votre propriété au meilleur prix à Marrakech.",
-    est_publie: true
-  }, null, 2);
-
-  const form = useForm<ArticleFormValues>({
-    resolver: zodResolver(articleSchema),
-    defaultValues: {
-      title: article?.title || '',
-      slug: article?.slug || '',
-      category: article?.category || 'vente',
-      content: article?.content || '',
-      excerpt: article?.excerpt || '',
-      image_url: article?.image_url || '',
-      meta_title: article?.meta_title || '',
-      meta_description: article?.meta_description || '',
-      est_publie: article?.est_publie || false,
-    },
-  });
-
-  // Auto-generate slug from title
-  const onTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const title = e.target.value;
-    form.setValue('title', title);
-    if (!article) { // Only auto-slug for new articles
-      const slug = title
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-z0-9]/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
-      form.setValue('slug', slug);
-    }
+  const requestClose = (next: boolean) => {
+    if (!next && isDirty && !isPending && !window.confirm("Quitter sans enregistrer l’article ?")) return;
+    onOpenChange(next);
   };
 
-  const onSubmit = async (data: ArticleFormValues) => {
-    const payload: TablesInsert<'articles'> = {
-      title: data.title!,
-      slug: data.slug!,
-      category: data.category!,
-      content: data.content!,
-      excerpt: data.excerpt || null,
-      image_url: data.image_url || null,
-      meta_title: data.meta_title || null,
-      meta_description: data.meta_description || null,
-      est_publie: data.est_publie ?? false,
-    };
-
-    if (article) {
-      await updateArticle.mutateAsync({ id: article.id, ...payload });
-    } else {
-      await createArticle.mutateAsync(payload);
-    }
-    onSuccess();
-  };
-
-  const isPending = createArticle.isPending || updateArticle.isPending;
+  const seoTitle = v.meta_title || v.title || "Titre de l’article";
+  const seoDesc = v.meta_description || v.excerpt || "Ajoutez une description pour donner envie de cliquer depuis Google.";
+  const site = typeof window !== "undefined" ? window.location.host : "liveinmarrakech.com";
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pb-10">
-        <div className="flex justify-between items-center bg-muted/20 p-4 rounded-lg border border-border/50">
-          <div>
-            <h3 className="text-sm font-medium">Saisie rapide</h3>
-            <p className="text-xs text-muted-foreground">Importer les données de l'article via un code JSON</p>
+    <Sheet open={open} onOpenChange={requestClose}>
+      <SheetContent side="right" onOpenAutoFocus={(e) => e.preventDefault()} className="flex h-[100dvh] w-full max-w-none flex-col gap-0 border-border bg-background p-0 sm:max-w-none lg:w-[760px] [&>button]:hidden">
+        <header className="flex shrink-0 items-center gap-2 border-b border-border bg-card px-2 py-1.5 lg:px-6 lg:py-3.5">
+          <button type="button" onClick={() => requestClose(false)} aria-label="Fermer" className="grid h-11 w-11 shrink-0 place-items-center rounded-md hover:bg-muted lg:order-last"><X size={22} aria-hidden="true" /></button>
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <SheetTitle className="truncate font-serif text-[19px] font-semibold lg:text-[26px]">{article ? "Modifier l’article" : "Nouvel article"}</SheetTitle>
+            <SheetDescription className={cn("m-0 text-xs font-medium", isDirty ? "text-warning-foreground" : "text-muted-foreground")}>{isDirty ? "Modifications non enregistrées" : v.est_publie ? "Publié sur le blog" : "Brouillon"}</SheetDescription>
           </div>
-          <Dialog open={isJsonImportOpen} onOpenChange={setIsJsonImportOpen}>
-            <Button 
-              type="button"
-              variant="outline" 
-              size="sm" 
-              onClick={() => setIsJsonImportOpen(true)}
-              className="gap-2"
-            >
-              <Code className="h-4 w-4" />
-              Importer JSON
-            </Button>
-            <DialogContent className="sm:max-w-xl">
-              <DialogHeader>
-                <DialogTitle>Importer un Article (JSON)</DialogTitle>
-                <DialogDescription>
-                  Collez le code JSON pour remplir automatiquement les champs de l'article.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <Textarea 
-                  placeholder='{ "title": "...", "content": "...", ... }'
-                  className="font-mono text-xs min-h-[300px]"
-                  value={jsonInput}
-                  onChange={(e) => setJsonInput(e.target.value)}
-                />
-                <div className="bg-muted p-2 rounded text-[10px] text-muted-foreground overflow-auto max-h-32">
-                  <strong>Format attendu :</strong>
-                  <pre className="mt-1">{articleTemplate}</pre>
+          <button type="button" onClick={() => setJsonOpen(true)} className={cn(btn.outline, "h-10 px-3 text-[13px]")}><Code size={16} aria-hidden="true" /><span className="hidden sm:inline">Importer un code JSON</span><span className="sm:hidden">JSON</span></button>
+        </header>
+
+        <form id="article-form" onSubmit={submit} noValidate className="min-h-0 flex-1 overflow-y-auto px-4 pb-32 pt-5 lg:px-6">
+          <div className="flex flex-col gap-4">
+            <section className="flex flex-col gap-4 rounded-[10px] border border-border bg-card p-4">
+              <label className="flex flex-col gap-1.5">
+                <span className={field.label}>Titre</span>
+                <input {...titleField} onChange={(e) => { void titleField.onChange(e); if (!article) setValue("slug", slugify(e.target.value), { shouldDirty: true }); }} placeholder="Ex. Louer à Marrakech : le guide des quartiers" className={cn(field.input, errors.title && "border-destructive")} />
+                {errors.title && <span role="alert" className="text-xs font-medium text-destructive">{errors.title.message}</span>}
+              </label>
+              <label className="flex flex-col gap-1.5">
+                <span className={field.label}>Adresse de l’article</span>
+                <span className={cn("flex h-11 overflow-hidden rounded-md border bg-white focus-within:border-primary", errors.slug ? "border-destructive" : "border-input")}>
+                  <span className="hidden items-center border-r border-border bg-[hsl(38_45%_95%)] px-3 text-[13px] text-muted-foreground sm:flex">/blog/</span>
+                  <input {...register("slug")} placeholder="louer-a-marrakech" className="min-w-0 flex-1 bg-transparent px-3 text-base outline-none lg:text-sm" />
+                </span>
+                {errors.slug ? <span role="alert" className="text-xs font-medium text-destructive">{errors.slug.message}</span> : <span className={field.help}>Créée automatiquement à partir du titre.</span>}
+              </label>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="flex flex-col gap-1.5">
+                  <span className={field.label}>Catégorie</span>
+                  <select {...register("category")} className={field.select}>
+                    {Object.entries(ARTICLE_CATEGORY_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                  </select>
+                </label>
+                <label className="flex flex-col gap-1.5">
+                  <span className={field.label}>Image de couverture (adresse)</span>
+                  <input {...register("image_url")} placeholder="https://…" className={cn(field.input, errors.image_url && "border-destructive")} />
+                  {errors.image_url && <span role="alert" className="text-xs font-medium text-destructive">{errors.image_url.message}</span>}
+                </label>
+              </div>
+              {v.image_url && !errors.image_url && <img src={v.image_url} alt="Aperçu de la couverture" className="aspect-[16/7] w-full rounded-md object-cover" />}
+              <label className="flex flex-col gap-1.5">
+                <span className={cn(field.label, "flex justify-between")}><span>Résumé</span><Counter value={(v.excerpt ?? "").length} max={200} /></span>
+                <textarea rows={3} {...register("excerpt")} placeholder="Deux phrases affichées dans la liste du blog." className={cn(field.input, "h-auto py-2.5 leading-relaxed")} />
+              </label>
+            </section>
+
+            <section className="flex flex-col gap-3 rounded-[10px] border border-border bg-card p-4">
+              <div className="flex items-center justify-between gap-3">
+                <span className="font-serif text-[22px] font-semibold">Contenu</span>
+                <div role="tablist" aria-label="Contenu" className="grid grid-cols-2 gap-1 rounded-lg bg-[hsl(38_33%_91%)] p-1">
+                  {(["write", "preview"] as const).map((t) => (
+                    <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={cn("h-9 rounded-md px-3 text-[13px]", tab === t ? "bg-white font-semibold shadow-sm" : "font-medium")}>{t === "write" ? "Écrire" : "Aperçu"}</button>
+                  ))}
                 </div>
               </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsJsonImportOpen(false)}>Annuler</Button>
-                <Button onClick={handleJsonImport}>Appliquer</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Titre de l'article</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="Ex: Guide de l'expatriation à Marrakech" 
-                    {...field} 
-                    onChange={onTitleChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="slug"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Slug (URL)</FormLabel>
-                <FormControl>
-                  <Input placeholder="ex: guide-expatriation-marrakech" {...field} />
-                </FormControl>
-                <FormDescription>Utilisé pour l'adresse de l'article</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="category"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Catégorie</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choisir une catégorie" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="location-longue-duree">Location Longue Durée</SelectItem>
-                    <SelectItem value="sous-location">Sous-location</SelectItem>
-                    <SelectItem value="vente">Vente</SelectItem>
-                    <SelectItem value="terrain">Terrain</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="image_url"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>URL de l'image de couverture</FormLabel>
-                <FormControl>
-                  <Input placeholder="https://images.unsplash.com/..." {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <FormField
-          control={form.control}
-          name="excerpt"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Résumé court (Extrait)</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Bref résumé qui apparaîtra sur la liste du blog..." 
-                  className="h-20"
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="content"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Contenu de l'article (Markdown supporté)</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Rédigez votre article ici..." 
-                  className="h-80 font-mono text-sm"
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="bg-muted/30 p-4 rounded-lg space-y-4">
-          <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground border-b pb-2">SEO & Métadonnées</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="meta_title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Meta Title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Titre pour Google" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+              {tab === "write" ? (
+                <>
+                  <textarea rows={16} {...register("content")} placeholder={"## Un intertitre\n\nVotre texte… **gras**, *italique*, listes avec « - »."} className={cn(field.input, "h-auto py-2.5 font-mono text-sm leading-relaxed", errors.content && "border-destructive")} />
+                  {errors.content ? <span role="alert" className="text-xs font-medium text-destructive">{errors.content.message}</span> : <span className={field.help}>Mise en forme Markdown : ## intertitre, **gras**, - liste, [lien](https://…).</span>}
+                </>
+              ) : (
+                <article className="prose-sm min-h-[320px] max-w-none rounded-md border border-border bg-white p-4 text-[15px] leading-relaxed [&_a]:text-primary [&_a]:underline [&_h2]:mb-2 [&_h2]:mt-5 [&_h2]:font-serif [&_h2]:text-2xl [&_h2]:font-semibold [&_h3]:font-serif [&_h3]:text-xl [&_li]:ml-5 [&_li]:list-disc [&_p]:mb-3">
+                  {v.content ? <ReactMarkdown>{v.content}</ReactMarkdown> : <p className="text-muted-foreground">Rien à afficher pour l’instant.</p>}
+                </article>
               )}
-            />
-            <FormField
-              control={form.control}
-              name="meta_description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Meta Description</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Description pour Google" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </div>
+            </section>
 
-        <FormField
-          control={form.control}
-          name="est_publie"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 bg-muted/20">
-              <div className="space-y-0.5">
-                <FormLabel className="text-base font-semibold">Publier l'article</FormLabel>
-                <FormDescription>
-                  L'article sera visible immédiatement par tout le monde.
-                </FormDescription>
+            <section className="flex flex-col gap-4 rounded-[10px] border border-border bg-card p-4">
+              <span className="font-serif text-[22px] font-semibold">Référencement Google</span>
+              <label className="flex flex-col gap-1.5">
+                <span className={cn(field.label, "flex justify-between")}><span>Titre pour Google</span><Counter value={(v.meta_title ?? "").length} max={60} /></span>
+                <input {...register("meta_title")} placeholder={v.title || "Reprend le titre si vide"} className={field.input} />
+              </label>
+              <label className="flex flex-col gap-1.5">
+                <span className={cn(field.label, "flex justify-between")}><span>Description pour Google</span><Counter value={(v.meta_description ?? "").length} max={160} /></span>
+                <textarea rows={3} {...register("meta_description")} placeholder="Reprend le résumé si vide" className={cn(field.input, "h-auto py-2.5 leading-relaxed")} />
+              </label>
+              <div aria-label="Aperçu dans Google" className="flex flex-col gap-1 rounded-md border border-border bg-white p-4">
+                <span className="text-xs text-[#4d5156]">{site} › blog › {v.slug || "adresse-de-l-article"}</span>
+                <span className="line-clamp-1 font-sans text-lg leading-snug text-[#1a0dab]">{seoTitle.length > 60 ? `${seoTitle.slice(0, 57)}…` : seoTitle}</span>
+                <span className="line-clamp-2 text-sm leading-snug text-[#4d5156]">{seoDesc.length > 160 ? `${seoDesc.slice(0, 157)}…` : seoDesc}</span>
               </div>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+            </section>
 
-        <Button type="submit" className="w-full h-12 text-lg" disabled={isPending}>
-          {isPending ? (
-            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-          ) : (
-            <Save className="mr-2 h-5 w-5" />
-          )}
-          {article ? 'Mettre à jour l\'article' : 'Créer l\'article'}
-        </Button>
-      </form>
-    </Form>
+            <label className="flex min-h-[64px] items-center justify-between gap-4 rounded-[10px] border border-border bg-card px-4">
+              <span className="flex flex-col gap-0.5">
+                <span className="text-[15px] font-semibold">Publier l’article</span>
+                <span className="text-[13px] text-muted-foreground">Visible immédiatement sur le blog du site.</span>
+              </span>
+              <Switch checked={!!v.est_publie} onCheckedChange={(c) => setValue("est_publie", c, { shouldDirty: true })} aria-label="Publier l’article" />
+            </label>
+          </div>
+        </form>
+
+        <footer className="absolute inset-x-0 bottom-0 flex gap-2 border-t border-border bg-card px-4 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 lg:justify-end lg:px-6 lg:pb-3.5">
+          <button type="button" onClick={() => requestClose(false)} disabled={isPending} className={cn(btn.outline, "h-12 flex-1 lg:h-11 lg:flex-none")}>Annuler</button>
+          <button type="submit" form="article-form" disabled={isPending} className={cn(btn.primary, "h-12 flex-[2] lg:h-11 lg:flex-none lg:px-6")}>{isPending ? "Enregistrement…" : v.est_publie ? "Enregistrer et publier" : "Enregistrer le brouillon"}</button>
+        </footer>
+      </SheetContent>
+
+      <Dialog open={jsonOpen} onOpenChange={setJsonOpen}>
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-xl rounded-[10px] bg-card">
+          <DialogHeader className="text-left">
+            <DialogTitle className="font-serif text-[22px] font-semibold">Importer un code JSON</DialogTitle>
+            <DialogDescription>Collez le code de l’article pour remplir les champs automatiquement.</DialogDescription>
+          </DialogHeader>
+          <textarea value={jsonInput} onChange={(e) => setJsonInput(e.target.value)} placeholder='{ "title": "…", "slug": "…", "category": "vente", "content": "…" }' className={cn(field.input, "h-auto min-h-[240px] py-2.5 font-mono text-xs")} />
+          <DialogFooter className="flex-col-reverse gap-2 sm:flex-row">
+            <button type="button" onClick={() => setJsonOpen(false)} className={btn.outline}>Annuler</button>
+            <button type="button" onClick={handleJsonImport} className={btn.primary}>Remplir l’article</button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </Sheet>
   );
 }

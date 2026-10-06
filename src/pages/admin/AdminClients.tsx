@@ -1,131 +1,121 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { CalendarClock, Home, Link2, MessageCircle, Pencil, Plus, Search, UsersRound } from "lucide-react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { useSearchParams } from "react-router-dom";
+import { ChevronRight, LayoutGrid, Link2, List, Mail, MessageCircle, Pencil, Phone, Plus, Search, X } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { useProperties } from "@/hooks/useBiens";
 import type { Bien, BienService } from "@/types/property";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/useToast";
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
+import OptimizedImage from "@/components/ui/OptimizedImage";
+import { CountBadge } from "@/components/admin/StatusBadge";
+import { EmptyState, PageHeader, SelectField } from "@/components/admin/ui";
+import { btn, field } from "@/components/admin/styles";
+import { endOfToday } from "@/hooks/useAdminCounts";
+import { LEAD_LABELS, TYPE_LABELS, formatPrix, type LeadStatus } from "@/lib/labels";
+import { telHref, whatsappHref } from "@/lib/contact";
 import { cn } from "@/lib/utils";
 
-type LeadStatus = "nouveau" | "contacte" | "qualification" | "visite" | "negociation" | "converti" | "perdu";
 type Furnishing = "any" | "furnished" | "unfurnished";
+type Transaction = "location-longue-duree" | "location-courte-duree" | "vente";
 type ClientLead = {
-  id: string;
-  name: string;
-  phone: string;
-  email: string | null;
-  source: string;
-  transaction_type: "location-longue-duree" | "location-courte-duree" | "vente";
-  property_types: string[];
-  budget_min: number | null;
-  budget_max: number | null;
-  preferred_areas: string[];
-  bedrooms_min: number | null;
-  furnishing: Furnishing;
-  available_from: string | null;
-  reference_location: string | null;
-  max_distance_km: number | null;
-  profession: string | null;
-  client_profile: string | null;
-  status: LeadStatus;
-  next_follow_up_at: string | null;
-  notes: string | null;
-  created_at: string;
+  id: string; name: string; phone: string; email: string | null; source: string; transaction_type: Transaction;
+  property_types: string[]; budget_min: number | null; budget_max: number | null; preferred_areas: string[];
+  bedrooms_min: number | null; furnishing: Furnishing; available_from: string | null; reference_location: string | null;
+  max_distance_km: number | null; profession: string | null; client_profile: string | null; status: LeadStatus;
+  next_follow_up_at: string | null; notes: string | null; created_at: string;
 };
+type LeadForm = Omit<ClientLead, "id" | "created_at"> & { areas_text: string };
 
-type LeadForm = Omit<ClientLead, "id" | "created_at"> & { areas_text: string; property_types: string[] };
+const STAGES: LeadStatus[] = ["nouveau", "contacte", "qualification", "visite", "negociation", "converti", "perdu"];
+const STAGE_COLOR: Record<LeadStatus, string> = {
+  nouveau: "bg-accent", contacte: "bg-[hsl(39_68%_45%)]", qualification: "bg-bronze", visite: "bg-primary",
+  negociation: "bg-[hsl(72_19%_23%)]", converti: "bg-[hsl(100_32%_36%)]", perdu: "bg-[hsl(2_17%_59%)]",
+};
+const SOURCES = ["WhatsApp", "Facebook", "Instagram", "Mubawab", "Site web", "Recommandation", "Agence partenaire", "Autre"];
+const PROJECTS: Record<Transaction, string> = { "location-longue-duree": "Location longue durée", vente: "Achat", "location-courte-duree": "Séjour courte durée" };
+const FURNISHING: Record<Furnishing, string> = { any: "Indifférent", furnished: "Meublé", unfurnished: "Non meublé" };
 
 const blankLead: LeadForm = {
-  name: "", phone: "", email: "", source: "WhatsApp", transaction_type: "location-longue-duree",
-  property_types: [], budget_min: null, budget_max: null, preferred_areas: [], areas_text: "",
-  bedrooms_min: null, furnishing: "any", available_from: null, reference_location: "", max_distance_km: null,
-  profession: "", client_profile: "", status: "nouveau", next_follow_up_at: null, notes: "",
+  name: "", phone: "", email: "", source: "WhatsApp", transaction_type: "location-longue-duree", property_types: [],
+  budget_min: null, budget_max: null, preferred_areas: [], areas_text: "", bedrooms_min: null, furnishing: "any",
+  available_from: null, reference_location: "", max_distance_km: null, profession: "", client_profile: "",
+  status: "nouveau", next_follow_up_at: null, notes: "",
 };
 
-const statusLabels: Record<LeadStatus, string> = {
-  nouveau: "Nouveau", contacte: "Contacté", qualification: "À qualifier", visite: "Visite prévue",
-  negociation: "Négociation", converti: "Converti", perdu: "Perdu",
-};
+const priceOf = (p: Bien, t: Transaction) => (t === "vente" ? p.prix_vente ?? p.prix : t === "location-courte-duree" ? p.prix_location_courte ?? p.prix : p.prix_location_longue ?? p.prix);
+const priceText = (p: Bien, t: Transaction) => formatPrix(priceOf(p, t), p.devise, t);
+const fmt = (n: number) => new Intl.NumberFormat("fr-FR").format(n);
 
-const statusStyles: Record<LeadStatus, string> = {
-  nouveau: "bg-blue-500/10 text-blue-700", contacte: "bg-violet-500/10 text-violet-700",
-  qualification: "bg-amber-500/10 text-amber-700", visite: "bg-emerald-500/10 text-emerald-700",
-  negociation: "bg-orange-500/10 text-orange-700", converti: "bg-green-600/10 text-green-700",
-  perdu: "bg-muted text-muted-foreground",
-};
-
-const typeLabels: Record<string, string> = {
-  villa: "Villa", appartement: "Appartement", riad: "Riad", maison: "Maison", terrain: "Terrain",
-};
-
-const priceOf = (property: Bien, transaction: ClientLead["transaction_type"]) =>
-  transaction === "vente" ? (property.prix_vente ?? property.prix)
-    : transaction === "location-courte-duree" ? (property.prix_location_courte ?? property.prix)
-      : (property.prix_location_longue ?? property.prix);
+function budgetText(l: Pick<ClientLead, "budget_min" | "budget_max">) {
+  if (l.budget_min && l.budget_max) return `${fmt(l.budget_min)} – ${fmt(l.budget_max)} MAD`;
+  if (l.budget_max) return `jusqu’à ${fmt(l.budget_max)} MAD`;
+  if (l.budget_min) return `dès ${fmt(l.budget_min)} MAD`;
+  return null;
+}
 
 function matchingProperties(lead: ClientLead, properties: Bien[]) {
   const service = lead.transaction_type as BienService;
   return properties
-    .filter((property) => property.statut === "publie")
-    .filter((property) => property.services?.includes(service) || property.service === service)
-    .filter((property) => !lead.property_types.length || lead.property_types.includes(property.type))
-    .filter((property) => {
-      const price = priceOf(property, lead.transaction_type);
+    .filter((p) => p.statut === "publie")
+    .filter((p) => p.services?.includes(service) || p.service === service)
+    .filter((p) => !lead.property_types.length || lead.property_types.includes(p.type))
+    .filter((p) => {
+      const price = priceOf(p, lead.transaction_type);
       return price != null && (lead.budget_min == null || price >= lead.budget_min) && (lead.budget_max == null || price <= lead.budget_max);
     })
-    .filter((property) => lead.bedrooms_min == null || (property.chambres ?? 0) >= lead.bedrooms_min)
-    .filter((property) => !lead.preferred_areas.length || lead.preferred_areas.some((area) => property.quartier?.toLocaleLowerCase().includes(area.toLocaleLowerCase())))
-    .filter((property) => lead.furnishing === "any" || (property.equipements ?? []).some((item) => item.toLocaleLowerCase() === "meublé") === (lead.furnishing === "furnished"))
-    .slice(0, 5);
+    .filter((p) => lead.bedrooms_min == null || (p.chambres ?? 0) >= lead.bedrooms_min)
+    .filter((p) => !lead.preferred_areas.length || lead.preferred_areas.some((a) => p.quartier?.toLocaleLowerCase().includes(a.toLocaleLowerCase())))
+    .filter((p) => lead.furnishing === "any" || (p.equipements ?? []).some((e) => e.toLocaleLowerCase() === "meublé") === (lead.furnishing === "furnished"))
+    .slice(0, 6);
 }
 
-const fieldClass = "space-y-1.5";
-const labelClass = "text-xs font-medium text-muted-foreground";
+const isDue = (l: ClientLead) => !!l.next_follow_up_at && new Date(l.next_follow_up_at) <= endOfToday() && !["converti", "perdu"].includes(l.status);
+const initials = (name: string) => name.split(/\s+/).filter(Boolean).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
+function followUpLabel(iso: string | null) {
+  if (!iso) return null;
+  const d = new Date(iso);
+  const today = new Date();
+  if (d.toDateString() === today.toDateString()) return "Aujourd’hui";
+  if (d < today) return `En retard · ${d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}`;
+  return d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+}
+
+function StageTag({ status, className }: { status: LeadStatus; className?: string }) {
+  return (
+    <span className={cn("inline-flex h-6 shrink-0 items-center gap-1.5 rounded border border-border bg-white px-2 text-xs font-semibold", className)}>
+      <span className={cn("h-2 w-2 rounded-sm", STAGE_COLOR[status])} aria-hidden="true" />{LEAD_LABELS[status]}
+    </span>
+  );
+}
+
+// ─── Page ──────────────────────────────────────────────────────────────────────
 export default function AdminClients() {
   const [leads, setLeads] = useState<ClientLead[]>([]);
   const [loading, setLoading] = useState(true);
+  const [crmMissing, setCrmMissing] = useState(false);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [editingLead, setEditingLead] = useState<ClientLead | null>(null);
-  const [form, setForm] = useState<LeadForm>(blankLead);
-  const { toast } = useToast();
+  const [stage, setStage] = useState<LeadStatus | "all">("all");
+  const [dueOnly, setDueOnly] = useState(false);
+  const [view, setView] = useState<"kanban" | "list">("kanban");
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [editing, setEditing] = useState<LeadForm | null>(null);
+  const [dragId, setDragId] = useState<string | null>(null);
   const { data: properties = [] } = useProperties();
 
   const fetchLeads = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase.from("client_leads")
-      .select("*").order("created_at", { ascending: false });
-    if (error) toast({ title: "CRM non disponible", description: "Lance la migration Supabase ajoutée au projet pour activer les dossiers clients.", variant: "destructive" });
-    setLeads((data ?? []) as ClientLead[]);
+    const { data, error } = await supabase.from("client_leads").select("*").order("created_at", { ascending: false });
+    setCrmMissing(!!error);
+    setLeads(((data ?? []) as ClientLead[]).map((l) => ({ ...l, property_types: l.property_types ?? [], preferred_areas: l.preferred_areas ?? [] })));
     setLoading(false);
-  }, [toast]);
-
+  }, []);
   useEffect(() => { void fetchLeads(); }, [fetchLeads]);
 
-  const filteredLeads = useMemo(() => leads.filter((lead) => {
-    const needle = search.trim().toLocaleLowerCase();
-    const matchesSearch = !needle || `${lead.name} ${lead.phone} ${lead.email ?? ""} ${lead.preferred_areas.join(" ")}`.toLocaleLowerCase().includes(needle);
-    return matchesSearch && (statusFilter === "all" || lead.status === statusFilter);
-  }), [leads, search, statusFilter]);
-
-  const followUps = leads.filter((lead) => lead.next_follow_up_at && new Date(lead.next_follow_up_at) <= new Date() && !["converti", "perdu"].includes(lead.status)).length;
-
-  const openNew = () => { setEditingLead(null); setForm(blankLead); setDialogOpen(true); };
-  const openEdit = (lead: ClientLead) => {
-    setEditingLead(lead);
-    setForm({ ...lead, email: lead.email ?? "", property_types: lead.property_types ?? [], preferred_areas: lead.preferred_areas ?? [], areas_text: (lead.preferred_areas ?? []).join(", "), notes: lead.notes ?? "", profession: lead.profession ?? "", client_profile: lead.client_profile ?? "", reference_location: lead.reference_location ?? "" });
-    setDialogOpen(true);
-  };
+  const opened = leads.find((l) => l.id === openId) ?? null;
+  const openNew = () => { setOpenId(null); setEditing({ ...blankLead }); };
+  const openLead = (lead: ClientLead) => { setEditing(null); setOpenId(lead.id); };
+  const startEdit = (lead: ClientLead) => setEditing({ ...lead, email: lead.email ?? "", areas_text: lead.preferred_areas.join(", "), notes: lead.notes ?? "", profession: lead.profession ?? "", client_profile: lead.client_profile ?? "", reference_location: lead.reference_location ?? "" });
 
   // Liens directs : ?new=1 ou ?edit=<id>
   const [searchParams, setSearchParams] = useSearchParams();
@@ -135,180 +125,407 @@ export default function AdminClients() {
       openNew();
       setSearchParams({}, { replace: true });
     } else if (editId && !loading) {
-      const lead = leads.find((l) => l.id === editId);
-      if (lead) openEdit(lead);
+      if (leads.some((l) => l.id === editId)) setOpenId(editId);
       setSearchParams({}, { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, loading, leads]);
 
-  const saveLead = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setSaving(true);
-    const { areas_text, id: _id, created_at: _createdAt, ...values } = form as LeadForm & Partial<ClientLead>;
+  const filtered = useMemo(() => leads.filter((l) => {
+    const needle = search.trim().toLocaleLowerCase("fr");
+    const hay = `${l.name} ${l.phone} ${l.email ?? ""} ${l.preferred_areas.join(" ")}`.toLocaleLowerCase("fr");
+    return (!needle || hay.includes(needle)) && (stage === "all" || l.status === stage) && (!dueOnly || isDue(l));
+  }), [leads, search, stage, dueOnly]);
+  const dueCount = leads.filter(isDue).length;
+
+  const patchLead = async (lead: ClientLead, patch: Partial<ClientLead>, message?: string) => {
+    const before = leads;
+    setLeads((list) => list.map((l) => (l.id === lead.id ? { ...l, ...patch } : l)));
+    const { error } = await supabase.from("client_leads").update(patch).eq("id", lead.id);
+    if (error) {
+      setLeads(before);
+      toast.error("La modification n’a pas été enregistrée. Réessayez.");
+    } else if (message) toast.success(message);
+  };
+
+  const saveLead = async (form: LeadForm) => {
+    const { areas_text, ...values } = form;
     const payload = {
       ...values,
-      email: values.email || null,
-      preferred_areas: areas_text.split(",").map((area) => area.trim()).filter(Boolean),
-      budget_min: values.budget_min || null,
-      budget_max: values.budget_max || null,
-      bedrooms_min: values.bedrooms_min ?? null,
-      max_distance_km: values.max_distance_km || null,
-      available_from: values.available_from || null,
-      next_follow_up_at: values.next_follow_up_at || null,
-      profession: values.profession || null,
-      client_profile: values.client_profile || null,
-      reference_location: values.reference_location || null,
-      notes: values.notes || null,
+      email: values.email || null, preferred_areas: areas_text.split(",").map((a) => a.trim()).filter(Boolean),
+      budget_min: values.budget_min || null, budget_max: values.budget_max || null, bedrooms_min: values.bedrooms_min ?? null,
+      max_distance_km: values.max_distance_km || null, available_from: values.available_from || null,
+      next_follow_up_at: values.next_follow_up_at || null, profession: values.profession || null,
+      client_profile: values.client_profile || null, reference_location: values.reference_location || null, notes: values.notes || null,
     };
-    const query = supabase.from("client_leads");
-    const result = editingLead
-      ? await query.update(payload).eq("id", editingLead.id)
-      : await query.insert({ ...payload, created_by: (await supabase.auth.getUser()).data.user?.id });
-    setSaving(false);
+    const existing = openId ? leads.find((l) => l.id === openId) : null;
+    const result = existing
+      ? await supabase.from("client_leads").update(payload).eq("id", existing.id).select().single()
+      : await supabase.from("client_leads").insert({ ...payload, created_by: (await supabase.auth.getUser()).data.user?.id }).select().single();
     if (result.error) {
-      toast({ title: "Enregistrement impossible", description: result.error.message, variant: "destructive" });
-      return;
+      toast.error("Le dossier n’a pas pu être enregistré. Vérifiez le nom et le téléphone, puis réessayez.");
+      return false;
     }
-    toast({ title: editingLead ? "Dossier modifié" : "Client ajouté", description: "Les informations ont été enregistrées." });
-    setDialogOpen(false);
+    toast.success(existing ? "Dossier enregistré." : "Client ajouté.");
     await fetchLeads();
-  };
-
-  const changeStatus = async (lead: ClientLead, status: LeadStatus) => {
-    const { error } = await supabase.from("client_leads").update({ status }).eq("id", lead.id);
-    if (error) toast({ title: "Mise à jour impossible", description: error.message, variant: "destructive" });
-    else setLeads((previous) => previous.map((item) => item.id === lead.id ? { ...item, status } : item));
-  };
-
-  const shareMatches = (lead: ClientLead, matches: Bien[]) => {
-    const base = window.location.origin;
-    const intro = `Bonjour ${lead.name.split(" ")[0]}, voici des biens qui correspondent à votre recherche :`;
-    const listings = matches.map((property) => {
-      const price = priceOf(property, lead.transaction_type);
-      const details = [property.titre, property.quartier, property.chambres ? `${property.chambres} chambres` : null, price ? `${price.toLocaleString("fr-FR")} ${property.devise}` : null].filter(Boolean).join(" · ");
-      return `• ${details}\n${base}/bien/${property.id}`;
-    }).join("\n\n");
-    const message = matches.length ? `${intro}\n\n${listings}\n\nDites-moi lesquels vous intéressent pour organiser une visite.` : `Bonjour ${lead.name.split(" ")[0]}, je reviens vers vous concernant votre recherche immobilière.`;
-    window.open(`https://wa.me/${lead.phone.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    setOpenId((result.data as ClientLead).id);
+    setEditing(null);
+    return true;
   };
 
   const copyRequestLink = async () => {
     const link = `${window.location.origin}/demande`;
     try {
       await navigator.clipboard.writeText(link);
-      toast({ title: "Lien copié", description: "Tu peux l’envoyer à tes clients sur WhatsApp ou Facebook." });
+      toast.success("Lien du formulaire copié.", { description: "Vous pouvez l’envoyer sur WhatsApp, Facebook ou Instagram." });
     } catch {
-      window.prompt("Copie ce lien pour l’envoyer à tes clients :", link);
+      window.prompt("Copiez ce lien pour l’envoyer à vos clients :", link);
     }
   };
 
+  const LeadRow = ({ lead }: { lead: ClientLead }) => (
+    <button type="button" onClick={() => openLead(lead)} className="flex w-full items-center gap-3 rounded-[10px] border border-border bg-card px-3.5 py-3 text-left hover:border-input">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[hsl(38_33%_91%)] text-sm font-semibold">{initials(lead.name)}</span>
+      <span className="flex min-w-0 flex-1 flex-col gap-1">
+        <span className="flex flex-wrap items-center gap-x-2 gap-y-1"><span className="text-[15px] font-semibold">{lead.name}</span><StageTag status={lead.status} /></span>
+        <span className="truncate text-[13px] text-muted-foreground">{[PROJECTS[lead.transaction_type], lead.property_types.map((t) => TYPE_LABELS[t as keyof typeof TYPE_LABELS] ?? t).join(", "), lead.preferred_areas.join(", ")].filter(Boolean).join(" · ")}</span>
+      </span>
+      <ChevronRight size={18} className="shrink-0 text-muted-foreground" aria-hidden="true" />
+    </button>
+  );
+
+  const DueCard = ({ lead }: { lead: ClientLead }) => (
+    <li className="flex flex-col rounded-[10px] border border-[hsl(37_55%_76%)] bg-card">
+      <button type="button" onClick={() => openLead(lead)} className="flex flex-col gap-1.5 px-3.5 pb-2.5 pt-3.5 text-left">
+        <span className="flex items-center justify-between gap-2"><span className="text-base font-semibold">{lead.name}</span><StageTag status={lead.status} /></span>
+        <span className="text-sm font-medium text-[hsl(36_8%_21%)]">{PROJECTS[lead.transaction_type]}{lead.property_types.length ? ` · ${lead.property_types.map((t) => TYPE_LABELS[t as keyof typeof TYPE_LABELS] ?? t).join(", ")}` : ""}</span>
+        <span className="text-[13px] text-muted-foreground">{[budgetText(lead), lead.preferred_areas.join(", "), lead.source].filter(Boolean).join(" · ")}</span>
+        <span className="text-[13px] font-semibold text-warning-foreground">Relance : {followUpLabel(lead.next_follow_up_at)}</span>
+      </button>
+      <div className="grid grid-cols-2 gap-2 px-3.5 pb-3.5">
+        <a href={telHref(lead.phone)} className={btn.soft}><Phone size={17} aria-hidden="true" />Appeler</a>
+        <a href={whatsappHref(lead.phone)} target="_blank" rel="noopener noreferrer" className={btn.whatsapp}><MessageCircle size={17} aria-hidden="true" />WhatsApp</a>
+      </div>
+    </li>
+  );
+
+  const due = filtered.filter(isDue);
+  const others = filtered.filter((l) => !isDue(l));
+
   return (
-    <main className="container mx-auto w-full min-w-0 flex-1 space-y-5 px-3 py-4 sm:px-5 sm:py-6 md:px-10 md:py-8">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <div className="mb-1 flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-bronze/10"><UsersRound className="h-4 w-4 text-[hsl(30_30%_45%)]" /></div>
-            <h2 className="font-serif text-xl sm:text-2xl md:text-3xl">Clients & demandes</h2>
-          </div>
-          <p className="ml-[42px] text-sm font-light text-muted-foreground">{leads.length} dossier{leads.length !== 1 ? "s" : ""} · {followUps} relance{followUps !== 1 ? "s" : ""} à faire</p>
-        </div>
-        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto"><Button variant="outline" onClick={() => void copyRequestLink()} className="min-w-0 min-h-11 gap-1.5 px-2 sm:px-3 text-[10px] sm:text-xs"><Link2 size={15} className="shrink-0" /><span className="truncate">Lien du formulaire</span></Button><Button onClick={openNew} className="min-w-0 min-h-11 gap-1.5 px-2 sm:px-3 text-[10px] sm:text-xs"><Plus size={16} className="shrink-0" /><span className="truncate">Ajouter un client</span></Button></div>
-      </div>
+    <div className="mx-auto flex max-w-[1400px] flex-col gap-4 px-4 py-4 lg:gap-5 lg:px-8 lg:py-7">
+      <PageHeader title="Clients & demandes" count={loading ? undefined : leads.length}>
+        <button type="button" onClick={() => void copyRequestLink()} className={btn.outline}><Link2 size={18} aria-hidden="true" /><span className="lg:hidden">Lien du formulaire</span><span className="hidden lg:inline">Copier le lien du formulaire public</span></button>
+        <button type="button" onClick={openNew} className={cn(btn.primary, "hidden lg:inline-flex")}><Plus size={18} aria-hidden="true" />Nouveau client</button>
+      </PageHeader>
 
-      <div className="grid gap-3 sm:grid-cols-[1fr_220px]">
-        <div className="relative"><Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" /><Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Chercher par nom, téléphone ou quartier…" className="pl-9" /></div>
-        <Select value={statusFilter} onValueChange={setStatusFilter}><SelectTrigger><SelectValue placeholder="Tous les statuts" /></SelectTrigger><SelectContent><SelectItem value="all">Tous les statuts</SelectItem>{Object.entries(statusLabels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select>
-      </div>
-
-      {loading ? <div className="admin-card rounded-xl p-12 text-center text-sm text-muted-foreground">Chargement des dossiers…</div> : filteredLeads.length === 0 ? (
-        <div className="admin-card flex flex-col items-center rounded-xl px-6 py-14 text-center">
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-muted/60"><UsersRound className="h-5 w-5 text-muted-foreground/60" /></div>
-          <p className="font-medium">{leads.length ? "Aucun résultat" : "Ton fichier client commence ici"}</p>
-          <p className="mt-1 max-w-md text-sm font-light text-muted-foreground">Ajoute les coordonnées et les critères de recherche. Le système te proposera les biens publiés qui correspondent au budget, au type, au quartier, aux chambres et au meublé.</p>
-          {!leads.length && <Button onClick={openNew} variant="outline" className="mt-5 gap-2"><Plus size={15} /> Créer le premier dossier</Button>}
-        </div>
-      ) : (
-        <div className="grid gap-4 xl:grid-cols-2">
-          {filteredLeads.map((lead) => {
-            const matches = matchingProperties(lead, properties);
-            const whatsappUrl = `https://wa.me/${lead.phone.replace(/\D/g, "")}`;
-            return (
-              <article key={lead.id} className="admin-card min-w-0 space-y-4 rounded-xl p-4 sm:p-5">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <h3 className="truncate font-serif text-xl">{lead.name}</h3>
-                    <a href={whatsappUrl} target="_blank" rel="noreferrer" className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-emerald-700"><MessageCircle size={14} />{lead.phone}</a>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className={cn("rounded-full px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider", statusStyles[lead.status])}>{statusLabels[lead.status]}</span>
-                    <Button variant="ghost" size="icon" onClick={() => openEdit(lead)} aria-label="Modifier le dossier"><Pencil size={15} /></Button>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-1.5 text-xs">
-                  <span className="rounded-md bg-muted px-2 py-1">{lead.transaction_type === "vente" ? "Vente" : lead.transaction_type === "location-courte-duree" ? "Séjour / courte durée" : "Location longue durée"}</span>
-                  {(lead.property_types ?? []).map((type) => <span key={type} className="rounded-md bg-muted px-2 py-1">{typeLabels[type] ?? type}</span>)}
-                  {lead.budget_max != null && <span className="rounded-md bg-muted px-2 py-1">Budget max {lead.budget_max.toLocaleString("fr-FR")} MAD</span>}
-                  {lead.preferred_areas.length > 0 && <span className="rounded-md bg-muted px-2 py-1">{lead.preferred_areas.join(", ")}</span>}
-                  {lead.bedrooms_min != null && <span className="rounded-md bg-muted px-2 py-1">{lead.bedrooms_min}+ chambres</span>}
-                  {lead.furnishing !== "any" && <span className="rounded-md bg-muted px-2 py-1">{lead.furnishing === "furnished" ? "Meublé" : "Non meublé"}</span>}
-                </div>
-                {(lead.profession || lead.client_profile || lead.reference_location) && <p className="text-xs leading-5 text-muted-foreground">{[lead.profession, lead.client_profile, lead.reference_location && `${lead.max_distance_km ?? "?"} km de ${lead.reference_location}`].filter(Boolean).join(" · ")}</p>}
-                <div className="rounded-lg border border-border/60 bg-muted/20 p-3">
-                  <div className="mb-2 flex items-center justify-between gap-2"><p className="flex items-center gap-1.5 text-xs font-medium"><Home size={13} /> Biens correspondants</p><span className="text-[11px] text-muted-foreground">{matches.length} trouvé{matches.length !== 1 ? "s" : ""}</span></div>
-                  {matches.length ? <div className="space-y-2">{matches.slice(0, 3).map((property) => <Link key={property.id} to={`/bien/${property.id}`} target="_blank" className="flex items-center justify-between gap-3 text-xs hover:text-primary"><span className="truncate">{property.titre} · {property.quartier ?? "Marrakech"}</span><span className="shrink-0">{(priceOf(property, lead.transaction_type) ?? 0).toLocaleString("fr-FR")} {property.devise}</span></Link>)}</div> : <p className="text-xs text-muted-foreground">Aucun bien publié ne correspond à ces critères pour le moment.</p>}
-                </div>
-                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/50 pt-3">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">{lead.next_follow_up_at && <><CalendarClock size={14} /> Relance : {format(new Date(lead.next_follow_up_at), "dd MMM yyyy", { locale: fr })}</>}{lead.source && <span>{lead.source}</span>}</div>
-                  <div className="flex items-center gap-2">
-                    <Select value={lead.status} onValueChange={(value) => void changeStatus(lead, value as LeadStatus)}><SelectTrigger className="h-8 w-[145px] text-xs"><SelectValue /></SelectTrigger><SelectContent>{Object.entries(statusLabels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select>
-                    <Button size="sm" variant="outline" className="gap-1.5" onClick={() => shareMatches(lead, matches)}><MessageCircle size={14} /> WhatsApp</Button>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
+      {crmMissing && (
+        <div role="alert" className="rounded-[10px] border border-[hsl(37_55%_76%)] bg-warning p-4 text-sm text-warning-foreground">
+          Le fichier clients n’est pas encore activé sur votre base Supabase. Appliquez la migration « client_leads » du projet, puis rechargez la page.
         </div>
       )}
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-h-[90svh] w-[calc(100vw-1rem)] max-w-3xl overflow-y-auto rounded-xl sm:w-full">
-          <DialogHeader><DialogTitle>{editingLead ? "Modifier le dossier client" : "Nouveau dossier client"}</DialogTitle><DialogDescription>Note les critères et le profil pour retrouver plus vite les biens adaptés.</DialogDescription></DialogHeader>
-          <form onSubmit={saveLead} className="space-y-5">
-            <section className="grid gap-3 sm:grid-cols-2">
-              <div className={fieldClass}><label className={labelClass}>Nom complet *</label><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-              <div className={fieldClass}><label className={labelClass}>Téléphone WhatsApp *</label><Input required type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+212…" /></div>
-              <div className={fieldClass}><label className={labelClass}>E-mail</label><Input type="email" value={form.email ?? ""} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
-              <div className={fieldClass}><label className={labelClass}>Source du contact</label><Select value={form.source} onValueChange={(value) => setForm({ ...form, source: value })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{["WhatsApp", "Facebook", "Instagram", "Mubawab", "Site web", "Recommandation", "Agence partenaire", "Autre"].map((source) => <SelectItem key={source} value={source}>{source}</SelectItem>)}</SelectContent></Select></div>
-            </section>
+      <div className="flex flex-col gap-2.5 lg:flex-row lg:items-center">
+        <label className="flex h-11 min-w-0 flex-1 items-center gap-2 rounded-md border border-input bg-white px-3 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/25 lg:max-w-[400px]">
+          <Search size={18} className="shrink-0 text-muted-foreground" aria-hidden="true" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Nom, téléphone, quartier…" aria-label="Rechercher un client" className="min-w-0 flex-1 bg-transparent text-base outline-none lg:text-sm" />
+        </label>
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2 lg:flex">
+          <SelectField label="Étape" value={stage} onChange={(v) => setStage(v as LeadStatus | "all")} className={cn("lg:w-[210px]", view === "kanban" && "lg:hidden")}>
+            <option value="all">Toutes les étapes</option>
+            {STAGES.map((s) => <option key={s} value={s}>{LEAD_LABELS[s]}</option>)}
+          </SelectField>
+          <button type="button" aria-pressed={dueOnly} onClick={() => setDueOnly((v) => !v)} className={cn("inline-flex h-11 items-center gap-2 rounded-md border px-3 text-sm font-semibold", dueOnly ? "border-warning-foreground bg-warning-foreground text-white" : "border-[hsl(37_55%_76%)] bg-warning text-warning-foreground")}>
+            À relancer<span className="-ml-1 hidden lg:inline">aujourd’hui</span><CountBadge count={dueCount} className="h-5 min-w-5 text-[11px]" />
+          </button>
+        </div>
+        <div role="group" aria-label="Affichage" className="ml-auto hidden gap-1 rounded-lg bg-[hsl(38_33%_91%)] p-1 lg:flex">
+          <button type="button" aria-pressed={view === "kanban"} onClick={() => setView("kanban")} className={cn("inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-[13px]", view === "kanban" ? "bg-white font-semibold shadow-sm" : "font-medium")}><LayoutGrid size={15} aria-hidden="true" />Kanban</button>
+          <button type="button" aria-pressed={view === "list"} onClick={() => setView("list")} className={cn("inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-[13px]", view === "list" ? "bg-white font-semibold shadow-sm" : "font-medium")}><List size={15} aria-hidden="true" />Liste</button>
+        </div>
+      </div>
 
-            <section className="space-y-3 rounded-lg border border-border/60 p-4">
-              <h3 className="text-sm font-medium">Ce que le client cherche</h3>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className={fieldClass}><label className={labelClass}>Projet</label><Select value={form.transaction_type} onValueChange={(value) => setForm({ ...form, transaction_type: value as LeadForm["transaction_type"] })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="location-longue-duree">Location longue durée</SelectItem><SelectItem value="vente">Achat</SelectItem><SelectItem value="location-courte-duree">Séjour / courte durée</SelectItem></SelectContent></Select></div>
-                <div className={fieldClass}><label className={labelClass}>Types de bien</label><div className="flex flex-wrap gap-2">{Object.entries(typeLabels).map(([value, label]) => <label key={value} className="flex items-center gap-1.5 rounded-md border px-2 py-1.5 text-xs"><input type="checkbox" checked={form.property_types.includes(value)} onChange={(e) => setForm({ ...form, property_types: e.target.checked ? [...form.property_types, value] : form.property_types.filter((type) => type !== value) })} />{label}</label>)}</div></div>
-                <div className={fieldClass}><label className={labelClass}>Budget minimum (MAD)</label><Input type="number" min="0" value={form.budget_min ?? ""} onChange={(e) => setForm({ ...form, budget_min: e.target.value ? Number(e.target.value) : null })} /></div>
-                <div className={fieldClass}><label className={labelClass}>Budget maximum (MAD)</label><Input type="number" min="0" value={form.budget_max ?? ""} onChange={(e) => setForm({ ...form, budget_max: e.target.value ? Number(e.target.value) : null })} /></div>
-                <div className={fieldClass}><label className={labelClass}>Quartiers ou secteurs (séparés par virgule)</label><Input value={form.areas_text} onChange={(e) => setForm({ ...form, areas_text: e.target.value })} placeholder="Route de Fès, Targa…" /></div>
-                <div className={fieldClass}><label className={labelClass}>Chambres minimum</label><Input type="number" min="0" value={form.bedrooms_min ?? ""} onChange={(e) => setForm({ ...form, bedrooms_min: e.target.value ? Number(e.target.value) : null })} /></div>
-                <div className={fieldClass}><label className={labelClass}>Meublé</label><Select value={form.furnishing} onValueChange={(value) => setForm({ ...form, furnishing: value as Furnishing })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="any">Indifférent</SelectItem><SelectItem value="furnished">Meublé</SelectItem><SelectItem value="unfurnished">Non meublé</SelectItem></SelectContent></Select></div>
-                <div className={fieldClass}><label className={labelClass}>Disponible à partir du</label><Input type="date" value={form.available_from ?? ""} onChange={(e) => setForm({ ...form, available_from: e.target.value || null })} /></div>
-                <div className={fieldClass}><label className={labelClass}>Point de référence pour la distance</label><Input value={form.reference_location ?? ""} onChange={(e) => setForm({ ...form, reference_location: e.target.value })} placeholder="Travail, école, quartier…" /></div>
-                <div className={fieldClass}><label className={labelClass}>Distance maximale (km)</label><Input type="number" min="0" value={form.max_distance_km ?? ""} onChange={(e) => setForm({ ...form, max_distance_km: e.target.value ? Number(e.target.value) : null })} /></div>
+      {loading && <div className="flex flex-col gap-2.5" aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="h-16 rounded-[10px] border border-border bg-card" />)}</div>}
+      {!loading && !crmMissing && leads.length === 0 && (
+        <EmptyState title="Votre fichier clients commence ici" text="Ajoutez les coordonnées et les critères d’un client : les biens publiés qui correspondent s’afficheront dans sa fiche. Vous pouvez aussi partager le formulaire public." action={<button type="button" onClick={openNew} className={btn.primary}><Plus size={18} aria-hidden="true" />Ajouter un client</button>} />
+      )}
+      {!loading && leads.length > 0 && filtered.length === 0 && <EmptyState title="Aucun client ne correspond" text="Essayez un autre mot ou retirez un filtre." />}
+
+      {!loading && filtered.length > 0 && (
+        <>
+          {/* Liste (mobile, et desktop en mode liste) */}
+          <div className={cn("flex flex-col gap-2.5", view === "kanban" && "lg:hidden")}>
+            {due.length > 0 && <h2 className="m-0 mt-1 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-warning-foreground">À relancer aujourd’hui</h2>}
+            {due.length > 0 && <ul className="m-0 grid list-none gap-2.5 p-0 lg:grid-cols-2">{due.map((l) => <DueCard key={l.id} lead={l} />)}</ul>}
+            {others.length > 0 && due.length > 0 && <h2 className="m-0 mt-3 font-sans text-[13px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Tous les clients</h2>}
+            <div className="grid gap-2.5 lg:grid-cols-2">{others.map((l) => <LeadRow key={l.id} lead={l} />)}</div>
+          </div>
+
+          {/* Kanban (desktop) */}
+          {view === "kanban" && (
+            <div className="hidden grid-cols-7 gap-2.5 lg:grid">
+              {STAGES.map((s) => {
+                const col = filtered.filter((l) => l.status === s);
+                return (
+                  <section key={s} aria-label={LEAD_LABELS[s]} onDragOver={(e) => e.preventDefault()}
+                    onDrop={() => { const l = leads.find((x) => x.id === dragId); if (l && l.status !== s) void patchLead(l, { status: s }, `${l.name} → ${LEAD_LABELS[s]}`); setDragId(null); }}
+                    className={cn("flex min-h-[420px] min-w-0 flex-col gap-2 rounded-[10px] bg-[hsl(38_38%_93%)] p-2.5", dragId && "outline-dashed outline-1 outline-[hsl(35_20%_66%)]")}>
+                    <h2 className="m-0 flex items-center gap-2 px-1 pb-1 pt-0.5 font-sans text-[13px] font-semibold">
+                      <span className={cn("h-2 w-2 rounded-sm", STAGE_COLOR[s])} aria-hidden="true" /><span className="flex-1">{LEAD_LABELS[s]}</span><span className="font-medium text-muted-foreground">{col.length}</span>
+                    </h2>
+                    {col.map((l) => (
+                      <button key={l.id} type="button" draggable onDragStart={() => setDragId(l.id)} onDragEnd={() => setDragId(null)} onClick={() => openLead(l)}
+                        className={cn("flex cursor-grab flex-col gap-1.5 rounded-lg border bg-card p-2.5 text-left shadow-[0_1px_2px_rgba(33,31,27,0.05)] hover:border-input", isDue(l) ? "border-[hsl(37_55%_76%)]" : "border-border", dragId === l.id && "opacity-50")}>
+                        <span className="text-sm font-semibold leading-tight">{l.name}</span>
+                        <span className="text-xs leading-snug text-[hsl(36_8%_21%)]">{PROJECTS[l.transaction_type]}{l.preferred_areas.length ? ` · ${l.preferred_areas.join(", ")}` : ""}</span>
+                        {budgetText(l) && <span className="text-xs font-medium text-muted-foreground">{budgetText(l)}</span>}
+                        {isDue(l) && <span className="self-start rounded bg-warning px-2 py-1 text-[11px] font-semibold text-warning-foreground">Relance aujourd’hui</span>}
+                      </button>
+                    ))}
+                  </section>
+                );
+              })}
+            </div>
+          )}
+        </>
+      )}
+
+      <ClientSheet
+        lead={opened}
+        form={editing}
+        properties={properties}
+        onClose={() => { setOpenId(null); setEditing(null); }}
+        onEdit={() => opened && startEdit(opened)}
+        onCancelEdit={() => (opened ? setEditing(null) : (setEditing(null), setOpenId(null)))}
+        onSave={saveLead}
+        onPatch={patchLead}
+      />
+    </div>
+  );
+}
+
+// ─── Fiche client ──────────────────────────────────────────────────────────────
+function ClientSheet({ lead, form, properties, onClose, onEdit, onCancelEdit, onSave, onPatch }: {
+  lead: ClientLead | null; form: LeadForm | null; properties: Bien[];
+  onClose: () => void; onEdit: () => void; onCancelEdit: () => void;
+  onSave: (form: LeadForm) => Promise<boolean>; onPatch: (lead: ClientLead, patch: Partial<ClientLead>, message?: string) => Promise<void>;
+}) {
+  const open = !!lead || !!form;
+  const matches = useMemo(() => (lead ? matchingProperties(lead, properties) : []), [lead, properties]);
+  const [selected, setSelected] = useState<string[]>([]);
+  useEffect(() => setSelected(matches.slice(0, 3).map((m) => m.id)), [matches]);
+
+  const sendMatches = () => {
+    if (!lead) return;
+    const chosen = matches.filter((m) => selected.includes(m.id));
+    const first = lead.name.split(" ")[0];
+    const list = chosen.map((p) => `• ${[p.titre, p.quartier, p.chambres ? `${p.chambres} chambres` : null, priceText(p, lead.transaction_type)].filter(Boolean).join(" · ")}\n${window.location.origin}/bien/${p.id}`).join("\n\n");
+    const message = chosen.length ? `Bonjour ${first}, voici des biens qui correspondent à votre recherche :\n\n${list}\n\nDites-moi lesquels vous intéressent pour organiser une visite.` : `Bonjour ${first}, je reviens vers vous au sujet de votre recherche immobilière.`;
+    window.open(whatsappHref(lead.phone, message), "_blank", "noopener,noreferrer");
+  };
+
+  const postpone = (days: number) => {
+    if (!lead) return;
+    const d = new Date();
+    d.setDate(d.getDate() + days);
+    d.setHours(10, 0, 0, 0);
+    void onPatch(lead, { next_follow_up_at: d.toISOString() }, `Relance reportée au ${d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}.`);
+  };
+
+  const details = lead ? [
+    ["Projet", PROJECTS[lead.transaction_type]],
+    ["Types de bien", lead.property_types.map((t) => TYPE_LABELS[t as keyof typeof TYPE_LABELS] ?? t).join(", ") || "Indifférent"],
+    ["Budget", budgetText(lead) ?? "Non précisé"],
+    ["Quartiers", lead.preferred_areas.join(", ") || "Indifférent"],
+    ["Chambres min.", lead.bedrooms_min != null ? String(lead.bedrooms_min) : "—"],
+    ["Meublé", FURNISHING[lead.furnishing ?? "any"]],
+    ["Disponible le", lead.available_from ? new Date(lead.available_from).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "—"],
+    ["Lieu de référence", lead.reference_location ? `${lead.reference_location}${lead.max_distance_km ? ` · ${lead.max_distance_km} km max.` : ""}` : "—"],
+    ["Téléphone", lead.phone],
+    ["E-mail", lead.email || "—"],
+    ["Profession", lead.profession || "—"],
+    ["Profil", lead.client_profile || "—"],
+  ] : [];
+
+  return (
+    <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
+      <SheetContent side="right" onOpenAutoFocus={(e) => e.preventDefault()} className="flex h-[100dvh] w-full max-w-none flex-col gap-0 border-border bg-background p-0 sm:max-w-none lg:w-[640px] [&>button]:hidden">
+        <header className="flex shrink-0 items-center gap-2 border-b border-border bg-card px-2 py-1.5 lg:px-5 lg:py-3">
+          <button type="button" onClick={onClose} aria-label="Fermer la fiche" className="grid h-11 w-11 place-items-center rounded-md hover:bg-muted"><X size={22} aria-hidden="true" /></button>
+          <SheetTitle className="flex-1 truncate font-sans text-[15px] font-semibold">{form ? (lead ? "Modifier le dossier" : "Nouveau client") : "Fiche client"}</SheetTitle>
+          <SheetDescription className="sr-only">Coordonnées, critères de recherche et biens correspondants.</SheetDescription>
+          {lead && !form && <button type="button" onClick={onEdit} className="inline-flex h-11 items-center gap-1.5 rounded-md px-3 text-sm font-semibold text-primary hover:bg-muted"><Pencil size={16} aria-hidden="true" />Modifier</button>}
+        </header>
+
+        {form ? (
+          <LeadEditor initial={form} onCancel={onCancelEdit} onSave={onSave} />
+        ) : lead && (
+          <div className="flex-1 overflow-y-auto px-4 pb-10 pt-4 lg:px-6">
+            <div className="flex flex-col gap-4">
+              <section className="flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-primary-soft text-lg font-semibold text-[hsl(72_19%_23%)]">{initials(lead.name)}</span>
+                  <div className="flex min-w-0 flex-col gap-1">
+                    <h2 className="m-0 font-serif text-[28px] font-semibold leading-none">{lead.name}</h2>
+                    <span className="text-[13px] text-muted-foreground">Source : {lead.source}{lead.profession ? ` · ${lead.profession}` : ""}</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <a href={telHref(lead.phone)} className="flex h-16 flex-col items-center justify-center gap-1.5 rounded-lg bg-primary-soft text-[13px] font-semibold text-[hsl(72_19%_23%)]"><Phone size={20} strokeWidth={1.7} aria-hidden="true" />Appeler</a>
+                  <a href={whatsappHref(lead.phone)} target="_blank" rel="noopener noreferrer" className="flex h-16 flex-col items-center justify-center gap-1.5 rounded-lg bg-whatsapp text-[13px] font-semibold text-white"><MessageCircle size={20} strokeWidth={1.7} aria-hidden="true" />WhatsApp</a>
+                  {lead.email ? (
+                    <a href={`mailto:${lead.email}`} className="flex h-16 flex-col items-center justify-center gap-1.5 rounded-lg border border-border bg-card text-[13px] font-semibold"><Mail size={20} strokeWidth={1.7} aria-hidden="true" />E-mail</a>
+                  ) : (
+                    <span className="flex h-16 flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-border text-[13px] font-medium text-muted-foreground"><Mail size={20} strokeWidth={1.7} aria-hidden="true" />Pas d’e-mail</span>
+                  )}
+                </div>
+              </section>
+
+              <section className="flex flex-col gap-3 rounded-[10px] border border-border bg-card p-4">
+                <div className="flex flex-col gap-1.5">
+                  <span className={field.label}>Étape</span>
+                  <SelectField label="Étape" value={lead.status} onChange={(v) => void onPatch(lead, { status: v as LeadStatus }, `Étape : ${LEAD_LABELS[v as LeadStatus]}.`)}>
+                    {STAGES.map((s) => <option key={s} value={s}>{LEAD_LABELS[s]}</option>)}
+                  </SelectField>
+                </div>
+                <div className={cn("flex flex-wrap items-center justify-between gap-2.5 rounded-lg p-3", isDue(lead) ? "bg-warning" : "bg-[hsl(38_45%_95%)]")}>
+                  <span className="flex flex-col gap-0.5">
+                    <span className={cn("text-[13px] font-semibold", isDue(lead) ? "text-warning-foreground" : "text-muted-foreground")}>Prochaine relance</span>
+                    <span className="text-[15px] font-semibold first-letter:uppercase">{followUpLabel(lead.next_follow_up_at) ?? "Aucune prévue"}</span>
+                  </span>
+                  <span className="flex gap-1.5">
+                    <button type="button" onClick={() => postpone(1)} className={cn(btn.outline, "h-10 bg-white px-3 text-[13px]")}>Demain</button>
+                    <button type="button" onClick={() => postpone(7)} className={cn(btn.outline, "h-10 bg-white px-3 text-[13px]")}>Dans 1 semaine</button>
+                  </span>
+                </div>
+              </section>
+
+              <section className="flex flex-col gap-2.5">
+                <div className="flex items-center justify-between">
+                  <h3 className="m-0 font-serif text-[22px] font-semibold">Biens correspondants</h3>
+                  <span className="text-[13px] font-semibold text-muted-foreground">{matches.length} trouvé{matches.length > 1 ? "s" : ""}</span>
+                </div>
+                {matches.length === 0 && <p className="m-0 rounded-[10px] border border-dashed border-input p-4 text-sm text-muted-foreground">Aucun bien publié ne correspond à ces critères pour le moment. Élargissez le budget ou les quartiers pour voir plus de biens.</p>}
+                {matches.map((p) => {
+                  const on = selected.includes(p.id);
+                  return (
+                    <label key={p.id} className={cn("flex cursor-pointer items-center gap-3 rounded-[10px] border bg-card p-2.5", on ? "border-primary" : "border-border")}>
+                      <input type="checkbox" checked={on} onChange={() => setSelected((s) => (on ? s.filter((x) => x !== p.id) : [...s, p.id]))} className="h-[22px] w-[22px] shrink-0 accent-[hsl(70_19%_34%)]" aria-label={`Sélectionner ${p.titre}`} />
+                      <span className="h-16 w-16 shrink-0 overflow-hidden rounded-md bg-[hsl(38_30%_91%)]">{p.photo_principale && <OptimizedImage src={p.photo_principale} alt="" size="thumb" className="h-full w-full object-cover" wrapperClassName="h-full w-full" />}</span>
+                      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                        <span className="font-serif text-base font-semibold leading-tight">{p.titre}</span>
+                        <span className="text-[13px] font-semibold">{priceText(p, lead.transaction_type)}</span>
+                        <span className="text-xs text-muted-foreground">{[p.quartier, p.chambres ? `${p.chambres} ch.` : null].filter(Boolean).join(" · ")}</span>
+                      </span>
+                    </label>
+                  );
+                })}
+                <button type="button" onClick={sendMatches} className={cn(btn.whatsapp, "h-12 text-[15px]")}>
+                  <MessageCircle size={18} aria-hidden="true" />{selected.length ? `Envoyer ${selected.length} bien${selected.length > 1 ? "s" : ""} sur WhatsApp` : "Écrire sur WhatsApp"}
+                </button>
+              </section>
+
+              <section className="rounded-[10px] border border-border bg-card">
+                <h3 className="m-0 px-4 pb-1.5 pt-3.5 font-serif text-[22px] font-semibold">Recherche</h3>
+                <dl className="m-0">
+                  {details.map(([k, v]) => (
+                    <div key={k} className="grid grid-cols-[130px_minmax(0,1fr)] gap-2.5 border-t border-[hsl(37_32%_90%)] px-4 py-2.5">
+                      <dt className="text-[13px] text-muted-foreground">{k}</dt><dd className="m-0 text-sm font-semibold">{v}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+
+              {lead.notes && (
+                <section className="flex flex-col gap-2 rounded-[10px] border border-border bg-card p-4">
+                  <h3 className="m-0 font-serif text-[22px] font-semibold">Notes</h3>
+                  <p className="m-0 whitespace-pre-line text-sm leading-relaxed text-[hsl(36_8%_21%)]">{lead.notes}</p>
+                </section>
+              )}
+            </div>
+          </div>
+        )}
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+// ─── Édition d'un dossier ────────────────────────────────────────────────────
+function Field({ label, children, className }: { label: string; children: React.ReactNode; className?: string }) {
+  return <label className={cn("flex flex-col gap-1.5", className)}><span className={field.label}>{label}</span>{children}</label>;
+}
+
+function LeadEditor({ initial, onCancel, onSave }: { initial: LeadForm; onCancel: () => void; onSave: (form: LeadForm) => Promise<boolean> }) {
+  const [form, setForm] = useState<LeadForm>(initial);
+  const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<{ name?: string; phone?: string }>({});
+  const up = <K extends keyof LeadForm>(k: K, v: LeadForm[K]) => setForm((f) => ({ ...f, [k]: v }));
+  const numOrNull = (v: string) => (v ? Number(v.replace(/\s/g, "")) : null);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const errs = { name: form.name.trim() ? undefined : "Indiquez le nom du client.", phone: form.phone.trim() ? undefined : "Indiquez un numéro de téléphone." };
+    setErrors(errs);
+    if (errs.name || errs.phone) return;
+    setSaving(true);
+    await onSave(form);
+    setSaving(false);
+  };
+
+  return (
+    <form onSubmit={submit} noValidate className="flex min-h-0 flex-1 flex-col">
+      <div className="flex-1 overflow-y-auto px-4 pb-28 pt-4 lg:px-6">
+        <div className="flex flex-col gap-4">
+          <section className="grid gap-3.5 rounded-[10px] border border-border bg-card p-4 sm:grid-cols-2">
+            <h3 className="m-0 font-serif text-[22px] font-semibold sm:col-span-2">Contact</h3>
+            <Field label="Nom complet">
+              <input value={form.name} onChange={(e) => up("name", e.target.value)} className={cn(field.input, errors.name && "border-destructive")} />
+              {errors.name && <span className="text-xs font-medium text-destructive">{errors.name}</span>}
+            </Field>
+            <Field label="Téléphone / WhatsApp">
+              <input type="tel" value={form.phone} onChange={(e) => up("phone", e.target.value)} placeholder="+212 6…" className={cn(field.input, errors.phone && "border-destructive")} />
+              {errors.phone && <span className="text-xs font-medium text-destructive">{errors.phone}</span>}
+            </Field>
+            <Field label="E-mail"><input type="email" value={form.email ?? ""} onChange={(e) => up("email", e.target.value)} className={field.input} /></Field>
+            <Field label="Source du contact"><SelectField label="Source" value={form.source} onChange={(v) => up("source", v)}>{SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}</SelectField></Field>
+            <Field label="Profession"><input value={form.profession ?? ""} onChange={(e) => up("profession", e.target.value)} className={field.input} /></Field>
+            <Field label="Profil / foyer"><input value={form.client_profile ?? ""} onChange={(e) => up("client_profile", e.target.value)} placeholder="Famille, couple, salarié…" className={field.input} /></Field>
+          </section>
+
+          <section className="grid gap-3.5 rounded-[10px] border border-border bg-card p-4 sm:grid-cols-2">
+            <h3 className="m-0 font-serif text-[22px] font-semibold sm:col-span-2">Ce que le client cherche</h3>
+            <Field label="Projet" className="sm:col-span-2"><SelectField label="Projet" value={form.transaction_type} onChange={(v) => up("transaction_type", v as Transaction)}>{(Object.keys(PROJECTS) as Transaction[]).map((t) => <option key={t} value={t}>{PROJECTS[t]}</option>)}</SelectField></Field>
+            <div className="flex flex-col gap-2 sm:col-span-2">
+              <span className={field.label}>Types de bien</span>
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(TYPE_LABELS).map(([v, l]) => {
+                  const on = form.property_types.includes(v);
+                  return <button key={v} type="button" aria-pressed={on} onClick={() => up("property_types", on ? form.property_types.filter((t) => t !== v) : [...form.property_types, v])} className={cn("min-h-11 rounded-full border px-4 text-sm font-medium", on ? "border-primary bg-primary-soft text-[hsl(72_19%_23%)]" : "border-input bg-white")}>{on ? "✓ " : ""}{l}</button>;
+                })}
               </div>
-            </section>
+            </div>
+            <Field label="Budget minimum (MAD)"><input inputMode="numeric" value={form.budget_min ?? ""} onChange={(e) => up("budget_min", numOrNull(e.target.value))} className={field.input} /></Field>
+            <Field label="Budget maximum (MAD)"><input inputMode="numeric" value={form.budget_max ?? ""} onChange={(e) => up("budget_max", numOrNull(e.target.value))} className={field.input} /></Field>
+            <Field label="Quartiers (séparés par des virgules)" className="sm:col-span-2"><input value={form.areas_text} onChange={(e) => up("areas_text", e.target.value)} placeholder="Gueliz, Hivernage…" className={field.input} /></Field>
+            <Field label="Chambres minimum"><input inputMode="numeric" value={form.bedrooms_min ?? ""} onChange={(e) => up("bedrooms_min", numOrNull(e.target.value))} className={field.input} /></Field>
+            <Field label="Meublé"><SelectField label="Meublé" value={form.furnishing} onChange={(v) => up("furnishing", v as Furnishing)}>{(Object.keys(FURNISHING) as Furnishing[]).map((f) => <option key={f} value={f}>{FURNISHING[f]}</option>)}</SelectField></Field>
+            <Field label="Disponible à partir du"><input type="date" value={form.available_from ?? ""} onChange={(e) => up("available_from", e.target.value || null)} className={field.input} /></Field>
+            <Field label="Distance maximale (km)"><input inputMode="numeric" value={form.max_distance_km ?? ""} onChange={(e) => up("max_distance_km", numOrNull(e.target.value))} className={field.input} /></Field>
+            <Field label="Lieu de référence" className="sm:col-span-2"><input value={form.reference_location ?? ""} onChange={(e) => up("reference_location", e.target.value)} placeholder="Travail, école…" className={field.input} /></Field>
+          </section>
 
-            <section className="grid gap-3 sm:grid-cols-2">
-              <div className={fieldClass}><label className={labelClass}>Métier / activité</label><Input value={form.profession ?? ""} onChange={(e) => setForm({ ...form, profession: e.target.value })} /></div>
-              <div className={fieldClass}><label className={labelClass}>Profil du client / composition du foyer</label><Input value={form.client_profile ?? ""} onChange={(e) => setForm({ ...form, client_profile: e.target.value })} placeholder="Salarié, famille, couple…" /></div>
-              <div className={fieldClass}><label className={labelClass}>Prochaine relance</label><Input type="datetime-local" value={form.next_follow_up_at ? form.next_follow_up_at.slice(0, 16) : ""} onChange={(e) => setForm({ ...form, next_follow_up_at: e.target.value ? new Date(e.target.value).toISOString() : null })} /></div>
-              <div className={fieldClass}><label className={labelClass}>Étape actuelle</label><Select value={form.status} onValueChange={(value) => setForm({ ...form, status: value as LeadStatus })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{Object.entries(statusLabels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select></div>
-              <div className={`${fieldClass} sm:col-span-2`}><label className={labelClass}>Notes pour toi</label><Textarea value={form.notes ?? ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Préférences, détails utiles, historique des échanges…" /></div>
-            </section>
-            <DialogFooter><Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Annuler</Button><Button disabled={saving} type="submit">{saving ? "Enregistrement…" : "Enregistrer le dossier"}</Button></DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-    </main>
+          <section className="grid gap-3.5 rounded-[10px] border border-border bg-card p-4 sm:grid-cols-2">
+            <h3 className="m-0 font-serif text-[22px] font-semibold sm:col-span-2">Suivi</h3>
+            <Field label="Étape"><SelectField label="Étape" value={form.status} onChange={(v) => up("status", v as LeadStatus)}>{STAGES.map((s) => <option key={s} value={s}>{LEAD_LABELS[s]}</option>)}</SelectField></Field>
+            <Field label="Prochaine relance"><input type="datetime-local" value={form.next_follow_up_at ? form.next_follow_up_at.slice(0, 16) : ""} onChange={(e) => up("next_follow_up_at", e.target.value ? new Date(e.target.value).toISOString() : null)} className={field.input} /></Field>
+            <Field label="Notes" className="sm:col-span-2"><textarea rows={4} value={form.notes ?? ""} onChange={(e) => up("notes", e.target.value)} placeholder="Préférences, historique des échanges…" className={cn(field.input, "h-auto py-2.5 leading-relaxed")} /></Field>
+          </section>
+        </div>
+      </div>
+      <footer className="flex shrink-0 gap-2 border-t border-border bg-card px-4 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 lg:px-6">
+        <button type="button" onClick={onCancel} className={cn(btn.outline, "h-12 flex-1 lg:h-11 lg:flex-none")}>Annuler</button>
+        <button type="submit" disabled={saving} className={cn(btn.primary, "h-12 flex-[2] lg:h-11 lg:flex-none lg:px-6")}>{saving ? "Enregistrement…" : "Enregistrer le dossier"}</button>
+      </footer>
+    </form>
   );
 }

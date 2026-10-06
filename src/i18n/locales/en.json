@@ -111,12 +111,13 @@
     "blog": "Blog",
     "visites": "Visit Requests",
     "ajouter_bien": "+ Add property",
-    "generer_article": "✨ Generate article",
+    "generer_article": "Generate article",
     "stats": {
       "total_biens": "Total properties",
       "biens_publies": "Published properties",
       "total_articles": "Total articles",
-      "articles_publies": "Published articles"
+      "articles_publies": "Published articles",
+      "visites": "Pending visits"
     }
   }
 }
