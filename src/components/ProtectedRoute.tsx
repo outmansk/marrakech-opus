@@ -39,7 +39,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   if (!session || !isAdmin) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/manage-xk92p/login" replace />;
   }
 
   return <>{children}</>;

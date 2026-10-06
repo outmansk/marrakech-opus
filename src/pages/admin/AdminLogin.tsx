@@ -45,7 +45,7 @@ export default function AdminLogin() {
       return;
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data: auth, error } = await supabase.auth.signInWithPassword({
       email: data.email,
       password: data.password,
     });
@@ -75,6 +75,23 @@ export default function AdminLogin() {
       // Reset attempts on success
       localStorage.removeItem('loginAttempts');
       localStorage.removeItem('lockoutUntil');
+
+      // Valid credentials are not enough: the account needs the admin role.
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', auth.user.id)
+        .maybeSingle();
+      if (profile?.role !== 'admin') {
+        await supabase.auth.signOut();
+        toast({
+          title: "Accès refusé",
+          description: "Ce compte n'a pas le rôle administrateur.",
+          variant: 'destructive',
+        });
+        return;
+      }
+
       navigate('/manage-xk92p/dashboard', { replace: true });
     }
   };
