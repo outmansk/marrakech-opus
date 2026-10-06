@@ -85,7 +85,7 @@ CREATE TABLE public.properties_v2 (
 ALTER TABLE public.properties_v2 ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Public can view published properties" ON public.properties_v2
-  FOR SELECT USING (statut = 'publie' OR public.is_admin());
+  FOR SELECT USING (statut IN ('publie', 'vendu-loue') OR public.is_admin());
 CREATE POLICY "Admins manage properties" ON public.properties_v2
   FOR ALL TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
 

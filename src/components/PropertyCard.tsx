@@ -3,7 +3,7 @@ import { ArrowRight, Bath, Bed, MapPin, Maximize, MessageCircle } from "lucide-r
 import type { Bien } from "@/types/property";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
-import { getServices } from "@/lib/propertyServices";
+import { getServices, isSoldOnly, isUnavailable } from "@/lib/propertyServices";
 
 interface PropertyCardProps {
   property: Bien;
@@ -71,7 +71,13 @@ const PropertyCard = ({ property, activeType }: PropertyCardProps) => {
         <Link to={href} tabIndex={-1} aria-hidden="true" className="relative block aspect-[4/3] flex-none overflow-hidden bg-[#e9e1d5]">
           <OptimizedImage src={image} alt={property.titre} size="card" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]" wrapperClassName="h-full w-full" />
           <span className={`pointer-events-none absolute left-3.5 top-3.5 z-[1] px-3 pb-2 pt-[9px] text-xs font-medium uppercase leading-none tracking-[0.12em] ${isSale ? "bg-[#211f1b] text-[#fbf8f2]" : "bg-[#a4573e] text-white"}`}>{badge}</span>
-          {property.statut === "vendu-loue" && <span className="absolute inset-0 z-[2] grid place-items-center bg-[#211f1b]/50 text-xs font-semibold uppercase tracking-[0.2em] text-white">{tL("Vendu / Loué", "Sold / Rented", "Vendido / Alquilado")}</span>}
+          {isUnavailable(property) && (
+            <span className="absolute inset-0 z-[2] grid place-items-center bg-[#211f1b]/45">
+              <span className="bg-[#fbf8f2] px-4 pb-2.5 pt-3 text-xs font-semibold uppercase leading-none tracking-[0.2em] text-[#211f1b]">
+                {isSoldOnly(property) ? tL("Déjà vendu", "Already sold", "Ya vendido") : tL("Déjà loué", "Already rented", "Ya alquilado")}
+              </span>
+            </span>
+          )}
         </Link>
 
         <div className="flex flex-1 flex-col gap-5 p-[clamp(18px,6cqi,26px)]">

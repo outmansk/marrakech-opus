@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { useProperties } from "@/hooks/useBiens";
+import { isUnavailable } from "@/lib/propertyServices";
 import { BIEN_TYPES, QUARTIERS } from "@/types/property";
 import SEOHead from "@/components/SEOHead";
 import { PageTransition } from "@/components/motion/Animations";
@@ -26,13 +27,15 @@ const Catalogue = () => {
     service: activeType !== "all" ? activeType : undefined,
     type: activeKind !== "all" ? activeKind : undefined,
     quartier: activeQuartier !== "all" ? activeQuartier : undefined,
-    statut: "publie",
+    statut: ["publie", "vendu-loue"],
   });
 
   const visibleProperties = useMemo(() => {
     const needle = queryText.trim().toLocaleLowerCase("fr");
-    if (!needle) return properties;
-    return properties.filter((property) => [property.titre, property.quartier, property.type, property.description_courte, property.reference].filter(Boolean).join(" ").toLocaleLowerCase("fr").includes(needle));
+    // Available listings first, sold/rented ones at the end (sort is stable).
+    const ordered = [...properties].sort((a, b) => Number(isUnavailable(a)) - Number(isUnavailable(b)));
+    if (!needle) return ordered;
+    return ordered.filter((property) => [property.titre, property.quartier, property.type, property.description_courte, property.reference].filter(Boolean).join(" ").toLocaleLowerCase("fr").includes(needle));
   }, [properties, queryText]);
 
   const update = (key: string, value: string) => {

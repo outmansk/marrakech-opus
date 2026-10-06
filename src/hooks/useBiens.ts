@@ -18,7 +18,7 @@ function generateReference(): string {
 export function useProperties(filters?: {
   type?: string;
   service?: string;
-  statut?: string;
+  statut?: string | string[];
   quartier?: string;
 }) {
   return useQuery<Bien[]>({
@@ -28,7 +28,8 @@ export function useProperties(filters?: {
 
       if (filters?.type) query = query.eq('type', filters.type);
       if (filters?.service) query = query.contains('services', [filters.service]);
-      if (filters?.statut) query = query.eq('statut', filters.statut);
+      if (Array.isArray(filters?.statut)) query = query.in('statut', filters.statut);
+      else if (filters?.statut) query = query.eq('statut', filters.statut);
       if (filters?.quartier) query = query.eq('quartier', filters.quartier);
 
       const { data, error } = await query;

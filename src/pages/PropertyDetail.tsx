@@ -14,6 +14,7 @@ import { BASE_URL } from "@/hooks/useSEO";
 import { motion } from "framer-motion";
 import { PageTransition, Reveal, EASE_LUXURY } from "@/components/motion/Animations";
 import { ServiceTag, TypeBadge } from "@/components/PropertyTags";
+import { isSoldOnly, isUnavailable } from "@/lib/propertyServices";
 
 const formatPrice = (price: number, devise: string = 'MAD') => {
   return new Intl.NumberFormat("fr-MA").format(price) + " " + devise;
@@ -85,6 +86,8 @@ const PropertyDetail = () => {
   }
 
   const images = property.photos?.length > 0 ? property.photos : ["/placeholder.svg"];
+  const unavailable = isUnavailable(property);
+  const unavailableLabel = isSoldOnly(property) ? "Déjà vendu" : "Déjà loué";
   const whatsappUrl = `https://wa.me/212605387041?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien : ${property?.titre} (Ref: ${property?.reference})`)}`;
 
   // Prix de l'offre (priorité à la vente, puis location)
@@ -392,6 +395,11 @@ const PropertyDetail = () => {
                   <ServiceTag key={s} service={s} variant="detail" />
                 ))}
                 <TypeBadge type={property.type} />
+                {unavailable && (
+                  <span className="text-[10px] tracking-widest uppercase font-sans font-semibold bg-foreground text-background px-2 py-1 rounded">
+                    {unavailableLabel}
+                  </span>
+                )}
                 {property.reference && (
                   <span className="text-[10px] tracking-widest uppercase font-sans text-muted-foreground border border-border px-2 py-1 rounded">
                     Réf: {property.reference}
@@ -526,9 +534,11 @@ const PropertyDetail = () => {
               <div className="sticky top-28 space-y-4">
                 <div className="bg-card border border-border rounded-lg p-8 space-y-6">
                   <div className="space-y-2">
-                    <p className="text-xs tracking-widest uppercase text-muted-foreground font-sans">Réserver ou Visiter</p>
+                    <p className="text-xs tracking-widest uppercase text-muted-foreground font-sans">{unavailable ? unavailableLabel : "Réserver ou Visiter"}</p>
                     <p className="text-sm font-light text-muted-foreground leading-relaxed">
-                      Ce bien vous intéresse ? Nos experts sont à votre disposition pour organiser une visite privée.
+                      {unavailable
+                        ? "Ce bien n'est plus disponible. Contactez-nous : nous vous proposerons des biens similaires."
+                        : "Ce bien vous intéresse ? Nos experts sont à votre disposition pour organiser une visite privée."}
                     </p>
                   </div>
 
@@ -539,15 +549,17 @@ const PropertyDetail = () => {
                         WhatsApp
                       </Button>
                     </a>
-                    <Button
-                      variant="luxury-ghost"
-                      size="lg"
-                      className="w-full h-14 gap-3 text-xs tracking-[0.2em]"
-                      onClick={() => setVisitOpen(true)}
-                    >
-                      <CalendarDays size={18} strokeWidth={1.25} />
-                      Demander une visite
-                    </Button>
+                    {!unavailable && (
+                      <Button
+                        variant="luxury-ghost"
+                        size="lg"
+                        className="w-full h-14 gap-3 text-xs tracking-[0.2em]"
+                        onClick={() => setVisitOpen(true)}
+                      >
+                        <CalendarDays size={18} strokeWidth={1.25} />
+                        Demander une visite
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -566,14 +578,16 @@ const PropertyDetail = () => {
                 WHATSAPP
               </Button>
             </a>
-            <Button
-              variant="luxury-ghost"
-              className="flex-1 h-[46px] gap-2 text-[10px] tracking-[0.15em] rounded-lg px-3"
-              onClick={() => setVisitOpen(true)}
-            >
-              <CalendarDays size={16} strokeWidth={1.25} />
-              VISITER
-            </Button>
+            {!unavailable && (
+              <Button
+                variant="luxury-ghost"
+                className="flex-1 h-[46px] gap-2 text-[10px] tracking-[0.15em] rounded-lg px-3"
+                onClick={() => setVisitOpen(true)}
+              >
+                <CalendarDays size={16} strokeWidth={1.25} />
+                VISITER
+              </Button>
+            )}
           </div>
         </div>
       </div>
