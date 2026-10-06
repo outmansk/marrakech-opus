@@ -38,13 +38,14 @@ function useDashboardData() {
   return useQuery({
     queryKey: ["admin-dashboard"],
     queryFn: async () => {
-      const [biens, articles, visits, leads, taches, contacts] = await Promise.all([
+      const [biens, articles, visits, leads, taches, contacts, messages] = await Promise.all([
         supabase.from("properties_v2").select("*").order("updated_at", { ascending: false }),
         supabase.from("articles").select("*").order("created_at", { ascending: false }),
         supabase.from("visit_requests").select("id, client_name, client_phone, requested_date, status, property_v2_id, created_at").order("requested_date", { ascending: true }),
         supabase.from("client_leads").select("id, name, phone, status, next_follow_up_at, created_at, transaction_type, budget_min, budget_max, preferred_areas").order("created_at", { ascending: false }),
         supabase.from("taches").select("*").eq("fait", false).not("echeance", "is", null).lte("echeance", endOfToday().toISOString()).order("echeance"),
         supabase.from("contacts").select("id, nom, telephone"),
+        supabase.from("contact_messages").select("id, name, phone, message, created_at").eq("traite", false).order("created_at", { ascending: false }),
       ]);
       if (biens.error) throw biens.error;
       return {
@@ -56,6 +57,7 @@ function useDashboardData() {
         // Idem pour l'agenda.
         taches: (taches.data ?? []) as Tache[],
         contacts: (contacts.data ?? []) as Pick<Contact, "id" | "nom" | "telephone">[],
+        messages: (messages.data ?? []) as { id: string; name: string; phone: string | null; message: string; created_at: string }[],
       };
     },
   });
@@ -179,6 +181,11 @@ export default function AdminDashboard() {
         action: { label: "Ouvrir", to: `${BASE}/agenda?edit=${t.id}` },
       };
     }),
+    ...data!.messages.map((m) => ({
+      key: `m-${m.id}`, kind: "Message", name: m.name, phone: m.phone ?? undefined,
+      detail: m.message.length > 90 ? `${m.message.slice(0, 90)}…` : m.message,
+      action: { label: "Lire", to: `${BASE}/messages` },
+    })),
     ...view.pending.map((v) => ({
       key: `v-${v.id}`, kind: "Visite" as const, name: v.client_name, phone: v.client_phone,
       detail: [view.bienById.get(v.property_v2_id ?? "")?.titre, formatVisitDate(v.requested_date)].filter(Boolean).join(" · "),

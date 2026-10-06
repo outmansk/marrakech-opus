@@ -114,7 +114,7 @@ export default function AdminClients() {
   useEffect(() => { void fetchLeads(); }, [fetchLeads]);
 
   const opened = leads.find((l) => l.id === openId) ?? null;
-  const openNew = () => { setOpenId(null); setEditing({ ...blankLead }); };
+  const openNew = (prefill: Partial<LeadForm> = {}) => { setOpenId(null); setEditing({ ...blankLead, ...prefill }); };
   const openLead = (lead: ClientLead) => { setEditing(null); setOpenId(lead.id); };
   const startEdit = (lead: ClientLead) => setEditing({ ...lead, email: lead.email ?? "", areas_text: lead.preferred_areas.join(", "), notes: lead.notes ?? "", profession: lead.profession ?? "", client_profile: lead.client_profile ?? "", reference_location: lead.reference_location ?? "" });
 
@@ -123,7 +123,13 @@ export default function AdminClients() {
   useEffect(() => {
     const editId = searchParams.get("edit");
     if (searchParams.get("new") === "1") {
-      openNew();
+      // Préremplissage possible depuis un message reçu : ?name=&phone=&email=&notes=&source=
+      const prefill: Partial<LeadForm> = {};
+      for (const key of ["name", "phone", "email", "notes", "source"] as const) {
+        const value = searchParams.get(key);
+        if (value) prefill[key] = value;
+      }
+      openNew(prefill);
       setSearchParams({}, { replace: true });
     } else if (editId && !loading) {
       if (leads.some((l) => l.id === editId)) setOpenId(editId);
@@ -217,7 +223,7 @@ export default function AdminClients() {
     <div className="mx-auto flex max-w-[1400px] flex-col gap-4 px-4 py-4 lg:gap-5 lg:px-8 lg:py-7">
       <PageHeader title="Clients & demandes" count={loading ? undefined : leads.length}>
         <button type="button" onClick={() => void copyRequestLink()} className={btn.outline}><Link2 size={18} aria-hidden="true" /><span className="lg:hidden">Lien du formulaire</span><span className="hidden lg:inline">Copier le lien du formulaire public</span></button>
-        <button type="button" onClick={openNew} className={cn(btn.primary, "hidden lg:inline-flex")}><Plus size={18} aria-hidden="true" />Nouveau client</button>
+        <button type="button" onClick={() => openNew()} className={cn(btn.primary, "hidden lg:inline-flex")}><Plus size={18} aria-hidden="true" />Nouveau client</button>
       </PageHeader>
 
       {crmMissing && (
@@ -248,7 +254,7 @@ export default function AdminClients() {
 
       {loading && <div className="flex flex-col gap-2.5" aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="h-16 rounded-[10px] border border-border bg-card" />)}</div>}
       {!loading && !crmMissing && leads.length === 0 && (
-        <EmptyState title="Votre fichier clients commence ici" text="Ajoutez les coordonnées et les critères d’un client : les biens publiés qui correspondent s’afficheront dans sa fiche. Vous pouvez aussi partager le formulaire public." action={<button type="button" onClick={openNew} className={btn.primary}><Plus size={18} aria-hidden="true" />Ajouter un client</button>} />
+        <EmptyState title="Votre fichier clients commence ici" text="Ajoutez les coordonnées et les critères d’un client : les biens publiés qui correspondent s’afficheront dans sa fiche. Vous pouvez aussi partager le formulaire public." action={<button type="button" onClick={() => openNew()} className={btn.primary}><Plus size={18} aria-hidden="true" />Ajouter un client</button>} />
       )}
       {!loading && leads.length > 0 && filtered.length === 0 && <EmptyState title="Aucun client ne correspond" text="Essayez un autre mot ou retirez un filtre." />}
 

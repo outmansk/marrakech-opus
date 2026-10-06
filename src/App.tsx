@@ -27,6 +27,7 @@ const AdminVisites = lazy(() => import("./pages/admin/AdminVisites"));
 const AdminClients = lazy(() => import("./pages/admin/AdminClients"));
 const AdminDocuments = lazy(() => import("./pages/admin/AdminDocuments"));
 const AdminAgenda = lazy(() => import("./pages/admin/AdminAgenda"));
+const AdminMessages = lazy(() => import("./pages/admin/AdminMessages"));
 const ProtectedRoute = lazy(() => import("./components/ProtectedRoute"));
 
 const queryClient = new QueryClient({
@@ -73,6 +74,7 @@ const AnimatedRoutes = () => {
           <Route path="clients" element={<AdminClients />} />
           <Route path="documents" element={<AdminDocuments />} />
           <Route path="agenda" element={<AdminAgenda />} />
+          <Route path="messages" element={<AdminMessages />} />
         </Route>
 
         {/* ── 404 ─────────────────────────────────────────────── */}

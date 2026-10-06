@@ -149,6 +149,7 @@ CREATE TABLE public.contact_messages (
   email TEXT NOT NULL CHECK (length(email) <= 254),
   phone TEXT CHECK (phone IS NULL OR length(phone) <= 40),
   message TEXT NOT NULL CHECK (length(message) <= 5000),
+  traite BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 

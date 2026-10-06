@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   ListTodo,
   LogOut,
+  Mail,
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
@@ -98,10 +99,11 @@ export default function AdminLayout() {
     { path: `${BASE}/visites`, label: "Demandes de visite", short: "Visites", icon: CalendarCheck, count: counts?.pendingVisits },
     { path: `${BASE}/clients`, label: "Clients & demandes", short: "Clients", icon: UsersRound, count: counts?.followUps },
     { path: `${BASE}/documents`, label: "Contrats & reçus", short: "Contrats", icon: Files },
+    { path: `${BASE}/messages`, label: "Messages du site", short: "Messages", icon: Mail, count: counts?.newMessages },
   ];
   const isActive = (path: string) => location.pathname.startsWith(path);
   const current = nav.find((item) => isActive(item.path));
-  // nav : 0 accueil, 1 agenda, 2 biens, 3 blog, 4 visites, 5 clients, 6 contrats
+  // nav : 0 accueil, 1 agenda, 2 biens, 3 blog, 4 visites, 5 clients, 6 contrats, 7 messages
   const tabs = [nav[0], nav[1], nav[2], nav[5]];
   const moreActive = !tabs.some((item) => isActive(item.path));
 
@@ -211,7 +213,7 @@ export default function AdminLayout() {
         <button type="button" onClick={() => setSheet("more")} aria-expanded={sheet === "more"} className={cn("flex h-16 flex-col items-center justify-center gap-1 text-xs", moreActive ? "font-semibold text-primary" : "font-medium text-muted-foreground")}>
           <span className="relative">
             <Menu size={22} strokeWidth={1.7} aria-hidden="true" />
-            {!!counts?.pendingVisits && <span className="absolute -right-1.5 -top-1 h-2.5 w-2.5 rounded-full bg-accent ring-2 ring-card" aria-label={`${counts.pendingVisits} visites en attente`} />}
+            {!!(counts?.pendingVisits || counts?.newMessages) && <span className="absolute -right-1.5 -top-1 h-2.5 w-2.5 rounded-full bg-accent ring-2 ring-card" aria-label="Visites ou messages à traiter" />}
           </span>
           Plus
         </button>
@@ -233,7 +235,7 @@ export default function AdminLayout() {
             ))}
             {sheet === "more" && (
               <>
-                {[nav[4], nav[3], nav[6]].map((item) => (
+                {[nav[7], nav[4], nav[3], nav[6]].map((item) => (
                   <Link key={item.path} to={item.path} className={cn("flex min-h-[52px] items-center gap-3 rounded-md px-3 text-[15px] hover:bg-muted", isActive(item.path) ? "font-semibold text-primary" : "font-medium")}>
                     <item.icon size={20} strokeWidth={1.7} aria-hidden="true" /><span className="flex-1">{item.label}</span><CountBadge count={item.count ?? 0} />
                   </Link>

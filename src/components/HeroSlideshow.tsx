@@ -48,7 +48,7 @@ const HeroSlideshow = () => {
           <img
             src={mobileHeroImage}
             alt={tL("Villa de prestige avec piscine à Marrakech au coucher du soleil", "Luxury villa with pool in Marrakech at sunset", "Villa de lujo con piscina en Marrakech al atardecer")}
-            fetchPriority="high"
+            {...{ fetchpriority: "high" }} // React 18 ne reconnaît que l’attribut HTML en minuscules
             className="h-full w-full object-cover object-[58%_50%] lg:object-[50%_60%]"
           />
         </motion.picture>

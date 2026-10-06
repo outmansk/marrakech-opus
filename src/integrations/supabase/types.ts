@@ -186,6 +186,7 @@ export type Database = {
           email: string
           phone: string | null
           message: string
+          traite: boolean
           created_at: string
         }
         Insert: {
@@ -194,6 +195,7 @@ export type Database = {
           email: string
           phone?: string | null
           message: string
+          traite?: boolean
           created_at?: string
         }
         Update: {
@@ -202,6 +204,7 @@ export type Database = {
           email?: string
           phone?: string | null
           message?: string
+          traite?: boolean
           created_at?: string
         }
         Relationships: []
