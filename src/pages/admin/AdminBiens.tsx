@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { supabase } from '@/lib/supabase';
 import { Plus, SlidersHorizontal, LayoutGrid, Search, X, Pencil, Eye, EyeOff, Trash2, ExternalLink } from 'lucide-react';
 
 import { useProperties } from '@/hooks/useBiens';
@@ -108,6 +110,22 @@ export default function AdminBiens() {
     setSelectedBien(bien);
     setSheetOpen(true);
   };
+
+  // Liens directs depuis le tableau de bord ou le bouton « + » : ?new=1 ou ?edit=<id>
+  const [searchParams, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    const editId = searchParams.get('edit');
+    if (searchParams.get('new') === '1') {
+      handleAddNew();
+      setSearchParams({}, { replace: true });
+    } else if (editId) {
+      void supabase.from('properties_v2').select('*').eq('id', editId).single().then(({ data }) => {
+        if (data) handleEdit(data as Bien);
+        setSearchParams({}, { replace: true });
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const resetFilters = () => {
     setFilterType('all');

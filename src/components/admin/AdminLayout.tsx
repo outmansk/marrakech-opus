@@ -1,331 +1,246 @@
-import { useState, useEffect } from "react";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import type { Session } from "@supabase/supabase-js";
 import {
-  LayoutDashboard,
   Building2,
-  FileText,
   CalendarCheck,
-  UsersRound,
+  ExternalLink,
+  FileText,
   Files,
+  Home,
+  LayoutDashboard,
   LogOut,
   Menu,
+  PanelLeftClose,
+  PanelLeftOpen,
+  PenLine,
+  Plus,
+  UserPlus,
+  UsersRound,
   X,
-  ExternalLink,
-  ChevronRight,
 } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
-import type { Session } from "@supabase/supabase-js";
+import { useAdminCounts } from "@/hooks/useAdminCounts";
+import { CountBadge } from "@/components/admin/StatusBadge";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
-// ─── Nav item type ────────────────────────────────────────────────────────────
+const BASE = "/manage-xk92p";
+const COLLAPSE_KEY = "lim-admin-sidebar-collapsed";
+
 interface NavItem {
   path: string;
   label: string;
+  short: string;
   icon: React.ElementType;
-  active: boolean;
-  badge?: number;
+  count?: number;
 }
 
-// ─── Sidebar Nav Link ─────────────────────────────────────────────────────────
-function SidebarLink({ item, collapsed, onClick }: { item: NavItem; collapsed: boolean; onClick?: () => void }) {
-  const navigate = useNavigate();
-  return (
-    <button
-      onClick={() => { navigate(item.path); onClick?.(); }}
-      title={collapsed ? item.label : undefined}
-      className={cn(
-        "relative min-h-11 w-full flex items-center gap-3 px-3 py-2.5 text-left transition-all duration-300 group rounded-lg",
-        item.active
-          ? "bg-primary/8 text-primary font-medium"
-          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-      )}
-    >
-      {/* Active indicator — animated bar */}
-      {item.active && (
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 bg-gradient-to-b from-primary to-primary/60 rounded-r-full admin-nav-indicator" />
-      )}
-
-      <div className={cn(
-        "shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300",
-        item.active
-          ? "bg-primary/12 text-primary"
-          : "bg-transparent text-muted-foreground group-hover:bg-muted/80 group-hover:text-foreground"
-      )}>
-        <item.icon
-          size={16}
-          strokeWidth={item.active ? 2 : 1.5}
-        />
-      </div>
-
-      {!collapsed && (
-        <>
-          <span className="text-[11px] tracking-[0.18em] uppercase font-sans flex-1 transition-colors">
-            {item.label}
-          </span>
-          {item.badge !== undefined && item.badge > 0 && (
-            <span className="text-[9px] bg-gradient-to-r from-terracotta to-terracotta/80 text-white px-2 py-0.5 rounded-full font-medium shadow-sm">
-              {item.badge}
-            </span>
-          )}
-          {item.active && (
-            <ChevronRight size={12} className="text-primary/50 shrink-0" />
-          )}
-        </>
-      )}
-    </button>
-  );
+function readCollapsed() {
+  try {
+    return localStorage.getItem(COLLAPSE_KEY) === "1";
+  } catch {
+    return false;
+  }
 }
 
-// ─── User Avatar ──────────────────────────────────────────────────────────────
-function UserAvatar({ email, size = 'md' }: { email: string; size?: 'sm' | 'md' }) {
-  const initials = email
-    ? email.split('@')[0].slice(0, 2).toUpperCase()
-    : 'AD';
-  
-  const sizeClass = size === 'sm' ? 'w-7 h-7 text-[10px]' : 'w-8 h-8 text-[11px]';
-  
-  return (
-    <div className={cn(
-      sizeClass,
-      "rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center font-medium text-primary/80 shrink-0 ring-1 ring-primary/10"
-    )}>
-      {initials}
-    </div>
-  );
-}
-
-// ─── Component ────────────────────────────────────────────────────────────────
 export default function AdminLayout() {
   const [session, setSession] = useState<Session | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { t } = useTranslation();
+  const [collapsed, setCollapsed] = useState(readCollapsed);
+  const [sheet, setSheet] = useState<"add" | "more" | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { data: counts } = useAdminCounts();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (!session) navigate("/manage-xk92p/login", { replace: true });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession);
+      if (!nextSession) navigate(`${BASE}/login`, { replace: true });
     });
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (!session) navigate("/manage-xk92p/login", { replace: true });
+    supabase.auth.getSession().then(({ data: { session: current } }) => {
+      setSession(current);
+      if (!current) navigate(`${BASE}/login`, { replace: true });
     });
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/manage-xk92p/login", { replace: true });
+  // Les jetons du back-office s'appliquent aussi aux fenêtres (Sheet, Dialog) rendues hors de la page.
+  useEffect(() => {
+    document.body.classList.add("admin");
+    return () => document.body.classList.remove("admin");
+  }, []);
+
+  useEffect(() => setSheet(null), [location.pathname, location.search]);
+
+  const toggleCollapsed = () => {
+    setCollapsed((value) => {
+      try {
+        localStorage.setItem(COLLAPSE_KEY, value ? "0" : "1");
+      } catch {
+        // Préférence non mémorisée : sans conséquence.
+      }
+      return !value;
+    });
   };
 
-  const navItems: NavItem[] = [
-    {
-      path: "/manage-xk92p/dashboard",
-      label: t("admin.tableau_bord"),
-      icon: LayoutDashboard,
-      active: location.pathname.includes("/manage-xk92p/dashboard"),
-    },
-    {
-      path: "/manage-xk92p/biens",
-      label: t("admin.biens"),
-      icon: Building2,
-      active: location.pathname.includes("/manage-xk92p/biens"),
-    },
-    {
-      path: "/manage-xk92p/blog",
-      label: t("admin.blog"),
-      icon: FileText,
-      active: location.pathname.includes("/manage-xk92p/blog"),
-    },
-    {
-      path: "/manage-xk92p/visites",
-      label: t("admin.visites"),
-      icon: CalendarCheck,
-      active: location.pathname.includes("/manage-xk92p/visites"),
-    },
-    {
-      path: "/manage-xk92p/clients",
-      label: "Clients & demandes",
-      icon: UsersRound,
-      active: location.pathname.includes("/manage-xk92p/clients"),
-    },
-    {
-      path: "/manage-xk92p/documents",
-      label: "Contrats & reçus",
-      icon: Files,
-      active: location.pathname.includes("/manage-xk92p/documents"),
-    },
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate(`${BASE}/login`, { replace: true });
+  };
+
+  const nav: NavItem[] = [
+    { path: `${BASE}/dashboard`, label: "Tableau de bord", short: "Accueil", icon: LayoutDashboard },
+    { path: `${BASE}/biens`, label: "Biens", short: "Biens", icon: Building2 },
+    { path: `${BASE}/blog`, label: "Blog", short: "Blog", icon: FileText },
+    { path: `${BASE}/visites`, label: "Demandes de visite", short: "Visites", icon: CalendarCheck, count: counts?.pendingVisits },
+    { path: `${BASE}/clients`, label: "Clients & demandes", short: "Clients", icon: UsersRound, count: counts?.followUps },
+    { path: `${BASE}/documents`, label: "Contrats & reçus", short: "Contrats", icon: Files },
   ];
-  const currentPage = navItems.find((item) => item.active)?.label ?? "Administration";
+  const isActive = (path: string) => location.pathname.startsWith(path);
+  const current = nav.find((item) => isActive(item.path));
+  const tabs = [nav[0], nav[1], nav[4], nav[3]];
+  const moreActive = !tabs.some((item) => isActive(item.path));
+
+  const addActions = [
+    { label: "Ajouter un bien", icon: Building2, to: `${BASE}/biens?new=1` },
+    { label: "Ajouter un client", icon: UserPlus, to: `${BASE}/clients?new=1` },
+    { label: "Nouvel article", icon: PenLine, to: `${BASE}/blog?new=1` },
+  ];
 
   if (!session) return null;
 
-  // ── Sidebar content (shared desktop + mobile) ──
-  const SidebarContent = ({ mobile = false }: { mobile?: boolean }) => (
-    <div className="flex flex-col h-full">
-      {/* Brand */}
-      <div className={cn("px-4 py-6 border-b border-border/40", sidebarCollapsed && !mobile && "px-3")}>
-        <button
-          onClick={() => navigate("/manage-xk92p/dashboard")}
-          className="flex items-center gap-3 w-full group"
-        >
-          {/* Logo mark — gradient accent */}
-          <div className={cn(
-            "shrink-0 flex items-center justify-center rounded-xl transition-all duration-300 bg-gradient-to-br from-primary/10 to-accent/10 ring-1 ring-primary/15 group-hover:ring-primary/30 group-hover:shadow-md",
-            sidebarCollapsed && !mobile ? "w-9 h-9" : "w-10 h-10"
-          )}>
-            <span className="font-serif text-lg text-primary leading-none font-medium">L</span>
-          </div>
-          {(!sidebarCollapsed || mobile) && (
-            <div className="text-left min-w-0">
-              <p className="font-serif text-sm leading-tight text-foreground truncate">
-                Live In Marrakech
-              </p>
-              <p className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground font-sans mt-0.5">
-                Administration
-              </p>
-            </div>
-          )}
-        </button>
-      </div>
-
-      {/* Navigation */}
-      <nav className={cn("flex-1 px-3 py-5 space-y-1 overflow-y-auto", sidebarCollapsed && !mobile && "px-2")}>
-        {!sidebarCollapsed && !mobile && (
-          <p className="text-[9px] tracking-[0.3em] uppercase text-muted-foreground/60 font-sans px-3 mb-3">
-            Navigation
-          </p>
-        )}
-        {navItems.map((item) => (
-          <SidebarLink
-            key={item.path}
-            item={item}
-            collapsed={sidebarCollapsed && !mobile}
-            onClick={mobile ? () => setSidebarOpen(false) : undefined}
-          />
-        ))}
-      </nav>
-
-      {/* Footer */}
-      <div className={cn(
-        "px-3 py-4 border-t border-border/40 space-y-2",
-        sidebarCollapsed && !mobile && "px-2"
-      )}>
-        {/* Lien site public */}
-        {(!sidebarCollapsed || mobile) && (
-          <a
-            href="/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2.5 px-3 py-2 text-[10px] tracking-[0.18em] uppercase text-muted-foreground hover:text-foreground transition-all duration-200 group rounded-lg hover:bg-muted/40"
-          >
-            <ExternalLink size={13} strokeWidth={1.5} className="shrink-0" />
-            Voir le site
-          </a>
-        )}
-        {/* Logout */}
-        <button
-          onClick={handleLogout}
-          className={cn(
-            "flex items-center gap-2.5 px-3 py-2 w-full text-[10px] tracking-[0.18em] uppercase text-muted-foreground hover:text-destructive transition-all duration-200 rounded-lg hover:bg-destructive/5",
-            sidebarCollapsed && !mobile && "justify-center px-2"
-          )}
-          title={sidebarCollapsed && !mobile ? t("auth.deconnexion") : undefined}
-        >
-          <LogOut size={14} strokeWidth={1.5} className="shrink-0" />
-          {(!sidebarCollapsed || mobile) && <span>{t("auth.deconnexion")}</span>}
-        </button>
-
-        {/* User info */}
-        {(!sidebarCollapsed || mobile) && session?.user?.email && (
-          <div className="flex items-center gap-2.5 px-3 py-2">
-            <UserAvatar email={session.user.email} size="sm" />
-            <p className="text-[10px] text-muted-foreground/70 tracking-wide truncate flex-1">
-              {session.user.email}
-            </p>
-          </div>
-        )}
-        {sidebarCollapsed && !mobile && session?.user?.email && (
-          <div className="flex justify-center py-1" title={session.user.email}>
-            <UserAvatar email={session.user.email} size="sm" />
-          </div>
-        )}
-      </div>
-    </div>
-  );
+  const email = session.user?.email ?? "";
+  const initials = email ? email.split("@")[0].slice(0, 2).toUpperCase() : "LM";
 
   return (
-    <div className="min-h-[100svh] bg-gradient-to-br from-muted/30 via-background to-muted/20 flex">
-
-      {/* ── Desktop Sidebar ── */}
-      <aside
-        className={cn(
-          "hidden md:flex flex-col sticky top-0 h-screen admin-sidebar border-r border-border/50 transition-all duration-300 shrink-0 z-30",
-          sidebarCollapsed ? "w-[64px]" : "w-[232px]"
-        )}
-      >
-        <SidebarContent />
-
-        {/* Collapse toggle — floating pill */}
-        <button
-          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          className="absolute -right-3 top-20 w-6 h-6 bg-background border border-border/60 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/30 hover:shadow-md transition-all duration-300 shadow-sm z-10"
-          title={sidebarCollapsed ? "Déployer" : "Réduire"}
-        >
-          <ChevronRight
-            size={12}
-            className={cn("transition-transform duration-300", sidebarCollapsed ? "rotate-0" : "rotate-180")}
-          />
-        </button>
-      </aside>
-
-      {/* ── Mobile: slide-in overlay ── */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40 md:hidden backdrop-blur-sm"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-      <aside
-        className={cn(
-          "fixed inset-y-0 left-0 h-[100svh] w-[min(86vw,20rem)] admin-sidebar border-r border-border/50 z-50 flex flex-col transition-transform duration-300 md:hidden shadow-2xl",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        )}
-      >
-        <div className="flex items-center justify-between px-4 h-14 border-b border-border/40 shrink-0">
-          <span className="font-serif text-sm">Menu Admin</span>
-          <button type="button" aria-label="Fermer le menu" onClick={() => setSidebarOpen(false)} className="grid h-11 w-11 place-items-center text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/50 transition-colors">
-            <X size={18} />
+    <div className="admin flex min-h-[100svh] bg-background text-foreground">
+      {/* ── Desktop : barre latérale ── */}
+      <aside className={cn("sticky top-0 hidden h-[100svh] shrink-0 flex-col border-r border-border bg-muted transition-[width] duration-200 lg:flex", collapsed ? "w-[72px]" : "w-[260px]")}>
+        <Link to={`${BASE}/dashboard`} className={cn("flex h-[76px] shrink-0 items-center font-serif font-semibold text-foreground", collapsed ? "justify-center text-xl" : "px-6 text-2xl")}>
+          {collapsed ? "LM" : "Live In Marrakech"}
+        </Link>
+        <nav aria-label="Navigation principale" className={cn("flex flex-1 flex-col gap-1 overflow-y-auto", collapsed ? "items-center px-2" : "px-3.5")}>
+          {nav.map((item) => {
+            const active = isActive(item.path);
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                aria-current={active ? "page" : undefined}
+                title={collapsed ? item.label : undefined}
+                className={cn(
+                  "relative flex min-h-11 items-center gap-3 rounded-md text-sm transition-colors",
+                  collapsed ? "w-11 justify-center" : "px-2.5",
+                  active ? "bg-[hsl(72_17%_87%)] font-semibold text-foreground" : "font-medium text-[hsl(36_8%_21%)] hover:bg-[hsl(39_35%_90%)]",
+                )}
+              >
+                <item.icon size={18} strokeWidth={1.7} className="shrink-0" aria-hidden="true" />
+                {collapsed ? (
+                  !!item.count && <span className="absolute -right-0.5 top-0.5 h-2.5 w-2.5 rounded-full bg-accent ring-2 ring-muted" aria-label={`${item.count} à traiter`} />
+                ) : (
+                  <>
+                    <span className="flex-1">{item.label}</span>
+                    <CountBadge count={item.count ?? 0} />
+                  </>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+        <div className={cn("flex flex-col gap-1 border-t border-border py-3", collapsed ? "items-center px-2" : "px-3.5")}>
+          <a href="/" target="_blank" rel="noopener noreferrer" title={collapsed ? "Voir le site" : undefined} className={cn("flex min-h-11 items-center gap-3 rounded-md text-sm font-medium text-[hsl(36_8%_21%)] hover:bg-[hsl(39_35%_90%)]", collapsed ? "w-11 justify-center" : "px-2.5")}>
+            <ExternalLink size={18} strokeWidth={1.7} aria-hidden="true" />{!collapsed && "Voir le site"}
+          </a>
+          {!collapsed && (
+            <div className="flex items-center gap-2.5 px-2.5 py-2">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-soft text-xs font-semibold text-[hsl(72_19%_23%)]">{initials}</span>
+              <span className="min-w-0 flex-1 truncate text-[13px] text-muted-foreground" title={email}>{email}</span>
+            </div>
+          )}
+          <button type="button" onClick={handleLogout} title={collapsed ? "Déconnexion" : undefined} className={cn("flex min-h-11 items-center gap-3 rounded-md text-sm font-medium text-[hsl(36_8%_21%)] hover:bg-[hsl(39_35%_90%)] hover:text-destructive", collapsed ? "w-11 justify-center" : "px-2.5")}>
+            <LogOut size={18} strokeWidth={1.7} aria-hidden="true" />{!collapsed && "Déconnexion"}
+          </button>
+          <button type="button" onClick={toggleCollapsed} aria-label={collapsed ? "Déplier le menu" : "Replier le menu"} className={cn("flex min-h-10 items-center gap-3 rounded-md text-[13px] font-medium text-muted-foreground hover:bg-[hsl(39_35%_90%)]", collapsed ? "w-11 justify-center" : "px-2.5")}>
+            {collapsed ? <PanelLeftOpen size={18} strokeWidth={1.7} aria-hidden="true" /> : <><PanelLeftClose size={18} strokeWidth={1.7} aria-hidden="true" />Replier le menu</>}
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto">
-          <SidebarContent mobile />
-        </div>
       </aside>
 
-      {/* ── Main content ── */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-
-        {/* Top bar — mobile only */}
-        <header className="md:hidden sticky top-0 bg-background/95 backdrop-blur-lg border-b border-border/50 z-20 px-3 h-14 grid grid-cols-[44px_minmax(0,1fr)_44px] items-center gap-2 shrink-0">
-          <button type="button" aria-label="Ouvrir le menu" aria-expanded={sidebarOpen} onClick={() => setSidebarOpen(true)} className="grid h-11 w-11 place-items-center text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted/50 transition-colors">
-            <Menu size={20} />
-          </button>
-          <div className="min-w-0 text-center leading-tight"><span className="block truncate font-serif text-sm">Live In Marrakech</span><span className="block truncate text-[9px] uppercase tracking-[0.14em] text-muted-foreground">{currentPage}</span></div>
-          <button type="button" aria-label={t("auth.deconnexion")} onClick={handleLogout} className="grid h-11 w-11 place-items-center text-muted-foreground hover:text-destructive rounded-lg hover:bg-destructive/5 transition-colors">
-            <LogOut size={16} />
-          </button>
+      <div className="flex min-w-0 flex-1 flex-col">
+        {/* ── Mobile : en-tête compact ── */}
+        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border bg-background/95 pl-4 pr-1 backdrop-blur lg:hidden">
+          <span className="truncate font-serif text-[22px] font-semibold leading-none">{current?.label ?? "Live In Marrakech"}</span>
+          <a href="/" target="_blank" rel="noopener noreferrer" aria-label="Voir le site" className="grid h-11 w-11 shrink-0 place-items-center rounded-md text-[hsl(36_8%_21%)]">
+            <ExternalLink size={20} strokeWidth={1.7} aria-hidden="true" />
+          </a>
         </header>
 
-        {/* Page content */}
-        <main className="min-w-0 flex-1 overflow-y-auto overscroll-y-contain">
+        <main className="min-w-0 flex-1 pb-[calc(88px+env(safe-area-inset-bottom))] lg:pb-0">
           <Outlet />
         </main>
       </div>
+
+      {/* ── Mobile : bouton « + » ── */}
+      <button
+        type="button"
+        onClick={() => setSheet("add")}
+        aria-label="Ajouter"
+        className="fixed bottom-[calc(80px+env(safe-area-inset-bottom))] right-4 z-40 grid h-14 w-14 place-items-center rounded-full bg-primary text-white shadow-[0_10px_24px_-10px_rgba(61,70,40,0.7)] lg:hidden"
+      >
+        <Plus size={24} strokeWidth={2} aria-hidden="true" />
+      </button>
+
+      {/* ── Mobile : barre d'onglets ── */}
+      <nav aria-label="Navigation principale" className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] lg:hidden">
+        {tabs.map((item) => {
+          const active = isActive(item.path);
+          return (
+            <Link key={item.path} to={item.path} aria-current={active ? "page" : undefined} className={cn("relative flex h-16 flex-col items-center justify-center gap-1 text-xs", active ? "font-semibold text-primary" : "font-medium text-muted-foreground")}>
+              {item.path.endsWith("dashboard") ? <Home size={22} strokeWidth={1.7} aria-hidden="true" /> : <item.icon size={22} strokeWidth={1.7} aria-hidden="true" />}
+              {item.short}
+              {!!item.count && <span className="absolute left-[calc(50%+6px)] top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent px-1 text-[11px] font-semibold leading-none text-white">{item.count}</span>}
+            </Link>
+          );
+        })}
+        <button type="button" onClick={() => setSheet("more")} aria-expanded={sheet === "more"} className={cn("flex h-16 flex-col items-center justify-center gap-1 text-xs", moreActive ? "font-semibold text-primary" : "font-medium text-muted-foreground")}>
+          <Menu size={22} strokeWidth={1.7} aria-hidden="true" />Plus
+        </button>
+      </nav>
+
+      <Sheet open={sheet !== null} onOpenChange={(open) => !open && setSheet(null)}>
+        <SheetContent side="bottom" className="rounded-t-[14px] border-border bg-card px-4 pb-[calc(20px+env(safe-area-inset-bottom))] pt-3 lg:hidden [&>button]:hidden">
+          <span aria-hidden="true" className="mx-auto mb-3 block h-1 w-10 rounded-full bg-input" />
+          <SheetHeader className="mb-2 flex-row items-center justify-between space-y-0 text-left">
+            <SheetTitle className="font-serif text-[22px] font-semibold">{sheet === "add" ? "Ajouter" : "Plus"}</SheetTitle>
+            <button type="button" onClick={() => setSheet(null)} aria-label="Fermer" className="grid h-11 w-11 place-items-center rounded-md"><X size={20} aria-hidden="true" /></button>
+          </SheetHeader>
+          <SheetDescription className="sr-only">{sheet === "add" ? "Choisissez ce que vous voulez créer." : "Autres sections du back-office."}</SheetDescription>
+          <div className="flex flex-col gap-1">
+            {sheet === "add" && addActions.map((action) => (
+              <Link key={action.to} to={action.to} className="flex min-h-[52px] items-center gap-3 rounded-md px-3 text-[15px] font-semibold hover:bg-muted">
+                <span className="grid h-9 w-9 place-items-center rounded-md bg-primary-soft text-[hsl(72_19%_23%)]"><action.icon size={18} strokeWidth={1.7} aria-hidden="true" /></span>{action.label}
+              </Link>
+            ))}
+            {sheet === "more" && (
+              <>
+                {[nav[2], nav[5]].map((item) => (
+                  <Link key={item.path} to={item.path} className={cn("flex min-h-[52px] items-center gap-3 rounded-md px-3 text-[15px] hover:bg-muted", isActive(item.path) ? "font-semibold text-primary" : "font-medium")}>
+                    <item.icon size={20} strokeWidth={1.7} aria-hidden="true" />{item.label}
+                  </Link>
+                ))}
+                <a href="/" target="_blank" rel="noopener noreferrer" className="flex min-h-[52px] items-center gap-3 rounded-md px-3 text-[15px] font-medium hover:bg-muted">
+                  <ExternalLink size={20} strokeWidth={1.7} aria-hidden="true" />Voir le site
+                </a>
+                <div className="my-1 h-px bg-border" />
+                <p className="truncate px-3 py-1 text-[13px] text-muted-foreground">{email}</p>
+                <button type="button" onClick={handleLogout} className="flex min-h-[52px] items-center gap-3 rounded-md px-3 text-left text-[15px] font-semibold text-destructive hover:bg-muted">
+                  <LogOut size={20} strokeWidth={1.7} aria-hidden="true" />Déconnexion
+                </button>
+              </>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

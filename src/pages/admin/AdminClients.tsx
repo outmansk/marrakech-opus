@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { CalendarClock, Home, Link2, MessageCircle, Pencil, Plus, Search, UsersRound } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -126,6 +126,21 @@ export default function AdminClients() {
     setForm({ ...lead, email: lead.email ?? "", property_types: lead.property_types ?? [], preferred_areas: lead.preferred_areas ?? [], areas_text: (lead.preferred_areas ?? []).join(", "), notes: lead.notes ?? "", profession: lead.profession ?? "", client_profile: lead.client_profile ?? "", reference_location: lead.reference_location ?? "" });
     setDialogOpen(true);
   };
+
+  // Liens directs : ?new=1 ou ?edit=<id>
+  const [searchParams, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    const editId = searchParams.get("edit");
+    if (searchParams.get("new") === "1") {
+      openNew();
+      setSearchParams({}, { replace: true });
+    } else if (editId && !loading) {
+      const lead = leads.find((l) => l.id === editId);
+      if (lead) openEdit(lead);
+      setSearchParams({}, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, loading, leads]);
 
   const saveLead = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

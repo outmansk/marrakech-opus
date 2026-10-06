@@ -61,6 +61,11 @@ export default {
           foreground: "hsl(var(--bronze-foreground))",
         },
         terracotta: "hsl(var(--terracotta))",
+        "primary-soft": "hsl(var(--primary-soft))",
+        success: { DEFAULT: "hsl(var(--success))", foreground: "hsl(var(--success-foreground))" },
+        warning: { DEFAULT: "hsl(var(--warning))", foreground: "hsl(var(--warning-foreground))" },
+        closed: { DEFAULT: "hsl(var(--closed))", foreground: "hsl(var(--closed-foreground))" },
+        whatsapp: "hsl(var(--whatsapp))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

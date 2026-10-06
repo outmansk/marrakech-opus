@@ -45,6 +45,16 @@
     --font-serif: 'Cormorant Garamond', Georgia, serif;
     --font-sans: 'Montserrat', -apple-system, sans-serif;
 
+    /* Back-office : statuts et actions de contact */
+    --primary-soft: 72 23% 92%;
+    --success: 92 30% 91%;
+    --success-foreground: 103 30% 27%;
+    --warning: 41 69% 89%;
+    --warning-foreground: 38 74% 27%;
+    --closed: 5 23% 92%;
+    --closed-foreground: 3 19% 38%;
+    --whatsapp: 152 39% 30%;
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -480,5 +490,31 @@ html.lenis body {
   }
   .floating-orb {
     animation: none !important;
+  }
+}
+
+/* ── Back-office : jetons du système de design admin ── */
+@layer base {
+  .admin {
+    --background: 39 43% 97%;
+    --foreground: 40 10% 12%;
+    --card: 40 100% 99%;
+    --card-foreground: 40 10% 12%;
+    --popover: 40 100% 99%;
+    --popover-foreground: 40 10% 12%;
+    --muted: 39 47% 94%;
+    --muted-foreground: 36 9% 34%;
+    --border: 35 30% 86%;
+    --input: 35 26% 78%;
+    --ring: 70 19% 34%;
+    --primary: 70 19% 34%;
+    --primary-foreground: 0 0% 100%;
+    --accent: 15 39% 44%;
+    --accent-foreground: 0 0% 100%;
+    --bronze: 25 20% 45%;
+    --destructive: 9 56% 39%;
+    --destructive-foreground: 0 0% 100%;
+    --radius: 0.375rem;
+    font-weight: 400;
   }
 }

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useArticles, useDeleteArticle, useToggleArticleStatus } from '@/hooks/useArticles';
 import {
@@ -68,6 +69,22 @@ export default function AdminBlog() {
     setEditingArticle(article);
     setIsSheetOpen(true);
   };
+
+  // Liens directs : ?new=1 ou ?edit=<id>
+  const [searchParams, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    const editId = searchParams.get('edit');
+    if (searchParams.get('new') === '1') {
+      setEditingArticle(undefined);
+      setIsSheetOpen(true);
+      setSearchParams({}, { replace: true });
+    } else if (editId && articles) {
+      const article = articles.find((a) => a.id === editId);
+      if (article) handleEdit(article);
+      setSearchParams({}, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, articles]);
 
   const handleClose = () => {
     setEditingArticle(undefined);
