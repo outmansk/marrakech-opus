@@ -1,19 +1,15 @@
-import { useTranslation } from 'react-i18next';
-
-const LANGUAGES = [
-  { code: 'fr', label: 'FR', flag: '🇫🇷' },
-  { code: 'en', label: 'EN', flag: '🇬🇧' },
-  { code: 'es', label: 'ES', flag: '🇪🇸' },
-] as const;
+import { Link, useLocation } from 'react-router-dom';
+import { LANGS, langFromPath, languageSwitchPath } from '@/i18n/routing';
 
 interface LanguageSwitcherProps {
   /** 'light' = texte blanc (sur fond sombre hero), 'dark' = texte foncé (header scrollé) */
   variant?: 'light' | 'dark';
 }
 
+/** Real links to the same page in each language: crawlers follow them, visitors keep their place. */
 export default function LanguageSwitcher({ variant = 'dark' }: LanguageSwitcherProps) {
-  const { i18n } = useTranslation();
-  const currentLang = i18n.language?.slice(0, 2) ?? 'fr';
+  const { pathname, search } = useLocation();
+  const currentLang = langFromPath(pathname);
 
   const textClass = variant === 'light'
     ? 'text-white/70 hover:text-white'
@@ -24,19 +20,20 @@ export default function LanguageSwitcher({ variant = 'dark' }: LanguageSwitcherP
     : 'text-foreground font-semibold';
 
   return (
-    <div className="flex items-center gap-2" aria-label="Language switcher">
-      {LANGUAGES.map(({ code, label }) => (
-        <button
+    <nav className="flex items-center gap-2" aria-label="Language switcher">
+      {LANGS.map((code) => (
+        <Link
           key={code}
-          onClick={() => i18n.changeLanguage(code)}
+          to={languageSwitchPath(pathname, search, code)}
+          hrefLang={code}
           className={`flex items-center text-[10px] tracking-widest uppercase transition-colors duration-300 px-1 py-0.5
             ${currentLang === code ? activeClass : textClass}`}
-          aria-label={`Switch to ${label}`}
-          aria-pressed={currentLang === code}
+          aria-label={`Switch to ${code.toUpperCase()}`}
+          aria-current={currentLang === code ? 'true' : undefined}
         >
-          <span>{label}</span>
-        </button>
+          <span>{code.toUpperCase()}</span>
+        </Link>
       ))}
-    </div>
+    </nav>
   );
 }

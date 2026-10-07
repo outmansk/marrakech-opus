@@ -1,5 +1,6 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import PropertyRequest from "./PropertyRequest";
 
@@ -10,7 +11,7 @@ vi.mock("@/components/Header", () => ({ default: () => null }));
 vi.mock("@/components/Footer", () => ({ default: () => null }));
 
 function openRequest(project = "Louer longue durée") {
-  render(<MemoryRouter><PropertyRequest /></MemoryRouter>);
+  render(<HelmetProvider><MemoryRouter><PropertyRequest /></MemoryRouter></HelmetProvider>);
   fireEvent.click(screen.getByRole("radio", { name: project }));
   fireEvent.change(screen.getByLabelText("Le quartier idéal"), { target: { value: "Hivernage" } });
   fireEvent.click(screen.getByRole("button", { name: "Commencer" }));
@@ -25,7 +26,7 @@ afterEach(cleanup);
 
 describe("Property request guided flow", () => {
   it("starts without a project and unlocks the neighbourhood only after choosing one", () => {
-    render(<MemoryRouter><PropertyRequest /></MemoryRouter>);
+    render(<HelmetProvider><MemoryRouter><PropertyRequest /></MemoryRouter></HelmetProvider>);
     expect(screen.getByLabelText("Le quartier idéal")).toBeDisabled();
     expect(screen.getAllByRole("radio").every((radio) => !(radio as HTMLInputElement).checked)).toBe(true);
     fireEvent.click(screen.getByRole("button", { name: "Commencer" }));
@@ -115,7 +116,7 @@ describe("Property request guided flow", () => {
   });
 
   it("preserves the selection across English and Arabic translations", () => {
-    render(<MemoryRouter><PropertyRequest /></MemoryRouter>);
+    render(<HelmetProvider><MemoryRouter><PropertyRequest /></MemoryRouter></HelmetProvider>);
     fireEvent.click(screen.getByRole("radio", { name: "Séjourner" }));
     fireEvent.click(screen.getByRole("button", { name: "EN" }));
     expect(screen.getByRole("radio", { name: "Short stay" })).toBeChecked();

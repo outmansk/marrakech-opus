@@ -20,6 +20,8 @@ const articleSchema = z.object({
   title: z.string().trim().min(5, "Le titre doit faire au moins 5 caractères.").transform((v) => DOMPurify.sanitize(v)),
   slug: z.string().trim().min(3, "Indiquez l’adresse de l’article (ex. louer-a-marrakech).").regex(/^[a-z0-9-]+$/, "Lettres minuscules, chiffres et tirets uniquement.").transform((v) => DOMPurify.sanitize(v)),
   category: z.enum(["location-longue-duree", "sous-location", "vente", "terrain"]),
+  lang: z.enum(["fr", "en", "es"]),
+  translation_key: z.string().trim().regex(/^[a-z0-9-]*$/, "Lettres minuscules, chiffres et tirets uniquement.").optional(),
   content: z.string().min(20, "Le contenu est trop court (20 caractères minimum).").transform((v) => DOMPurify.sanitize(v)),
   excerpt: z.string().optional().transform((v) => (v ? DOMPurify.sanitize(v) : v)),
   image_url: z.string().url("Collez une adresse d’image complète (https://…).").optional().or(z.literal("")).transform((v) => (v ? DOMPurify.sanitize(v) : v)),
@@ -56,7 +58,7 @@ export function ArticleForm({ open, onOpenChange, article }: ArticleFormProps) {
   useEffect(() => {
     if (!open) return;
     form.reset({
-      title: article?.title || "", slug: article?.slug || "", category: article?.category || "vente", content: article?.content || "",
+      title: article?.title || "", slug: article?.slug || "", category: article?.category || "vente", lang: article?.lang || "fr", translation_key: article?.translation_key || "", content: article?.content || "",
       excerpt: article?.excerpt || "", image_url: article?.image_url || "", meta_title: article?.meta_title || "",
       meta_description: article?.meta_description || "", est_publie: article?.est_publie || false,
     });
@@ -67,6 +69,7 @@ export function ArticleForm({ open, onOpenChange, article }: ArticleFormProps) {
   const onSubmit = async (data: ArticleFormValues) => {
     const payload: TablesInsert<"articles"> = {
       title: data.title, slug: data.slug, category: data.category, content: data.content,
+      lang: data.lang, translation_key: data.translation_key || null,
       excerpt: data.excerpt || null, image_url: data.image_url || null, meta_title: data.meta_title || null,
       meta_description: data.meta_description || null, est_publie: data.est_publie ?? false,
     };
@@ -130,6 +133,19 @@ export function ArticleForm({ open, onOpenChange, article }: ArticleFormProps) {
                   <select {...register("category")} className={field.select}>
                     {Object.entries(ARTICLE_CATEGORY_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                   </select>
+                </label>
+                <label className="flex flex-col gap-1.5">
+                  <span className={field.label}>Langue de l’article</span>
+                  <select {...register("lang")} className={field.select}>
+                    <option value="fr">Français (/blog/…)</option>
+                    <option value="en">Anglais (/en/blog/…)</option>
+                    <option value="es">Espagnol (/es/blog/…)</option>
+                  </select>
+                </label>
+                <label className="flex flex-col gap-1.5">
+                  <span className={field.label}>Code de traduction (facultatif)</span>
+                  <input {...register("translation_key")} placeholder="acheter-au-maroc" className={cn(field.input, errors.translation_key && "border-destructive")} />
+                  {errors.translation_key ? <span role="alert" className="text-xs font-medium text-destructive">{errors.translation_key.message}</span> : <span className={field.help}>Le même code sur les versions FR, EN et ES d’un article les relie entre elles pour Google.</span>}
                 </label>
                 <label className="flex flex-col gap-1.5">
                   <span className={field.label}>Image de couverture (adresse)</span>

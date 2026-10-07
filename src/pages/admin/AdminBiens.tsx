@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { propertyPath } from "@/lib/propertyUrl";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Home, Pencil, Phone, Plus, Search, SlidersHorizontal, UserPlus, X } from "lucide-react";
 import { useContacts } from "@/hooks/useAgenda";
@@ -18,7 +19,7 @@ import { cn } from "@/lib/utils";
 type StatutFilter = BienStatut | "all";
 
 function shareText(bien: Bien) {
-  return `${bien.titre} — ${mainPrice(bien)}\n${window.location.origin}/bien/${bien.id}`;
+  return `${bien.titre} — ${mainPrice(bien)}\n${window.location.origin}${propertyPath(bien)}`;
 }
 
 function Thumb({ bien, className }: { bien: Bien; className: string }) {
@@ -73,7 +74,7 @@ function useBienActions(onEdit: (bien: Bien) => void) {
     bien.statut === "vendu-loue"
       ? { label: "Remettre en brouillon", onSelect: () => setStatut.mutate({ id: bien.id, statut: "brouillon" }) }
       : { label: "Marquer « Déjà loué / vendu »", onSelect: () => setStatut.mutate({ id: bien.id, statut: "vendu-loue" }) },
-    { label: "Voir sur le site", onSelect: () => undefined, href: `/bien/${bien.id}` },
+    { label: "Voir sur le site", onSelect: () => undefined, href: propertyPath(bien) },
     { label: "Envoyer sur WhatsApp", onSelect: () => undefined, href: `https://wa.me/?text=${encodeURIComponent(shareText(bien))}` },
     { label: "Supprimer…", danger: true, onSelect: () => setToDelete(bien) },
   ];

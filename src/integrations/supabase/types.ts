@@ -23,10 +23,12 @@ export type Database = {
           excerpt: string | null
           id: string
           image_url: string | null
+          lang: string
           meta_description: string | null
           meta_title: string | null
           slug: string
           title: string
+          translation_key: string | null
           updated_at: string
         }
         Insert: {
@@ -37,10 +39,12 @@ export type Database = {
           excerpt?: string | null
           id?: string
           image_url?: string | null
+          lang?: string
           meta_description?: string | null
           meta_title?: string | null
           slug: string
           title: string
+          translation_key?: string | null
           updated_at?: string
         }
         Update: {
@@ -51,10 +55,12 @@ export type Database = {
           excerpt?: string | null
           id?: string
           image_url?: string | null
+          lang?: string
           meta_description?: string | null
           meta_title?: string | null
           slug?: string
           title?: string
+          translation_key?: string | null
           updated_at?: string
         }
         Relationships: []

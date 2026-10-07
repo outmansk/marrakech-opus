@@ -4,13 +4,15 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroSlideshow from "@/components/HeroSlideshow";
 import PropertiesCarousel from "@/components/PropertiesCarousel";
-import servicesImage from "@/assets/slide1.jpg";
-import approachImage from "@/assets/slide4.jpg";
-import districtsImage from "@/assets/slide2.jpg";
-import customSearchImage from "@/assets/slide1_koutoubia.png";
+import servicesImage from "@/assets/slide1.webp";
+import approachImage from "@/assets/slide4.webp";
+import districtsImage from "@/assets/slide2.webp";
+import customSearchImage from "@/assets/slide1_koutoubia.webp";
 import SEOHead from "@/components/SEOHead";
 import { PageTransition, Reveal } from "@/components/motion/Animations";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
+import { useLocalePath } from "@/hooks/useLocalePath";
+import { landingPath } from "@/content/landings";
 import { QUARTIERS } from "@/types/property";
 
 const WHATSAPP_URL = "https://wa.me/212605387041?text=Bonjour%2C%20je%20souhaite%20%C3%AAtre%20conseill%C3%A9%20pour%20un%20bien%20%C3%A0%20Marrakech.";
@@ -21,6 +23,7 @@ const sectionTitleClass = "text-[40px] font-normal leading-[1.02] tracking-[-0.0
 
 const Index = () => {
   const tL = useLocalizedText();
+  const { lang, lp } = useLocalePath();
 
   const trust = [
     { icon: ShieldCheck, text: tL("Biens vérifiés", "Verified properties", "Propiedades verificadas") },
@@ -29,9 +32,9 @@ const Index = () => {
   ];
 
   const services = [
-    { title: tL("Acheter", "Buy", "Comprar"), text: tL("Une sélection précise, des visites privées et une négociation maîtrisée.", "A precise selection, private viewings and expert negotiation.", "Una selección precisa, visitas privadas y negociación experta."), to: "/catalogue?type=vente" },
-    { title: tL("Louer", "Rent", "Alquilar"), text: tL("Des adresses adaptées à votre rythme de vie, pour un mois ou une année.", "Homes adapted to your lifestyle, for a month or a year.", "Hogares adaptados a su estilo de vida, por un mes o un año."), to: "/catalogue?type=location-longue-duree" },
-    { title: tL("Être accompagné", "Be advised", "Ser asesorado"), text: tL("Un interlocuteur unique, du premier échange jusqu’à la remise des clés.", "One dedicated advisor, from the first call to the key handover.", "Un asesor dedicado, desde la primera llamada hasta la entrega de llaves."), to: "/contact" },
+    { title: tL("Acheter", "Buy", "Comprar"), text: tL("Une sélection précise, des visites privées et une négociation maîtrisée.", "A precise selection, private viewings and expert negotiation.", "Una selección precisa, visitas privadas y negociación experta."), to: landingPath("vente", lang) },
+    { title: tL("Louer", "Rent", "Alquilar"), text: tL("Des adresses adaptées à votre rythme de vie, pour un mois ou une année.", "Homes adapted to your lifestyle, for a month or a year.", "Hogares adaptados a su estilo de vida, por un mes o un año."), to: landingPath("location", lang) },
+    { title: tL("Être accompagné", "Be advised", "Ser asesorado"), text: tL("Un interlocuteur unique, du premier échange jusqu’à la remise des clés.", "One dedicated advisor, from the first call to the key handover.", "Un asesor dedicado, desde la primera llamada hasta la entrega de llaves."), to: lp("/contact") },
   ];
 
   const requestLabel = tL("Décrire ma recherche", "Tell us what you need", "Cuéntenos qué busca");
@@ -112,7 +115,7 @@ const Index = () => {
                   {tL("Nous prenons le temps de comprendre votre projet, puis nous vous présentons uniquement les adresses qui ont du sens. Une expérience claire, confidentielle et profondément locale.", "We take time to understand your project, then show only the addresses that truly fit. A clear, confidential and deeply local experience.", "Nos tomamos el tiempo de comprender su proyecto y mostramos solo las propiedades que encajan. Una experiencia clara, confidencial y local.")}
                 </p>
                 <div className="flex flex-wrap gap-3 lg:pt-2.5">
-                  <Link to="/demande" className="flex min-h-14 w-full items-center justify-between gap-3.5 bg-[#211f1b] px-5 text-xs font-medium uppercase leading-none tracking-[0.16em] text-[#fbf8f2] transition-colors duration-200 hover:bg-[#a4573e] hover:text-[#fbf8f2] lg:w-auto lg:justify-start lg:px-[26px] lg:tracking-[0.18em]">
+                  <Link to={lp("/demande")} className="flex min-h-14 w-full items-center justify-between gap-3.5 bg-[#211f1b] px-5 text-xs font-medium uppercase leading-none tracking-[0.16em] text-[#fbf8f2] transition-colors duration-200 hover:bg-[#a4573e] hover:text-[#fbf8f2] lg:w-auto lg:justify-start lg:px-[26px] lg:tracking-[0.18em]">
                     {requestLabel}
                     <ArrowRight size={18} strokeWidth={1.5} aria-hidden="true" />
                   </Link>
@@ -139,7 +142,7 @@ const Index = () => {
               {QUARTIERS.map((quartier) => (
                 <li key={quartier}>
                   <Link
-                    to={`/catalogue?quartier=${encodeURIComponent(quartier)}`}
+                    to={lp(`/catalogue?quartier=${encodeURIComponent(quartier)}`)}
                     className="flex min-h-[46px] items-center gap-3 border border-[#fbf8f2]/40 bg-[#14100c]/25 px-4 font-serif text-[19px] leading-none text-[#fbf8f2] transition-colors duration-200 hover:border-[#fbf8f2] hover:bg-[#fbf8f2] hover:text-[#211f1b] lg:min-h-[52px] lg:px-[22px] lg:text-[22px]"
                   >
                     {quartier}
@@ -162,7 +165,7 @@ const Index = () => {
                   {tL("Vous ne trouvez pas votre bien ? Décrivez-le, nous le cherchons pour vous.", "Can’t find your property? Describe it and we’ll look for it for you.", "¿No encuentra su propiedad? Descríbala y la buscamos por usted.")}
                 </h2>
                 <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:pt-2">
-                  <Link to="/demande" className="flex min-h-14 items-center justify-between gap-3.5 bg-[#fbf8f2] px-5 text-xs font-medium uppercase leading-none tracking-[0.16em] text-[#211f1b] transition-colors duration-200 hover:bg-[#211f1b] hover:text-[#fbf8f2] lg:justify-start lg:px-[26px] lg:tracking-[0.18em]">
+                  <Link to={lp("/demande")} className="flex min-h-14 items-center justify-between gap-3.5 bg-[#fbf8f2] px-5 text-xs font-medium uppercase leading-none tracking-[0.16em] text-[#211f1b] transition-colors duration-200 hover:bg-[#211f1b] hover:text-[#fbf8f2] lg:justify-start lg:px-[26px] lg:tracking-[0.18em]">
                     {requestLabel}
                     <ArrowRight size={18} strokeWidth={1.5} aria-hidden="true" />
                   </Link>

@@ -9,6 +9,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { QUARTIERS } from "@/types/property";
+import SEOHead from "@/components/SEOHead";
+import { useLocalePath } from "@/hooks/useLocalePath";
+import { useLocalizedText } from "@/hooks/useLocalizedText";
 import "./PropertyRequest.css";
 
 type Language = "fr" | "ar" | "en";
@@ -120,7 +123,10 @@ const copy = {
 const propertyTypes = ["villa", "appartement", "riad", "maison", "other"] as const;
 
 export default function PropertyRequest() {
-  const [language, setLanguage] = useState<Language>("fr");
+  const { lang, lp } = useLocalePath();
+  const tL = useLocalizedText();
+  // The form has its own FR / AR / EN copy; the English site opens it in English.
+  const [language, setLanguage] = useState<Language>(lang === "en" ? "en" : "fr");
   const [step, setStep] = useState<0 | 1 | 2>(0);
   const [projectChosen, setProjectChosen] = useState(false);
   const [projectError, setProjectError] = useState(false);
@@ -205,6 +211,14 @@ export default function PropertyRequest() {
 
   return (
     <div className="request-page min-h-screen font-sans selection:bg-[#5d6647] selection:text-white" lang={language} dir={rtl ? "rtl" : "ltr"}>
+      <SEOHead
+        title={tL("Décrire ma recherche immobilière à Marrakech", "Describe your property search in Marrakech", "Describa su búsqueda inmobiliaria en Marrakech")}
+        description={tL(
+          "Location longue durée, achat ou séjour : décrivez le bien que vous cherchez à Marrakech, notre agence vous propose une sélection sur mesure.",
+          "Long-term rental, purchase or stay: describe the property you are looking for in Marrakech and our agency will send you a tailored selection.",
+          "Alquiler de larga duración, compra o estancia: describa la propiedad que busca en Marrakech y nuestra agencia le enviará una selección a medida.",
+        )}
+      />
       <Header />
       <main className={`request-layout ${step > 0 && !submitted ? "request-layout--details" : ""}`}>
         <section className="request-intro">
@@ -292,7 +306,7 @@ export default function PropertyRequest() {
                 {t.whatsapp}
               </a>
               <Link
-                to="/catalogue"
+                to={lp("/catalogue")}
                 className="inline-flex min-h-[3.5rem] flex-1 items-center justify-center gap-3 rounded-xl border border-[#d8d3c9] bg-white px-6 text-sm font-medium uppercase tracking-wider text-[#514f47] shadow-sm transition-colors hover:border-[#5d6647] hover:text-[#5d6647]"
               >
                 <Home size={18} />

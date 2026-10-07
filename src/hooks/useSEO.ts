@@ -1,5 +1,5 @@
-import { useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
+import { LANGS, DEFAULT_LANG, langFromPath, localizePath, stripLang, type Lang } from '@/i18n/routing';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 export const SITE_NAME = 'Live In Marrakech';
@@ -13,8 +13,18 @@ export interface UseSEOParams {
   image?: string;
   /** Open Graph type – defaults to "website" */
   type?: string;
-  /** JSON-LD object to inject as a <script type="application/ld+json"> */
-  schema?: Record<string, unknown>;
+  /** JSON-LD object(s) rendered as <script type="application/ld+json"> */
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+  /**
+   * Paths of this page in each language (with their language prefix).
+   * Defaults to the same path in every language; pass a partial map when
+   * some translations do not exist (blog articles).
+   */
+  alternates?: Partial<Record<Lang, string>>;
+  /** Overrides the canonical path (e.g. a property's slug URL). */
+  canonicalPath?: string;
+  /** Keep the page out of search results (404…). */
+  noindex?: boolean;
 }
 
 export interface UseSEOReturn {
@@ -23,7 +33,11 @@ export interface UseSEOReturn {
   canonicalUrl: string;
   ogImage: string;
   type: string;
+  lang: Lang;
+  alternates: { lang: Lang | 'x-default'; href: string }[];
 }
+
+const absolute = (path: string) => `${BASE_URL}${path === '/' ? '' : path}` || BASE_URL;
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 export function useSEO({
@@ -31,34 +45,28 @@ export function useSEO({
   description,
   image,
   type = 'website',
-  schema,
+  alternates,
+  canonicalPath,
 }: UseSEOParams): UseSEOReturn {
   const { pathname } = useLocation();
+  const lang = langFromPath(pathname);
+  const path = canonicalPath ?? pathname;
 
-  const fullTitle = `${title} | ${SITE_NAME}`;
-  const canonicalUrl = `${BASE_URL}${pathname}`;
-  const ogImage = image || DEFAULT_OG_IMAGE;
+  const paths: Partial<Record<Lang, string>> = alternates
+    ?? Object.fromEntries(LANGS.map((l) => [l, localizePath(stripLang(path), l)]));
+  const links: UseSEOReturn['alternates'] = LANGS
+    .filter((l) => paths[l])
+    .map((l) => ({ lang: l, href: absolute(paths[l]!) }));
+  if (paths[DEFAULT_LANG]) links.push({ lang: 'x-default', href: absolute(paths[DEFAULT_LANG]!) });
 
-  // Stable serialisation for the dependency array
-  const schemaString = useMemo(
-    () => (schema ? JSON.stringify(schema) : null),
-    [schema],
-  );
-
-  // Inject / remove JSON-LD <script> in <head>
-  useEffect(() => {
-    if (!schemaString) return;
-
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.textContent = schemaString;
-    script.setAttribute('data-seo-jsonld', 'true');
-    document.head.appendChild(script);
-
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, [schemaString]);
-
-  return { fullTitle, description, canonicalUrl, ogImage, type };
+  return {
+    fullTitle: `${title} | ${SITE_NAME}`,
+    description,
+    canonicalUrl: absolute(path),
+    ogImage: image || DEFAULT_OG_IMAGE,
+    type,
+    lang,
+    // A lone self-reference is not worth emitting.
+    alternates: links.length > 2 ? links : [],
+  };
 }

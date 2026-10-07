@@ -5,11 +5,15 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
+import { useLocalePath } from "@/hooks/useLocalePath";
+import { languageSwitchPath, stripLang } from "@/i18n/routing";
 
 const Header = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const tL = useLocalizedText();
   const location = useLocation();
+  const { lang: currentLanguage, lp } = useLocalePath();
+  const basePath = stripLang(location.pathname);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -36,16 +40,15 @@ const Header = () => {
     { to: "/contact", label: t("nav.contact") },
   ];
 
-  const active = (to: string) => to === "/" ? location.pathname === "/" : location.pathname.startsWith(to);
-  const currentLanguage = i18n.language?.slice(0, 2) ?? "fr";
+  const active = (to: string) => to === "/" ? basePath === "/" : basePath.startsWith(to);
   const nextLanguage = currentLanguage === "fr" ? "en" : currentLanguage === "en" ? "es" : "fr";
-  const overHomeHero = location.pathname === "/" && !scrolled && !open;
+  const overHomeHero = basePath === "/" && !scrolled && !open;
 
   return (
     <>
       <header className={`fixed inset-x-0 top-0 z-[70] h-16 transition-colors duration-300 ${overHomeHero ? "border-transparent bg-transparent" : "border-b border-[#2b2722]/10 bg-[#f6f1e8]/95 backdrop-blur-xl"}`}>
         <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between px-5 md:px-10">
-          <Link to="/" className={`font-serif text-[22px] tracking-[-0.02em] transition-colors md:text-[26px] ${overHomeHero ? "text-white" : "text-[#211f1b]"}`}>
+          <Link to={lp("/")} className={`font-serif text-[22px] tracking-[-0.02em] transition-colors md:text-[26px] ${overHomeHero ? "text-white" : "text-[#211f1b]"}`}>
             Live In Marrakech
           </Link>
 
@@ -53,7 +56,7 @@ const Header = () => {
             {links.map(({ to, label }) => (
               <Link
                 key={to}
-                to={to}
+                to={lp(to)}
                 className={`relative py-2 text-[10px] font-medium uppercase tracking-[0.2em] transition-colors duration-200 ${overHomeHero ? (active(to) ? "text-white" : "text-white/80 hover:text-white") : active(to) ? "text-[#a4573e]" : "text-[#5c574f] hover:text-[#211f1b]"}`}
               >
                 {label}
@@ -74,14 +77,14 @@ const Header = () => {
           </div>
 
           <div className="flex items-center gap-1 lg:hidden">
-            <button
-              type="button"
-              onClick={() => i18n.changeLanguage(nextLanguage)}
+            <Link
+              to={languageSwitchPath(location.pathname, location.search, nextLanguage)}
+              hrefLang={nextLanguage}
               className={`grid min-h-11 min-w-11 place-items-center text-[13px] font-medium uppercase tracking-[0.16em] transition-colors ${overHomeHero ? "text-white" : "text-[#211f1b]"}`}
               aria-label={`Changer la langue, langue actuelle ${currentLanguage.toUpperCase()}`}
             >
               {currentLanguage.toUpperCase()}
-            </button>
+            </Link>
             <button
               type="button"
               className={`grid h-11 w-11 place-items-center transition-colors ${overHomeHero ? "text-white" : "text-[#211f1b]"}`}
@@ -107,7 +110,7 @@ const Header = () => {
             <nav className="space-y-2">
               {links.map(({ to, label }, index) => (
                 <motion.div key={to} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
-                  <Link to={to} className={`block border-b border-[#2b2722]/10 py-4 font-serif text-3xl ${active(to) ? "text-[#a4573e]" : "text-[#211f1b]"}`}>
+                  <Link to={lp(to)} className={`block border-b border-[#2b2722]/10 py-4 font-serif text-3xl ${active(to) ? "text-[#a4573e]" : "text-[#211f1b]"}`}>
                     {label}
                   </Link>
                 </motion.div>

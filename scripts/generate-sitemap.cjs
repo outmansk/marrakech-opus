@@ -14,6 +14,10 @@
 
 const fs = require('fs');
 const path = require('path');
+// Search landing pages (villas à vendre…), one translated address per language.
+const LANDINGS = require('../src/content/landings.json');
+// Addresses that redirect elsewhere (old blog articles merged into landing pages) stay out of the sitemap.
+const REDIRECTED = new Set((require('../vercel.json').redirects || []).map((r) => r.source));
 
 // ── Load .env (process env wins, e.g. on Vercel) ───────────
 function loadEnv() {
@@ -70,9 +74,22 @@ const STATIC_PAGES = [
   { loc: '/',          priority: '1.0', changefreq: 'daily' },
   { loc: '/catalogue', priority: '0.9', changefreq: 'daily' },
   { loc: '/blog',      priority: '0.8', changefreq: 'weekly' },
+  { loc: '/demande',   priority: '0.6', changefreq: 'monthly' },
+  { loc: '/contact',   priority: '0.5', changefreq: 'monthly' },
 ];
 
+// Same rules as src/i18n/routing.ts: French at the root, /en and /es for the others.
 const LANGUAGES = ['fr', 'en', 'es'];
+const localize = (loc, lang) => (lang === 'fr' ? loc : loc === '/' ? `/${lang}` : `/${lang}${loc}`);
+const absolute = (loc) => `${SITE_URL}${loc === '/' ? '' : loc}`;
+
+// Same as propertyPath() in src/lib/propertyUrl.ts.
+const slugify = (text) =>
+  String(text || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+function propertyPath(prop) {
+  const slug = slugify(prop.titre).slice(0, 70).replace(/-$/, '');
+  return `/bien/${slug ? `${slug}-` : ''}${prop.id}`;
+}
 
 // ── XML generation ─────────────────────────────────────────
 function xmlEscape(str) {
@@ -84,29 +101,35 @@ function xmlEscape(str) {
     .replace(/'/g, '&apos;');
 }
 
-function hreflangTags(loc) {
-  return LANGUAGES.map(
-    (lang) =>
-      `    <xhtml:link rel="alternate" hreflang="${lang}" href="${SITE_URL}${loc}" />`
-  ).join('\n');
+/** alternates: { fr: '/x', en: '/en/x', … } — every version of the page, itself included. */
+function hreflangTags(alternates) {
+  const langs = LANGUAGES.filter((lang) => alternates[lang]);
+  if (langs.length < 2) return '';
+  const tags = langs.map((lang) => `    <xhtml:link rel="alternate" hreflang="${lang}" href="${xmlEscape(absolute(alternates[lang]))}" />`);
+  if (alternates.fr) tags.push(`    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(absolute(alternates.fr))}" />`);
+  return tags.join('\n') + '\n';
 }
 
-function urlEntry({ loc, lastmod, changefreq, priority, images }) {
+function urlEntry({ loc, alternates = {}, lastmod, changefreq, priority, images }) {
   const imgTags = (images || [])
     .map(
       (img) =>
-        `    <image:image>\n      <image:loc>${xmlEscape(img.url)}</image:loc>\n      <image:title>${xmlEscape(img.title || '')}</image:title>\n    </image:image>`
+        `    <image:image>\n      <image:loc>${xmlEscape(img.url)}</image:loc>\n      <image:title>${xmlEscape(img.title || '')}</image:title>\n    </image:image>\n`
     )
-    .join('\n');
+    .join('');
 
   return `  <url>
-    <loc>${SITE_URL}${loc}</loc>
-${hreflangTags(loc)}
-    <lastmod>${lastmod}</lastmod>
+    <loc>${xmlEscape(absolute(loc))}</loc>
+${hreflangTags(alternates)}    <lastmod>${lastmod}</lastmod>
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>
-${imgTags}
-  </url>`;
+${imgTags}  </url>`;
+}
+
+/** One entry per language, each listing all the others. */
+function allLanguages(loc, fields) {
+  const alternates = Object.fromEntries(LANGUAGES.map((lang) => [lang, localize(loc, lang)]));
+  return LANGUAGES.map((lang) => urlEntry({ ...fields, loc: alternates[lang], alternates }));
 }
 
 // ── Main ───────────────────────────────────────────────────
@@ -115,23 +138,32 @@ async function main() {
   const today = new Date().toISOString().split('T')[0];
 
   // Fetch dynamic data
-  const [properties, articles] = await Promise.all([
-    supabaseQuery('properties_v2', 'id,titre,updated_at,photo_principale,photos', '&statut=eq.publie'),
-    supabaseQuery('articles', 'slug,updated_at', '&est_publie=eq.true'),
-  ]);
+  let articles = await supabaseQuery('articles', 'slug,updated_at,lang,translation_key', '&est_publie=eq.true');
+  if (!Array.isArray(articles) || articles.length === 0) {
+    // Before the `lang` migration the columns do not exist: every article is French.
+    articles = await supabaseQuery('articles', 'slug,updated_at', '&est_publie=eq.true');
+  }
+  const properties = await supabaseQuery('properties_v2', 'id,titre,updated_at,photo_principale,photos', '&statut=eq.publie');
 
   console.log(`  📦  ${properties.length} propriétés publiées`);
   console.log(`  📝  ${articles.length} articles publiés\n`);
 
-  // Build URL entries
   const entries = [];
 
-  // Static pages
+  // Static pages, in every language
   for (const page of STATIC_PAGES) {
-    entries.push(urlEntry({ ...page, lastmod: today }));
+    entries.push(...allLanguages(page.loc, { ...page, lastmod: today }));
   }
 
-  // Property pages
+  // Search landing pages, each listing its translations
+  for (const landing of LANDINGS) {
+    const alternates = Object.fromEntries(LANGUAGES.map((lang) => [lang, localize(landing.paths[lang], lang)]));
+    for (const lang of LANGUAGES) {
+      entries.push(urlEntry({ loc: alternates[lang], alternates, lastmod: today, changefreq: 'weekly', priority: landing.type ? '0.8' : '0.9' }));
+    }
+  }
+
+  // Property pages, in every language
   for (const prop of properties) {
     const lastmod = prop.updated_at
       ? new Date(prop.updated_at).toISOString().split('T')[0]
@@ -142,30 +174,20 @@ async function main() {
       .slice(0, 3)
       .map((id) => ({ url: imageUrl(id), title: prop.titre || '' }))
       .filter((img) => img.url);
-    entries.push(
-      urlEntry({
-        loc: `/bien/${prop.id}`,
-        lastmod,
-        changefreq: 'weekly',
-        priority: '0.7',
-        images,
-      })
-    );
+    entries.push(...allLanguages(propertyPath(prop), { lastmod, changefreq: 'weekly', priority: '0.7', images }));
   }
 
-  // Blog articles
-  for (const article of articles) {
+  // Blog articles: one address each, linked to their translations
+  const articleLoc = (article) => localize(`/blog/${article.slug}`, article.lang || 'fr');
+  for (const article of articles.filter((a) => !REDIRECTED.has(articleLoc(a)))) {
     const lastmod = article.updated_at
       ? new Date(article.updated_at).toISOString().split('T')[0]
       : today;
-    entries.push(
-      urlEntry({
-        loc: `/blog/${article.slug}`,
-        lastmod,
-        changefreq: 'monthly',
-        priority: '0.6',
-      })
-    );
+    const siblings = article.translation_key
+      ? articles.filter((other) => other.translation_key === article.translation_key)
+      : [article];
+    const alternates = Object.fromEntries(siblings.map((other) => [other.lang || 'fr', articleLoc(other)]));
+    entries.push(urlEntry({ loc: articleLoc(article), alternates, lastmod, changefreq: 'monthly', priority: '0.6' }));
   }
 
   // Assemble XML

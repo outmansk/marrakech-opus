@@ -294,4 +294,17 @@ DROP TRIGGER IF EXISTS taches_updated_at ON public.taches;
 CREATE TRIGGER taches_updated_at BEFORE UPDATE ON public.taches
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
+-- ─── Blog languages (FR / EN / ES) ──────────────────────────────────
+-- Each article is written in one language and published at /blog/…, /en/blog/… or /es/blog/….
+-- Translations of the same article share a translation_key (used for hreflang links).
+
+ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS lang TEXT NOT NULL DEFAULT 'fr';
+ALTER TABLE public.articles DROP CONSTRAINT IF EXISTS articles_lang_check;
+ALTER TABLE public.articles ADD CONSTRAINT articles_lang_check CHECK (lang IN ('fr', 'en', 'es'));
+ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS translation_key TEXT
+  CHECK (translation_key IS NULL OR translation_key ~ '^[a-z0-9-]{1,120}$');
+
+CREATE INDEX IF NOT EXISTS articles_lang_published_idx ON public.articles(lang, est_publie);
+CREATE INDEX IF NOT EXISTS articles_translation_key_idx ON public.articles(translation_key);
+
 NOTIFY pgrst, 'reload schema';

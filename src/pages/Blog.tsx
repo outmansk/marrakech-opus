@@ -1,66 +1,68 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, FileText } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { supabase } from "@/lib/supabase";
+import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
-import type { Article } from "@/types/article";
+import { publishedArticlesQueryOptions } from "@/hooks/useArticles";
+import { useLocalizedText } from "@/hooks/useLocalizedText";
+import { useLocalePath } from "@/hooks/useLocalePath";
+import { BASE_URL } from "@/hooks/useSEO";
 
 
 const Blog = () => {
   const { t } = useTranslation();
-  const [articles, setArticles] = useState<Article[]>([]);
+  const tL = useLocalizedText();
+  const { lang, lp } = useLocalePath();
   const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [loading, setLoading] = useState(true);
+  const { data: allArticles = [], isLoading: loading } = useQuery(publishedArticlesQueryOptions(lang));
+  const articles = useMemo(
+    () => activeCategory === 'all' ? allArticles : allArticles.filter((article) => article.category === activeCategory),
+    [allArticles, activeCategory],
+  );
 
   const categories = [
-    { id: 'all', label: 'Tous' },
+    { id: 'all', label: tL('Tous', 'All', 'Todos') },
     { id: 'location-longue-duree', label: t('services.location_longue') },
     { id: 'sous-location', label: t('services.sous_location') },
     { id: 'vente', label: t('services.vente') },
-    { id: 'terrain', label: 'Terrain' },
+    { id: 'terrain', label: tL('Terrain', 'Land', 'Terreno') },
   ];
 
-  useEffect(() => {
-    const fetchArticles = async () => {
-      setLoading(true);
-      let query = supabase
-        .from('articles')
-        .select('*')
-        .eq('est_publie', true)
-        .order('created_at', { ascending: false });
-
-      if (activeCategory !== 'all') {
-        query = query.eq('category', activeCategory);
-      }
-
-      const { data } = await query;
-      if (data) setArticles(data as Article[]);
-      setLoading(false);
-    };
-
-    void fetchArticles();
-  }, [activeCategory]);
+  const pageTitle = tL("Blog immobilier Marrakech — Conseils & actualités", "Marrakech real estate blog — Advice & news", "Blog inmobiliario Marrakech — Consejos y noticias");
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": tL("Accueil", "Home", "Inicio"), "item": `${BASE_URL}${lp("/") === "/" ? "" : lp("/")}` },
+      { "@type": "ListItem", "position": 2, "name": "Blog", "item": `${BASE_URL}${lp("/blog")}` },
+    ],
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SEOHead
-        title="Blog Immobilier Marrakech — Conseils & Actualités"
-        description="Actualités, conseils et analyses du marché immobilier à Marrakech : location, vente, investissement et sous-location."
+        title={pageTitle}
+        description={tL(
+          "Actualités, conseils et analyses du marché immobilier à Marrakech : location, vente, investissement et sous-location.",
+          "News, advice and analysis of the Marrakech property market: renting, buying, investing and subletting.",
+          "Noticias, consejos y análisis del mercado inmobiliario de Marrakech: alquiler, compra, inversión y subarriendo.",
+        )}
+        schema={schema}
       />
       
       <Header />
 
       <div className="pt-32 pb-24">
         <div className="container mx-auto px-6 md:px-12">
-          <Link to="/" className="inline-flex items-center text-xs tracking-widest uppercase font-medium text-muted-foreground hover:text-foreground transition-colors mb-8">
+          <Link to={lp("/")} className="inline-flex items-center text-xs tracking-widest uppercase font-medium text-muted-foreground hover:text-foreground transition-colors mb-8">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-            Retour à l'accueil
+            {tL("Retour à l'accueil", "Back to home", "Volver al inicio")}
           </Link>
           <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">{t('nav.journal')}</p>
-          <h1 className="mb-12">Blog Immobilier</h1>
+          <h1 className="mb-12">{tL("Blog immobilier", "Real estate blog", "Blog inmobiliario")}</h1>
 
           {/* Filters */}
           <div className="flex gap-1 mb-16 border-b border-border overflow-x-auto pb-px scrollbar-hide w-full max-w-full">
@@ -96,12 +98,12 @@ const Blog = () => {
           ) : articles.length === 0 ? (
             <div className="text-center py-20">
               <FileText className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
-              <p className="text-muted-foreground font-light text-lg">Aucun article publié.</p>
+              <p className="text-muted-foreground font-light text-lg">{tL("Aucun article publié.", "No articles published yet.", "Todavía no hay artículos publicados.")}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
               {articles.map((article) => (
-                <Link to={`/blog/${article.slug}`} key={article.id} className="group flex flex-col items-start hover-target h-full border border-border bg-card overflow-hidden">
+                <Link to={lp(`/blog/${article.slug}`)} key={article.id} className="group flex flex-col items-start hover-target h-full border border-border bg-card overflow-hidden">
                   <div className="relative w-full aspect-[4/3] overflow-hidden bg-muted">
                     <img
                       src={article.image_url || 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&q=80'}
@@ -115,7 +117,7 @@ const Blog = () => {
                   
                   <div className="p-6 flex flex-col flex-grow w-full">
                      <p className="text-muted-foreground text-xs mb-3 font-light">
-                      {new Date(article.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      {new Date(article.created_at).toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}
                     </p>
                     <h3 className="font-serif text-xl mb-3 line-clamp-2 transition-colors duration-300">
                       {article.title}

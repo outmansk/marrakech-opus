@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { Reveal, PageTransition, EASE_LUXURY } from "@/components/motion/Animations";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
-import slide3 from "@/assets/slide2.jpg";
+import slide3 from "@/assets/slide2.webp";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
 
 const Contact = () => {

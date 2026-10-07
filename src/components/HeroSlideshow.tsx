@@ -2,7 +2,7 @@ import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, ChevronDown, MapPin, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import heroImage from "@/assets/hero-marrakech.jpg";
+import heroImage from "@/assets/hero-marrakech.webp";
 import mobileHeroImage from "@/assets/hero-marrakech-mobile-v2.webp";
 import { QUARTIERS, type BienService } from "@/types/property";
 import { useLocalizedText } from "@/hooks/useLocalizedText";

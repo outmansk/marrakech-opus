@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { propertyPath } from "@/lib/propertyUrl";
 import { useForm, type FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -328,7 +329,7 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
             <button type="button" onClick={() => setJsonOpen(true)} className={cn(btn.outline, "hidden h-10 px-3 text-[13px] lg:inline-flex")}><Code size={16} aria-hidden="true" />Importer un code JSON</button>
           )}
           {isEditing && (
-            <a href={`/bien/${bien!.id}`} target="_blank" rel="noopener noreferrer" className={cn("inline-flex h-11 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-sm font-semibold text-primary lg:border lg:border-input lg:bg-card lg:px-3.5 lg:text-foreground")}>
+            <a href={propertyPath(bien!)} target="_blank" rel="noopener noreferrer" className={cn("inline-flex h-11 shrink-0 items-center gap-1.5 rounded-md px-2.5 text-sm font-semibold text-primary lg:border lg:border-input lg:bg-card lg:px-3.5 lg:text-foreground")}>
               <Eye size={18} aria-hidden="true" /><span className="lg:hidden">Aperçu</span><span className="hidden lg:inline">Aperçu comme sur le site</span>
             </a>
           )}

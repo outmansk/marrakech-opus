@@ -1,0 +1,135 @@
+[
+  {
+    "id": "vente",
+    "service": "vente",
+    "label": {
+      "fr": "Biens à vendre",
+      "en": "Property for sale",
+      "es": "Inmuebles en venta"
+    },
+    "paths": {
+      "fr": "/vente",
+      "en": "/for-sale",
+      "es": "/venta"
+    }
+  },
+  {
+    "id": "vente-villas",
+    "service": "vente",
+    "type": "villa",
+    "label": {
+      "fr": "Villas à vendre",
+      "en": "Villas for sale",
+      "es": "Villas en venta"
+    },
+    "paths": {
+      "fr": "/vente/villas-marrakech",
+      "en": "/for-sale/villas-marrakech",
+      "es": "/venta/villas-marrakech"
+    }
+  },
+  {
+    "id": "vente-appartements",
+    "service": "vente",
+    "type": "appartement",
+    "label": {
+      "fr": "Appartements à vendre",
+      "en": "Apartments for sale",
+      "es": "Apartamentos en venta"
+    },
+    "paths": {
+      "fr": "/vente/appartements-marrakech",
+      "en": "/for-sale/apartments-marrakech",
+      "es": "/venta/apartamentos-marrakech"
+    }
+  },
+  {
+    "id": "vente-riads",
+    "service": "vente",
+    "type": "riad",
+    "label": {
+      "fr": "Riads à vendre",
+      "en": "Riads for sale",
+      "es": "Riads en venta"
+    },
+    "paths": {
+      "fr": "/vente/riads-marrakech",
+      "en": "/for-sale/riads-marrakech",
+      "es": "/venta/riads-marrakech"
+    }
+  },
+  {
+    "id": "vente-maisons",
+    "service": "vente",
+    "type": "maison",
+    "label": {
+      "fr": "Maisons à vendre",
+      "en": "Houses for sale",
+      "es": "Casas en venta"
+    },
+    "paths": {
+      "fr": "/vente/maisons-marrakech",
+      "en": "/for-sale/houses-marrakech",
+      "es": "/venta/casas-marrakech"
+    }
+  },
+  {
+    "id": "vente-terrains",
+    "service": "vente",
+    "type": "terrain",
+    "label": {
+      "fr": "Terrains à vendre",
+      "en": "Land for sale",
+      "es": "Terrenos en venta"
+    },
+    "paths": {
+      "fr": "/vente/terrains-marrakech",
+      "en": "/for-sale/land-marrakech",
+      "es": "/venta/terrenos-marrakech"
+    }
+  },
+  {
+    "id": "location",
+    "service": "location-longue-duree",
+    "label": {
+      "fr": "Location longue durée",
+      "en": "Long-term rentals",
+      "es": "Alquiler de larga duración"
+    },
+    "paths": {
+      "fr": "/location-longue-duree",
+      "en": "/long-term-rental",
+      "es": "/alquiler-larga-duracion"
+    }
+  },
+  {
+    "id": "location-appartements",
+    "service": "location-longue-duree",
+    "type": "appartement",
+    "label": {
+      "fr": "Appartements à louer à l’année",
+      "en": "Apartments for long-term rent",
+      "es": "Apartamentos en alquiler de larga duración"
+    },
+    "paths": {
+      "fr": "/location-longue-duree/appartements-marrakech",
+      "en": "/long-term-rental/apartments-marrakech",
+      "es": "/alquiler-larga-duracion/apartamentos-marrakech"
+    }
+  },
+  {
+    "id": "location-villas",
+    "service": "location-longue-duree",
+    "type": "villa",
+    "label": {
+      "fr": "Villas à louer à l’année",
+      "en": "Villas for long-term rent",
+      "es": "Villas en alquiler de larga duración"
+    },
+    "paths": {
+      "fr": "/location-longue-duree/villas-marrakech",
+      "en": "/long-term-rental/villas-marrakech",
+      "es": "/alquiler-larga-duracion/villas-marrakech"
+    }
+  }
+]

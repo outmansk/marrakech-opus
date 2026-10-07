@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { localizePath } from "@/i18n/routing";
 import { useSearchParams } from "react-router-dom";
 import { FileText, Pencil, Plus, Search, X } from "lucide-react";
 import { useArticles, useDeleteArticle, useToggleArticleStatus } from "@/hooks/useArticles";
@@ -64,7 +65,7 @@ export default function AdminBlog() {
 
   const published = articles.filter((a) => a.est_publie).length;
   const menu = (a: Article) => [
-    { label: "Voir sur le site", onSelect: () => undefined, href: `/blog/${a.slug}` },
+    { label: "Voir sur le site", onSelect: () => undefined, href: localizePath(`/blog/${a.slug}`, a.lang ?? "fr") },
     { label: "Supprimer…", danger: true, onSelect: () => setToDelete(a) },
   ];
   const toggle = (a: Article) => toggleStatus.mutate({ id: a.id, est_publie: !a.est_publie });
@@ -140,7 +141,7 @@ export default function AdminBlog() {
                     <td className="px-4 py-3">
                       <button type="button" onClick={() => openEdit(a)} className="flex items-center gap-3 text-left">
                         <Cover article={a} className="h-12 w-16 rounded" />
-                        <span className="flex flex-col gap-0.5"><span className="text-[15px] font-semibold hover:text-primary">{a.title}</span><span className="text-xs text-muted-foreground">/blog/{a.slug}</span></span>
+                        <span className="flex flex-col gap-0.5"><span className="text-[15px] font-semibold hover:text-primary">{a.title}</span><span className="text-xs text-muted-foreground">{localizePath(`/blog/${a.slug}`, a.lang ?? "fr")}</span></span>
                       </button>
                     </td>
                     <td className="px-3 py-3 text-sm font-medium">{categoryLabel(a.category)}</td>

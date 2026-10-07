@@ -5,6 +5,7 @@ import type { Bien } from "@/types/property";
 import PropertyCard from "@/components/PropertyCard";
 import { useProperties } from "@/hooks/useBiens";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
+import { useLocalePath } from "@/hooks/useLocalePath";
 import { getServices } from "@/lib/propertyServices";
 
 type ServiceFilter = "all" | "sale" | "rent";
@@ -21,6 +22,7 @@ const matchesService = (property: Bien, svc: ServiceFilter) => {
 
 const PropertiesCarousel = () => {
   const tL = useLocalizedText();
+  const { lp } = useLocalePath();
 
   // Use React Query via the shared hook — cached, retried, deduped
   const { data: properties = [], isLoading: loading } = useProperties({ statut: "publie" });
@@ -217,7 +219,7 @@ const PropertiesCarousel = () => {
           <p className="flex-[1_1_300px] text-[15px] leading-[1.6] text-[#655f56] [text-wrap:pretty]">
             {tL("Recherche par quartier, type de bien ou mot-clé dans le catalogue complet.", "Search by neighborhood, property type or keyword in the full catalogue.", "Busque por barrio, tipo de propiedad o palabra clave en el catálogo completo.")}
           </p>
-          <Link to="/catalogue" className="flex min-h-[52px] max-w-[min(100%,360px)] flex-[1_1_260px] items-center justify-between gap-3 border border-[#211f1b] px-[18px] text-sm font-medium leading-none tracking-[0.02em] text-[#211f1b] transition-colors duration-200 hover:bg-[#211f1b] hover:text-[#fbf8f2]">
+          <Link to={lp("/catalogue")} className="flex min-h-[52px] max-w-[min(100%,360px)] flex-[1_1_260px] items-center justify-between gap-3 border border-[#211f1b] px-[18px] text-sm font-medium leading-none tracking-[0.02em] text-[#211f1b] transition-colors duration-200 hover:bg-[#211f1b] hover:text-[#fbf8f2]">
             <span>{tL("Voir tout le catalogue", "View the full catalogue", "Ver todo el catálogo")}</span>
             <ArrowRight size={18} strokeWidth={1.5} className="flex-none" aria-hidden="true" />
           </Link>

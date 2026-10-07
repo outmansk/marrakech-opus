@@ -1,53 +1,32 @@
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useEffect } from "react";
+import { useParams, Link, Navigate } from "react-router-dom";
 import SEOHead from "@/components/SEOHead";
 import ReactMarkdown, { type Components } from "react-markdown";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Calendar, Share2, ArrowRight } from "lucide-react";
-import { supabase } from "@/lib/supabase";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import type { Article } from "@/types/article";
 import OptimizedImage from "@/components/ui/OptimizedImage";
+import { articleQueryOptions } from "@/hooks/useArticles";
+import { useLocalizedText } from "@/hooks/useLocalizedText";
+import { useLocalePath } from "@/hooks/useLocalePath";
+import { BASE_URL, SITE_NAME } from "@/hooks/useSEO";
+import { DEFAULT_LANG, localizePath, type Lang } from "@/i18n/routing";
+
+const LANG_NAMES: Record<Lang, string> = { fr: "Français", en: "English", es: "Español" };
 
 const BlogPost = () => {
   const { t } = useTranslation();
+  const tL = useLocalizedText();
+  const { lang, lp } = useLocalePath();
   const { slug } = useParams<{ slug: string }>();
-  const [article, setArticle] = useState<Article | null>(null);
-  const [similarArticles, setSimilarArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading: loading } = useQuery(articleQueryOptions(slug));
+  const article = data?.article ?? null;
+  const similarArticles = data?.similar ?? [];
 
   useEffect(() => {
-    const fetchArticle = async () => {
-      setLoading(true);
-      const { data } = await supabase
-        .from("articles")
-        .select("*")
-        .eq("slug", slug)
-        .eq("est_publie", true)
-        .single();
-
-      if (data) {
-        setArticle(data as Article);
-
-        const { data: similar } = await supabase
-          .from("articles")
-          .select("*")
-          .eq("category", data.category)
-          .eq("est_publie", true)
-          .neq("id", data.id)
-          .limit(3);
-
-        if (similar) setSimilarArticles(similar as Article[]);
-      } else {
-        setArticle(null);
-        setSimilarArticles([]);
-      }
-      setLoading(false);
-    };
-
-    void fetchArticle();
     window.scrollTo(0, 0);
   }, [slug]);
 
@@ -85,15 +64,25 @@ const BlogPost = () => {
   if (!article) {
     return (
       <div className="min-h-screen flex flex-col justify-center items-center">
+        <SEOHead title={tL("Article introuvable", "Article not found", "Artículo no encontrado")} description="" noindex />
         <Header />
-        <h1 className="font-serif mb-4">Article introuvable</h1>
-        <Link to="/blog"><Button variant="outline">Retour au blog</Button></Link>
+        <h1 className="font-serif mb-4">{tL("Article introuvable", "Article not found", "Artículo no encontrado")}</h1>
+        <Link to={lp("/blog")}><Button variant="outline">{tL("Retour au blog", "Back to the blog", "Volver al blog")}</Button></Link>
       </div>
     );
   }
 
+  // Each article lives at one address, in its own language.
+  const articleLang = article.lang ?? DEFAULT_LANG;
+  if (articleLang !== lang) return <Navigate to={localizePath(`/blog/${article.slug}`, articleLang)} replace />;
+
+  const translations = data?.translations ?? [];
+  const articlePath = lp(`/blog/${article.slug}`);
+  const alternates: Partial<Record<Lang, string>> = { [articleLang]: articlePath };
+  for (const translation of translations) alternates[translation.lang] = localizePath(`/blog/${translation.slug}`, translation.lang);
+
   const toc = extractTOC(article.content);
-  
+
   const MarkdownComponents: Components = {
     h2: ({ node: _node, children, ...props }) => {
       const id = String(children).toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
@@ -109,19 +98,31 @@ const BlogPost = () => {
     strong: ({ node: _node, ...props }) => <strong className="text-foreground font-medium" {...props} />,
   };
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "headline": article.meta_title || article.title,
-    "description": article.meta_description || article.excerpt,
-    "image": article.image_url,
-    "datePublished": article.created_at,
-    "dateModified": article.updated_at,
-    "author": {
-      "@type": "Organization",
-      "name": "Live In Marrakech"
-    }
-  };
+  const homeUrl = `${BASE_URL}${lp("/") === "/" ? "" : lp("/")}`;
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": article.meta_title || article.title,
+      "description": article.meta_description || article.excerpt,
+      ...(article.image_url && { "image": article.image_url }),
+      "datePublished": article.created_at,
+      "dateModified": article.updated_at,
+      "inLanguage": articleLang,
+      "mainEntityOfPage": `${BASE_URL}${articlePath}`,
+      "author": { "@type": "Organization", "name": SITE_NAME, "url": BASE_URL },
+      "publisher": { "@id": `${BASE_URL}/#business` },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": tL("Accueil", "Home", "Inicio"), "item": homeUrl },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": `${BASE_URL}${lp("/blog")}` },
+        { "@type": "ListItem", "position": 3, "name": article.title, "item": `${BASE_URL}${articlePath}` },
+      ],
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -130,33 +131,40 @@ const BlogPost = () => {
         description={article.meta_description || article.excerpt || ''}
         image={article.image_url}
         schema={jsonLd}
+        alternates={alternates}
+        type="article"
       />
-      
+
       <Header />
 
       <div className="pt-32 pb-16">
         <div className="container mx-auto px-6 max-w-4xl">
-          <Link to="/blog" className="inline-flex items-center text-xs tracking-widest uppercase font-medium text-muted-foreground hover:text-foreground transition-colors mb-8">
-            <ArrowLeft size={16} strokeWidth={1.25} className="mr-2" /> Retour
+          <Link to={lp("/blog")} className="inline-flex items-center text-xs tracking-widest uppercase font-medium text-muted-foreground hover:text-foreground transition-colors mb-8">
+            <ArrowLeft size={16} strokeWidth={1.25} className="mr-2" /> {tL("Retour", "Back", "Volver")}
           </Link>
-          
+
           <div className="inline-block bg-secondary text-muted-foreground px-4 py-1.5 text-[10px] uppercase tracking-widest font-medium mb-6">
             {article.category.replace('-', ' ')}
           </div>
-          
+
           <h1 className="mb-6">{article.title}</h1>
-          
-          <div className="flex items-center gap-6 text-muted-foreground font-light text-sm mb-12">
+
+          <div className="flex flex-wrap items-center gap-6 text-muted-foreground font-light text-sm mb-12">
             <span className="flex items-center">
-              <Calendar size={16} strokeWidth={1} className="mr-2" /> 
-              {new Date(article.created_at).toLocaleDateString('fr-FR')}
+              <Calendar size={16} strokeWidth={1} className="mr-2" />
+              {new Date(article.created_at).toLocaleDateString(lang, { timeZone: 'UTC' })}
             </span>
-            <button className="flex items-center hover:text-foreground transition-colors" onClick={() => { navigator.clipboard.writeText(window.location.href); alert("Lien copié !"); }}>
-              <Share2 size={16} strokeWidth={1} className="mr-2" /> Partager
+            <button className="flex items-center hover:text-foreground transition-colors" onClick={() => { navigator.clipboard.writeText(window.location.href); alert(tL("Lien copié !", "Link copied!", "¡Enlace copiado!")); }}>
+              <Share2 size={16} strokeWidth={1} className="mr-2" /> {tL("Partager", "Share", "Compartir")}
             </button>
+            {translations.map((translation) => (
+              <Link key={translation.lang} to={localizePath(`/blog/${translation.slug}`, translation.lang)} hrefLang={translation.lang} className="hover:text-foreground transition-colors">
+                {LANG_NAMES[translation.lang]}
+              </Link>
+            ))}
           </div>
         </div>
-        
+
         {article.image_url && (
           <div className="container mx-auto px-6 max-w-5xl mb-16">
             <div className="aspect-[21/9] w-full overflow-hidden bg-muted">
@@ -169,7 +177,7 @@ const BlogPost = () => {
       <div className="container mx-auto px-6 pb-24 grid grid-cols-1 lg:grid-cols-12 gap-16 max-w-5xl">
         <div className="lg:col-span-4 order-2 lg:order-1">
           <div className="sticky top-32">
-            <p className="text-xs tracking-widest uppercase text-muted-foreground mb-6">Sommaire</p>
+            <p className="text-xs tracking-widest uppercase text-muted-foreground mb-6">{tL("Sommaire", "Contents", "Índice")}</p>
             <ul className="space-y-4 border-l border-border pl-6">
               {toc.map((item, index) => (
                 <li key={index} className={`${item.level === 3 ? 'ml-4' : ''}`}>
@@ -181,11 +189,11 @@ const BlogPost = () => {
             </ul>
 
             <div className="mt-16 bg-secondary p-8 text-center">
-              <h3 className="font-serif text-2xl mb-4">Besoin d'un expert ?</h3>
-              <p className="text-muted-foreground text-sm font-light mb-8">Notre agence vous accompagne dans votre projet immobilier à Marrakech.</p>
-              <Link to="/catalogue">
+              <h3 className="font-serif text-2xl mb-4">{tL("Besoin d'un expert ?", "Need an expert?", "¿Necesita un experto?")}</h3>
+              <p className="text-muted-foreground text-sm font-light mb-8">{tL("Notre agence vous accompagne dans votre projet immobilier à Marrakech.", "Our agency supports your real estate project in Marrakech.", "Nuestra agencia le acompaña en su proyecto inmobiliario en Marrakech.")}</p>
+              <Link to={lp("/catalogue")}>
                 <Button variant="luxury" className="w-full">
-                  Voir nos biens
+                  {tL("Voir nos biens", "See our properties", "Ver nuestras propiedades")}
                 </Button>
               </Link>
             </div>
@@ -206,13 +214,13 @@ const BlogPost = () => {
           <div className="container mx-auto px-6 max-w-5xl">
             <div className="flex items-end justify-between mb-16">
               <div>
-                <h2>Articles similaires</h2>
+                <h2>{tL("Articles similaires", "Related articles", "Artículos relacionados")}</h2>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {similarArticles.map(sim => (
-                <Link to={`/blog/${sim.slug}`} key={sim.id} className="group flex flex-col items-start hover-target h-full border border-border bg-background overflow-hidden">
+                <Link to={lp(`/blog/${sim.slug}`)} key={sim.id} className="group flex flex-col items-start hover-target h-full border border-border bg-background overflow-hidden">
                   <div className="relative w-full aspect-[4/3] overflow-hidden bg-muted">
                     <OptimizedImage src={sim.image_url} alt={sim.title} size="card" className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" wrapperClassName="w-full h-full" />
                   </div>

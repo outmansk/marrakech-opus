@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { queryOptions, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import type { Bien, BienInsert, BienUpdate } from '@/types/property';
@@ -24,42 +24,49 @@ function invalidateAll(queryClient: ReturnType<typeof useQueryClient>) {
   queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
 }
 
-// ─── useProperties ─────────────────────────────────────────────────────────
-export function useProperties(filters?: {
+// ─── Query definitions (shared with the build-time pre-render) ─────────────
+export type PropertyFilters = {
   type?: string;
   service?: string;
   statut?: string | string[];
   quartier?: string;
-}) {
-  return useQuery<Bien[]>({
-    queryKey: [QUERY_KEY, filters],
-    queryFn: async () => {
-      let query = supabase.from(TABLE).select('*').order('created_at', { ascending: false });
+};
 
-      if (filters?.type) query = query.eq('type', filters.type);
-      if (filters?.service) query = query.contains('services', [filters.service]);
-      if (Array.isArray(filters?.statut)) query = query.in('statut', filters.statut);
-      else if (filters?.statut) query = query.eq('statut', filters.statut);
-      if (filters?.quartier) query = query.eq('quartier', filters.quartier);
+export const propertiesQueryOptions = (filters?: PropertyFilters) => queryOptions<Bien[]>({
+  queryKey: [QUERY_KEY, filters],
+  queryFn: async () => {
+    let query = supabase.from(TABLE).select('*').order('created_at', { ascending: false });
 
-      const { data, error } = await query;
-      if (error) throw error;
-      return (data ?? []) as Bien[];
-    },
-  });
+    if (filters?.type) query = query.eq('type', filters.type);
+    if (filters?.service) query = query.contains('services', [filters.service]);
+    if (Array.isArray(filters?.statut)) query = query.in('statut', filters.statut);
+    else if (filters?.statut) query = query.eq('statut', filters.statut);
+    if (filters?.quartier) query = query.eq('quartier', filters.quartier);
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return (data ?? []) as Bien[];
+  },
+});
+
+export const propertyQueryOptions = (id: string | null) => queryOptions<Bien>({
+  queryKey: [QUERY_KEY, id],
+  queryFn: async () => {
+    const { data, error } = await supabase.from(TABLE).select('*').eq('id', id!).single();
+    if (error) throw error;
+    return data as Bien;
+  },
+  enabled: !!id,
+});
+
+// ─── useProperties ─────────────────────────────────────────────────────────
+export function useProperties(filters?: PropertyFilters) {
+  return useQuery(propertiesQueryOptions(filters));
 }
 
 // ─── useProperty ───────────────────────────────────────────────────────────
 export function useProperty(id: string | null) {
-  return useQuery<Bien>({
-    queryKey: [QUERY_KEY, id],
-    queryFn: async () => {
-      const { data, error } = await supabase.from(TABLE).select('*').eq('id', id!).single();
-      if (error) throw error;
-      return data as Bien;
-    },
-    enabled: !!id,
-  });
+  return useQuery(propertyQueryOptions(id));
 }
 
 // ─── useCreateProperty ─────────────────────────────────────────────────────

@@ -3,6 +3,8 @@ import { ArrowRight, Bath, Bed, MapPin, Maximize, MessageCircle } from "lucide-r
 import type { Bien } from "@/types/property";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
+import { useLocalePath } from "@/hooks/useLocalePath";
+import { propertyPath } from "@/lib/propertyUrl";
 import { getServices, isSoldOnly, isUnavailable } from "@/lib/propertyServices";
 
 interface PropertyCardProps {
@@ -34,6 +36,7 @@ const resolvePrice = (property: Bien, activeType?: string): { kind: PriceKind; a
 
 const PropertyCard = ({ property, activeType }: PropertyCardProps) => {
   const tL = useLocalizedText();
+  const { lp } = useLocalePath();
 
   const devise = property.devise || 'MAD';
   const { kind, amount } = resolvePrice(property, activeType);
@@ -55,7 +58,7 @@ const PropertyCard = ({ property, activeType }: PropertyCardProps) => {
   const image = property.photo_principale || property.photos?.[0] || "/placeholder.svg";
   const surface = property.surface_habitable || property.surface_terrain;
   const typeLabel = property.type ? property.type.charAt(0).toUpperCase() + property.type.slice(1) : null;
-  const href = `/bien/${property.id}`;
+  const href = lp(propertyPath(property));
   const viewLabel = tL("Voir le bien", "View property", "Ver la propiedad");
   const whatsappUrl = `https://wa.me/212605387041?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien : ${property.titre}${property.reference ? ` (Ref: ${property.reference})` : ""}`)}`;
 

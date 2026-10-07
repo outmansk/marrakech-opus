@@ -1,78 +1,39 @@
 # robots.txt — Live In Marrakech (liveinmarrakech.com)
-# Dernière mise à jour : 2026-05-06
+# Dernière mise à jour : 2026-10-07
+#
+# Tout le site public est ouvert (FR à la racine, /en et /es),
+# y compris aux moteurs de recherche IA. Seul le back-office est fermé.
 
-# Moteurs de recherche
+User-agent: *
+Allow: /
+Disallow: /manage-xk92p/
+Disallow: /api/
+
+# Moteurs de recherche et assistants IA (autorisés explicitement)
 User-agent: Googlebot
-Allow: /
-Crawl-delay: 2
-Disallow: /manage-xk92p/
-Disallow: /api/
-
 User-agent: Bingbot
-Allow: /
-Crawl-delay: 2
-Disallow: /manage-xk92p/
-Disallow: /api/
-
-# Crawlers sociaux
+User-agent: Applebot
+User-agent: Applebot-Extended
+User-agent: Google-Extended
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
 User-agent: Twitterbot
-Allow: /
-Disallow: /manage-xk92p/
-
 User-agent: facebookexternalhit
-Allow: /
-Disallow: /manage-xk92p/
-
 User-agent: LinkedInBot
 Allow: /
 Disallow: /manage-xk92p/
+Disallow: /api/
 
-# Crawlers IA / LLM
-User-agent: GPTBot
-Allow: /
-Crawl-delay: 2
-Disallow: /manage-xk92p/
-
-User-agent: ChatGPT-User
-Allow: /
-Crawl-delay: 2
-Disallow: /manage-xk92p/
-
-User-agent: Claude-Web
-Allow: /
-Crawl-delay: 2
-Disallow: /manage-xk92p/
-
-User-agent: ClaudeBot
-Allow: /
-Crawl-delay: 2
-Disallow: /manage-xk92p/
-
-User-agent: PerplexityBot
-Allow: /
-Crawl-delay: 2
-Disallow: /manage-xk92p/
-
-User-agent: Google-Extended
-Allow: /
-Crawl-delay: 2
-Disallow: /manage-xk92p/
-
-# Blocage scrapers
+# Outils d'analyse SEO tiers
 User-agent: AhrefsBot
-Disallow: /
-
 User-agent: SemrushBot
-Disallow: /
-
 User-agent: MJ12bot
 Disallow: /
-
-# Règle par défaut
-User-agent: *
-Allow: /
-Crawl-delay: 2
-Disallow: /manage-xk92p/
-Disallow: /api/
 
 Sitemap: https://liveinmarrakech.com/sitemap.xml

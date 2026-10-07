@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, Navigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, Bed, Car, MapPin, Clock, MessageCircle, CalendarDays, Bath, Maximize, ChevronLeft, ChevronRight, Share2, Heart } from "lucide-react";
+import { ArrowLeft, ArrowRight, Bed, Car, MapPin, Clock, MessageCircle, CalendarDays, Bath, Maximize, ChevronLeft, ChevronRight, Share2, Heart } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import VisitModal from "@/components/VisitModal";
@@ -15,6 +15,11 @@ import { motion } from "framer-motion";
 import { PageTransition, Reveal, EASE_LUXURY } from "@/components/motion/Animations";
 import { ServiceTag, TypeBadge } from "@/components/PropertyTags";
 import { isSoldOnly, isUnavailable } from "@/lib/propertyServices";
+import { propertyIdFromParam, propertyPath } from "@/lib/propertyUrl";
+import { useLocalePath } from "@/hooks/useLocalePath";
+import { useLocalizedText } from "@/hooks/useLocalizedText";
+import { getImageUrl } from "@/lib/cloudinary";
+import { landingFor, landingPath, type Landing } from "@/content/landings";
 
 const formatPrice = (price: number, devise: string = 'MAD') => {
   return new Intl.NumberFormat("fr-MA").format(price) + " " + devise;
@@ -22,8 +27,11 @@ const formatPrice = (price: number, devise: string = 'MAD') => {
 
 const PropertyDetail = () => {
   const { t } = useTranslation();
-  const { id } = useParams();
-  const { data: property, isLoading: loading } = useProperty(id ?? null);
+  const tL = useLocalizedText();
+  const { lang, lp } = useLocalePath();
+  const { pathname } = useLocation();
+  const { id: param } = useParams();
+  const { data: property, isLoading: loading } = useProperty(propertyIdFromParam(param));
   const [selectedImage, setSelectedImage] = useState(0);
   const [visitOpen, setVisitOpen] = useState(false);
   const thumbsRef = useRef<HTMLDivElement>(null);
@@ -73,11 +81,12 @@ const PropertyDetail = () => {
   if (!property) {
     return (
       <div className="min-h-screen">
+        <SEOHead title={tL("Bien introuvable", "Property not found", "Propiedad no encontrada")} description="" noindex />
         <Header />
         <div className="pt-32 pb-24 container mx-auto px-6 md:px-12 text-center">
           <h2 className="mb-6">{t('biens.aucun_bien')}</h2>
-          <Link to="/catalogue">
-            <Button variant="luxury-ghost">Retour au catalogue</Button>
+          <Link to={lp("/catalogue")}>
+            <Button variant="luxury-ghost">{tL("Retour au catalogue", "Back to the catalogue", "Volver al catálogo")}</Button>
           </Link>
         </div>
         <Footer />
@@ -86,13 +95,21 @@ const PropertyDetail = () => {
   }
 
   const images = property.photos?.length > 0 ? property.photos : ["/placeholder.svg"];
+  const shareImages = images.map((image) => {
+    const url = getImageUrl(image, "full");
+    return url.startsWith("/") ? `${BASE_URL}${url}` : url;
+  });
   const unavailable = isUnavailable(property);
+  const relatedLandings = property.services.map((service) => landingFor(service, property.type)).filter(Boolean) as Landing[];
   const unavailableLabel = isSoldOnly(property) ? "Déjà vendu" : "Déjà loué";
   const whatsappUrl = `https://wa.me/212605387041?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien : ${property?.titre} (Ref: ${property?.reference})`)}`;
 
   // Prix de l'offre (priorité à la vente, puis location)
   const offerPrice = property.prix_vente || property.prix_location_longue || property.prix_location_courte || property.prix || 0;
-  const propertyUrl = `${BASE_URL}/bien/${property.id}`;
+  // One address per property: old /bien/<id> links move to the readable one.
+  const canonicalPath = lp(propertyPath(property));
+  if (pathname !== canonicalPath) return <Navigate to={canonicalPath} replace />;
+  const propertyUrl = `${BASE_URL}${canonicalPath}`;
 
   // Construction du JSON-LD RealEstateListing pour les LLMs (GEO) et Google
   const jsonLd: Record<string, unknown> = {
@@ -102,7 +119,8 @@ const PropertyDetail = () => {
     "description": property.description_courte || property.description_longue || "Magnifique bien immobilier à Marrakech",
     "url": propertyUrl,
     "datePosted": property.created_at,
-    "image": images,
+    // Photos are stored as Cloudinary ids: structured data needs absolute URLs.
+    "image": shareImages,
     "address": {
       "@type": "PostalAddress",
       "addressLocality": property.quartier || "Marrakech",
@@ -132,9 +150,9 @@ const PropertyDetail = () => {
     })) || [],
     "offers": {
       "@type": "Offer",
-      "priceCurrency": "MAD",
+      "priceCurrency": property.devise || "MAD",
       "price": offerPrice,
-      "availability": "https://schema.org/InStock",
+      "availability": unavailable ? "https://schema.org/SoldOut" : "https://schema.org/InStock",
       "url": propertyUrl,
       "seller": {
         "@type": "RealEstateAgent",
@@ -142,6 +160,17 @@ const PropertyDetail = () => {
         "url": "https://liveinmarrakech.com"
       }
     }
+  };
+
+  const homeUrl = `${BASE_URL}${lp("/") === "/" ? "" : lp("/")}`;
+  const breadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": tL("Accueil", "Home", "Inicio"), "item": homeUrl },
+      { "@type": "ListItem", "position": 2, "name": tL("Nos biens", "Properties", "Propiedades"), "item": `${BASE_URL}${lp("/catalogue")}` },
+      { "@type": "ListItem", "position": 3, "name": property.titre, "item": propertyUrl },
+    ],
   };
 
   const metaDescription = property.description_courte || `Découvrez ce magnifique bien immobilier (${property.type}) à ${property.quartier || 'Marrakech'}. Exclusivité Live In Marrakech.`;
@@ -155,8 +184,9 @@ const PropertyDetail = () => {
       <SEOHead
         title={property.titre}
         description={metaDescription}
-        image={images[0]}
-        schema={jsonLd}
+        image={shareImages[0]}
+        schema={[jsonLd, breadcrumb]}
+        canonicalPath={canonicalPath}
       />
 
       <Header />
@@ -164,7 +194,7 @@ const PropertyDetail = () => {
       <div className="pt-20 md:pt-24">
         {/* ── Back link (desktop only — mobile uses floating back button) ── */}
         <div className="hidden md:block container mx-auto px-6 md:px-12 mb-4">
-          <Link to="/catalogue" className="inline-flex items-center gap-2 text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors font-sans mb-8">
+          <Link to={lp("/catalogue")} className="inline-flex items-center gap-2 text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors font-sans mb-8">
             <ArrowLeft size={16} strokeWidth={1.25} />
             {t("nav.catalogue")}
           </Link>
@@ -188,7 +218,7 @@ const PropertyDetail = () => {
 
             {/* Floating back button */}
             <Link
-              to="/catalogue"
+              to={lp("/catalogue")}
               className="absolute top-4 left-4 z-20 w-9 h-9 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white active:scale-95 transition-transform"
             >
               <ArrowLeft size={18} strokeWidth={1.5} />
@@ -523,6 +553,20 @@ const PropertyDetail = () => {
                         <div className="w-1.5 h-1.5 rounded-full bg-accent/60 shrink-0" />
                         <span className="font-light text-muted-foreground text-[13px] md:text-sm tracking-wide">{eq}</span>
                       </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ── Similar properties: the search pages for this type ── */}
+              {relatedLandings.length > 0 && (
+                <div>
+                  <h3 className="text-lg md:text-xl mb-4 md:mb-6 font-serif">{tL("Biens similaires", "Similar properties", "Inmuebles similares")}</h3>
+                  <div className="flex flex-wrap gap-2.5">
+                    {relatedLandings.map((landing) => (
+                      <Link key={landing.id} to={landingPath(landing.id, lang)} className="inline-flex min-h-11 items-center gap-2 border border-border px-4 text-sm hover:border-accent hover:text-accent transition-colors">
+                        {landing.label[lang]} <ArrowRight size={14} strokeWidth={1.5} />
+                      </Link>
                     ))}
                   </div>
                 </div>

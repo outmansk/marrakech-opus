@@ -1,10 +1,17 @@
-import { MapPin, Phone, Mail, Instagram, Facebook } from "lucide-react";
+import { MapPin, Phone, Mail, Instagram } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useLocalePath } from "@/hooks/useLocalePath";
+import { LANGS, languageSwitchPath } from "@/i18n/routing";
+import { getLanding, landingPath, type LandingId } from "@/content/landings";
+
+// Main search pages, linked from every page of the site.
+const FOOTER_LANDINGS: LandingId[] = ["vente-villas", "vente-appartements", "vente-riads", "location-appartements", "location-villas"];
 
 const Footer = () => {
-  const { t, i18n } = useTranslation();
-  const currentLang = i18n.language;
+  const { t } = useTranslation();
+  const { pathname, search } = useLocation();
+  const { lang: currentLang, lp } = useLocalePath();
 
   return (
     <footer className="bg-[#211f1b] text-white">
@@ -34,16 +41,6 @@ const Footer = () => {
                 <Instagram size={16} strokeWidth={1.25} />
               </a>
               <a
-                href="https://www.facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 border border-white/15 flex items-center justify-center text-white/40
-                  hover:border-white/50 hover:text-white transition-all duration-300"
-                aria-label="Facebook"
-              >
-                <Facebook size={16} strokeWidth={1.25} />
-              </a>
-              <a
                 href="https://wa.me/212605387041"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -68,12 +65,13 @@ const Footer = () => {
             <div className="w-full h-[1px] bg-white/8 mb-6" />
             <nav className="flex flex-col gap-3">
               {[
-                { to: "/", label: t("nav.accueil") },
-                { to: "/catalogue", label: t("nav.catalogue") },
-                { to: "/catalogue?type=vente", label: t("services.vente") },
-                { to: "/catalogue?type=location-longue-duree", label: t("services.location_longue") },
-                { to: "/blog", label: t("nav.blog") },
-                { to: "/contact", label: t("nav.contact") },
+                { to: lp("/"), label: t("nav.accueil") },
+                { to: lp("/catalogue"), label: t("nav.catalogue") },
+                { to: landingPath("vente", currentLang), label: t("services.vente") },
+                { to: landingPath("location", currentLang), label: t("services.location_longue") },
+                ...FOOTER_LANDINGS.map((id) => ({ to: landingPath(id, currentLang), label: getLanding(id).label[currentLang] })),
+                { to: lp("/blog"), label: t("nav.blog") },
+                { to: lp("/contact"), label: t("nav.contact") },
               ].map(({ to, label }) => (
                 <Link
                   key={to}
@@ -126,16 +124,17 @@ const Footer = () => {
           </p>
           {/* Language links */}
           <div className="flex items-center gap-4">
-            {(["fr", "en", "es"] as const).map((lang, i) => (
+            {LANGS.map((lang, i) => (
               <span key={lang} className="flex items-center gap-4">
-                <button
-                  onClick={() => i18n.changeLanguage(lang)}
+                <Link
+                  to={languageSwitchPath(pathname, search, lang)}
+                  hrefLang={lang}
                   className={`text-[10px] tracking-[0.2em] uppercase font-sans font-light transition-colors duration-300 ${
                     currentLang === lang ? "text-white" : "text-white/25 hover:text-white/60"
                   }`}
                 >
                   {lang.toUpperCase()}
-                </button>
+                </Link>
                 {i < 2 && <span className="text-white/15 text-xs">|</span>}
               </span>
             ))}

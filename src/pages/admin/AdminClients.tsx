@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { propertyPath } from "@/lib/propertyUrl";
 import { useSearchParams } from "react-router-dom";
 import { ChevronRight, LayoutGrid, Link2, List, Mail, MessageCircle, Pencil, Phone, Plus, Search, X } from "lucide-react";
 import { toast } from "sonner";
@@ -326,7 +327,7 @@ function ClientSheet({ lead, form, properties, onClose, onEdit, onCancelEdit, on
     if (!lead) return;
     const chosen = matches.filter((m) => selected.includes(m.id));
     const first = lead.name.split(" ")[0];
-    const list = chosen.map((p) => `• ${[p.titre, p.quartier, p.chambres ? `${p.chambres} chambres` : null, priceText(p, lead.transaction_type)].filter(Boolean).join(" · ")}\n${window.location.origin}/bien/${p.id}`).join("\n\n");
+    const list = chosen.map((p) => `• ${[p.titre, p.quartier, p.chambres ? `${p.chambres} chambres` : null, priceText(p, lead.transaction_type)].filter(Boolean).join(" · ")}\n${window.location.origin}${propertyPath(p)}`).join("\n\n");
     const message = chosen.length ? `Bonjour ${first}, voici des biens qui correspondent à votre recherche :\n\n${list}\n\nDites-moi lesquels vous intéressent pour organiser une visite.` : `Bonjour ${first}, je reviens vers vous au sujet de votre recherche immobilière.`;
     window.open(whatsappHref(lead.phone, message), "_blank", "noopener,noreferrer");
   };
