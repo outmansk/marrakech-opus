@@ -18,6 +18,8 @@ const fs = require('fs');
 const path = require('path');
 // Search landing pages (villas à vendre…), one translated address per language.
 const LANDINGS = require('../src/content/landings.json');
+// Proposed EN/ES property texts (used by the site while the translated columns are empty).
+const SUGGESTED_TRANSLATIONS = require('../src/content/propertyTranslations.json');
 // Addresses that redirect elsewhere (old blog articles merged into landing pages) stay out of the sitemap.
 const REDIRECTED = new Set((require('../vercel.json').redirects || []).map((r) => r.source));
 
@@ -251,7 +253,9 @@ async function main() {
   const articles = [...dbArticles.filter((a) => !fileSlugs.has(a.slug)), ...fileArticles]
     .filter((a) => !REDIRECTED.has(articleLoc(a)));
   // Only properties that are available: rented/sold ones stay online but are not promoted.
-  const properties = await supabaseQuery('properties_v2', 'id,titre,type,services,quartier,updated_at,photo_principale,photos', '&statut=eq.publie');
+  const baseColumns = 'id,titre,type,services,quartier,updated_at,photo_principale,photos';
+  let properties = await supabaseQuery('properties_v2', `${baseColumns},titre_en,titre_es`, '&statut=eq.publie');
+  if (!properties.length) properties = await supabaseQuery('properties_v2', baseColumns, '&statut=eq.publie'); // before the translation columns exist
 
   console.log(`  📦  ${properties.length} propriétés disponibles`);
   console.log(`  📝  ${articles.length} articles publiés\n`);
@@ -284,7 +288,12 @@ async function main() {
       .slice(0, 3)
       .map((id) => ({ url: imageUrl(id), title: prop.titre || '' }))
       .filter((img) => img.url);
-    entries.push(...allLanguages(propertyPath(prop), { lastmod: day(prop.updated_at), changefreq: 'weekly', priority: '0.7', images }));
+    // A language without a translation is noindex on the site, so it stays out of the sitemap too.
+    const langs = LANGUAGES.filter((lang) => lang === 'fr' || prop[`titre_${lang}`] || SUGGESTED_TRANSLATIONS[prop.id]?.[lang]?.titre);
+    const alternates = Object.fromEntries(langs.map((lang) => [lang, localize(propertyPath(prop), lang)]));
+    for (const lang of langs) {
+      entries.push(urlEntry({ loc: alternates[lang], alternates, lastmod: day(prop.updated_at), changefreq: 'weekly', priority: '0.7', images }));
+    }
   }
 
   // Blog articles: one address each, linked to their translations
