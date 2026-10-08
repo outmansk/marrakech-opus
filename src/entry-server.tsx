@@ -16,6 +16,8 @@ import { supabase } from "./lib/supabase";
 import { propertyIdFromParam, propertyPath } from "./lib/propertyUrl";
 import { propertiesQueryOptions, propertyQueryOptions } from "./hooks/useBiens";
 import { articleQueryOptions, publishedArticlesQueryOptions } from "./hooks/useArticles";
+import { withFileArticles } from "./content/blog";
+import type { Article } from "./types/article";
 import { LANDINGS, findLanding, landingCopyQueryOptions, landingPath } from "./content/landings";
 import Index from "./pages/Index";
 import Catalogue from "./pages/Catalogue";
@@ -42,9 +44,8 @@ export async function getPrerenderPaths(): Promise<string[]> {
 
   const paths = LANGS.flatMap((lang) => [...STATIC_PATHS, ...(properties ?? []).map(propertyPath)].map((path) => localizePath(path, lang)));
   for (const landing of LANDINGS) paths.push(...LANGS.map((lang) => landingPath(landing.id, lang)));
-  for (const article of articles ?? []) {
-    const lang = (article as { lang?: string }).lang;
-    paths.push(localizePath(`/blog/${article.slug}`, LANGS.find((l) => l === lang) ?? "fr"));
+  for (const article of withFileArticles((articles ?? []) as Article[], () => true)) {
+    paths.push(localizePath(`/blog/${article.slug}`, LANGS.find((l) => l === article.lang) ?? "fr"));
   }
   return paths;
 }

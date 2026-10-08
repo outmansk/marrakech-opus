@@ -71,7 +71,7 @@ Uploads go to **Cloudinary** (unsigned preset) via `src/lib/cloudinary.ts`, whic
 ### i18n & SEO (public site only)
 - i18next with `src/i18n/locales/{fr,en,es}.json`, fallback `fr`. Some components use `useLocalizedText()` → `tL(fr, en, es)` for inline strings instead of JSON keys. Property content (titles, descriptions) exists only in French.
 - Every public page renders `SEOHead` (title, description, single canonical, hreflang fr/en/es/x-default, `og:locale`, `<html lang>`, JSON-LD via Helmet). Use `alternates` when translations differ (blog), `canonicalPath`, `noindex` for 404s. Site-wide `RealEstateAgent` + `WebSite` JSON-LD lives in `index.html`; `<!--app-head-->` there is the pre-render insertion point.
-- Blog articles have a `lang` (`fr|en|es`) and optional `translation_key` linking translations; each article has one URL in its own language. Queries tolerate the columns being absent (pre-migration).
+- Blog articles come from two sources merged in `useArticles.ts`: Supabase rows (edited in the admin) and **Markdown files in `src/content/blog/`** (frontmatter mirrors the table: slug, lang, translation_key, category, title, meta_title, meta_description, excerpt, date, published; parsed by `src/content/blog.ts`). A file wins over a row with the same slug. New articles are written as files; they appear after a deploy (pre-render + sitemap read them too). Each article has a `lang` (`fr|en|es`) and one URL in its own language; `translation_key` links translations (hreflang).
 - `sitemap.xml` (per-language URLs with hreflang) is generated at build by `scripts/generate-sitemap.cjs`; `supabase/functions/sitemap` is an older edge-function version, not used by `robots.txt`. Static `public/robots.txt`, `llms.txt`, `humans.txt`.
 
 ### Styling

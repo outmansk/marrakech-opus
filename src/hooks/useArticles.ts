@@ -4,6 +4,7 @@ import { Article } from '@/types/article';
 import { toast } from 'sonner';
 import type { TablesInsert, TablesUpdate } from '@/integrations/supabase/types';
 import { DEFAULT_LANG, type Lang } from '@/i18n/routing';
+import { withFileArticles } from '@/content/blog';
 
 type ArticleInsert = TablesInsert<'articles'>;
 type ArticleUpdate = TablesUpdate<'articles'>;
@@ -22,24 +23,18 @@ async function saveArticle<T>(write: (row: ArticleInsert | ArticleUpdate) => Pro
 
 // ─── Public queries (shared with the build-time pre-render) ─────────────────
 
-// Until the `lang` column exists (see supabase/schema.sql), every article counts as French.
-const isMissingColumn = (error: { code?: string } | null) => error?.code === '42703';
 const withLang = (article: Article): Article => ({ ...article, lang: article.lang ?? DEFAULT_LANG });
+
+/** Every published article: Supabase rows plus the Markdown files of src/content/blog. */
+async function allPublishedArticles(): Promise<Article[]> {
+  const { data, error } = await supabase.from('articles').select('*').eq('est_publie', true);
+  if (error) throw error;
+  return withFileArticles((data as Article[]).map(withLang), () => true);
+}
 
 export const publishedArticlesQueryOptions = (lang: Lang) => queryOptions<Article[]>({
   queryKey: ['articles', 'published', lang],
-  queryFn: async () => {
-    const base = () => supabase.from('articles').select('*').eq('est_publie', true).order('created_at', { ascending: false });
-    const { data, error } = await base().eq('lang', lang);
-    if (isMissingColumn(error)) {
-      if (lang !== DEFAULT_LANG) return [];
-      const fallback = await base();
-      if (fallback.error) throw fallback.error;
-      return (fallback.data as Article[]).map(withLang);
-    }
-    if (error) throw error;
-    return (data as Article[]).map(withLang);
-  },
+  queryFn: async () => (await allPublishedArticles()).filter((article) => article.lang === lang),
 });
 
 export interface ArticlePage {
@@ -53,22 +48,21 @@ export const articleQueryOptions = (slug: string | undefined) => queryOptions<Ar
   queryKey: ['articles', 'slug', slug],
   enabled: !!slug,
   queryFn: async () => {
-    const { data, error } = await supabase.from('articles').select('*').eq('slug', slug!).eq('est_publie', true).maybeSingle();
-    if (error) throw error;
-    if (!data) return { article: null, translations: [], similar: [] };
-    const article = withLang(data as Article);
+    const all = await allPublishedArticles();
+    const article = all.find((candidate) => candidate.slug === slug) ?? null;
+    if (!article) return { article: null, translations: [], similar: [] };
 
-    let similarQuery = supabase.from('articles').select('*').eq('category', article.category).eq('est_publie', true).neq('id', article.id).limit(3);
-    if (data && 'lang' in data) similarQuery = similarQuery.eq('lang', article.lang!);
-    const similar = await similarQuery;
+    const translations = article.translation_key
+      ? all.filter((other) => other.translation_key === article.translation_key && other.slug !== article.slug)
+          .map((other) => ({ lang: other.lang!, slug: other.slug }))
+      : [];
+    const sameLang = all.filter((other) => other.lang === article.lang && other.slug !== article.slug);
+    const similar = [
+      ...sameLang.filter((other) => other.category === article.category),
+      ...sameLang.filter((other) => other.category !== article.category),
+    ].slice(0, 3);
 
-    let translations: ArticlePage['translations'] = [];
-    if (article.translation_key) {
-      const { data: siblings } = await supabase.from('articles').select('slug, lang').eq('translation_key', article.translation_key).eq('est_publie', true).neq('id', article.id);
-      translations = (siblings ?? []) as ArticlePage['translations'];
-    }
-
-    return { article, translations, similar: ((similar.data ?? []) as Article[]).map(withLang) };
+    return { article, translations, similar };
   },
 });
 

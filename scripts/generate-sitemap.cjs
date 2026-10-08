@@ -132,17 +132,38 @@ function allLanguages(loc, fields) {
   return LANGUAGES.map((lang) => urlEntry({ ...fields, loc: alternates[lang], alternates }));
 }
 
+// ── Blog articles stored as Markdown files (src/content/blog, parsed like src/content/blog.ts) ──
+function readFileArticles() {
+  const dir = path.resolve(__dirname, '..', 'src', 'content', 'blog');
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir)
+    .filter((name) => name.endsWith('.md'))
+    .map((name) => {
+      const raw = fs.readFileSync(path.join(dir, name), 'utf-8');
+      const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+      const meta = {};
+      for (const line of (match ? match[1] : '').split(/\r?\n/)) {
+        const separator = line.indexOf(':');
+        if (separator < 1) continue;
+        const value = line.slice(separator + 1).trim();
+        meta[line.slice(0, separator).trim()] = value.startsWith('"') ? JSON.parse(value) : value;
+      }
+      return { slug: meta.slug, lang: meta.lang || 'fr', translation_key: meta.translation_key || null, updated_at: meta.updated || meta.date, published: meta.published !== 'false' };
+    })
+    .filter((article) => article.slug && article.published);
+}
+
 // ── Main ───────────────────────────────────────────────────
 async function main() {
   console.log('🗺️  Generating sitemap.xml...\n');
   const today = new Date().toISOString().split('T')[0];
 
   // Fetch dynamic data
-  let articles = await supabaseQuery('articles', 'slug,updated_at,lang,translation_key', '&est_publie=eq.true');
-  if (!Array.isArray(articles) || articles.length === 0) {
-    // Before the `lang` migration the columns do not exist: every article is French.
-    articles = await supabaseQuery('articles', 'slug,updated_at', '&est_publie=eq.true');
-  }
+  const dbArticles = await supabaseQuery('articles', 'slug,updated_at,lang,translation_key', '&est_publie=eq.true');
+  // Articles written as Markdown files replace a database row with the same slug (as on the site).
+  const fileArticles = readFileArticles();
+  const fileSlugs = new Set(fileArticles.map((a) => a.slug));
+  const articles = [...dbArticles.filter((a) => !fileSlugs.has(a.slug)), ...fileArticles];
   const properties = await supabaseQuery('properties_v2', 'id,titre,updated_at,photo_principale,photos', '&statut=eq.publie');
 
   console.log(`  📦  ${properties.length} propriétés publiées`);
