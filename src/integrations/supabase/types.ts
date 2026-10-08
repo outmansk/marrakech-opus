@@ -264,6 +264,14 @@ export type Database = {
           surface_habitable: number | null
           surface_terrain: number | null
           titre: string
+          titre_en: string | null
+          titre_es: string | null
+          description_courte_en: string | null
+          description_courte_es: string | null
+          description_longue_en: string | null
+          description_longue_es: string | null
+          traduction_a_relire: boolean
+          meuble: boolean | null
           type: string
           updated_at: string
         }
@@ -294,6 +302,14 @@ export type Database = {
           surface_habitable?: number | null
           surface_terrain?: number | null
           titre: string
+          titre_en?: string | null
+          titre_es?: string | null
+          description_courte_en?: string | null
+          description_courte_es?: string | null
+          description_longue_en?: string | null
+          description_longue_es?: string | null
+          traduction_a_relire?: boolean
+          meuble?: boolean | null
           type: string
           updated_at?: string
         }
@@ -324,6 +340,14 @@ export type Database = {
           surface_habitable?: number | null
           surface_terrain?: number | null
           titre?: string
+          titre_en?: string | null
+          titre_es?: string | null
+          description_courte_en?: string | null
+          description_courte_es?: string | null
+          description_longue_en?: string | null
+          description_longue_es?: string | null
+          traduction_a_relire?: boolean
+          meuble?: boolean | null
           type?: string
           updated_at?: string
         }

@@ -93,6 +93,17 @@ export interface Bien {
   quartier: string | null;
   description_courte: string | null;
   description_longue: string | null;
+  /** Translations edited in the admin (empty → proposed text from src/content/propertyTranslations.json). */
+  titre_en?: string | null;
+  titre_es?: string | null;
+  description_courte_en?: string | null;
+  description_courte_es?: string | null;
+  description_longue_en?: string | null;
+  description_longue_es?: string | null;
+  /** The agency still has to review the EN/ES texts. */
+  traduction_a_relire?: boolean;
+  /** true = furnished, false = unfurnished, null = not specified yet. */
+  meuble?: boolean | null;
   equipements: string[];
   photos: string[];
   photo_principale: string | null;

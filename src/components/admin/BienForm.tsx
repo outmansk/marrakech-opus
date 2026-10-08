@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { suggestedTranslation } from "@/lib/propertyI18n";
 import { propertyPath } from "@/lib/propertyUrl";
 import { useForm, type FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -48,6 +49,14 @@ const bienSchema = z.object({
     place: z.string().trim().min(1, "Indiquez le lieu.").transform(clean),
     time: z.string().trim().min(1, "Indiquez le temps ou la distance.").transform(clean),
   })).default([]),
+  meuble: z.boolean().nullable().optional(),
+  titre_en: z.string().nullable().optional().transform((v) => (v ? clean(v) : v)),
+  titre_es: z.string().nullable().optional().transform((v) => (v ? clean(v) : v)),
+  description_courte_en: z.string().nullable().optional().transform((v) => (v ? clean(v) : v)),
+  description_courte_es: z.string().nullable().optional().transform((v) => (v ? clean(v) : v)),
+  description_longue_en: z.string().nullable().optional().transform((v) => (v ? clean(v) : v)),
+  description_longue_es: z.string().nullable().optional().transform((v) => (v ? clean(v) : v)),
+  traduction_a_relire: z.boolean().default(true),
 });
 
 type BienFormValues = z.infer<typeof bienSchema>;
@@ -58,7 +67,20 @@ const EMPTY: BienFormValues = {
   surface_habitable: null, surface_terrain: null, chambres: null, salles_de_bain: null, disponible_le: null,
   quartier: null, latitude: null, longitude: null, description_courte: null, description_longue: null,
   equipements: [], photos: [], photo_principale: null, proximites: [],
+  meuble: null, titre_en: null, titre_es: null, description_courte_en: null, description_courte_es: null,
+  description_longue_en: null, description_longue_es: null, traduction_a_relire: true,
 };
+
+/** Saved translation, or the proposed one from the repository (shown pre-filled, to review). */
+function translationFields(bien: Bien) {
+  const field = (lang: "en" | "es", key: "titre" | "description_courte" | "description_longue") =>
+    bien[`${key}_${lang}`] || suggestedTranslation(bien.id, lang)?.[key] || null;
+  return {
+    titre_en: field("en", "titre"), titre_es: field("es", "titre"),
+    description_courte_en: field("en", "description_courte"), description_courte_es: field("es", "description_courte"),
+    description_longue_en: field("en", "description_longue"), description_longue_es: field("es", "description_longue"),
+  };
+}
 
 function fromBien(bien: Bien): BienFormValues {
   return {
@@ -69,6 +91,9 @@ function fromBien(bien: Bien): BienFormValues {
     chambres: bien.chambres, salles_de_bain: bien.salles_de_bain, disponible_le: bien.disponible_le, quartier: bien.quartier,
     latitude: bien.latitude, longitude: bien.longitude, description_courte: bien.description_courte, description_longue: bien.description_longue,
     equipements: bien.equipements ?? [], photos: bien.photos ?? [], photo_principale: bien.photo_principale, proximites: bien.proximites ?? [],
+    meuble: bien.meuble ?? null, ...translationFields(bien),
+    // A proposed (not yet saved) translation is always "to review".
+    traduction_a_relire: bien.traduction_a_relire ?? true,
   };
 }
 
@@ -80,7 +105,8 @@ const FIELD_STEP: Partial<Record<keyof BienFormValues, number>> = {
   prix_vente: 1, prix_location_longue: 1, prix_location_courte: 1, prix: 1, devise: 1,
   surface_habitable: 2, surface_terrain: 2, chambres: 2, salles_de_bain: 2,
   quartier: 3, disponible_le: 3, latitude: 3, longitude: 3,
-  description_courte: 4, description_longue: 4, equipements: 5, proximites: 6, photos: 7, photo_principale: 7,
+  description_courte: 4, description_longue: 4, titre_en: 4, titre_es: 4, description_courte_en: 4, description_courte_es: 4,
+  description_longue_en: 4, description_longue_es: 4, meuble: 2, equipements: 5, proximites: 6, photos: 7, photo_principale: 7,
 };
 
 const PRICE_FIELDS: { service: BienService; name: "prix_vente" | "prix_location_longue" | "prix_location_courte" | "prix"; label: string; unit: string }[] = [
@@ -288,6 +314,11 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
       description_courte: v.description_courte || null, description_longue: v.description_longue || null,
       equipements: v.equipements, photos: v.photos, photo_principale: v.photo_principale ?? v.photos[0] ?? null,
       proximites: v.proximites.map(({ place, time }) => ({ place, time })),
+      meuble: v.meuble ?? null,
+      titre_en: v.titre_en || null, titre_es: v.titre_es || null,
+      description_courte_en: v.description_courte_en || null, description_courte_es: v.description_courte_es || null,
+      description_longue_en: v.description_longue_en || null, description_longue_es: v.description_longue_es || null,
+      traduction_a_relire: v.traduction_a_relire,
     };
     if (isEditing && bien) await updateMutation.mutateAsync({ id: bien.id, ...payload });
     else await createMutation.mutateAsync(payload);
@@ -433,6 +464,16 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
                   <Stepper label="Chambres" value={values.chambres} onChange={(v) => set("chambres", v)} />
                   <Stepper label="Salles de bain" value={values.salles_de_bain} onChange={(v) => set("salles_de_bain", v)} />
                 </div>
+                <div className="flex flex-col gap-2">
+                  <Label>Meublé ou vide</Label>
+                  <Segmented
+                    label="Meublé ou vide"
+                    value={values.meuble === true ? "oui" : values.meuble === false ? "non" : "inconnu"}
+                    onChange={(v) => set("meuble", v === "oui" ? true : v === "non" ? false : null)}
+                    options={[{ value: "inconnu", label: "Non renseigné" }, { value: "oui", label: "Meublé" }, { value: "non", label: "Vide" }]}
+                  />
+                  <span className={fieldCls.help}>Sur le site : badge « Meublé » + caution 2 mois, ou « Vide » + caution 1 mois. Non renseigné : rien n’est affiché.</span>
+                </div>
               </section>
 
               {/* 4. Localisation */}
@@ -477,6 +518,35 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="description_longue">Description longue</Label>
                   <textarea id="description_longue" rows={8} {...register("description_longue")} placeholder="Pièces, prestations, environnement, conditions…" className={cn(fieldCls.input, "h-auto py-2.5 leading-relaxed")} />
+                </div>
+
+                {/* Traductions affichées sur /en et /es */}
+                <div className="flex flex-col gap-4 rounded-lg border border-border bg-muted/30 p-4">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-sm font-semibold">Traductions (anglais et espagnol)</span>
+                    <span className={fieldCls.help}>Affichées sur les pages /en et /es. Sans titre traduit, la page de cette langue montre le français et n’apparaît pas sur Google.</span>
+                  </div>
+                  <label className="flex items-center gap-2.5 text-sm">
+                    <input type="checkbox" className="h-5 w-5 accent-[hsl(70_19%_34%)]" {...register("traduction_a_relire")} />
+                    Traduction à relire
+                  </label>
+                  {(["en", "es"] as const).map((lang) => (
+                    <div key={lang} className="flex flex-col gap-3 border-t border-border pt-3">
+                      <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{lang === "en" ? "Anglais" : "Espagnol"}</span>
+                      <div className="flex flex-col gap-1.5">
+                        <Label htmlFor={`titre_${lang}`}>Titre</Label>
+                        <input id={`titre_${lang}`} {...register(`titre_${lang}`)} className={fieldCls.input} />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <Label htmlFor={`description_courte_${lang}`}>Description courte</Label>
+                        <textarea id={`description_courte_${lang}`} rows={3} {...register(`description_courte_${lang}`)} className={cn(fieldCls.input, "h-auto py-2.5 leading-relaxed")} />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <Label htmlFor={`description_longue_${lang}`}>Description longue</Label>
+                        <textarea id={`description_longue_${lang}`} rows={6} {...register(`description_longue_${lang}`)} className={cn(fieldCls.input, "h-auto py-2.5 leading-relaxed")} />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </section>
 

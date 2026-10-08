@@ -307,4 +307,18 @@ ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS translation_key TEXT
 CREATE INDEX IF NOT EXISTS articles_lang_published_idx ON public.articles(lang, est_publie);
 CREATE INDEX IF NOT EXISTS articles_translation_key_idx ON public.articles(translation_key);
 
+-- ─── Property translations (EN / ES) and furnished status ────────────
+-- Empty translation → the site uses the proposed text of src/content/propertyTranslations.json.
+-- meuble: true = furnished, false = unfurnished, NULL = not specified yet.
+
+ALTER TABLE public.properties_v2
+  ADD COLUMN IF NOT EXISTS titre_en TEXT,
+  ADD COLUMN IF NOT EXISTS titre_es TEXT,
+  ADD COLUMN IF NOT EXISTS description_courte_en TEXT,
+  ADD COLUMN IF NOT EXISTS description_courte_es TEXT,
+  ADD COLUMN IF NOT EXISTS description_longue_en TEXT,
+  ADD COLUMN IF NOT EXISTS description_longue_es TEXT,
+  ADD COLUMN IF NOT EXISTS traduction_a_relire BOOLEAN NOT NULL DEFAULT true,
+  ADD COLUMN IF NOT EXISTS meuble BOOLEAN;
+
 NOTIFY pgrst, 'reload schema';

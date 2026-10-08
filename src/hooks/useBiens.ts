@@ -19,6 +19,19 @@ function friendlyError(err: Error) {
   return `L’opération n’a pas abouti. Réessayez. (${err.message})`;
 }
 
+// Columns added in October 2026 (translations, furnished). Until the SQL of supabase/schema.sql has run,
+// PostgREST rejects them (PGRST204): the save is retried without them so the admin keeps working.
+const NEW_COLUMNS = ['titre_en', 'titre_es', 'description_courte_en', 'description_courte_es', 'description_longue_en', 'description_longue_es', 'traduction_a_relire', 'meuble'] as const;
+async function saveBien<T extends Record<string, unknown>>(write: (row: T) => PromiseLike<{ data: unknown; error: { code?: string } | null }>, row: T) {
+  let result = await write(row);
+  if (result.error?.code === 'PGRST204') {
+    const legacy = Object.fromEntries(Object.entries(row).filter(([key]) => !(NEW_COLUMNS as readonly string[]).includes(key))) as T;
+    result = await write(legacy);
+  }
+  if (result.error) throw result.error;
+  return result.data as Bien;
+}
+
 function invalidateAll(queryClient: ReturnType<typeof useQueryClient>) {
   queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
   queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
@@ -79,9 +92,7 @@ export function useCreateProperty() {
         ...payload,
         reference: payload.reference || generateReference(),
       };
-      const { data, error } = await supabase.from(TABLE).insert(withRef).select().single();
-      if (error) throw error;
-      return data as Bien;
+      return saveBien((row) => supabase.from(TABLE).insert(row as BienInsert).select().single(), withRef);
     },
     onSuccess: () => {
       invalidateAll(queryClient);
@@ -99,9 +110,7 @@ export function useUpdateProperty() {
 
   return useMutation({
     mutationFn: async ({ id, ...payload }: BienUpdate & { id: string }) => {
-      const { data, error } = await supabase.from(TABLE).update(payload).eq('id', id).select().single();
-      if (error) throw error;
-      return data as Bien;
+      return saveBien((row) => supabase.from(TABLE).update(row).eq('id', id).select().single(), payload);
     },
     onSuccess: () => {
       invalidateAll(queryClient);
