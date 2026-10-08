@@ -66,7 +66,7 @@ export function useSEO({
     ogImage: image || DEFAULT_OG_IMAGE,
     type,
     lang,
-    // A lone self-reference is not worth emitting.
-    alternates: links.length > 2 ? links : [],
+    // Always reciprocal: every version of the page, itself included (a French-only page lists fr + x-default).
+    alternates: links,
   };
 }

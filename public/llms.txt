@@ -1,34 +1,92 @@
 # Live In Marrakech
 
-> Live In Marrakech is a real estate agency in Marrakech, Morocco. It offers villas, apartments, riads, houses and land for sale, for long-term rental (monthly, furnished or unfurnished), for short stays and for subletting. The website is available in French (main language), English and Spanish.
+> Live In Marrakech is a real-estate agency in Marrakech, Morocco. The website lists the properties the agency currently offers and publishes practical guides for people who want to rent long term or buy in Marrakech. It is available in French (main language, at the root), English (/en) and Spanish (/es).
 
 Contact: +212 6 05 38 70 41 (phone and WhatsApp) · contact@liveinmarrakech.com · https://liveinmarrakech.com
 
-Neighbourhoods covered: Hivernage, Gueliz, Palmeraie, Medina, Chrifia, Targa, Route de l'Ourika, Route d'Amizmiz, Sidi Ghanem, Agdal, Route de Fes.
+## Current offer (generated from the listings on 2026-10-08)
 
-Prices are shown in Moroccan dirhams (MAD) or euros (EUR), per month for long-term rentals and per night for short stays. Listings marked "Déjà loué / vendu" (already rented / sold) are kept online for reference and are no longer available.
+- Property types currently listed: villas, houses, apartments, riads.
+- Services currently offered: long-term rental, subletting, sale.
+- Areas of the currently listed properties: Chrifia, Palmeraie, Route de Fes.
+- Prices are shown on each property page, in Moroccan dirhams (MAD) or euros (EUR), per month for long-term rentals. Availability and prices change: the property page is the reference.
+
+## Long-term rental rules
+
+- Long-term rental: 1-year lease minimum.
+- Security deposit: 2 months of rent for a furnished home, 1 month for an unfurnished one.
+- Documents required from the tenant: passport or national ID card only.
 
 ## Main pages
 
-- [Home (FR)](https://liveinmarrakech.com): agency presentation and current selection of properties
-- [Property catalogue (FR)](https://liveinmarrakech.com/catalogue): all listed properties, filterable by project (buy, long-term rent, stay), property type and neighbourhood
+- [Home (FR)](https://liveinmarrakech.com)
+- [Home (EN)](https://liveinmarrakech.com/en)
+- [Inicio (ES)](https://liveinmarrakech.com/es)
+- [Property catalogue (FR)](https://liveinmarrakech.com/catalogue)
 - [Property catalogue (EN)](https://liveinmarrakech.com/en/catalogue)
-- [Catálogo de propiedades (ES)](https://liveinmarrakech.com/es/catalogue)
-- [Describe your search](https://liveinmarrakech.com/en/demande): form to describe the property you are looking for; the agency replies with a tailored selection
-- [Contact](https://liveinmarrakech.com/en/contact)
+- [Catálogo (ES)](https://liveinmarrakech.com/es/catalogue)
+- [Describe your search (FR)](https://liveinmarrakech.com/demande)
+- [Describe your search (EN)](https://liveinmarrakech.com/en/demande)
+- [Describa su búsqueda (ES)](https://liveinmarrakech.com/es/demande)
+
+## Sale and long-term rental pages (FR)
+
+- [Biens à vendre](https://liveinmarrakech.com/vente)
+- [Villas à vendre](https://liveinmarrakech.com/vente/villas-marrakech)
+- [Appartements à vendre](https://liveinmarrakech.com/vente/appartements-marrakech)
+- [Riads à vendre](https://liveinmarrakech.com/vente/riads-marrakech)
+- [Maisons à vendre](https://liveinmarrakech.com/vente/maisons-marrakech)
+- [Terrains à vendre](https://liveinmarrakech.com/vente/terrains-marrakech)
+- [Location longue durée](https://liveinmarrakech.com/location-longue-duree)
+- [Appartements à louer à l’année](https://liveinmarrakech.com/location-longue-duree/appartements-marrakech)
+- [Villas à louer à l’année](https://liveinmarrakech.com/location-longue-duree/villas-marrakech)
+
+## Sale and long-term rental pages (EN)
+
+- [Property for sale](https://liveinmarrakech.com/en/for-sale)
+- [Villas for sale](https://liveinmarrakech.com/en/for-sale/villas-marrakech)
+- [Apartments for sale](https://liveinmarrakech.com/en/for-sale/apartments-marrakech)
+- [Riads for sale](https://liveinmarrakech.com/en/for-sale/riads-marrakech)
+- [Houses for sale](https://liveinmarrakech.com/en/for-sale/houses-marrakech)
+- [Land for sale](https://liveinmarrakech.com/en/for-sale/land-marrakech)
+- [Long-term rentals](https://liveinmarrakech.com/en/long-term-rental)
+- [Apartments for long-term rent](https://liveinmarrakech.com/en/long-term-rental/apartments-marrakech)
+- [Villas for long-term rent](https://liveinmarrakech.com/en/long-term-rental/villas-marrakech)
+
+## Sale and long-term rental pages (ES)
+
+- [Inmuebles en venta](https://liveinmarrakech.com/es/venta)
+- [Villas en venta](https://liveinmarrakech.com/es/venta/villas-marrakech)
+- [Apartamentos en venta](https://liveinmarrakech.com/es/venta/apartamentos-marrakech)
+- [Riads en venta](https://liveinmarrakech.com/es/venta/riads-marrakech)
+- [Casas en venta](https://liveinmarrakech.com/es/venta/casas-marrakech)
+- [Terrenos en venta](https://liveinmarrakech.com/es/venta/terrenos-marrakech)
+- [Alquiler de larga duración](https://liveinmarrakech.com/es/alquiler-larga-duracion)
+- [Apartamentos en alquiler de larga duración](https://liveinmarrakech.com/es/alquiler-larga-duracion/apartamentos-marrakech)
+- [Villas en alquiler de larga duración](https://liveinmarrakech.com/es/alquiler-larga-duracion/villas-marrakech)
+
+## Guides
+
+- [La Sous-Location d'Appartement à Marrakech (FR)](https://liveinmarrakech.com/blog/sous-location-appartement-marrakech)
+- [Investissement foncier autour de Marrakech en 2026 (FR)](https://liveinmarrakech.com/blog/investir-terrain-marrakech-2026)
+- [undefined (FR)](https://liveinmarrakech.com/blog/acheter-immobilier-maroc-etranger)
+- [undefined (EN)](https://liveinmarrakech.com/en/blog/best-areas-to-live-marrakech)
+- [undefined (EN)](https://liveinmarrakech.com/en/blog/buying-property-morocco-foreigner)
+- [undefined (ES)](https://liveinmarrakech.com/es/blog/comprar-inmueble-marruecos-extranjero)
+- [undefined (EN)](https://liveinmarrakech.com/en/blog/land-title-melkia-off-plan-morocco)
+- [undefined (ES)](https://liveinmarrakech.com/es/blog/mejores-barrios-marrakech)
+- [undefined (EN)](https://liveinmarrakech.com/en/blog/moving-to-marrakech-expat-guide)
+- [undefined (ES)](https://liveinmarrakech.com/es/blog/mudarse-a-marrakech-guia-expatriados)
+- [undefined (FR)](https://liveinmarrakech.com/blog/quartiers-marrakech-ou-vivre)
+- [undefined (FR)](https://liveinmarrakech.com/blog/s-installer-a-marrakech-expatries)
+- [undefined (FR)](https://liveinmarrakech.com/blog/titre-foncier-melkia-vefa-maroc)
+- [undefined (ES)](https://liveinmarrakech.com/es/blog/titulo-propiedad-melkia-vefa-marruecos)
 
 ## Property pages
 
-Each property has its own page at `/bien/{readable-title}-{id}` (English: `/en/bien/…`, Spanish: `/es/bien/…`) with photos, price, surface, bedrooms, bathrooms, neighbourhood, amenities and a WhatsApp contact button. The full list of current property pages is in the sitemap: https://liveinmarrakech.com/sitemap.xml
-
-## Blog
-
-- [Blog (FR)](https://liveinmarrakech.com/blog): guides about buying, renting and investing in Marrakech
-- [Blog (EN)](https://liveinmarrakech.com/en/blog)
-- [Blog (ES)](https://liveinmarrakech.com/es/blog)
+Each property has its own page at /bien/{readable-title}-{id} (/en/bien/… and /es/bien/… in English and Spanish) with photos, price, bedrooms, bathrooms, surface, area and a WhatsApp contact button. The current list is in the sitemap: https://liveinmarrakech.com/sitemap.xml
 
 ## Notes for AI assistants
 
-- Please cite the specific property or article page you use, with its link.
-- Availability and prices change: the property page is the reference at the time of reading.
-- The back-office (`/manage-xk92p/`) is private and not part of the public site.
+- Please cite the specific property, page or guide you use, with its link.
+- Legal and tax information in the guides is general; readers are referred to a notary for their own case.

@@ -1,8 +1,10 @@
 /**
  * generate-sitemap.cjs
  * ─────────────────────────────────────────────────────────
- * Generates a complete sitemap.xml from static pages +
- * dynamic properties & blog articles from Supabase.
+ * Generates public/sitemap.xml (static pages, landing pages,
+ * available properties and blog articles, in FR/EN/ES with
+ * hreflang) and public/llms.txt from Supabase and the
+ * Markdown articles of src/content/blog.
  *
  * Usage:
  *   node scripts/generate-sitemap.cjs
@@ -104,7 +106,7 @@ function xmlEscape(str) {
 /** alternates: { fr: '/x', en: '/en/x', … } — every version of the page, itself included. */
 function hreflangTags(alternates) {
   const langs = LANGUAGES.filter((lang) => alternates[lang]);
-  if (langs.length < 2) return '';
+  if (langs.length === 0) return '';
   const tags = langs.map((lang) => `    <xhtml:link rel="alternate" hreflang="${lang}" href="${xmlEscape(absolute(alternates[lang]))}" />`);
   if (alternates.fr) tags.push(`    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(absolute(alternates.fr))}" />`);
   return tags.join('\n') + '\n';
@@ -120,8 +122,8 @@ function urlEntry({ loc, alternates = {}, lastmod, changefreq, priority, images 
 
   return `  <url>
     <loc>${xmlEscape(absolute(loc))}</loc>
-${hreflangTags(alternates)}    <lastmod>${lastmod}</lastmod>
-    <changefreq>${changefreq}</changefreq>
+${hreflangTags(alternates)}${lastmod ? `    <lastmod>${lastmod}</lastmod>
+` : ''}    <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>
 ${imgTags}  </url>`;
 }
@@ -153,62 +155,145 @@ function readFileArticles() {
     .filter((article) => article.slug && article.published);
 }
 
+// ── Confirmed rental rules (from the owner, Oct 2026) — keep in sync with the site texts ──
+const RENTAL_RULES = [
+  'Long-term rental: 1-year lease minimum.',
+  'Security deposit: 2 months of rent for a furnished home, 1 month for an unfurnished one.',
+  'Documents required from the tenant: passport or national ID card only.',
+];
+const CONTACT = { phone: '+212 6 05 38 70 41', email: 'contact@liveinmarrakech.com' };
+const TYPE_NAMES = { villa: 'villas', appartement: 'apartments', riad: 'riads', maison: 'houses', terrain: 'land' };
+const SERVICE_NAMES = {
+  vente: 'sale',
+  'location-longue-duree': 'long-term rental',
+  'location-courte-duree': 'short stays',
+  'sous-location': 'subletting',
+};
+
+const day = (iso) => (iso ? new Date(iso).toISOString().split('T')[0] : undefined);
+const latest = (dates) => dates.filter(Boolean).sort().pop();
+
+/** llms.txt: a factual map of the public site for AI assistants, rebuilt from the data on every build. */
+function buildLlmsTxt({ properties, articles, articleLoc }) {
+  const types = [...new Set(properties.map((p) => p.type))].map((t) => TYPE_NAMES[t] || t);
+  const services = [...new Set(properties.flatMap((p) => p.services || []))].map((s) => SERVICE_NAMES[s] || s);
+  const areas = [...new Set(properties.map((p) => p.quartier).filter(Boolean))].sort();
+  const link = (label, loc) => `- [${label}](${absolute(loc)})`;
+  const landingLinks = (lang) => LANDINGS.map((l) => link(l.label[lang], localize(l.paths[lang], lang)));
+  const guide = (a) => link(`${a.title} (${(a.lang || 'fr').toUpperCase()})`, articleLoc(a));
+
+  return `# Live In Marrakech
+
+> Live In Marrakech is a real-estate agency in Marrakech, Morocco. The website lists the properties the agency currently offers and publishes practical guides for people who want to rent long term or buy in Marrakech. It is available in French (main language, at the root), English (/en) and Spanish (/es).
+
+Contact: ${CONTACT.phone} (phone and WhatsApp) · ${CONTACT.email} · ${SITE_URL}
+
+## Current offer (generated from the listings on ${day(new Date().toISOString())})
+
+- Property types currently listed: ${types.join(', ') || 'none'}.
+- Services currently offered: ${services.join(', ') || 'none'}.
+- Areas of the currently listed properties: ${areas.join(', ') || 'not specified'}.
+- Prices are shown on each property page, in Moroccan dirhams (MAD) or euros (EUR), per month for long-term rentals. Availability and prices change: the property page is the reference.
+
+## Long-term rental rules
+
+${RENTAL_RULES.map((r) => `- ${r}`).join('\n')}
+
+## Main pages
+
+${link('Home (FR)', '/')}
+${link('Home (EN)', '/en')}
+${link('Inicio (ES)', '/es')}
+${link('Property catalogue (FR)', '/catalogue')}
+${link('Property catalogue (EN)', '/en/catalogue')}
+${link('Catálogo (ES)', '/es/catalogue')}
+${link('Describe your search (FR)', '/demande')}
+${link('Describe your search (EN)', '/en/demande')}
+${link('Describa su búsqueda (ES)', '/es/demande')}
+
+## Sale and long-term rental pages (FR)
+
+${landingLinks('fr').join('\n')}
+
+## Sale and long-term rental pages (EN)
+
+${landingLinks('en').join('\n')}
+
+## Sale and long-term rental pages (ES)
+
+${landingLinks('es').join('\n')}
+
+## Guides
+
+${articles.map(guide).join('\n')}
+
+## Property pages
+
+Each property has its own page at /bien/{readable-title}-{id} (/en/bien/… and /es/bien/… in English and Spanish) with photos, price, bedrooms, bathrooms, surface, area and a WhatsApp contact button. The current list is in the sitemap: ${SITE_URL}/sitemap.xml
+
+## Notes for AI assistants
+
+- Please cite the specific property, page or guide you use, with its link.
+- Legal and tax information in the guides is general; readers are referred to a notary for their own case.
+`;
+}
+
 // ── Main ───────────────────────────────────────────────────
 async function main() {
-  console.log('🗺️  Generating sitemap.xml...\n');
-  const today = new Date().toISOString().split('T')[0];
+  console.log('🗺️  Generating sitemap.xml and llms.txt...\n');
 
   // Fetch dynamic data
-  const dbArticles = await supabaseQuery('articles', 'slug,updated_at,lang,translation_key', '&est_publie=eq.true');
+  const dbArticles = await supabaseQuery('articles', 'slug,title,updated_at,lang,translation_key', '&est_publie=eq.true');
   // Articles written as Markdown files replace a database row with the same slug (as on the site).
   const fileArticles = readFileArticles();
   const fileSlugs = new Set(fileArticles.map((a) => a.slug));
-  const articles = [...dbArticles.filter((a) => !fileSlugs.has(a.slug)), ...fileArticles];
-  const properties = await supabaseQuery('properties_v2', 'id,titre,updated_at,photo_principale,photos', '&statut=eq.publie');
+  const articleLoc = (article) => localize(`/blog/${article.slug}`, article.lang || 'fr');
+  const articles = [...dbArticles.filter((a) => !fileSlugs.has(a.slug)), ...fileArticles]
+    .filter((a) => !REDIRECTED.has(articleLoc(a)));
+  // Only properties that are available: rented/sold ones stay online but are not promoted.
+  const properties = await supabaseQuery('properties_v2', 'id,titre,type,services,quartier,updated_at,photo_principale,photos', '&statut=eq.publie');
 
-  console.log(`  📦  ${properties.length} propriétés publiées`);
+  console.log(`  📦  ${properties.length} propriétés disponibles`);
   console.log(`  📝  ${articles.length} articles publiés\n`);
 
+  const propertiesLastmod = day(latest(properties.map((p) => p.updated_at)));
+  const articlesLastmod = day(latest(articles.map((a) => a.updated_at)));
   const entries = [];
 
-  // Static pages, in every language
+  // Static pages, in every language. lastmod = last change of the content they list (none for contact/demande).
+  const staticLastmod = { '/': propertiesLastmod, '/catalogue': propertiesLastmod, '/blog': articlesLastmod };
   for (const page of STATIC_PAGES) {
-    entries.push(...allLanguages(page.loc, { ...page, lastmod: today }));
+    entries.push(...allLanguages(page.loc, { ...page, lastmod: staticLastmod[page.loc] }));
   }
 
-  // Search landing pages, each listing its translations
+  // Search landing pages, each listing its translations; lastmod = last change of the listings they show.
   for (const landing of LANDINGS) {
+    const listed = properties.filter((p) => (p.services || []).includes(landing.service) && (!landing.type || p.type === landing.type));
     const alternates = Object.fromEntries(LANGUAGES.map((lang) => [lang, localize(landing.paths[lang], lang)]));
+    const lastmod = day(latest(listed.map((p) => p.updated_at)));
     for (const lang of LANGUAGES) {
-      entries.push(urlEntry({ loc: alternates[lang], alternates, lastmod: today, changefreq: 'weekly', priority: landing.type ? '0.8' : '0.9' }));
+      entries.push(urlEntry({ loc: alternates[lang], alternates, lastmod, changefreq: 'weekly', priority: landing.type ? '0.8' : '0.9' }));
     }
   }
 
   // Property pages, in every language
   for (const prop of properties) {
-    const lastmod = prop.updated_at
-      ? new Date(prop.updated_at).toISOString().split('T')[0]
-      : today;
     const images = [prop.photo_principale, ...(prop.photos || [])]
       .filter(Boolean)
       .filter((id, i, all) => all.indexOf(id) === i)
       .slice(0, 3)
       .map((id) => ({ url: imageUrl(id), title: prop.titre || '' }))
       .filter((img) => img.url);
-    entries.push(...allLanguages(propertyPath(prop), { lastmod, changefreq: 'weekly', priority: '0.7', images }));
+    entries.push(...allLanguages(propertyPath(prop), { lastmod: day(prop.updated_at), changefreq: 'weekly', priority: '0.7', images }));
   }
 
   // Blog articles: one address each, linked to their translations
-  const articleLoc = (article) => localize(`/blog/${article.slug}`, article.lang || 'fr');
-  for (const article of articles.filter((a) => !REDIRECTED.has(articleLoc(a)))) {
-    const lastmod = article.updated_at
-      ? new Date(article.updated_at).toISOString().split('T')[0]
-      : today;
+  for (const article of articles) {
     const siblings = article.translation_key
       ? articles.filter((other) => other.translation_key === article.translation_key)
       : [article];
     const alternates = Object.fromEntries(siblings.map((other) => [other.lang || 'fr', articleLoc(other)]));
-    entries.push(urlEntry({ loc: articleLoc(article), alternates, lastmod, changefreq: 'monthly', priority: '0.6' }));
+    entries.push(urlEntry({ loc: articleLoc(article), alternates, lastmod: day(article.updated_at), changefreq: 'monthly', priority: '0.6' }));
   }
 
   // Assemble XML
@@ -221,10 +306,10 @@ ${entries.join('\n\n')}
 
 </urlset>`;
 
-  // Write to public/
-  const outputPath = path.resolve(__dirname, '..', 'public', 'sitemap.xml');
-  fs.writeFileSync(outputPath, xml, 'utf-8');
-  console.log(`✅  sitemap.xml generated → ${outputPath}`);
+  const publicDir = path.resolve(__dirname, '..', 'public');
+  fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), xml, 'utf-8');
+  fs.writeFileSync(path.join(publicDir, 'llms.txt'), buildLlmsTxt({ properties, articles, articleLoc }), 'utf-8');
+  console.log('✅  public/sitemap.xml and public/llms.txt generated');
   console.log(`   Total URLs: ${entries.length}`);
 }
 
