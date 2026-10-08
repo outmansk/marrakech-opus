@@ -7,6 +7,7 @@ title: "Título de propiedad, melkia, VEFA: entender la situación de un inmuebl
 meta_title: "Título de propiedad, melkia, VEFA: situación jurídica de un inmueble en Marruecos"
 meta_description: "Título de propiedad, melkia, VEFA, comunidad de propietarios: lo que hay que entender sobre la situación jurídica de un inmueble en Marruecos antes de comprar en Marrakech."
 excerpt: "Antes de comprar en Marruecos, compruebe la situación jurídica del inmueble: título de propiedad, melkia, compra sobre plano o comunidad. Qué implica cada una."
+image_url: /blog/statut-juridique-bien-maroc.webp
 date: 2026-10-08
 published: true
 ---

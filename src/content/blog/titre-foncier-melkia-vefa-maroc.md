@@ -7,6 +7,7 @@ title: "Titre foncier, melkia, VEFA : comprendre le statut d’un bien au Maroc"
 meta_title: "Titre foncier, melkia, VEFA : le statut juridique d’un bien au Maroc"
 meta_description: "Titre foncier, melkia, VEFA, copropriété : ce qu’il faut comprendre sur le statut juridique d’un bien immobilier au Maroc avant d’acheter à Marrakech."
 excerpt: "Avant d’acheter au Maroc, vérifiez le statut juridique du bien : titre foncier, melkia, vente sur plan ou copropriété. Ce que chaque statut implique."
+image_url: /blog/statut-juridique-bien-maroc.webp
 date: 2026-10-08
 published: true
 ---

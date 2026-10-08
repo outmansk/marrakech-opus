@@ -7,6 +7,7 @@ title: "Moving to Marrakech: a practical guide for expats"
 meta_title: "Moving to Marrakech: residency, housing, banking, healthcare, schools"
 meta_description: "Residency permit, housing, banking, healthcare, schools, transport: a practical guide to moving to Marrakech as an expat or retiree."
 excerpt: "Visa, residency permit, housing, banking, healthcare, schools: the steps to settle smoothly in Marrakech, and the order to do them in."
+image_url: /blog/s-installer-marrakech.webp
 date: 2026-10-08
 published: true
 ---

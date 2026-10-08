@@ -7,6 +7,7 @@ title: "Mudarse a Marrakech: guía práctica para expatriados"
 meta_title: "Mudarse a Marrakech: residencia, vivienda, banco, sanidad, colegios"
 meta_description: "Permiso de residencia, vivienda, banco, sanidad, colegios, transporte: guía práctica para instalarse en Marrakech como expatriado o jubilado."
 excerpt: "Visado, tarjeta de residencia, vivienda, banco, sanidad, colegios: los pasos para instalarse con tranquilidad en Marrakech y el orden en que darlos."
+image_url: /blog/s-installer-marrakech.webp
 date: 2026-10-08
 published: true
 ---

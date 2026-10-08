@@ -7,6 +7,7 @@ title: "Land title, melkia, off-plan: understanding property status in Morocco"
 meta_title: "Land title, melkia, off-plan (VEFA): property legal status in Morocco"
 meta_description: "Land title, melkia, off-plan (VEFA), co-ownership: what to understand about a property’s legal status in Morocco before buying in Marrakech."
 excerpt: "Before buying in Morocco, check the property’s legal status: land title, melkia, off-plan sale or co-ownership. What each one means for you."
+image_url: /blog/statut-juridique-bien-maroc.webp
 date: 2026-10-08
 published: true
 ---

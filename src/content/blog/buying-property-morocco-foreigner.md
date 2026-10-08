@@ -7,6 +7,7 @@ title: "Buying property in Morocco as a foreigner: the complete guide"
 meta_title: "Buying property in Morocco as a foreigner: steps, checks, costs"
 meta_description: "Can foreigners buy property in Morocco? Buying steps, documents to check, costs and transferring funds: the guide to buying safely in Marrakech."
 excerpt: "Yes, foreigners can buy an apartment, a villa or a riad in Morocco. Here are the steps, the essential checks and what to prepare with your notary."
+image_url: /blog/acheter-maroc-etranger.webp
 date: 2026-10-08
 published: true
 ---

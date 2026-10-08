@@ -7,6 +7,7 @@ title: "Dans quel quartier vivre à Marrakech ? Le guide des quartiers"
 meta_title: "Dans quel quartier vivre à Marrakech ? Guéliz, Hivernage, Palmeraie…"
 meta_description: "Guéliz, Hivernage, Médina, Palmeraie, Agdal, route de l’Ourika : le guide des quartiers de Marrakech pour choisir où vivre, louer ou acheter selon votre mode de vie."
 excerpt: "Guéliz pour tout faire à pied, l’Hivernage pour le calme, la Médina pour le charme, la Palmeraie pour l’espace : comment choisir son quartier à Marrakech."
+image_url: /blog/quartiers-marrakech.webp
 date: 2026-10-08
 published: true
 ---

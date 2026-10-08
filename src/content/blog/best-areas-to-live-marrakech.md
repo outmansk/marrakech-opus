@@ -7,6 +7,7 @@ title: "Where to live in Marrakech: a guide to the best areas"
 meta_title: "Best areas to live in Marrakech: Gueliz, Hivernage, Palmeraie…"
 meta_description: "Gueliz, Hivernage, Medina, Palmeraie, Agdal, Ourika road: a guide to Marrakech neighbourhoods to choose where to live, rent or buy."
 excerpt: "Gueliz to do everything on foot, Hivernage for calm, the Medina for charm, the Palmeraie for space: how to choose your area in Marrakech."
+image_url: /blog/quartiers-marrakech.webp
 date: 2026-10-08
 published: true
 ---

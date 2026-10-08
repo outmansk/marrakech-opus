@@ -7,6 +7,7 @@ title: "S’installer à Marrakech : le guide pratique pour les expatriés"
 meta_title: "S’installer à Marrakech : séjour, logement, banque, santé, écoles"
 meta_description: "Séjour et carte de séjour, logement, banque, santé, écoles, transports : le guide pratique pour s’installer à Marrakech en tant qu’expatrié ou retraité."
 excerpt: "Visa, carte de séjour, logement, banque, santé, écoles : les étapes pour s’installer sereinement à Marrakech, et l’ordre dans lequel les faire."
+image_url: /blog/s-installer-marrakech.webp
 date: 2026-10-08
 published: true
 ---

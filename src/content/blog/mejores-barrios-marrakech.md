@@ -7,6 +7,7 @@ title: "¿En qué barrio vivir en Marrakech? Guía de los barrios"
 meta_title: "Mejores barrios para vivir en Marrakech: Gueliz, Hivernage, Palmeraie…"
 meta_description: "Gueliz, Hivernage, Medina, Palmeraie, Agdal, carretera de Ourika: guía de los barrios de Marrakech para elegir dónde vivir, alquilar o comprar."
 excerpt: "Gueliz para hacerlo todo a pie, Hivernage por la tranquilidad, la Medina por su encanto, la Palmeraie por el espacio: cómo elegir barrio en Marrakech."
+image_url: /blog/quartiers-marrakech.webp
 date: 2026-10-08
 published: true
 ---

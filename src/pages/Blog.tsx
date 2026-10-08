@@ -105,11 +105,19 @@ const Blog = () => {
               {articles.map((article) => (
                 <Link to={lp(`/blog/${article.slug}`)} key={article.id} className="group flex flex-col items-start hover-target h-full border border-border bg-card overflow-hidden">
                   <div className="relative w-full aspect-[4/3] overflow-hidden bg-muted">
-                    <img
-                      src={article.image_url || 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&q=80'}
-                      alt={article.title}
-                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    />
+                    {article.image_url ? (
+                      <img
+                        src={article.image_url}
+                        alt={article.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                      />
+                    ) : (
+                      // No stock photo: a plain block keeps every card distinct.
+                      <div aria-hidden="true" className="flex h-full w-full items-end bg-[#ede5d8] p-6">
+                        <span className="font-serif text-[64px] italic leading-none text-[#a4573e]/25">{article.title.charAt(0)}</span>
+                      </div>
+                    )}
                     <div className="absolute top-4 left-4 bg-background/90 backdrop-blur-md px-3 py-1 text-[10px] uppercase tracking-widest font-medium text-foreground">
                       {categories.find(c => c.id === article.category)?.label}
                     </div>

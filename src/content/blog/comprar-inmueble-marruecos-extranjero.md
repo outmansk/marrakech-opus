@@ -7,6 +7,7 @@ title: "Comprar un inmueble en Marruecos siendo extranjero: la guía"
 meta_title: "Comprar en Marruecos siendo extranjero: pasos, comprobaciones, gastos"
 meta_description: "¿Puede un extranjero comprar en Marruecos? Pasos de la compra, documentos que comprobar, gastos y transferencia de fondos: la guía para comprar con seguridad en Marrakech."
 excerpt: "Sí, un extranjero puede comprar un apartamento, una villa o un riad en Marruecos. Estos son los pasos, las comprobaciones imprescindibles y lo que debe preparar con su notario."
+image_url: /blog/acheter-maroc-etranger.webp
 date: 2026-10-08
 published: true
 ---

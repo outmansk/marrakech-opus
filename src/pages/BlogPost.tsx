@@ -99,13 +99,15 @@ const BlogPost = () => {
   };
 
   const homeUrl = `${BASE_URL}${lp("/") === "/" ? "" : lp("/")}`;
+  // Covers stored on the site ("/blog/x.webp") need an absolute URL for social previews and JSON-LD.
+  const coverUrl = article.image_url?.startsWith("/") ? `${BASE_URL}${article.image_url}` : article.image_url;
   const jsonLd = [
     {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
       "headline": article.meta_title || article.title,
       "description": article.meta_description || article.excerpt,
-      ...(article.image_url && { "image": article.image_url }),
+      ...(coverUrl && { "image": coverUrl }),
       "datePublished": article.created_at,
       "dateModified": article.updated_at,
       "inLanguage": articleLang,
@@ -129,7 +131,7 @@ const BlogPost = () => {
       <SEOHead
         title={article.meta_title || article.title}
         description={article.meta_description || article.excerpt || ''}
-        image={article.image_url}
+        image={coverUrl}
         schema={jsonLd}
         alternates={alternates}
         type="article"
