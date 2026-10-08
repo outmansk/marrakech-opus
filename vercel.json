@@ -1,5 +1,6 @@
 {
   "cleanUrls": true,
+  "trailingSlash": false,
   "redirects": [
     {
       "source": "/blog/location-appartement-longue-duree-marrakech",
@@ -34,11 +35,49 @@
   ],
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/manage-xk92p",
+      "destination": "/spa"
+    },
+    {
+      "source": "/manage-xk92p/:path*",
+      "destination": "/spa"
+    },
+    {
+      "source": "/bien/:slug",
+      "destination": "/spa"
+    },
+    {
+      "source": "/:lang(en|es)/bien/:slug",
+      "destination": "/spa"
+    },
+    {
+      "source": "/blog/:slug",
+      "destination": "/spa"
+    },
+    {
+      "source": "/:lang(en|es)/blog/:slug",
       "destination": "/spa"
     }
   ],
   "headers": [
+    {
+      "source": "/manage-xk92p",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/manage-xk92p/:path*",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
     {
       "source": "/assets/(.*)",
       "headers": [

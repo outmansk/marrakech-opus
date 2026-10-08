@@ -11,9 +11,10 @@
  *   vite build --ssr src/entry-server.tsx --outDir dist-ssr
  *
  * Each page is written as <path>.html (Vercel `cleanUrls` serves it without
- * the extension). dist/spa.html is the empty app shell: Vercel serves it for every
- * address that has no pre-rendered file (admin, properties published
- * since the last deploy). Rebuild the site to pre-render new content.
+ * the extension). dist/spa.html is the empty app shell: Vercel serves it for the
+ * admin and for /bien/… and /blog/… addresses with no pre-rendered file (content
+ * published since the last deploy). Any other unknown address gets dist/404.html
+ * with a 404 status. Rebuild the site to pre-render new content.
  * ─────────────────────────────────────────────────────────
  */
 import fs from 'node:fs';
@@ -67,6 +68,15 @@ for (const url of paths) {
     failed += 1;
     console.error(`  ❌  ${url}: ${err instanceof Error ? err.message : err}`);
   }
+}
+
+// dist/404.html: served by Vercel with a real 404 status for every unknown address (see vercel.json).
+// French markup for crawlers; the browser re-renders it in the language of the requested URL.
+try {
+  const page = await render('/404');
+  fs.writeFileSync(path.join(dist, '404.html'), fill(page).replace('<div id="root">', '<div id="root" data-client-render>'));
+} catch (err) {
+  console.error(`  ❌  404 page: ${err instanceof Error ? err.message : err}`);
 }
 
 if (!paths.includes('/')) fs.writeFileSync(path.join(dist, 'index.html'), template.replace('<!--app-head-->', ''));

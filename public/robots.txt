@@ -1,12 +1,11 @@
 # robots.txt — Live In Marrakech (liveinmarrakech.com)
-# Dernière mise à jour : 2026-10-07
+# Dernière mise à jour : 2026-10-08
 #
 # Tout le site public est ouvert (FR à la racine, /en et /es),
-# y compris aux moteurs de recherche IA. Seul le back-office est fermé.
+# y compris aux moteurs de recherche et assistants IA.
 
 User-agent: *
 Allow: /
-Disallow: /manage-xk92p/
 Disallow: /api/
 
 # Moteurs de recherche et assistants IA (autorisés explicitement)
@@ -27,7 +26,6 @@ User-agent: Twitterbot
 User-agent: facebookexternalhit
 User-agent: LinkedInBot
 Allow: /
-Disallow: /manage-xk92p/
 Disallow: /api/
 
 # Outils d'analyse SEO tiers

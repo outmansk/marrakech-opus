@@ -24,5 +24,6 @@ const app = (
 );
 
 // Pre-rendered pages already contain the markup: attach to it instead of re-rendering.
-if (container.hasChildNodes()) hydrateRoot(container, app);
+// The 404 page (data-client-render) is served for any language, so it is rendered afresh.
+if (container.hasChildNodes() && !("clientRender" in container.dataset)) hydrateRoot(container, app);
 else createRoot(container).render(app);
