@@ -30,13 +30,14 @@
     "voir_catalogue": "Ver catálogo completo",
     "aucun_bien": "No hay propiedades disponibles en este momento.",
     "ajouter_via_admin": "Añada propiedades a través del panel de administración.",
-    "chambres": "habitación",
-    "chambres_plural": "habitaciones",
+    "chambres": "dormitorio",
+    "chambres_plural": "dormitorios",
     "surface": "m²",
     "terrain": "terreno",
     "disponible": "Disponible",
     "vendu": "Vendido / Alquilado",
-    "brouillon": "Borrador"
+    "brouillon": "Borrador",
+    "salles_de_bain": "baños"
   },
   "services": {
     "vente": "Venta",

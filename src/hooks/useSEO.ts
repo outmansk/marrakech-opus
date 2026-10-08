@@ -25,6 +25,8 @@ export interface UseSEOParams {
   canonicalPath?: string;
   /** Keep the page out of search results (404…). */
   noindex?: boolean;
+  /** Append " | Live In Marrakech" to the title (default). Off when the title must stay ≤ 60 characters on its own. */
+  withBrand?: boolean;
 }
 
 export interface UseSEOReturn {
@@ -47,6 +49,7 @@ export function useSEO({
   type = 'website',
   alternates,
   canonicalPath,
+  withBrand = true,
 }: UseSEOParams): UseSEOReturn {
   const { pathname } = useLocation();
   const lang = langFromPath(pathname);
@@ -60,7 +63,7 @@ export function useSEO({
   if (paths[DEFAULT_LANG]) links.push({ lang: 'x-default', href: absolute(paths[DEFAULT_LANG]!) });
 
   return {
-    fullTitle: `${title} | ${SITE_NAME}`,
+    fullTitle: withBrand ? `${title} | ${SITE_NAME}` : title,
     description,
     canonicalUrl: absolute(path),
     ogImage: image || DEFAULT_OG_IMAGE,

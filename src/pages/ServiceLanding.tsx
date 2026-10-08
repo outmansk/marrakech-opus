@@ -15,6 +15,7 @@ import { BASE_URL } from "@/hooks/useSEO";
 import { LANDINGS, findLanding, landingCopyQueryOptions, landingPath, type Landing } from "@/content/landings";
 import { getServices, isUnavailable } from "@/lib/propertyServices";
 import { propertyPath } from "@/lib/propertyUrl";
+import { propertyText } from "@/lib/propertyI18n";
 import { LANGS, stripLang, type Lang } from "@/i18n/routing";
 import type { Bien } from "@/types/property";
 
@@ -99,7 +100,7 @@ export default function ServiceLanding() {
       "@type": "ItemList",
       "name": copy.h1,
       "numberOfItems": available.length,
-      "itemListElement": available.map((property, index) => ({ "@type": "ListItem", "position": index + 1, "url": absolute(lp(propertyPath(property))), "name": property.titre })),
+      "itemListElement": available.map((property, index) => ({ "@type": "ListItem", "position": index + 1, "url": absolute(lp(propertyPath(property))), "name": propertyText(property, lang).titre })),
     }] : []),
   ];
 

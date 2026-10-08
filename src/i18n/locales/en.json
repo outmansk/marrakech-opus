@@ -36,7 +36,8 @@
     "terrain": "land",
     "disponible": "Available",
     "vendu": "Sold / Rented",
-    "brouillon": "Draft"
+    "brouillon": "Draft",
+    "salles_de_bain": "bathrooms"
   },
   "services": {
     "vente": "Sale",

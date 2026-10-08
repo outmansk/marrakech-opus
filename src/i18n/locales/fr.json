@@ -36,7 +36,8 @@
     "terrain": "terrain",
     "disponible": "Disponible",
     "vendu": "Vendu / Loué",
-    "brouillon": "Brouillon"
+    "brouillon": "Brouillon",
+    "salles_de_bain": "salles de bain"
   },
   "services": {
     "vente": "Vente",

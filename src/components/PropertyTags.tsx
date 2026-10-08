@@ -1,6 +1,8 @@
 import { MapPin, Bed, Bath, Maximize, Car, Waves, TreePine, Armchair, Camera, Sparkles, Home, Building2, Building, LandPlot, Castle } from "lucide-react";
 import type { BienService, BienType } from "@/types/property";
 import { useTranslation } from "react-i18next";
+import { useLocalePath } from "@/hooks/useLocalePath";
+import { typeName } from "@/lib/propertyI18n";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    PROPERTY TAGS — Composants réutilisables pour les tags premium
@@ -79,13 +81,15 @@ export const ServiceTag = ({ service, variant = 'default' }: { service: BienServ
 export const TypeBadge = ({ type, variant = 'default' }: { type: BienType; variant?: 'default' | 'overlay' }) => {
   const config = TYPE_STYLES[type];
   const Icon = config.icon;
+  const { lang } = useLocalePath();
+  const label = typeName(type, lang);
 
   if (variant === 'overlay') {
     return (
       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[8px] tracking-[0.2em] uppercase font-sans font-medium
         backdrop-blur-md bg-white/80 text-[#0A0A0A] rounded-[3px] shadow-sm border border-white/30">
         <Icon size={10} strokeWidth={1.5} />
-        {type}
+        {label}
       </span>
     );
   }
@@ -94,7 +98,7 @@ export const TypeBadge = ({ type, variant = 'default' }: { type: BienType; varia
     <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[9px] tracking-[0.15em] uppercase font-sans font-medium
       ${config.bg} ${config.text} rounded-sm`}>
       <Icon size={10} strokeWidth={1.5} />
-      {type}
+      {label}
     </span>
   );
 };
@@ -212,7 +216,7 @@ export const SpecsBar = ({
   
   const specs = [
     chambres !== null && { icon: Bed, value: `${chambres}`, label: t('biens.chambres_plural') },
-    sallesDeBain !== null && { icon: Bath, value: `${sallesDeBain}`, label: 'Sdb' },
+    sallesDeBain !== null && { icon: Bath, value: `${sallesDeBain}`, label: t('biens.salles_de_bain') },
     surface !== null && { icon: Maximize, value: `${surface}`, label: t('biens.surface') },
     hasParking && { icon: Car, value: '', label: 'Parking' },
   ].filter(Boolean) as Array<{ icon: typeof Bed; value: string; label: string }>;

@@ -5,6 +5,7 @@ import OptimizedImage from "@/components/ui/OptimizedImage";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
 import { useLocalePath } from "@/hooks/useLocalePath";
 import { propertyPath } from "@/lib/propertyUrl";
+import { propertyText, typeName } from "@/lib/propertyI18n";
 import { getServices, isSoldOnly, isUnavailable } from "@/lib/propertyServices";
 
 interface PropertyCardProps {
@@ -36,7 +37,8 @@ const resolvePrice = (property: Bien, activeType?: string): { kind: PriceKind; a
 
 const PropertyCard = ({ property, activeType }: PropertyCardProps) => {
   const tL = useLocalizedText();
-  const { lp } = useLocalePath();
+  const { lang, lp } = useLocalePath();
+  const titre = propertyText(property, lang).titre;
 
   const devise = property.devise || 'MAD';
   const { kind, amount } = resolvePrice(property, activeType);
@@ -57,13 +59,17 @@ const PropertyCard = ({ property, activeType }: PropertyCardProps) => {
 
   const image = property.photo_principale || property.photos?.[0] || "/placeholder.svg";
   const surface = property.surface_habitable || property.surface_terrain;
-  const typeLabel = property.type ? property.type.charAt(0).toUpperCase() + property.type.slice(1) : null;
+  const typeLabel = property.type ? typeName(property.type, lang) : null;
   const href = lp(propertyPath(property));
   const viewLabel = tL("Voir le bien", "View property", "Ver la propiedad");
-  const whatsappUrl = `https://wa.me/212605387041?text=${encodeURIComponent(`Bonjour, je suis intéressé(e) par le bien : ${property.titre}${property.reference ? ` (Ref: ${property.reference})` : ""}`)}`;
+  const whatsappUrl = `https://wa.me/212605387041?text=${encodeURIComponent(tL(
+    `Bonjour, je suis intéressé(e) par le bien : ${property.titre}${property.reference ? ` (Réf. ${property.reference})` : ""}`,
+    `Hello, I am interested in this property: ${titre}${property.reference ? ` (Ref. ${property.reference})` : ""}`,
+    `Hola, me interesa este inmueble: ${titre}${property.reference ? ` (Ref. ${property.reference})` : ""}`,
+  ))}`;
 
   const specs = [
-    property.chambres != null && property.chambres > 0 && { icon: Bed, value: String(property.chambres), label: property.chambres > 1 ? tL("Chambres", "Bedrooms", "Habitaciones") : tL("Chambre", "Bedroom", "Habitación") },
+    property.chambres != null && property.chambres > 0 && { icon: Bed, value: String(property.chambres), label: property.chambres > 1 ? tL("Chambres", "Bedrooms", "Dormitorios") : tL("Chambre", "Bedroom", "Dormitorio") },
     property.salles_de_bain != null && property.salles_de_bain > 0 && { icon: Bath, value: String(property.salles_de_bain), label: property.salles_de_bain > 1 ? tL("Salles de bain", "Bathrooms", "Baños") : tL("Salle de bain", "Bathroom", "Baño") },
     surface != null && surface > 0 && { icon: Maximize, value: `${surface} m²`, label: tL("Surface", "Area", "Superficie") },
   ].filter(Boolean) as { icon: typeof Bed; value: string; label: string }[];
@@ -72,7 +78,7 @@ const PropertyCard = ({ property, activeType }: PropertyCardProps) => {
     <div className="mobile-property-visible h-full w-full [container-type:inline-size]">
       <article className="group flex h-full flex-col border border-[#e6ddd0] bg-[#fffdf9] text-[#211f1b] transition-[box-shadow,border-color] duration-300 hover:border-[#d6c9b6] hover:shadow-[0_24px_44px_-30px_rgba(33,31,27,0.45)]">
         <Link to={href} tabIndex={-1} aria-hidden="true" className="relative block aspect-[4/3] flex-none overflow-hidden bg-[#e9e1d5]">
-          <OptimizedImage src={image} alt={property.titre} size="card" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]" wrapperClassName="h-full w-full" />
+          <OptimizedImage src={image} alt={`${typeLabel ?? ""} — ${titre}`} size="card" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]" wrapperClassName="h-full w-full" />
           <span className={`pointer-events-none absolute left-3.5 top-3.5 z-[1] px-3 pb-2 pt-[9px] text-xs font-medium uppercase leading-none tracking-[0.12em] ${isSale ? "bg-[#211f1b] text-[#fbf8f2]" : "bg-[#a4573e] text-white"}`}>{badge}</span>
           {isUnavailable(property) && (
             <span className="absolute inset-0 z-[2] grid place-items-center bg-[#211f1b]/45">
@@ -90,7 +96,7 @@ const PropertyCard = ({ property, activeType }: PropertyCardProps) => {
               <span className="flex items-center gap-[5px] text-[#655f56]"><MapPin size={14} strokeWidth={1.6} className="flex-none" aria-hidden="true" />{property.quartier || "Marrakech"}</span>
             </p>
             <h3 className="m-0 text-[clamp(25px,7.4cqi,29px)] font-medium leading-[1.12] tracking-[-0.005em] [text-wrap:pretty]">
-              <Link to={href} className="text-[#211f1b] transition-colors duration-200 hover:text-[#a4573e]">{property.titre}</Link>
+              <Link to={href} className="text-[#211f1b] transition-colors duration-200 hover:text-[#a4573e]">{titre}</Link>
             </h3>
           </div>
 
@@ -121,11 +127,11 @@ const PropertyCard = ({ property, activeType }: PropertyCardProps) => {
             )}
 
             <div className="flex flex-wrap gap-2">
-              <Link to={href} aria-label={`${viewLabel} : ${property.titre}`} className="flex min-h-[50px] flex-[1_1_150px] items-center justify-between gap-2.5 whitespace-nowrap bg-[#211f1b] px-[15px] text-sm font-medium leading-none tracking-[0.02em] text-[#fbf8f2] transition-colors duration-200 hover:bg-[#a4573e] hover:text-white">
+              <Link to={href} aria-label={`${viewLabel} : ${titre}`} className="flex min-h-[50px] flex-[1_1_150px] items-center justify-between gap-2.5 whitespace-nowrap bg-[#211f1b] px-[15px] text-sm font-medium leading-none tracking-[0.02em] text-[#fbf8f2] transition-colors duration-200 hover:bg-[#a4573e] hover:text-white">
                 <span>{viewLabel}</span>
                 <ArrowRight size={18} strokeWidth={1.5} className="flex-none" aria-hidden="true" />
               </Link>
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label={`${tL("Se renseigner sur WhatsApp", "Ask on WhatsApp", "Consultar por WhatsApp")} : ${property.titre}`} className="flex min-h-[50px] flex-[1_1_110px] items-center justify-center gap-2 whitespace-nowrap border border-[#211f1b] px-3.5 text-sm font-medium leading-none tracking-[0.02em] text-[#211f1b] transition-colors duration-200 hover:bg-[#211f1b] hover:text-[#fbf8f2]">
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label={`${tL("Se renseigner sur WhatsApp", "Ask on WhatsApp", "Consultar por WhatsApp")} : ${titre}`} className="flex min-h-[50px] flex-[1_1_110px] items-center justify-center gap-2 whitespace-nowrap border border-[#211f1b] px-3.5 text-sm font-medium leading-none tracking-[0.02em] text-[#211f1b] transition-colors duration-200 hover:bg-[#211f1b] hover:text-[#fbf8f2]">
                 <MessageCircle size={18} strokeWidth={1.5} className="flex-none" aria-hidden="true" />
                 <span>WhatsApp</span>
               </a>

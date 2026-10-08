@@ -1,0 +1,147 @@
+{
+  "_comment": "Proposed EN/ES translations of the property texts (written October 2026 from the French texts, same facts, to be reviewed). The site uses them while the matching columns of properties_v2 are empty; once the agency saves a translation in the admin, the database value wins. Keys are property ids.",
+  "744048a5-2754-4075-a9a7-ddbe7bd79f51": {
+    "en": {
+      "titre": "Villa Swigya: a Peaceful Retreat with a Fully Private Pool",
+      "description_courte": "Get away from it all in this superb five-suite villa: a peaceful haven with a large garden and a completely private pool, with the rare option of subletting.",
+      "description_longue": "The lifestyle: Villa Swigya is a beautiful property where luxury, privacy and tradition come together. Set away from the bustle of the Red City, this quiet retreat is made for relaxing, whether you want a calm escape or time together as a family. It offers an exceptional setting, remarkably peaceful, and the rare possibility of subletting.\n\nInside: The villa has impressive volumes, with a splendid double living room mixing Moroccan touches and contemporary comfort, a generous space for entertaining. The modern, fully equipped kitchen, with its bold red design, will delight anyone who loves to cook. The sleeping area has five warm, bright suites, each with its own private bathroom for everyone's privacy and comfort.\n\nOutside: The large landscaped grounds are bathed in Marrakech's golden light. The big green garden frames a beautiful private pool that is not overlooked at all. Enjoy spectacular sunsets from the sun loungers or relax in the lounge areas set up on the lawn. A large private car park completes the high-end features of the property."
+    },
+    "es": {
+      "titre": "Villa Swigya: un remanso de paz con piscina totalmente privada",
+      "description_courte": "Desconecte en esta magnífica villa de cinco suites: un remanso de paz con amplio jardín y piscina totalmente privada, con la rara posibilidad de subarrendar.",
+      "description_longue": "El estilo de vida: Villa Swigya es una propiedad excepcional donde se unen el lujo, la intimidad y la tradición. Alejada del bullicio de la Ciudad Roja, este oasis de tranquilidad invita al descanso, ya sea para un retiro sereno o para disfrutar en familia. Ofrece un entorno excepcional, una calma absoluta y la rara posibilidad de explotarla en subarriendo.\n\nEl interior: La villa tiene volúmenes impresionantes, con un espléndido doble salón que combina detalles marroquíes y confort contemporáneo, ideal para recibir. La cocina moderna, totalmente equipada y con un atrevido diseño en rojo, encantará a los amantes de la cocina. La zona de noche cuenta con cinco suites cálidas y luminosas, cada una con su propio baño privado para garantizar la intimidad y el bienestar de todos.\n\nEl exterior: Un amplio terreno ajardinado bañado por la luz dorada de Marrakech. El gran jardín verde enmarca una magnífica piscina privada sin ningún vecino a la vista. Disfrute de puestas de sol espectaculares desde las tumbonas o relájese en las zonas lounge instaladas sobre el césped. Un gran aparcamiento privado completa las prestaciones de alto nivel de la propiedad."
+    }
+  },
+  "cad5f7d0-ef06-4795-893f-81b7fd3dc7e4": {
+    "en": {
+      "titre": "Architect-Designed Villa with Reflecting Pool and Large Garden",
+      "description_courte": "Pure elegance in an architect-designed villa: five suites, a lush garden and a 72 m² heated pool, an ideal sanctuary for an exceptional way of life.",
+      "description_longue": "The lifestyle: This majestic contemporary villa is designed for privacy and outstanding comfort. Ideally located near the most prestigious golf courses and a few minutes from the Medina, it is a true oasis of calm. It is also a rare opportunity for high-end subletting, combining modern design and quality finishes for an everyday life of excellence.\n\nInside: The large living spaces are filled with natural light and have a sophisticated look. The villa is organised around two generous living rooms with fireplaces, perfect for spending time together. The large kitchen with clean lines is fully equipped. The sleeping area has five superb air-conditioned suites, each with a private bathroom and made-to-measure dressing room with a safe, designed as a luxurious place to rest.\n\nOutside: The beautiful landscaped garden is home to a majestic century-old olive tree. The centrepiece is the spectacular 72 m² pool, heated on request, whose reflections play with the architecture of the house. A large terrace with a shaded lounge area, an outdoor bar and a barbecue invites you to enjoy Marrakech evenings in a fully private and secure setting."
+    },
+    "es": {
+      "titre": "Villa de arquitecto con piscina espejo y amplio jardín",
+      "description_courte": "Elegancia absoluta en esta villa de arquitecto: cinco suites, un jardín exuberante y una piscina climatizada de 72 m², el refugio ideal para un estilo de vida excepcional.",
+      "description_longue": "El estilo de vida: Esta majestuosa villa contemporánea está pensada para ofrecer intimidad y un confort inigualable. Situada cerca de los campos de golf más prestigiosos y a pocos minutos de la Medina, es un auténtico oasis de serenidad. Representa también una oportunidad excepcional para un subarriendo de alto nivel, combinando diseño moderno y acabados de calidad.\n\nEl interior: Los amplios espacios, bañados de luz natural, tienen una estética sofisticada. La villa se organiza en torno a dos generosos salones con chimenea, perfectos para compartir. La gran cocina de líneas depuradas está totalmente equipada. La zona de noche cuenta con cinco suntuosas suites climatizadas, cada una con baño privado y vestidor a medida con caja fuerte, concebidas como un lujoso refugio de descanso.\n\nEl exterior: Un precioso jardín paisajístico donde crece un majestuoso olivo centenario. La pieza central es la espectacular piscina de 72 m², climatizada bajo petición, cuyos reflejos juegan con la arquitectura de la casa. Una amplia terraza con zona lounge a la sombra, bar exterior y barbacoa invita a disfrutar de las noches de Marrakech en un entorno totalmente privado y seguro."
+    }
+  },
+  "4b731349-1a9e-4c53-84fb-c082b44dd38e": {
+    "en": {
+      "titre": "Elegant Furnished Contemporary Villa with Private Pool",
+      "description_courte": "A bright 250 m² villa, fully furnished, with five suites and a beautiful pool: a perfect haven of peace.",
+      "description_longue": "The lifestyle: This elegant contemporary villa sits in the complete calm of Douar Ra9, away from the city bustle. With 250 m² of refined living space on a 500 m² plot, and sold fully furnished, it is a true oasis of serenity, ideal as a main home or a luxurious holiday residence.\n\nInside: Elegant flooring sets off a large open living room with a welcoming sitting area, ideal for entertaining. The modern kitchen is fully equipped. The sleeping area, designed for everyone's privacy, has five superb bedrooms, each with its own private bathroom.\n\nOutside: A striking entrance with characterful brick arches leads to a well-kept garden and a splendid private pool, made for relaxing in the Marrakech sun. A private car park completes the high-end features of the property."
+    },
+    "es": {
+      "titre": "Elegante villa contemporánea amueblada con piscina privada",
+      "description_courte": "Luminosa villa de 250 m², totalmente amueblada, con cinco suites y una preciosa piscina: un remanso de paz.",
+      "description_longue": "El estilo de vida: Esta elegante villa contemporánea se encuentra en la calma absoluta de Douar Ra9, lejos del bullicio de la ciudad. Con 250 m² de espacio refinado sobre una parcela de 500 m², y vendida totalmente amueblada, es un auténtico oasis de serenidad, ideal como vivienda principal o como lujosa residencia de vacaciones.\n\nEl interior: Un elegante suelo realza un gran salón abierto con una acogedora zona de estar, ideal para recibir. La cocina moderna está totalmente equipada. La zona de noche, pensada para la intimidad de cada uno, cuenta con cinco magníficos dormitorios, cada uno con su propio baño privado.\n\nEl exterior: Una entrada marcada por arcos de ladrillo con carácter conduce a un jardín cuidado y a una espléndida piscina privada, perfecta para relajarse bajo el sol de Marrakech. Un aparcamiento privado completa las prestaciones de alto nivel de la propiedad."
+    }
+  },
+  "b0289e1e-6ef6-4b79-b6de-edca28490c2c": {
+    "en": {
+      "titre": "Prestige Villa with Outstanding Mountain Views",
+      "description_courte": "A superb 600 m² villa with six suites, a pool, a gym, a hammam and 360° panoramic mountain views, with no overlooking neighbours.",
+      "description_longue": "The lifestyle: This superb villa with high-end features sits in a privileged setting on the Sidi Rahal road. Built on a 1,180 m² landscaped plot, it offers 600 m² of living space combining elegance, comfort and modern design. With an exceptional 360° panoramic view of the mountains and no overlooking neighbours, it is ideal as a prestige residence or a rental investment (price as a standard residential rental: €5,000 / price with subletting authorisation: €6,000). The property has a land title (VNA).\n\nInside: The villa has generous, light-filled spaces. The living area is organised around a large living room with a fireplace and a contemporary, fully equipped open kitchen. The sleeping area has six beautiful suites, each with a private bathroom and a terrace. A refined library overlooking the pool adds a further touch of elegance.\n\nOutside and annexes: A beautiful landscaped garden surrounds an elegant pool and large furnished terraces. For complete comfort, a separate wellness area houses a steam hammam and a fully glazed gym facing the garden. The property also includes a closed garage and a separate house for the caretaker and staff."
+    },
+    "es": {
+      "titre": "Villa de prestigio con vistas excepcionales a las montañas",
+      "description_courte": "Suntuosa villa de 600 m² con seis suites, piscina, gimnasio, hammam y vistas panorámicas de 360° a las montañas, sin ningún vecino a la vista.",
+      "description_longue": "El estilo de vida: Esta suntuosa villa de prestaciones de alto nivel se encuentra en un entorno privilegiado en la carretera de Sidi Rahal. Construida sobre una parcela ajardinada de 1.180 m², ofrece 600 m² habitables que combinan elegancia, confort y modernidad. Con vistas panorámicas excepcionales de 360° a las montañas y sin vecinos a la vista, es ideal como residencia de prestigio o como inversión en alquiler (precio en alquiler residencial clásico: 5.000 € / precio con autorización de subarriendo: 6.000 €). La propiedad tiene título de propiedad (VNA).\n\nEl interior: La villa ofrece espacios amplios y llenos de luz. La zona de día se organiza en torno a un gran salón con chimenea y una cocina americana contemporánea totalmente equipada. La zona de noche cuenta con seis preciosas suites, cada una con baño privado y terraza. Una refinada biblioteca con vistas a la piscina aporta un toque más de elegancia.\n\nEl exterior y los anexos: Un precioso jardín paisajístico rodea una elegante piscina y amplias terrazas acondicionadas. Para un confort absoluto, un espacio de bienestar independiente alberga un hammam de vapor y un gimnasio totalmente acristalado frente al jardín. La propiedad incluye también un garaje cerrado y una casa independiente para el guarda y el personal."
+    }
+  },
+  "c951debd-927c-4df8-80e0-1000d77ab8e1": {
+    "en": {
+      "titre": "Charming Private Villa with Pool and Large Garden",
+      "description_courte": "A charming single-storey villa with three bedrooms, a large garden and a private pool with no overlooking neighbours. A haven of peace with easy access and maintenance included.",
+      "description_longue": "The lifestyle: This charming villa sits in a true haven of peace, towards Sidi Rahal. With complete privacy and no overlooking neighbours, it is ideal for those looking for absolute calm while keeping very easy access via a fully paved road, with no dirt track.\n\nInside: The villa has a pleasant living room opening onto a bright, welcoming sitting area, and a fully equipped kitchen for everyday comfort.\n\nOutside: Enjoy a large garden and a beautiful private pool to relax in the sun. A major advantage of this rental: full maintenance of the garden and pool is included in the price, for complete peace of mind."
+    },
+    "es": {
+      "titre": "Encantadora villa privada con piscina y gran jardín",
+      "description_courte": "Encantadora villa de una planta con tres dormitorios, gran jardín y piscina privada sin vecinos a la vista. Un remanso de paz con fácil acceso y mantenimiento incluido.",
+      "description_longue": "El estilo de vida: Esta encantadora villa se encuentra en un auténtico remanso de paz, en dirección a Sidi Rahal. Con total intimidad y sin vecinos a la vista, es ideal para quienes buscan una calma absoluta sin renunciar a un acceso muy fácil por una carretera totalmente asfaltada, sin pistas.\n\nEl interior: La villa cuenta con un agradable salón abierto a una zona de estar luminosa y acogedora, y con una cocina totalmente equipada para el día a día.\n\nEl exterior: Disfrute de un gran jardín y de una bonita piscina privada para relajarse al sol. Gran ventaja de este alquiler: el mantenimiento completo del jardín y de la piscina está incluido en el precio, para una tranquilidad total."
+    }
+  },
+  "9c8ac15a-b61d-40c8-9ef7-a6e5f68a608c": {
+    "en": {
+      "titre": "Elegant Traditional House with Private Garden in Ennakhil",
+      "description_courte": "An oasis of calm in the heart of Ennakhil: an authentic traditional house, full of light, in a green and secure residence.",
+      "description_longue": "The lifestyle: Discover the Marrakech way of life in this elegant house within a secure, green residence in the sought-after Ennakhil area. A true haven of peace, with terracotta-toned walls, it offers a warm and intimate atmosphere, among flowering bougainvillea and the complete calm of this exclusive setting.\n\nInside: Built on two levels, the property offers 178 m² of generous, naturally lit space. The ground floor has two large reception rooms, an equipped kitchen, an extra bedroom that works well as a study, and a bathroom. Upstairs, reached by an elegant solid wood staircase, the sleeping area has three spacious bedrooms and two bathrooms, combining family comfort and authentic charm.\n\nOutside: A lovely terrace extends into a private garden, the perfect place to enjoy the mild climate of the Ochre City. The upstairs balconies offer a calm, open view of the surrounding greenery. A peaceful setting with 24/7 security, and a good opportunity to make the home your own."
+    },
+    "es": {
+      "titre": "Elegante casa tradicional con jardín privado en Ennakhil",
+      "description_courte": "Un oasis de serenidad en pleno Ennakhil: una auténtica casa tradicional, llena de luz, en una residencia verde y segura.",
+      "description_longue": "El estilo de vida: Descubra el arte de vivir de Marrakech en esta elegante casa situada en una residencia segura y arbolada del prestigioso barrio de Ennakhil. Un auténtico remanso de paz, con muros en tonos terracota, que ofrece un ambiente cálido e íntimo, entre buganvillas en flor y la calma absoluta de este entorno exclusivo.\n\nEl interior: Construida en dos plantas, la propiedad ofrece 178 m² de espacios amplios y llenos de luz natural. La planta baja cuenta con dos grandes salones, una cocina equipada, un dormitorio adicional ideal como despacho y un baño. En la planta superior, a la que se accede por una elegante escalera de madera maciza, la zona de noche tiene tres amplios dormitorios y dos baños, combinando confort familiar y encanto auténtico.\n\nEl exterior: Una bonita terraza se prolonga en un jardín privado, el lugar ideal para disfrutar del clima suave de la Ciudad Ocre. Los balcones de la planta superior ofrecen una vista despejada y relajante sobre la naturaleza. Un entorno tranquilo con vigilancia 24/7, y una buena oportunidad para personalizar la vivienda."
+    }
+  },
+  "75c9eafa-f629-454c-9458-ddf0763436b0": {
+    "en": {
+      "titre": "Contemporary Villa with Private Pool in Green Grounds",
+      "description_courte": "Outstanding modern architecture on 2,500 m² of wooded grounds: contemporary luxury, complete calm and high-end features.",
+      "description_longue": "The lifestyle: This exceptional contemporary property is a true tribute to clean modern architecture. Set in 2,500 m² of private grounds planted with olive and palm trees, the villa offers an idyllic setting where complete calm meets understated elegance. Designed to blend indoor and outdoor spaces, it is the ideal retreat for lovers of prestige and serenity.\n\nInside: With a generous 420 m² of living space, the house opens onto superb, light-filled volumes. The ground floor has a large double living room with an adjoining sitting room and large openings onto the garden. The sleeping area has five majestic suites, each with a private bathroom finished in marble and high-quality porcelain stoneware. A large, fully fitted modern kitchen and a monumental marble staircase complete the interior of this architect-designed home.\n\nOutside: The outdoor spaces were designed as a private resort. The property has a superb private pool surrounded by a secluded sun deck, wide raised terraces and a panoramic roof terrace with an unobstructed view of the surrounding nature. Covered upstairs walkways overlook the pool for moments of relaxation. A spacious private car park secures access to this exclusive property."
+    },
+    "es": {
+      "titre": "Villa contemporánea con piscina privada en un entorno verde",
+      "description_courte": "Arquitectura moderna excepcional en un parque arbolado de 2.500 m²: lujo contemporáneo, calma absoluta y prestaciones de alto nivel.",
+      "description_longue": "El estilo de vida: Esta propiedad contemporánea excepcional es un auténtico homenaje a la arquitectura moderna depurada. Situada en un parque privado de 2.500 m² plantado de olivos y palmeras, la villa ofrece un entorno idílico donde la calma absoluta se une a la elegancia discreta. Pensada para unir el interior y el exterior, es el refugio ideal para los amantes del prestigio y la serenidad.\n\nEl interior: Con una generosa superficie habitable de 420 m², la casa se abre a magníficos volúmenes llenos de luz. La planta baja alberga un amplio doble salón con zona de estar contigua y grandes aperturas al jardín. La zona de noche cuenta con cinco majestuosas suites, cada una con baño privado con acabados de mármol y gres porcelánico de alta calidad. Una gran cocina moderna totalmente equipada y una escalera monumental de mármol completan el interior de esta casa de arquitecto.\n\nEl exterior: Los espacios exteriores se han concebido como un resort privado. La finca cuenta con una magnífica piscina privada rodeada de un solárium íntimo, amplias terrazas elevadas y una azotea panorámica con vistas despejadas a la naturaleza. Las galerías cubiertas de la planta superior dominan la piscina para momentos de descanso. Un amplio aparcamiento privado asegura el acceso a esta propiedad exclusiva."
+    }
+  },
+  "b2686df2-14a9-4bd2-897e-e8d5bd93d6e2": {
+    "en": {
+      "titre": "Modern, Comfortable Apartment in Chrifia",
+      "description_courte": "A lovely two-bedroom apartment in Chrifia, 15 minutes from the city centre. Quiet, modern comfort and a lift.",
+      "description_longue": "This attractive contemporary apartment is in the popular, peaceful Chrifia area of Marrakech. It combines modern comfort and calm, just 15 minutes from the lively city centre. The living space has two elegant, bright bedrooms, a spacious living room for relaxing, a balcony with a pleasant view and a well-designed kitchen. On the third floor of a secure building with a lift, this welcoming apartment is a great opportunity to fully enjoy life in Marrakech."
+    },
+    "es": {
+      "titre": "Apartamento moderno y confortable en Chrifia",
+      "description_courte": "Bonito apartamento de dos dormitorios en Chrifia, a 15 minutos del centro. Tranquilo, confort moderno y ascensor.",
+      "description_longue": "Este bonito apartamento contemporáneo se encuentra en el tranquilo y apreciado barrio de Chrifia, en Marrakech. Combina confort moderno y serenidad, a solo 15 minutos del animado centro de la ciudad. Cuenta con dos dormitorios elegantes y luminosos, un amplio salón para descansar, un balcón con vistas agradables y una cocina bien distribuida. Situado en la tercera planta de una residencia segura con ascensor, este acogedor apartamento es una gran oportunidad para disfrutar plenamente de la vida en Marrakech."
+    }
+  },
+  "b0b1924e-b9a3-46f2-92f1-7b10017db25d": {
+    "en": {
+      "titre": "Apartment with Golf Views at Prestigia Ambre",
+      "description_courte": "A superb 116 m² apartment with a terrace and panoramic golf views in the Prestigia Ambre estate.",
+      "description_longue": "On the first floor of a high-end residence at Prestigia Ambre, this exceptional 116 m² apartment combines contemporary luxury and easy living. The living area opens onto a large, light-filled living room, extended by a beautiful terrace with an open, unobstructed view of the golf course. The high-end kitchen is fully equipped. The sleeping area has two spacious bedrooms and a modern bathroom. Very sunny, with air conditioning and heating, the apartment is in a highly secure estate with pools and landscaped gardens."
+    },
+    "es": {
+      "titre": "Apartamento con vistas al golf en Prestigia Ambre",
+      "description_courte": "Magnífico apartamento de 116 m² con terraza y vistas panorámicas al golf en el complejo Prestigia Ambre.",
+      "description_longue": "En la primera planta de una residencia de alto standing en Prestigia Ambre, este excepcional apartamento de 116 m² combina lujo contemporáneo y calidad de vida. La zona de día se abre a un gran salón lleno de luz, prolongado por una magnífica terraza con vistas despejadas al campo de golf. La cocina de alta gama está totalmente equipada. La zona de noche cuenta con dos amplios dormitorios y un baño moderno. Muy soleado, con aire acondicionado y calefacción, el apartamento se encuentra en un complejo muy seguro con piscinas y zonas verdes ajardinadas."
+    }
+  },
+  "74b6e091-4e35-470b-9f65-b2e1c05f5100": {
+    "en": {
+      "titre": "Traditional Riad with Pool in the Village Touristique",
+      "description_courte": "A lovely 150 m² riad with a pool and private patio, in a quiet spot in the Village Touristique.",
+      "description_longue": "This beautiful 150 m² riad in the heart of the Village Touristique is a rare opportunity, available for sale as well as for long-term rental. Designed for a calm family life, it is arranged around a pleasant small patio with a superb private pool. The living space includes a bright, warm living room and a practical kitchen. Upstairs are three lovely air-conditioned bedrooms, each with its own bathroom for comfort and privacy. Combining residential calm with easy access to everything Marrakech has to offer, this quality home is sure to appeal from the first visit."
+    },
+    "es": {
+      "titre": "Riad tradicional con piscina en el Village Touristique",
+      "description_courte": "Precioso riad de 150 m² con piscina y patio privado, en una zona tranquila del Village Touristique.",
+      "description_longue": "Este magnífico riad de 150 m² en pleno Village Touristique es una oportunidad poco común, disponible tanto en venta como en alquiler de larga duración. Pensado para una vida familiar tranquila, se organiza en torno a un agradable pequeño patio con una magnífica piscina privada. La zona de día incluye un salón luminoso y acogedor y una cocina práctica. En la planta superior hay tres bonitos dormitorios climatizados, cada uno con su propio baño para mayor confort e intimidad. Combinando tranquilidad residencial y cercanía a todos los servicios de Marrakech, esta vivienda de calidad le conquistará desde la primera visita."
+    }
+  },
+  "28342b88-f26c-48fc-be40-52cb54342e9b": {
+    "en": {
+      "titre": "Small Villa with Private Pool – Himri, Route de Fès",
+      "description_courte": "Small villa with a private pool for long-term rent on the Route de Fès, Marrakech, 12 km from the Majorelle Garden.",
+      "description_longue": "Small villa with a private pool – long-term rental – Route de Fès, Marrakech\n\nFor rent: a charming small detached villa on the Route de Fès, in a calm and pleasant setting.\n\nFeatures:\n\n* 2 bedrooms\n* Living room\n* 3 bathrooms\n* Kitchen\n* Unfurnished\n* Private pool\n* 300 m² plot\n* 100 m² of living space\n* 3 reversible air conditioners\n* Wi-Fi\n\nNearby:\n\n* 12 km from the Majorelle Garden\n* 6 km from Atacadão\n* 9.3 km from McDonald's\n\nThe last 190 metres of the access road are a dirt track, with paving work in progress.\n\nThis villa is ideal for a long-term rental, offering calm, privacy and easy access to central Marrakech."
+    },
+    "es": {
+      "titre": "Pequeña villa con piscina privada – Himri, carretera de Fez",
+      "description_courte": "Pequeña villa con piscina privada en alquiler de larga duración en la carretera de Fez, Marrakech, a 12 km del Jardín Majorelle.",
+      "description_longue": "Pequeña villa con piscina privada – alquiler de larga duración – carretera de Fez, Marrakech\n\nSe alquila encantadora pequeña villa independiente en la carretera de Fez, en un entorno tranquilo y agradable.\n\nCaracterísticas:\n\n* 2 dormitorios\n* Salón\n* 3 baños\n* Cocina\n* Sin amueblar\n* Piscina privada\n* Parcela de 300 m²\n* 100 m² habitables\n* 3 aires acondicionados reversibles\n* Wi-Fi\n\nCerca:\n\n* A 12 km del Jardín Majorelle\n* A 6 km de Atacadão\n* A 9,3 km de McDonald's\n\nLos últimos 190 metros de acceso son de pista, con obras de pavimentación en curso.\n\nEsta villa es ideal para un alquiler de larga duración, con calma, intimidad y fácil acceso al centro de Marrakech."
+    }
+  },
+  "97560a47-a9c0-4014-863a-af48298b0bed": {
+    "en": {
+      "titre": "Villa Elhaj: 3-Bedroom Villa with Large Pool, Route de Fès",
+      "description_courte": "Three-bedroom villa with a large pool on the Route de Fès.",
+      "description_longue": "A lovely villa for long-term rent on the Route de Fès, in a calm, green setting about 20 minutes from Marrakech and 12 km from the Majorelle Garden.\nThe villa has 3 bedrooms, 3 bathrooms, a living room, a dining room, a kitchen and a large terrace.\nOutside, you enjoy a large garden of more than 1,500 m², a big pool and lovely spaces to relax as a family.\nThe villa also has solar panels.\nA large plot of land belonging to the owner is right next door, where you can enjoy the fruit, vegetables and plantings.\nPrice: 13,000 MAD per month\nGarden, pool and caretaker maintenance: 1,500 MAD per month\nAn ideal villa for people looking for calm, space, a large garden and a pool, while staying close to Marrakech."
+    },
+    "es": {
+      "titre": "Villa Elhaj: villa de 3 dormitorios con gran piscina, carretera de Fez",
+      "description_courte": "Villa de tres dormitorios con gran piscina en la carretera de Fez.",
+      "description_longue": "Bonita villa en alquiler de larga duración en la carretera de Fez, en un entorno tranquilo y verde, a unos 20 minutos de Marrakech y a 12 km del Jardín Majorelle.\nLa villa tiene 3 dormitorios, 3 baños, un salón, un comedor, una cocina y una gran terraza.\nEn el exterior disfrutará de un gran jardín de más de 1.500 m², una gran piscina y bonitos espacios para relajarse en familia.\nLa villa dispone también de placas solares.\nJunto a ella hay un gran terreno del propietario, con la posibilidad de disfrutar de sus frutas, verduras y cultivos.\nPrecio: 13.000 MAD al mes\nMantenimiento de jardín, piscina y guarda: 1.500 MAD al mes\nUna villa ideal para quienes buscan calma, espacio, gran jardín y piscina sin alejarse de Marrakech."
+    }
+  }
+}
