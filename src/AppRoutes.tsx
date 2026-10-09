@@ -20,6 +20,9 @@ export interface PublicPages {
   Contact: ComponentType;
   PropertyRequest: ComponentType;
   ServiceLanding: ComponentType;
+  About: ComponentType;
+  LegalNotice: ComponentType;
+  Privacy: ComponentType;
   NotFound: ComponentType;
 }
 
@@ -54,6 +57,9 @@ const publicRoutes = (p: PublicPages) => [
   <Route key="post" path="blog/:slug" element={<p.BlogPost />} />,
   <Route key="contact" path="contact" element={<p.Contact />} />,
   <Route key="demande" path="demande" element={<p.PropertyRequest />} />,
+  <Route key="about" path="a-propos" element={<p.About />} />,
+  <Route key="legal" path="mentions-legales" element={<p.LegalNotice />} />,
+  <Route key="privacy" path="confidentialite" element={<p.Privacy />} />,
   // Search landing pages (/vente/villas-marrakech, /en/for-sale/…): the page looks the path up
   // in src/content/landings.json and shows the 404 page when it is not one of them.
   <Route key="landing-hub" path=":section" element={<p.ServiceLanding />} />,

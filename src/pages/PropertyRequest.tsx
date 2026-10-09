@@ -10,6 +10,8 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { QUARTIERS } from "@/types/property";
 import SEOHead from "@/components/SEOHead";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { breadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { useLocalePath } from "@/hooks/useLocalePath";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
 import "./PropertyRequest.css";
@@ -209,6 +211,11 @@ export default function PropertyRequest() {
       ? `Hello, I just submitted my property search. My project: ${projectLabel} in Marrakech.`
       : `Bonjour, je viens d'envoyer ma recherche immobilière. Mon projet : ${projectLabel} à Marrakech.`);
 
+  const crumbs = [
+    { name: tL("Accueil", "Home", "Inicio"), path: lp("/") },
+    { name: tL("Ma recherche", "My search", "Mi búsqueda"), path: lp("/demande") },
+  ];
+
   return (
     <div className="request-page min-h-screen font-sans selection:bg-[#5d6647] selection:text-white" lang={language} dir={rtl ? "rtl" : "ltr"}>
       <SEOHead
@@ -219,10 +226,12 @@ export default function PropertyRequest() {
           "Long-term rental, purchase or stay: describe the property you are looking for in Marrakech and our agency will send you a tailored selection.",
           "Alquiler de larga duración, compra o estancia: describa la propiedad que busca en Marrakech y nuestra agencia le enviará una selección a medida.",
         )}
+        schema={breadcrumbJsonLd(crumbs)}
       />
       <Header />
       <main className={`request-layout ${step > 0 && !submitted ? "request-layout--details" : ""}`}>
         <section className="request-intro">
+          <Breadcrumbs crumbs={crumbs} className="mb-5" />
           <div className="request-eyebrow">
             <Palmtree size={18} strokeWidth={1.7} aria-hidden="true" />
             {t.eyebrow}

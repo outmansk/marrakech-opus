@@ -76,6 +76,9 @@ const Index = () => {
                 src={servicesImage}
                 alt={tL("Villa illuminée au crépuscule à Marrakech", "Illuminated villa at dusk in Marrakech", "Villa iluminada al anochecer en Marrakech")}
                 loading="lazy"
+                decoding="async"
+                width={1024}
+                height={1024}
                 className="mt-[18px] hidden aspect-[4/3] w-full object-cover lg:block"
               />
             </div>
@@ -103,7 +106,7 @@ const Index = () => {
           <div className="mx-auto grid max-w-[1312px] gap-[26px] lg:grid-cols-2 lg:items-center lg:gap-24 lg:px-16">
             <Reveal direction="left">
               <div className="relative">
-                <img src={approachImage} alt={tL("Intérieur contemporain ouvert sur un jardin à Marrakech", "Contemporary interior opening onto a garden in Marrakech", "Interior contemporáneo abierto a un jardín en Marrakech")} loading="lazy" className="block aspect-[4/5] w-full object-cover" />
+                <img src={approachImage} alt={tL("Intérieur contemporain ouvert sur un jardin à Marrakech", "Contemporary interior opening onto a garden in Marrakech", "Interior contemporáneo abierto a un jardín en Marrakech")} loading="lazy" decoding="async" width={1024} height={1024} className="block aspect-[4/5] w-full object-cover" />
                 <div aria-hidden="true" className="pointer-events-none absolute inset-3.5 border border-white/40 lg:inset-[22px]" />
               </div>
             </Reveal>
@@ -131,7 +134,7 @@ const Index = () => {
 
         {/* Explorer Marrakech */}
         <section className="relative overflow-hidden bg-[#1d1814] text-[#fbf8f2]">
-          <img src={districtsImage} alt={tL("La Koutoubia et l’Atlas au coucher du soleil", "The Koutoubia and the Atlas at sunset", "La Kutubía y el Atlas al atardecer")} loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-50 lg:opacity-[0.55]" />
+          <img src={districtsImage} alt={tL("La Koutoubia et l’Atlas au coucher du soleil", "The Koutoubia and the Atlas at sunset", "La Kutubía y el Atlas al atardecer")} loading="lazy" decoding="async" width={1024} height={1024} className="absolute inset-0 h-full w-full object-cover opacity-50 lg:opacity-[0.55]" />
           <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,16,12,0.9)_0%,rgba(20,16,12,0.6)_100%)] lg:bg-[linear-gradient(90deg,rgba(20,16,12,0.92)_0%,rgba(20,16,12,0.55)_60%,rgba(20,16,12,0.35)_100%)]" />
           <div className="relative mx-auto flex max-w-[1312px] flex-col gap-7 px-5 py-16 lg:gap-12 lg:px-16 lg:py-32">
             <div className="flex max-w-[640px] flex-col gap-3.5 lg:gap-[18px]">
@@ -158,7 +161,7 @@ const Index = () => {
         <section className="bg-[#fbf8f2] px-4 py-14 lg:px-0 lg:py-[120px]">
           <div className="mx-auto max-w-[1312px] lg:px-16">
             <div className="flex flex-col overflow-hidden bg-[#a4573e] text-white lg:grid lg:grid-cols-[7fr_5fr]">
-              <img src={customSearchImage} alt={tL("Terrasse face à la Koutoubia", "Terrace facing the Koutoubia", "Terraza frente a la Kutubía")} loading="lazy" className="block aspect-[16/10] w-full object-cover lg:order-2 lg:aspect-auto lg:h-full lg:min-h-[480px]" />
+              <img src={customSearchImage} alt={tL("Terrasse face à la Koutoubia", "Terrace facing the Koutoubia", "Terraza frente a la Kutubía")} loading="lazy" decoding="async" width={1024} height={1024} className="block aspect-[16/10] w-full object-cover lg:order-2 lg:aspect-auto lg:h-full lg:min-h-[480px]" />
               <div className="flex flex-col justify-center gap-5 px-[22px] pb-[26px] pt-8 lg:gap-[26px] lg:px-[72px] lg:py-20">
                 <p className="text-[11px] font-medium uppercase leading-none tracking-[0.24em] text-[#fbe3d8] lg:text-xs lg:tracking-[0.26em]">{tL("Recherche sur mesure", "Tailored search", "Búsqueda a medida")}</p>
                 <h2 className="text-[34px] font-normal leading-[1.05] text-white lg:text-[56px] lg:leading-[1.02] lg:tracking-[-0.02em]">

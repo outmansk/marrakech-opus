@@ -10,6 +10,8 @@ import { useProperty } from "@/hooks/useBiens";
 import type { Bien } from "@/types/property";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import SEOHead from "@/components/SEOHead";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { breadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { BASE_URL } from "@/hooks/useSEO";
 import { motion } from "framer-motion";
 import { PageTransition, Reveal, EASE_LUXURY } from "@/components/motion/Animations";
@@ -179,16 +181,12 @@ const PropertyDetail = () => {
     }
   };
 
-  const homeUrl = `${BASE_URL}${lp("/") === "/" ? "" : lp("/")}`;
-  const breadcrumb = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": tL("Accueil", "Home", "Inicio"), "item": homeUrl },
-      { "@type": "ListItem", "position": 2, "name": tL("Nos biens", "Properties", "Propiedades"), "item": `${BASE_URL}${lp("/catalogue")}` },
-      { "@type": "ListItem", "position": 3, "name": text.titre, "item": propertyUrl },
-    ],
-  };
+  const crumbs = [
+    { name: tL("Accueil", "Home", "Inicio"), path: lp("/") },
+    { name: tL("Nos biens", "Properties", "Propiedades"), path: lp("/catalogue") },
+    { name: text.titre, path: lp(propertyPath(property)) },
+  ];
+  const breadcrumb = breadcrumbJsonLd(crumbs);
 
   const alternates = Object.fromEntries(translatedLangs.map((l: Lang) => [l, localizePath(propertyPath(property), l)]));
 
@@ -258,12 +256,14 @@ const PropertyDetail = () => {
               <>
                 <button
                   onClick={(e) => { e.preventDefault(); goToPrev(); }}
+                  aria-label={tL("Photo précédente", "Previous photo", "Foto anterior")}
                   className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/25 backdrop-blur-sm active:bg-black/50 text-white w-9 h-9 rounded-full flex items-center justify-center z-10 transition-colors"
                 >
                   <ChevronLeft size={20} strokeWidth={1.5} />
                 </button>
                 <button
                   onClick={(e) => { e.preventDefault(); goToNext(); }}
+                  aria-label={tL("Photo suivante", "Next photo", "Foto siguiente")}
                   className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/25 backdrop-blur-sm active:bg-black/50 text-white w-9 h-9 rounded-full flex items-center justify-center z-10 transition-colors"
                 >
                   <ChevronRight size={20} strokeWidth={1.5} />
@@ -290,7 +290,7 @@ const PropertyDetail = () => {
                         ? "w-5 h-1.5 bg-white"
                         : "w-1.5 h-1.5 bg-white/50"
                     }`}
-                    aria-label={`Image ${idx + 1}`}
+                    aria-label={tL(`Afficher la photo ${idx + 1}`, `Show photo ${idx + 1}`, `Ver la foto ${idx + 1}`)}
                   />
                 ))}
               </div>
@@ -304,6 +304,8 @@ const PropertyDetail = () => {
                 <button
                   key={i}
                   onClick={() => setSelectedImage(i)}
+                  aria-label={tL(`Afficher la photo ${i + 1}`, `Show photo ${i + 1}`, `Ver la foto ${i + 1}`)}
+                  aria-pressed={selectedImage === i}
                   className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden transition-all duration-300 ${
                     selectedImage === i
                       ? "ring-2 ring-accent ring-offset-2 ring-offset-background opacity-100 scale-105"
@@ -339,12 +341,14 @@ const PropertyDetail = () => {
               <>
                 <button
                   onClick={(e) => { e.preventDefault(); goToPrev(); }}
+                  aria-label={tL("Photo précédente", "Previous photo", "Foto anterior")}
                   className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
                 >
                   <ChevronLeft size={24} />
                 </button>
                 <button
                   onClick={(e) => { e.preventDefault(); goToNext(); }}
+                  aria-label={tL("Photo suivante", "Next photo", "Foto siguiente")}
                   className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
                 >
                   <ChevronRight size={24} />
@@ -361,6 +365,7 @@ const PropertyDetail = () => {
                 <button
                   key={`${url}-${offset}`}
                   onClick={() => setSelectedImage(index)}
+                  aria-label={tL(`Afficher la photo ${index + 1}`, `Show photo ${index + 1}`, `Ver la foto ${index + 1}`)}
                   className={`relative overflow-hidden transition-opacity ${selectedImage === index ? "opacity-100" : "opacity-80 hover:opacity-100"}`}
                 >
                   <OptimizedImage
@@ -391,6 +396,7 @@ const PropertyDetail = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1, ease: EASE_LUXURY }}
               >
+                <Breadcrumbs crumbs={crumbs} className="mb-3 md:mb-4" />
                 {(
                   <div className="flex items-center gap-1.5 mb-2 md:mb-3">
                     <MapPin size={14} strokeWidth={1.5} className="text-accent" />

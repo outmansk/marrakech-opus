@@ -5,16 +5,20 @@ import { useTranslation } from "react-i18next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { breadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { motion } from "framer-motion";
 import { Reveal, PageTransition, EASE_LUXURY } from "@/components/motion/Animations";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import slide3 from "@/assets/slide2.webp";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
+import { useLocalePath } from "@/hooks/useLocalePath";
 
 const Contact = () => {
   const { t } = useTranslation();
   const tL = useLocalizedText();
+  const { lp } = useLocalePath();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -72,16 +76,19 @@ const Contact = () => {
     }
   };
 
+  const crumbs = [{ name: tL("Accueil", "Home", "Inicio"), path: lp("/") }, { name: tL("Contact", "Contact", "Contacto"), path: lp("/contact") }];
+
   return (
     <PageTransition>
       <div className="min-h-screen bg-[#FAF8F3] text-[#0A0A0A]">
         <SEOHead
           title={tL("Contactez-nous", "Contact Us", "Contáctenos")}
           description={tL(
-            "Contactez l'agence immobilière Live In Marrakech. Nos experts sont à votre disposition pour vous accompagner.",
-            "Contact the Live In Marrakech real estate agency. Our experts are ready to assist you.",
-            "Contacte con la agencia inmobiliaria Live In Marrakech. Nuestros expertos están a su disposición para acompañarle."
+            "Contactez l'agence immobilière Live In Marrakech. Téléphone, WhatsApp et e-mail pour la location et l’achat à Marrakech.",
+            "Contact the Live In Marrakech real estate agency. Phone, WhatsApp and email for renting and buying in Marrakech.",
+            "Contacte con la agencia inmobiliaria Live In Marrakech. Teléfono, WhatsApp y correo para alquilar y comprar en Marrakech."
           )}
+          schema={breadcrumbJsonLd(crumbs)}
         />
 
         <Header />
@@ -91,7 +98,9 @@ const Contact = () => {
           <div className="absolute inset-0">
             <img
               src={slide3}
-              alt="Marrakech Riad Courtyard"
+              alt={tL("La Koutoubia et l’Atlas au coucher du soleil", "The Koutoubia and the Atlas at sunset", "La Kutubía y el Atlas al atardecer")}
+              width={1024}
+              height={1024}
               className="w-full h-full object-cover opacity-60 scale-105"
             />
             <div
@@ -103,6 +112,7 @@ const Contact = () => {
           </div>
 
           <div className="relative z-10 text-center px-4 sm:px-6">
+            <Breadcrumbs crumbs={crumbs} className="mb-5 justify-center !text-white/60" />
             <motion.p
               className="text-white/60 text-[10px] md:text-xs tracking-[0.3em] uppercase font-sans font-light mb-4"
               initial={{ opacity: 0, y: 15 }}
@@ -138,9 +148,9 @@ const Contact = () => {
                   </h2>
                   <p className="text-muted-foreground font-light leading-relaxed">
                     {tL(
-                      "Que vous recherchiez un Riad historique dans la Médina, une villa contemporaine à Amelkis, ou que vous souhaitiez simplement discuter de gestion locative, nos conseillers sont à votre écoute.",
-                      "Whether you're searching for a historic Riad in the Medina, a contemporary villa in Amelkis, or simply wish to discuss property management in Marrakech, our advisors are here.",
-                      "Tanto si busca un Riad histórico en la Medina, una villa contemporánea en Amelkis, o simplemente desea hablar de gestión de propiedades en Marrakech, nuestros asesores están aquí."
+                      "Location à l’année, achat, sous-location ou séjour : écrivez-nous ou appelez-nous, nous répondons à vos questions et organisons les visites, sur place ou en vidéo.",
+                      "Long-term rental, purchase, sublet or short stay: write to us or call us, we answer your questions and arrange viewings, in person or by video.",
+                      "Alquiler de larga duración, compra, subarriendo o estancia: escríbanos o llámenos, respondemos a sus preguntas y organizamos las visitas, en persona o por vídeo."
                     )}
                   </p>
                 </Reveal>

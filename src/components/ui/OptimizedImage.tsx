@@ -23,6 +23,14 @@ interface OptimizedImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElem
   aspectRatio?: string;
 }
 
+/** Intrinsic size of each Cloudinary preset (see SIZE_PRESETS in lib/cloudinary.ts), for width/height attributes. */
+const PRESET_DIMENSIONS: Record<ImageSize, [number, number]> = {
+  thumb: [200, 200],
+  card: [600, 450],
+  hero: [1200, 800],
+  full: [1920, 1280],
+};
+
 // ─── Shimmer Skeleton ─────────────────────────────────────────────────────────
 
 function Shimmer({ className }: { className?: string }) {
@@ -47,7 +55,7 @@ function Shimmer({ className }: { className?: string }) {
  * - Cloudinary URL generation (public_id → optimised CDN URL)
  * - Backward-compatible with legacy Supabase full URLs
  * - Responsive srcSet (300w / 600w / 900w / 1200w) for Cloudinary assets
- * - IntersectionObserver-based lazy loading
+ * - Native lazy loading (the image address stays in the pre-rendered HTML)
  * - Shimmer skeleton placeholder while loading
  * - Smooth fade-in transition on load
  */
@@ -64,34 +72,13 @@ export function OptimizedImage({
 }: OptimizedImageProps) {
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
-  const [inView, setInView] = useState(eager);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  // Reset error state when src changes
+  // Reset error state when src changes; an image already loaded before hydration counts as loaded.
   useEffect(() => {
     setErrored(false);
-    setLoaded(false);
+    setLoaded(!!imgRef.current?.complete && (imgRef.current?.naturalWidth ?? 0) > 0);
   }, [src]);
-
-  // ── Intersection Observer for lazy loading ──────────────────────────────────
-  useEffect(() => {
-    if (eager) return;
-    const el = imgRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: '200px' }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [eager]);
 
   // ── Error handler — fallback to placeholder ─────────────────────────────────
   const handleError = useCallback(() => {
@@ -105,12 +92,11 @@ export function OptimizedImage({
   }, [errored, src, size]);
 
   // ── Derived URLs ────────────────────────────────────────────────────────────
-  const resolvedSrc = errored
-    ? '/placeholder.svg'
-    : inView ? getImageUrl(src, size) : undefined;
-  const srcSet = errored
-    ? undefined
-    : inView ? (getSrcSet(src, { crop: 'fill', gravity: 'auto' }) ?? undefined) : undefined;
+  // The address is always in the HTML (pre-rendered pages, image search, AI crawlers);
+  // loading="lazy" lets the browser defer off-screen images by itself.
+  const resolvedSrc = errored ? '/placeholder.svg' : getImageUrl(src, size);
+  const srcSet = errored ? undefined : (getSrcSet(src, { crop: 'fill', gravity: 'auto' }) ?? undefined);
+  const [presetWidth, presetHeight] = PRESET_DIMENSIONS[size];
 
   // Default sizes attribute for responsive images
   const defaultSizes =
@@ -144,6 +130,8 @@ export function OptimizedImage({
         src={resolvedSrc}
         srcSet={srcSet}
         sizes={props.sizes ?? defaultSizes}
+        width={props.width ?? presetWidth}
+        height={props.height ?? presetHeight}
         alt={alt}
         loading={eager ? 'eager' : 'lazy'}
         decoding="async"

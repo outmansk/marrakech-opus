@@ -9,6 +9,8 @@ import { useProperties } from "@/hooks/useBiens";
 import { isUnavailable } from "@/lib/propertyServices";
 import { BIEN_TYPES, QUARTIERS } from "@/types/property";
 import SEOHead from "@/components/SEOHead";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { breadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { PageTransition } from "@/components/motion/Animations";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
 import { useLocalePath } from "@/hooks/useLocalePath";
@@ -18,7 +20,7 @@ import { propertiesQueryOptions } from "@/hooks/useBiens";
 
 const Catalogue = () => {
   const tL = useLocalizedText();
-  const { lang } = useLocalePath();
+  const { lang, lp } = useLocalePath();
   // Unfiltered list (same query as the pre-render) to link only to search pages that have stock.
   const { data: allProperties = [] } = useQuery(propertiesQueryOptions({ statut: ["publie", "vendu-loue"] }));
   const [searchParams, setSearchParams] = useSearchParams();
@@ -83,14 +85,17 @@ const Catalogue = () => {
     </div>
   );
 
+  const crumbs = [{ name: tL("Accueil", "Home", "Inicio"), path: lp("/") }, { name: tL("Nos biens", "Properties", "Propiedades"), path: lp("/catalogue") }];
+
   return (
     <PageTransition>
       <div className="min-h-screen bg-[#fbf8f2]">
-        <SEOHead title={tL("Catalogue immobilier Marrakech", "Marrakech property catalogue", "Catálogo inmobiliario Marrakech")} description={tL("Découvrez nos villas, riads et appartements disponibles à Marrakech.", "Discover our available villas, riads and apartments in Marrakech.", "Descubra nuestras villas, riads y apartamentos disponibles en Marrakech.")} />
+        <SEOHead title={tL("Catalogue immobilier Marrakech", "Marrakech property catalogue", "Catálogo inmobiliario Marrakech")} description={tL("Découvrez nos villas, riads et appartements disponibles à Marrakech.", "Discover our available villas, riads and apartments in Marrakech.", "Descubra nuestras villas, riads y apartamentos disponibles en Marrakech.")} schema={breadcrumbJsonLd(crumbs)} />
         <Header />
         <main className="pt-16">
           <section className="border-b border-[#2b2722]/12 bg-[#ede5d8] py-5 md:py-8">
             <div className="mx-auto max-w-[1320px] px-5 md:px-10 xl:px-16">
+              <Breadcrumbs crumbs={crumbs} className="mb-3" />
               <h1 className="text-[32px] leading-tight tracking-[-0.025em] text-[#211f1b] md:text-[44px]">{tL("Nos biens", "Properties", "Propiedades")}</h1>
             </div>
           </section>

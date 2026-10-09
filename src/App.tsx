@@ -13,6 +13,9 @@ const pages: PublicPages = {
   Contact: lazy(() => import("./pages/Contact")),
   PropertyRequest: lazy(() => import("./pages/PropertyRequest")),
   ServiceLanding: lazy(() => import("./pages/ServiceLanding")),
+  About: lazy(() => import("./pages/About")),
+  LegalNotice: lazy(() => import("./pages/LegalNotice")),
+  Privacy: lazy(() => import("./pages/Privacy")),
   NotFound: lazy(() => import("./pages/NotFound")),
 };
 

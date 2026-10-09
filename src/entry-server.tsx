@@ -28,10 +28,13 @@ import Contact from "./pages/Contact";
 import PropertyRequest from "./pages/PropertyRequest";
 import NotFound from "./pages/NotFound";
 import ServiceLanding from "./pages/ServiceLanding";
+import About from "./pages/About";
+import LegalNotice from "./pages/LegalNotice";
+import Privacy from "./pages/Privacy";
 
-const pages: PublicPages = { Index, Catalogue, PropertyDetail, Blog, BlogPost, Contact, PropertyRequest, ServiceLanding, NotFound };
+const pages: PublicPages = { Index, Catalogue, PropertyDetail, Blog, BlogPost, Contact, PropertyRequest, ServiceLanding, About, LegalNotice, Privacy, NotFound };
 
-const STATIC_PATHS = ["/", "/catalogue", "/blog", "/contact", "/demande"];
+const STATIC_PATHS = ["/", "/catalogue", "/blog", "/contact", "/demande", "/a-propos", "/mentions-legales", "/confidentialite"];
 
 /** Every public address to pre-render, in every language. */
 export async function getPrerenderPaths(): Promise<string[]> {
@@ -63,7 +66,7 @@ async function prefetch(queryClient: QueryClient, url: string) {
     ]);
   }
   else if (path === "/") await queryClient.prefetchQuery(propertiesQueryOptions({ statut: "publie" }));
-  else if (section === "catalogue") await queryClient.prefetchQuery(propertiesQueryOptions({ statut: ["publie", "vendu-loue"] }));
+  else if (section === "catalogue" || section === "a-propos") await queryClient.prefetchQuery(propertiesQueryOptions({ statut: ["publie", "vendu-loue"] }));
   else if (section === "bien" && param) await queryClient.prefetchQuery(propertyQueryOptions(propertyIdFromParam(param)));
   else if (section === "blog" && param) await queryClient.prefetchQuery(articleQueryOptions(param));
   else if (section === "blog") await queryClient.prefetchQuery(publishedArticlesQueryOptions(lang));

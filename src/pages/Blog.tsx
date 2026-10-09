@@ -6,6 +6,8 @@ import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { breadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { publishedArticlesQueryOptions } from "@/hooks/useArticles";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
 import { useLocalePath } from "@/hooks/useLocalePath";
@@ -32,14 +34,8 @@ const Blog = () => {
   ];
 
   const pageTitle = tL("Blog immobilier Marrakech : guides pour louer et acheter", "Marrakech real estate blog: guides to rent and buy", "Blog inmobiliario Marrakech: guías para alquilar y comprar");
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": tL("Accueil", "Home", "Inicio"), "item": `${BASE_URL}${lp("/") === "/" ? "" : lp("/")}` },
-      { "@type": "ListItem", "position": 2, "name": "Blog", "item": `${BASE_URL}${lp("/blog")}` },
-    ],
-  };
+  const crumbs = [{ name: tL("Accueil", "Home", "Inicio"), path: lp("/") }, { name: "Blog", path: lp("/blog") }];
+  const schema = breadcrumbJsonLd(crumbs);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -58,10 +54,7 @@ const Blog = () => {
 
       <div className="pt-32 pb-24">
         <div className="container mx-auto px-6 md:px-12">
-          <Link to={lp("/")} className="inline-flex items-center text-xs tracking-widest uppercase font-medium text-muted-foreground hover:text-foreground transition-colors mb-8">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-            {tL("Retour à l'accueil", "Back to home", "Volver al inicio")}
-          </Link>
+          <Breadcrumbs crumbs={crumbs} className="mb-8" />
           <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">{t('nav.journal')}</p>
           <h1 className="mb-12">{tL("Blog immobilier", "Real estate blog", "Blog inmobiliario")}</h1>
 
@@ -111,6 +104,9 @@ const Blog = () => {
                         src={article.image_url}
                         alt={article.title}
                         loading="lazy"
+                        decoding="async"
+                        width={800}
+                        height={600}
                         className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                       />
                     ) : (

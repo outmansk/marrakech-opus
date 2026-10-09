@@ -43,15 +43,18 @@ const HeroSlideshow = () => {
   return (
     <section className="bg-[#fbf8f2]">
       <div className="relative h-[640px] overflow-hidden bg-[#2a211b] text-[#fbf8f2] lg:h-[880px]">
-        <motion.picture initial={{ opacity: 0, scale: 1.03 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.9 }} className="absolute inset-0 block">
+        {/* No fade-in: this is the LCP image, it must be visible in the pre-rendered HTML. */}
+        <picture className="absolute inset-0 block">
           <source media="(min-width: 1024px)" srcSet={heroImage} />
           <img
             src={mobileHeroImage}
             alt={tL("Villa de prestige avec piscine à Marrakech au coucher du soleil", "Luxury villa with pool in Marrakech at sunset", "Villa de lujo con piscina en Marrakech al atardecer")}
+            width={900}
+            height={1125}
             {...{ fetchpriority: "high" }} // React 18 ne reconnaît que l’attribut HTML en minuscules
             className="h-full w-full object-cover object-[58%_50%] lg:object-[50%_60%]"
           />
-        </motion.picture>
+        </picture>
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(20,16,12,0.6)_0%,rgba(20,16,12,0)_26%,rgba(20,16,12,0.2)_50%,rgba(20,16,12,0.85)_100%)] lg:bg-[linear-gradient(180deg,rgba(20,16,12,0.55)_0%,rgba(20,16,12,0.05)_30%,rgba(20,16,12,0.15)_55%,rgba(20,16,12,0.78)_100%)]" />
 
         <div className="absolute inset-x-0 bottom-[74px] z-[2] lg:bottom-16">

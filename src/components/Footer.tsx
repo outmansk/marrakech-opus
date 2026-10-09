@@ -2,6 +2,7 @@ import { MapPin, Phone, Mail, Instagram } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import { useLocalePath } from "@/hooks/useLocalePath";
+import { useLocalizedText } from "@/hooks/useLocalizedText";
 import { LANGS, languageSwitchPath } from "@/i18n/routing";
 import { getLanding, landingPath, type LandingId } from "@/content/landings";
 
@@ -12,6 +13,7 @@ const Footer = () => {
   const { t } = useTranslation();
   const { pathname, search } = useLocation();
   const { lang: currentLang, lp } = useLocalePath();
+  const tL = useLocalizedText();
 
   return (
     <footer className="bg-[#211f1b] text-white">
@@ -122,6 +124,17 @@ const Footer = () => {
           <p className="text-white/25 text-[10px] tracking-[0.2em] uppercase font-sans font-light">
             © {new Date().getFullYear()} Live In Marrakech. {t("footer.droits")}
           </p>
+          <nav aria-label={tL("Informations légales", "Legal information", "Información legal")} className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+            {[
+              { to: lp("/a-propos"), label: tL("À propos", "About us", "Quiénes somos") },
+              { to: lp("/mentions-legales"), label: tL("Mentions légales", "Legal notice", "Aviso legal") },
+              { to: lp("/confidentialite"), label: tL("Confidentialité", "Privacy", "Privacidad") },
+            ].map(({ to, label }) => (
+              <Link key={to} to={to} className="text-white/40 hover:text-white/70 text-[10px] tracking-[0.2em] uppercase font-sans font-light transition-colors duration-300">
+                {label}
+              </Link>
+            ))}
+          </nav>
           {/* Language links */}
           <div className="flex items-center gap-4">
             {LANGS.map((lang, i) => (

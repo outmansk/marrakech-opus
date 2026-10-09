@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import SEOHead from "@/components/SEOHead";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { breadcrumbJsonLd } from "@/lib/breadcrumbs";
 import ReactMarkdown, { type Components } from "react-markdown";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
@@ -99,7 +101,11 @@ const BlogPost = () => {
     strong: ({ node: _node, ...props }) => <strong className="text-foreground font-medium" {...props} />,
   };
 
-  const homeUrl = `${BASE_URL}${lp("/") === "/" ? "" : lp("/")}`;
+  const crumbs = [
+    { name: tL("Accueil", "Home", "Inicio"), path: lp("/") },
+    { name: "Blog", path: lp("/blog") },
+    { name: article.title, path: articlePath },
+  ];
   // Covers stored on the site ("/blog/x.webp") need an absolute URL for social previews and JSON-LD.
   const coverUrl = article.image_url?.startsWith("/") ? `${BASE_URL}${article.image_url}` : article.image_url;
   const faq = articleFaq(article.content);
@@ -121,15 +127,7 @@ const BlogPost = () => {
       "author": { "@type": "Organization", "name": SITE_NAME, "url": BASE_URL },
       "publisher": { "@id": `${BASE_URL}/#business` },
     },
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": tL("Accueil", "Home", "Inicio"), "item": homeUrl },
-        { "@type": "ListItem", "position": 2, "name": "Blog", "item": `${BASE_URL}${lp("/blog")}` },
-        { "@type": "ListItem", "position": 3, "name": article.title, "item": `${BASE_URL}${articlePath}` },
-      ],
-    },
+    breadcrumbJsonLd(crumbs),
     ...(faq.length ? [{
       "@context": "https://schema.org",
       "@type": "FAQPage",
@@ -155,9 +153,7 @@ const BlogPost = () => {
 
       <div className="pt-32 pb-16">
         <div className="container mx-auto px-6 max-w-4xl">
-          <Link to={lp("/blog")} className="inline-flex items-center text-xs tracking-widest uppercase font-medium text-muted-foreground hover:text-foreground transition-colors mb-8">
-            <ArrowLeft size={16} strokeWidth={1.25} className="mr-2" /> {tL("Retour", "Back", "Volver")}
-          </Link>
+          <Breadcrumbs crumbs={crumbs} className="mb-8" />
 
           <div className="inline-block bg-secondary text-muted-foreground px-4 py-1.5 text-[10px] uppercase tracking-widest font-medium mb-6">
             {article.category.replace('-', ' ')}

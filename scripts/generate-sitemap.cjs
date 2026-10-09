@@ -85,6 +85,8 @@ const STATIC_PAGES = [
   { loc: '/blog',      priority: '0.8', changefreq: 'weekly' },
   { loc: '/demande',   priority: '0.6', changefreq: 'monthly' },
   { loc: '/contact',   priority: '0.5', changefreq: 'monthly' },
+  { loc: '/a-propos',  priority: '0.5', changefreq: 'monthly' },
+  { loc: '/confidentialite', priority: '0.2', changefreq: 'yearly' },
 ];
 
 // Same rules as src/i18n/routing.ts: French at the root, /en and /es for the others.

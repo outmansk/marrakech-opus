@@ -6,10 +6,10 @@ import type { LandingCopy, LandingId } from "./landings";
 const copy: Record<LandingId, LandingCopy> = {
   vente: {
     title: "Property for sale in Marrakech: villas, houses, riads",
-    description: "Villas, houses and riads for sale in Marrakech, visited by our agency: real prices, real photos and support all the way to the notary.",
+    description: "Villas, houses and riads for sale in Marrakech: prices shown, property photos and support from the viewing to signing at the notary.",
     eyebrow: "Buy in Marrakech",
     h1: "Property for sale in Marrakech",
-    answer: "Live In Marrakech offers property for sale in and around Marrakech, depending on availability: villas, houses, riads. Every property is visited by the agency before it is listed, and we support buyers, Moroccan residents or not, all the way to signing at the notary.",
+    answer: "Live In Marrakech offers property for sale in and around Marrakech, depending on availability: villas, houses, riads. We support buyers, Moroccan residents or not, from the viewing to signing at the notary.",
     sections: [
       {
         heading: "What kind of property to buy in Marrakech?",
@@ -35,7 +35,7 @@ const copy: Record<LandingId, LandingCopy> = {
       {
         heading: "How we work",
         paragraphs: [
-          "We only list properties we have visited, with real photos and a price confirmed by the owner. You can arrange a viewing on WhatsApp in English, French or Spanish, and we prepare the file with your notary until the keys are handed over.",
+          "Each listing shows photos of the property and its price. You can arrange a viewing on WhatsApp, in person or by video, and we then prepare the file with your notary until the keys are handed over.",
           "Can’t see the right property? Tell us your budget, preferred area and number of bedrooms, and we will send you a selection, including properties that are not online yet.",
         ],
       },
@@ -52,7 +52,7 @@ const copy: Record<LandingId, LandingCopy> = {
 
   "vente-villas": {
     title: "Villa for sale in Marrakech with pool and garden",
-    description: "Villas for sale in Marrakech on the Fez road and the Sidi Rahal road: pool, garden, real photos and prices confirmed by the owner.",
+    description: "Villas for sale in Marrakech on the Fez road and the Sidi Rahal road: pool, garden, photos and price shown on every listing.",
     eyebrow: "For sale · Villas",
     h1: "Villas for sale in Marrakech",
     answer: "Villas for sale in Marrakech are mainly on the outskirts of the city, in the Palmeraie and along the Fez, Ourika and Amizmiz roads, usually with a garden and a private pool.",
@@ -166,7 +166,7 @@ const copy: Record<LandingId, LandingCopy> = {
 
   "vente-maisons": {
     title: "House for sale in Marrakech",
-    description: "Houses for sale in and around Marrakech, including a traditional house with a garden in Ennakhil (Palmeraie). Visited by our agency.",
+    description: "Houses for sale in and around Marrakech, including a traditional house with a garden in Ennakhil (Palmeraie). In-person or video viewings.",
     eyebrow: "For sale · Houses",
     h1: "Houses for sale in Marrakech",
     answer: "In Marrakech, houses for sale are detached homes that are simpler or more compact than a villa: houses with a garden on the outskirts, as in the Palmeraie, or town houses in residential areas.",
