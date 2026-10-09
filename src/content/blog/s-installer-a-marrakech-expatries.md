@@ -4,12 +4,13 @@ lang: fr
 translation_key: s-installer-marrakech
 category: location-longue-duree
 title: "S’installer à Marrakech : le guide pratique pour les expatriés"
-meta_title: "S’installer à Marrakech : séjour, logement, banque, santé, écoles"
+meta_title: "S’installer à Marrakech : guide pratique des expatriés"
 meta_description: "Séjour et carte de séjour, logement, banque, santé, écoles, transports : le guide pratique pour s’installer à Marrakech en tant qu’expatrié ou retraité."
 excerpt: "Visa, carte de séjour, logement, banque, santé, écoles : les étapes pour s’installer sereinement à Marrakech, et l’ordre dans lequel les faire."
 image_url: /blog/s-installer-marrakech.webp
 date: 2026-10-08
 published: true
+updated: 2026-10-09
 ---
 
 **En bref :** de nombreuses nationalités, dont les ressortissants de l’Union européenne, entrent au Maroc sans visa pour un séjour touristique de 90 jours maximum. Pour rester plus longtemps, il faut demander une carte de séjour. Le plus simple est de commencer par **louer à l’année**, ce qui fournit aussi le justificatif de domicile demandé pour la plupart des démarches.
@@ -51,3 +52,21 @@ Les étés sont très chauds et les hivers doux en journée mais frais la nuit. 
 L’ordre le plus simple : 1) trouver un logement à l’année, 2) ouvrir un compte bancaire, 3) déposer la demande de carte de séjour, 4) inscrire les enfants à l’école. Pour la première étape, [décrivez votre recherche](/demande) : nous vous envoyons une sélection de biens adaptés et organisons les visites, sur place ou en vidéo.
 
 *Les règles de séjour évoluent : vérifiez toujours les informations auprès des autorités marocaines et de votre consulat. Dernière mise à jour : octobre 2026.*
+
+## Questions fréquentes
+
+### Faut-il un visa pour s’installer à Marrakech ?
+
+Selon votre nationalité, vous pouvez entrer au Maroc sans visa pour un séjour touristique de 90 jours au plus. Pour rester plus longtemps, il faut demander une carte de séjour auprès des services de police de votre lieu de résidence. Vérifiez votre cas auprès du consulat du Maroc avant le départ.
+
+### Comment obtenir une carte de séjour au Maroc ?
+
+La demande se fait auprès des services de police de votre lieu de résidence. Les pièces demandées incluent en général le passeport, des photos, un justificatif de logement comme un bail, et un justificatif de ressources ou d’activité. La liste exacte dépend de votre situation.
+
+### Faut-il louer avant d’acheter à Marrakech ?
+
+C’est le plus prudent : louer à l’année permet de découvrir les quartiers au quotidien avant de s’engager. Le bail écrit sert aussi de justificatif de domicile pour la carte de séjour, la banque ou l’école.
+
+### Quels documents faut-il pour louer avec Live In Marrakech ?
+
+Un passeport ou une carte d’identité suffit. Le bail est d’un an minimum, et le dépôt de garantie est d’un mois de loyer pour un logement vide ou de deux mois pour un logement meublé.

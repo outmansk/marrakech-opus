@@ -4,12 +4,13 @@ lang: en
 translation_key: acheter-maroc-etranger
 category: vente
 title: "Buying property in Morocco as a foreigner: the complete guide"
-meta_title: "Buying property in Morocco as a foreigner: steps, checks, costs"
+meta_title: "Buying property in Morocco as a foreigner: the guide"
 meta_description: "Can foreigners buy property in Morocco? Buying steps, documents to check, costs and transferring funds: the guide to buying safely in Marrakech."
 excerpt: "Yes, foreigners can buy an apartment, a villa or a riad in Morocco. Here are the steps, the essential checks and what to prepare with your notary."
 image_url: /blog/acheter-maroc-etranger.webp
 date: 2026-10-08
 published: true
+updated: 2026-10-09
 ---
 
 **In short:** as a general rule, foreigners can buy a home in Morocco outright without being resident. A purchase goes through a preliminary agreement and then a final deed at the notary, and the sale is registered at the Land Registry when the property is titled. The key points: check the land title, bring the funds in through a bank, and keep the records.
@@ -51,6 +52,24 @@ As an owner you will pay the local taxes attached to the home and, if you rent i
 
 ## Where to look in Marrakech?
 
-The area matters as much as the property: read our guide [Best areas to live in Marrakech](/en/blog/best-areas-to-live-marrakech), then browse our [villas for sale](/en/for-sale/villas-marrakech), [apartments for sale](/en/for-sale/apartments-marrakech) or [riads for sale](/en/for-sale/riads-marrakech). Can’t find the right one? [Tell us what you need](/en/demande) and we will send you a selection.
+The area matters as much as the property: read our guide [Best areas to live in Marrakech](/en/blog/best-areas-to-live-marrakech), then browse our [villas for sale](/en/for-sale/villas-marrakech), [houses for sale](/en/for-sale/houses-marrakech) or [riads for sale](/en/for-sale/riads-marrakech). Can’t find the right one? [Tell us what you need](/en/demande) and we will send you a selection.
 
 *This article gives general guidance and does not replace advice from a notary. Last updated: October 2026.*
+
+## Frequently asked questions
+
+### Can foreign nationals buy property in Morocco?
+
+Yes. As a general rule, foreigners can buy an apartment, a villa or a riad in Morocco outright, with the same rights as a Moroccan buyer and no residence permit. The main exception is agricultural land outside urban areas, which follows specific rules: have a notary check each case.
+
+### What's the average cost of a house in Morocco?
+
+We do not quote a national average: prices vary widely by city, area, size and condition, and we have no reliable source for a single figure. For Marrakech, our [villas](/en/for-sale/villas-marrakech) and [houses for sale](/en/for-sale/houses-marrakech) show their real asking prices.
+
+### How much money do I need to retire in Morocco?
+
+There is no single figure: it depends above all on your housing, health insurance and lifestyle. Housing is usually the biggest item, so start with real rents: our [long-term rentals](/en/long-term-rental) show current monthly prices, and our [moving guide](/en/blog/moving-to-marrakech-expat-guide) covers residency, banking and healthcare.
+
+### Do I need to be resident to buy in Morocco?
+
+No. Buying a home requires neither residency nor a residence card. If you fund the purchase from abroad, pay through a bank and keep the transfer records: they are needed to repatriate the capital when you sell.

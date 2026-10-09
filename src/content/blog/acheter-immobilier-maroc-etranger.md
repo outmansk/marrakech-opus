@@ -4,12 +4,13 @@ lang: fr
 translation_key: acheter-maroc-etranger
 category: vente
 title: "Acheter un bien immobilier au Maroc quand on est étranger : le guide"
-meta_title: "Acheter au Maroc quand on est étranger : étapes, vérifications, frais"
-meta_description: "Un étranger peut-il acheter au Maroc ? Étapes de l’achat, documents à vérifier, frais et transfert des fonds : le guide pour acheter à Marrakech en toute sécurité."
+meta_title: "Acheter au Maroc quand on est étranger : le guide"
+meta_description: "Un étranger peut-il acheter au Maroc ? Étapes, documents à vérifier, frais et transfert des fonds : le guide pour acheter à Marrakech."
 excerpt: "Oui, un étranger peut acheter un appartement, une villa ou un riad au Maroc. Voici les étapes, les vérifications indispensables et les points à préparer avec votre notaire."
 image_url: /blog/acheter-maroc-etranger.webp
 date: 2026-10-08
 published: true
+updated: 2026-10-09
 ---
 
 **En bref :** un étranger peut en règle générale acheter un logement au Maroc en pleine propriété, sans être résident. L’achat passe par un compromis puis un acte définitif chez le notaire, et la vente est inscrite à la Conservation foncière quand le bien est titré. Les points clés : vérifier le titre foncier, faire venir les fonds par la banque et garder les justificatifs.
@@ -51,6 +52,24 @@ Une fois propriétaire, vous paierez les taxes locales liées au logement et, si
 
 ## Où chercher à Marrakech ?
 
-Le choix du quartier compte autant que le bien : lisez notre guide [Dans quel quartier vivre à Marrakech](/blog/quartiers-marrakech-ou-vivre), puis parcourez nos [villas à vendre](/vente/villas-marrakech), nos [appartements à vendre](/vente/appartements-marrakech) ou nos [riads à vendre](/vente/riads-marrakech). Vous ne trouvez pas ? [Décrivez votre recherche](/demande) : nous vous envoyons une sélection.
+Le choix du quartier compte autant que le bien : lisez notre guide [Dans quel quartier vivre à Marrakech](/blog/quartiers-marrakech-ou-vivre), puis parcourez nos [villas à vendre](/vente/villas-marrakech), nos [maisons à vendre](/vente/maisons-marrakech) ou nos [riads à vendre](/vente/riads-marrakech). Vous ne trouvez pas ? [Décrivez votre recherche](/demande) : nous vous envoyons une sélection.
 
 *Cet article donne des repères généraux et ne remplace pas le conseil d’un notaire. Dernière mise à jour : octobre 2026.*
+
+## Questions fréquentes
+
+### Un étranger peut-il acheter un bien immobilier au Maroc ?
+
+Oui. En règle générale, un étranger peut acheter un appartement, une villa ou un riad au Maroc en pleine propriété, avec les mêmes droits qu’un acheteur marocain. La principale exception concerne les terres agricoles situées hors des zones urbaines, dont l’achat par des étrangers est encadré : faites vérifier chaque cas par un notaire.
+
+### Faut-il être résident pour acheter au Maroc ?
+
+Non. L’achat d’un logement n’exige ni résidence ni carte de séjour. Si vous financez l’achat avec des fonds venant de l’étranger, faites-les passer par la banque et conservez les justificatifs de transfert : ils sont demandés pour rapatrier le capital lors d’une future revente.
+
+### Qui rédige l’acte de vente au Maroc ?
+
+L’acte définitif est signé chez un notaire ou devant des adouls. Pour un bien titré, le notaire enregistre ensuite l’acte et le fait inscrire à la Conservation foncière : c’est cette inscription qui vous rend officiellement propriétaire.
+
+### Combien coûtent les frais d’achat ?
+
+Nous ne donnons pas de pourcentage, car le montant dépend du prix, de la nature du bien et de votre situation. Les frais comprennent les droits d’enregistrement, les frais de conservation foncière et les honoraires du notaire : demandez-lui un décompte écrit avant de signer le compromis.

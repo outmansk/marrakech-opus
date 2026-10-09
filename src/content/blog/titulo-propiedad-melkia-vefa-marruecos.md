@@ -4,12 +4,13 @@ lang: es
 translation_key: statut-juridique-bien-maroc
 category: vente
 title: "Título de propiedad, melkia, VEFA: entender la situación de un inmueble en Marruecos"
-meta_title: "Título de propiedad, melkia, VEFA: situación jurídica de un inmueble en Marruecos"
-meta_description: "Título de propiedad, melkia, VEFA, comunidad de propietarios: lo que hay que entender sobre la situación jurídica de un inmueble en Marruecos antes de comprar en Marrakech."
+meta_title: "Título de propiedad, melkia y VEFA en Marruecos"
+meta_description: "Título de propiedad, melkia, VEFA y comunidad de propietarios: la situación jurídica de un inmueble en Marruecos antes de comprar."
 excerpt: "Antes de comprar en Marruecos, compruebe la situación jurídica del inmueble: título de propiedad, melkia, compra sobre plano o comunidad. Qué implica cada una."
 image_url: /blog/statut-juridique-bien-maroc.webp
 date: 2026-10-08
 published: true
+updated: 2026-10-09
 ---
 
 **En resumen:** en Marruecos, la situación más segura es el **título de propiedad** (titre foncier): el inmueble está inscrito en la Conservación de la Propiedad y la propiedad está garantizada. Un inmueble en régimen de **melkia** (acta adular) no está inscrito y exige más precauciones. La **VEFA** es la compra sobre plano. En todos los casos, pida a un notario que compruebe la situación antes de firmar nada.
@@ -47,11 +48,11 @@ Qué comprobar en el contrato:
 
 ## La comunidad de propietarios: comprar un apartamento
 
-Un apartamento forma parte de un edificio en régimen de copropiedad, regido por la Ley n.º 18-00. Cada unidad suele tener su propio título. Antes de comprar, pida el **reglamento de la comunidad**, los **gastos** y el estado de las cuentas de la **administración**: determinan la vida en la residencia (piscina, vigilancia, mantenimiento). Vea nuestros [apartamentos en venta](/es/venta/apartamentos-marrakech).
+Un apartamento forma parte de un edificio en régimen de copropiedad, regido por la Ley n.º 18-00. Cada unidad suele tener su propio título. Antes de comprar, pida el **reglamento de la comunidad**, los **gastos** y el estado de las cuentas de la **administración**: determinan la vida en la residencia (piscina, vigilancia, mantenimiento). Vea nuestros [inmuebles en venta](/es/venta).
 
 ## Los terrenos: situaciones particulares
 
-En un terreno, compruebe además su **vocación**: las tierras agrícolas tienen normas específicas, sobre todo para compradores extranjeros, y algunas categorías de tierras (tierras colectivas, bienes habús) no se compran como un terreno privado corriente. La nota de información urbanística de la Agencia Urbana indica qué se puede construir. Vea nuestros [terrenos en venta](/es/venta/terrenos-marrakech).
+En un terreno, compruebe además su **vocación**: las tierras agrícolas tienen normas específicas, sobre todo para compradores extranjeros, y algunas categorías de tierras (tierras colectivas, bienes habús) no se compran como un terreno privado corriente. La nota de información urbanística de la Agencia Urbana indica qué se puede construir. ¿Busca un terreno? [Cuéntenos su proyecto](/es/demande).
 
 ## Lo que debe pedir antes de firmar
 
@@ -64,3 +65,21 @@ En un terreno, compruebe además su **vocación**: las tierras agrícolas tienen
 A continuación, lea nuestra guía [Comprar un inmueble en Marruecos siendo extranjero](/es/blog/comprar-inmueble-marruecos-extranjero).
 
 *Este artículo ofrece orientaciones generales y no sustituye el consejo de un notario. Última actualización: octubre de 2026.*
+
+## Preguntas frecuentes
+
+### ¿Qué es un título de propiedad en Marruecos?
+
+Es la inscripción de un inmueble en el registro que lleva la Conservación de la Propiedad. El título indica el propietario, la superficie y las cargas posibles, como hipotecas. Es la situación más segura para el comprador y a menudo una condición para obtener una hipoteca.
+
+### ¿Qué es una melkia?
+
+Una melkia es un acta redactada por adules a partir de testimonios, que acredita que una persona posee un inmueble no inscrito. Los riesgos son mayores que con un título: se puede solicitar la inscripción, pero el procedimiento lleva tiempo.
+
+### ¿Qué es la VEFA?
+
+La VEFA es la compra de una vivienda sobre plano, regulada por la Ley n.º 44-00 modificada por la Ley n.º 107-12. El precio se paga por etapas según avanza la obra, y el contrato debe precisar el calendario de pagos, la fecha de entrega y las garantías.
+
+### ¿Qué documentos pedir antes de firmar?
+
+El certificado de propiedad reciente o el acta de melkia, el plano catastral, la licencia de obra y el permiso de habitar para una casa, el reglamento de la comunidad para un apartamento y el contrato de reserva para una VEFA. Su notario los revisa.

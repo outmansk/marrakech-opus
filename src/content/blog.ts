@@ -51,3 +51,25 @@ export function withFileArticles(fromDb: Article[], keep: (article: Article) => 
   return [...fromDb.filter((article) => !fileSlugs.has(article.slug)), ...FILE_ARTICLES.filter(keep)]
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
+
+const FAQ_HEADINGS = ["Questions fréquentes", "Frequently asked questions", "Preguntas frecuentes"];
+
+/** Questions of the "## Questions fréquentes" section of an article (### question, then its answer). */
+export function articleFaq(content: string): { q: string; a: string }[] {
+  const start = content.split(/\r?\n/).findIndex((line) => FAQ_HEADINGS.includes(line.replace(/^##\s+/, "").trim()) && line.startsWith("## "));
+  if (start < 0) return [];
+  const lines = content.split(/\r?\n/).slice(start + 1);
+  const end = lines.findIndex((line) => line.startsWith("## "));
+  const items: { q: string; a: string }[] = [];
+  for (const line of end < 0 ? lines : lines.slice(0, end)) {
+    if (line.startsWith("### ")) items.push({ q: line.slice(4).trim(), a: "" });
+    else if (items.length && line.trim()) items[items.length - 1].a += (items[items.length - 1].a ? " " : "") + line.trim();
+  }
+  // Structured data carries plain text: drop Markdown links and emphasis.
+  const plain = (text: string) => text.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/[*_]{1,2}([^*_]+)[*_]{1,2}/g, "$1");
+  return items.filter((item) => item.a).map((item) => ({ q: item.q, a: plain(item.a) }));
+}
+
+/** Articles under this word count are kept out of search results (noindex) and of the sitemap. */
+export const THIN_ARTICLE_WORDS = 300;
+export const isThinArticle = (content: string) => content.split(/\s+/).filter((word) => /\p{L}/u.test(word)).length < THIN_ARTICLE_WORDS;

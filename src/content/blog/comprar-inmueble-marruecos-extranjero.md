@@ -4,12 +4,13 @@ lang: es
 translation_key: acheter-maroc-etranger
 category: vente
 title: "Comprar un inmueble en Marruecos siendo extranjero: la guía"
-meta_title: "Comprar en Marruecos siendo extranjero: pasos, comprobaciones, gastos"
-meta_description: "¿Puede un extranjero comprar en Marruecos? Pasos de la compra, documentos que comprobar, gastos y transferencia de fondos: la guía para comprar con seguridad en Marrakech."
+meta_title: "Comprar casa en Marruecos siendo extranjero: guía"
+meta_description: "¿Puede un extranjero comprar en Marruecos? Pasos, documentos que comprobar, gastos y transferencia de fondos para comprar en Marrakech."
 excerpt: "Sí, un extranjero puede comprar un apartamento, una villa o un riad en Marruecos. Estos son los pasos, las comprobaciones imprescindibles y lo que debe preparar con su notario."
 image_url: /blog/acheter-maroc-etranger.webp
 date: 2026-10-08
 published: true
+updated: 2026-10-09
 ---
 
 **En resumen:** por regla general, un extranjero puede comprar una vivienda en Marruecos en plena propiedad sin ser residente. La compra pasa por un compromiso y después por una escritura definitiva ante notario, y la venta se inscribe en la Conservación de la Propiedad cuando el inmueble tiene título. Lo esencial: comprobar el título de propiedad, traer los fondos por vía bancaria y conservar los justificantes.
@@ -51,6 +52,20 @@ Como propietario pagará los impuestos locales de la vivienda y, si la alquila, 
 
 ## ¿Dónde buscar en Marrakech?
 
-El barrio cuenta tanto como el inmueble: lea nuestra guía [Los mejores barrios para vivir en Marrakech](/es/blog/mejores-barrios-marrakech) y consulte nuestras [villas en venta](/es/venta/villas-marrakech), [apartamentos en venta](/es/venta/apartamentos-marrakech) o [riads en venta](/es/venta/riads-marrakech). ¿No encuentra lo que busca? [Cuéntenos qué necesita](/es/demande) y le enviaremos una selección.
+El barrio cuenta tanto como el inmueble: lea nuestra guía [Los mejores barrios para vivir en Marrakech](/es/blog/mejores-barrios-marrakech) y consulte nuestras [villas en venta](/es/venta/villas-marrakech), [casas en venta](/es/venta/casas-marrakech) o [riads en venta](/es/venta/riads-marrakech). ¿No encuentra lo que busca? [Cuéntenos qué necesita](/es/demande) y le enviaremos una selección.
 
 *Este artículo ofrece orientaciones generales y no sustituye el consejo de un notario. Última actualización: octubre de 2026.*
+
+## Preguntas frecuentes
+
+### ¿Puede un español comprar una casa en Marruecos?
+
+Sí. Por regla general, un extranjero, también un español, puede comprar en Marruecos un apartamento, una villa o un riad en plena propiedad, con los mismos derechos que un comprador marroquí y sin permiso de residencia. La excepción principal son las tierras agrícolas, con un régimen particular que debe comprobar un notario.
+
+### ¿Cuánto cuesta un alquiler en Marrakech?
+
+No damos una media del mercado, porque el precio depende del tipo de vivienda, la zona, la superficie y los equipamientos. Nuestros [alquileres de larga duración](/es/alquiler-larga-duracion) muestran los alquileres mensuales reales de los inmuebles disponibles ahora.
+
+### ¿Hace falta ser residente para comprar en Marruecos?
+
+No. Comprar una vivienda no exige residencia ni tarjeta de residencia. Si financia la compra desde el extranjero, pague por vía bancaria y conserve los justificantes de transferencia: se piden para repatriar el capital en una futura venta.

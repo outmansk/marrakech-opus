@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import { articleQueryOptions } from "@/hooks/useArticles";
+import { articleFaq, isThinArticle } from "@/content/blog";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
 import { useLocalePath } from "@/hooks/useLocalePath";
 import { BASE_URL, SITE_NAME } from "@/hooks/useSEO";
@@ -101,6 +102,11 @@ const BlogPost = () => {
   const homeUrl = `${BASE_URL}${lp("/") === "/" ? "" : lp("/")}`;
   // Covers stored on the site ("/blog/x.webp") need an absolute URL for social previews and JSON-LD.
   const coverUrl = article.image_url?.startsWith("/") ? `${BASE_URL}${article.image_url}` : article.image_url;
+  const faq = articleFaq(article.content);
+  const thin = isThinArticle(article.content);
+  const updated = article.updated_at && article.updated_at.slice(0, 10) !== article.created_at.slice(0, 10)
+    ? new Date(article.updated_at).toLocaleDateString(lang, { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })
+    : null;
   const jsonLd = [
     {
       "@context": "https://schema.org",
@@ -124,13 +130,21 @@ const BlogPost = () => {
         { "@type": "ListItem", "position": 3, "name": article.title, "item": `${BASE_URL}${articlePath}` },
       ],
     },
+    ...(faq.length ? [{
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "inLanguage": articleLang,
+      "mainEntity": faq.map(({ q, a }) => ({ "@type": "Question", "name": q, "acceptedAnswer": { "@type": "Answer", "text": a } })),
+    }] : []),
   ];
 
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
         title={article.meta_title || article.title}
+        withBrand={false}
         description={article.meta_description || article.excerpt || ''}
+        noindex={thin}
         image={coverUrl}
         schema={jsonLd}
         alternates={alternates}
@@ -156,6 +170,7 @@ const BlogPost = () => {
               <Calendar size={16} strokeWidth={1} className="mr-2" />
               {new Date(article.created_at).toLocaleDateString(lang, { timeZone: 'UTC' })}
             </span>
+            {updated && <span>{tL("Dernière mise à jour :", "Last updated:", "Última actualización:")} <time dateTime={article.updated_at.slice(0, 10)}>{updated}</time></span>}
             <button className="flex items-center hover:text-foreground transition-colors" onClick={() => { navigator.clipboard.writeText(window.location.href); alert(tL("Lien copié !", "Link copied!", "¡Enlace copiado!")); }}>
               <Share2 size={16} strokeWidth={1} className="mr-2" /> {tL("Partager", "Share", "Compartir")}
             </button>

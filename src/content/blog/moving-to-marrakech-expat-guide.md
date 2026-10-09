@@ -4,12 +4,13 @@ lang: en
 translation_key: s-installer-marrakech
 category: location-longue-duree
 title: "Moving to Marrakech: a practical guide for expats"
-meta_title: "Moving to Marrakech: residency, housing, banking, healthcare, schools"
+meta_title: "Moving to Marrakech: a practical guide for expats"
 meta_description: "Residency permit, housing, banking, healthcare, schools, transport: a practical guide to moving to Marrakech as an expat or retiree."
 excerpt: "Visa, residency permit, housing, banking, healthcare, schools: the steps to settle smoothly in Marrakech, and the order to do them in."
 image_url: /blog/s-installer-marrakech.webp
 date: 2026-10-08
 published: true
+updated: 2026-10-09
 ---
 
 **In short:** many nationalities, including EU, UK and US citizens, can enter Morocco without a visa for a tourist stay of up to 90 days. To stay longer you need to apply for a residency card. The simplest start is to **rent long term**, which also gives you the proof of address needed for most formalities.
@@ -51,3 +52,21 @@ Summers are very hot and winters mild by day but cool at night. During viewings,
 The simplest order: 1) find a long-term home, 2) open a bank account, 3) apply for the residency card, 4) enrol the children at school. For the first step, [tell us what you need](/en/demande): we will send you a selection of suitable properties and arrange viewings, in person or by video.
 
 *Residency rules change: always check with the Moroccan authorities and your consulate. Last updated: October 2026.*
+
+## Frequently asked questions
+
+### Do I need a visa to move to Marrakech?
+
+Depending on your nationality, you can enter Morocco without a visa for a tourist stay of up to 90 days. To stay longer, you apply for a residency card with the police services where you live. Check your case with the Moroccan consulate before leaving.
+
+### How do I get a residency card in Morocco?
+
+You apply with the police services where you live. The documents usually include your passport, photos, proof of accommodation such as a lease, and proof of income or activity. The exact list depends on your situation.
+
+### Should I rent before buying in Marrakech?
+
+It is the safest approach: renting by the year lets you get to know the areas day to day before committing. The written lease also serves as proof of address for the residency card, the bank and schools.
+
+### What documents do I need to rent with Live In Marrakech?
+
+A passport or a national ID card is enough. The lease is one year minimum, and the security deposit is one month’s rent for an unfurnished home or two months for a furnished one.

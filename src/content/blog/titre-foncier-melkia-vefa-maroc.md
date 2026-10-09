@@ -4,12 +4,13 @@ lang: fr
 translation_key: statut-juridique-bien-maroc
 category: vente
 title: "Titre foncier, melkia, VEFA : comprendre le statut d’un bien au Maroc"
-meta_title: "Titre foncier, melkia, VEFA : le statut juridique d’un bien au Maroc"
+meta_title: "Titre foncier, melkia, VEFA : statut d’un bien au Maroc"
 meta_description: "Titre foncier, melkia, VEFA, copropriété : ce qu’il faut comprendre sur le statut juridique d’un bien immobilier au Maroc avant d’acheter à Marrakech."
 excerpt: "Avant d’acheter au Maroc, vérifiez le statut juridique du bien : titre foncier, melkia, vente sur plan ou copropriété. Ce que chaque statut implique."
 image_url: /blog/statut-juridique-bien-maroc.webp
 date: 2026-10-08
 published: true
+updated: 2026-10-09
 ---
 
 **En bref :** au Maroc, le statut le plus sûr est le **titre foncier** : le bien est immatriculé à la Conservation foncière et sa propriété est garantie. Un bien sous **melkia** (acte adoulaire) n’est pas immatriculé et demande plus de précautions. La **VEFA** est l’achat d’un logement sur plan. Dans tous les cas, faites vérifier le statut par un notaire avant de signer quoi que ce soit.
@@ -47,11 +48,11 @@ Points à vérifier dans le contrat :
 
 ## La copropriété : acheter un appartement
 
-Un appartement fait partie d’un immeuble en copropriété, régi par la loi n° 18-00. Chaque lot a en principe son propre titre foncier. Avant d’acheter, demandez le **règlement de copropriété**, le montant des **charges** et l’état des comptes du **syndic** : ils conditionnent la vie dans la résidence (piscine, gardiennage, entretien). Voir nos [appartements à vendre](/vente/appartements-marrakech).
+Un appartement fait partie d’un immeuble en copropriété, régi par la loi n° 18-00. Chaque lot a en principe son propre titre foncier. Avant d’acheter, demandez le **règlement de copropriété**, le montant des **charges** et l’état des comptes du **syndic** : ils conditionnent la vie dans la résidence (piscine, gardiennage, entretien). Voir nos [biens à vendre](/vente).
 
 ## Les terrains : des statuts particuliers
 
-Pour un terrain, vérifiez en plus sa **vocation** : les terres agricoles obéissent à des règles spécifiques, notamment pour les acheteurs étrangers, et certaines catégories de terres (terres collectives, biens habous) ne s’achètent pas comme un terrain privé ordinaire. La note de renseignements urbanistiques de l’Agence urbaine indique ce qui peut être construit. Voir nos [terrains à vendre](/vente/terrains-marrakech).
+Pour un terrain, vérifiez en plus sa **vocation** : les terres agricoles obéissent à des règles spécifiques, notamment pour les acheteurs étrangers, et certaines catégories de terres (terres collectives, biens habous) ne s’achètent pas comme un terrain privé ordinaire. La note de renseignements urbanistiques de l’Agence urbaine indique ce qui peut être construit. Vous cherchez un terrain ? [Décrivez votre projet](/demande).
 
 ## La liste à demander avant de signer
 
@@ -64,3 +65,21 @@ Pour un terrain, vérifiez en plus sa **vocation** : les terres agricoles obéis
 Pour la suite, lisez notre guide [Acheter un bien au Maroc quand on est étranger](/blog/acheter-immobilier-maroc-etranger).
 
 *Cet article donne des repères généraux et ne remplace pas le conseil d’un notaire. Dernière mise à jour : octobre 2026.*
+
+## Questions fréquentes
+
+### Qu’est-ce qu’un titre foncier au Maroc ?
+
+C’est l’immatriculation d’un bien au registre foncier tenu par la Conservation foncière. Le titre indique le propriétaire, la surface et les charges éventuelles comme les hypothèques. C’est le statut le plus sûr pour l’acheteur, et souvent une condition pour obtenir un crédit.
+
+### Qu’est-ce qu’une melkia ?
+
+Une melkia est un acte établi par des adouls, à partir de témoignages, qui atteste qu’une personne possède un bien non immatriculé. Les risques sont plus élevés qu’avec un titre foncier : il est possible de demander l’immatriculation, mais la procédure prend du temps.
+
+### Qu’est-ce que la VEFA ?
+
+La vente en l’état futur d’achèvement est l’achat d’un logement sur plan, encadré par la loi n° 44-00 modifiée par la loi n° 107-12. Le prix est payé par étapes selon l’avancement des travaux, et le contrat doit préciser l’échéancier, la date de livraison et les garanties.
+
+### Quels documents demander avant de signer ?
+
+Le certificat de propriété récent ou l’acte de melkia, le plan cadastral, le permis de construire et le permis d’habiter pour une maison, le règlement de copropriété pour un appartement, et le contrat de réservation pour une VEFA. Votre notaire contrôle ces pièces.

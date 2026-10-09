@@ -157,7 +157,8 @@ function readFileArticles() {
         const value = line.slice(separator + 1).trim();
         meta[line.slice(0, separator).trim()] = value.startsWith('"') ? JSON.parse(value) : value;
       }
-      return { slug: meta.slug, lang: meta.lang || 'fr', translation_key: meta.translation_key || null, updated_at: meta.updated || meta.date, published: meta.published !== 'false' };
+      const content = raw.slice(match ? match[0].length : 0);
+      return { slug: meta.slug, title: meta.title, lang: meta.lang || 'fr', translation_key: meta.translation_key || null, updated_at: meta.updated || meta.date, published: meta.published !== 'false', content };
     })
     .filter((article) => article.slug && article.published);
 }
@@ -255,13 +256,15 @@ async function main() {
   console.log('🗺️  Generating sitemap.xml and llms.txt...\n');
 
   // Fetch dynamic data
-  const dbArticles = await supabaseQuery('articles', 'slug,title,updated_at,lang,translation_key', '&est_publie=eq.true');
+  const dbArticles = await supabaseQuery('articles', 'slug,title,content,updated_at,lang,translation_key', '&est_publie=eq.true');
   // Articles written as Markdown files replace a database row with the same slug (as on the site).
   const fileArticles = readFileArticles();
   const fileSlugs = new Set(fileArticles.map((a) => a.slug));
   const articleLoc = (article) => localize(`/blog/${article.slug}`, article.lang || 'fr');
   const articles = [...dbArticles.filter((a) => !fileSlugs.has(a.slug)), ...fileArticles]
-    .filter((a) => !REDIRECTED.has(articleLoc(a)));
+    .filter((a) => !REDIRECTED.has(articleLoc(a)))
+    // Too short to be useful: noindex on the site (isThinArticle in src/content/blog.ts), so not listed here.
+    .filter((a) => (a.content || '').split(/\s+/).filter((w) => /\p{L}/u.test(w)).length >= 300);
   // Only properties that are available: rented/sold ones stay online but are not promoted.
   const baseColumns = 'id,titre,type,services,quartier,updated_at,photo_principale,photos';
   let properties = await supabaseQuery('properties_v2', `${baseColumns},titre_en,titre_es`, '&statut=eq.publie');
