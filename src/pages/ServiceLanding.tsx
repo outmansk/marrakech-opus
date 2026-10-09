@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, ArrowUpRight, ChevronDown, MessageCircle } from "lucide-react";
+import { ArrowRight, ArrowUpRight, MessageCircle } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -19,8 +19,10 @@ import { propertyText } from "@/lib/propertyI18n";
 import { LANGS, stripLang, type Lang } from "@/i18n/routing";
 import type { Bien } from "@/types/property";
 import type { Landing } from "@/content/landings";
+import { ZONES, zoneLabel, zoneOf } from "@/content/zones";
+import { rentalFaq, rentalIntroFigures, rentalSections, whatsappFromPage, type RentalFacts } from "@/content/rentalCopy";
+import { typeName } from "@/lib/propertyI18n";
 
-const WHATSAPP_URL = "https://wa.me/212605387041";
 // Same filter as the catalogue: the pre-render loads this list once for both pages.
 const PUBLIC_STATUTS = ["publie", "vendu-loue"];
 
@@ -67,6 +69,52 @@ export default function ServiceLanding() {
     ? new Date(Math.max(...listed.map((property) => Date.parse(property.updated_at)))).toLocaleDateString(lang, { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })
     : null;
 
+  // Long-term rental pages: figures, rent table, areas and FAQ computed from the available listings.
+  const rental = landing.service === "location-longue-duree";
+  const rentOf = (property: Bien) => property.prix_location_longue || null;
+  const rentRange = (items: Bien[]) => {
+    const values = items.map(rentOf).filter((v): v is number => !!v);
+    return values.length ? [Math.min(...values), Math.max(...values)] : null;
+  };
+  const cheapestOf = (items: Bien[]) => {
+    const sorted = items.filter(rentOf).sort((a, b) => rentOf(a)! - rentOf(b)!);
+    return sorted[0] ? { rent: format(rentOf(sorted[0])!), zone: zoneLabel(sorted[0], lang) } : null;
+  };
+  const range = rentRange(available);
+  const allRentals = availableFor(LANDINGS.find((l) => l.id === "location")!, properties);
+  const rentalFacts: RentalFacts = {
+    kind: landing.type === "appartement" ? "appartement" : landing.type === "villa" ? "villa" : "all",
+    count: available.length,
+    min: range ? format(range[0]) : null,
+    max: range ? format(range[1]) : null,
+    cheapest: cheapestOf(available),
+    zones: [...new Set(available.map((property) => zoneLabel(property, lang)))],
+    cheapestApartment: cheapestOf(allRentals.filter((property) => property.type === "appartement")),
+  };
+  const rentRows = Object.values(available.reduce<Record<string, Bien[]>>((groups, property) => {
+    const key = `${property.type}|${zoneLabel(property, lang)}`;
+    (groups[key] ||= []).push(property);
+    return groups;
+  }, {})).map((group) => {
+    const [low, high] = rentRange(group) ?? [0, 0];
+    return { type: typeName(group[0].type, lang), zone: zoneLabel(group[0], lang), rent: low === high ? format(low) : `${format(low)} – ${format(high)}`, count: group.length };
+  });
+  const rentalZones = [...new Set(available.map((property) => zoneOf(property)).filter(Boolean))] as (keyof typeof ZONES)[];
+  const rentalText = rentalSections(lang);
+  const faqItems = rental ? rentalFaq(lang, rentalFacts) : copy.faq;
+  const whatsappUrl = whatsappFromPage(lang, copy.h1);
+
+  const ctaRow = (className = "") => (
+    <div className={`flex flex-wrap gap-3 ${className}`}>
+      <Link to={lp("/demande")} className="flex min-h-14 items-center gap-3 bg-[#211f1b] px-6 text-xs font-medium uppercase tracking-[0.16em] text-[#fbf8f2] transition-colors hover:bg-[#a4573e]">
+        {tL("Décrire ma recherche", "Tell us what you need", "Cuéntenos qué busca")} <ArrowRight size={16} aria-hidden="true" />
+      </Link>
+      <a href={whatsappUrl} target="_blank" rel="noreferrer" className="flex min-h-14 items-center gap-3 border border-[#5f6746]/50 px-6 text-xs font-medium uppercase tracking-[0.16em] text-[#5f6746] transition-colors hover:bg-[#5f6746] hover:text-white">
+        <MessageCircle size={16} aria-hidden="true" /> WhatsApp
+      </a>
+    </div>
+  );
+
   const catalogueLink = (quartier?: string) => {
     const params = new URLSearchParams({ type: landing.service });
     if (landing.type) params.set("kind", landing.type);
@@ -89,7 +137,7 @@ export default function ServiceLanding() {
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "inLanguage": lang,
-      "mainEntity": copy.faq.map(({ q, a }) => ({ "@type": "Question", "name": q, "acceptedAnswer": { "@type": "Answer", "text": a } })),
+      "mainEntity": faqItems.map(({ q, a }) => ({ "@type": "Question", "name": q, "acceptedAnswer": { "@type": "Answer", "text": a } })),
     },
     ...(available.length ? [{
       "@context": "https://schema.org",
@@ -128,7 +176,7 @@ export default function ServiceLanding() {
               <h1 className="max-w-[900px] text-[38px] leading-[1.05] tracking-[-0.02em] md:text-[56px]">{copy.h1}</h1>
               <p className="mt-6 max-w-[760px] text-[15px] leading-[1.75] text-[#4f4a43] md:text-base">
                 {copy.answer}{" "}
-                {empty
+                {rental && !empty ? rentalIntroFigures(lang, rentalFacts) : empty
                   ? tL("Aucun bien de ce type n’est disponible pour le moment : décrivez votre recherche, nous vous envoyons une sélection.", "No property of this type is available right now: describe your search and we will send you a selection.", "No hay ningún inmueble de este tipo disponible ahora mismo: describa su búsqueda y le enviaremos una selección.")
                   : available.length > 0 && tL(
                     `Live In Marrakech propose actuellement ${available.length} ${available.length > 1 ? "biens" : "bien"} de ce type, présentés ci-dessous.`,
@@ -136,6 +184,7 @@ export default function ServiceLanding() {
                     `Live In Marrakech ofrece actualmente ${available.length} ${available.length > 1 ? "inmuebles" : "inmueble"} de este tipo, que verá a continuación.`,
                   )}
               </p>
+              {rental && ctaRow("mt-6")}
 
               <dl className="mt-8 grid max-w-[900px] gap-px overflow-hidden border border-[#2b2722]/12 bg-[#2b2722]/12 sm:grid-cols-3">
                 {facts.map((fact) => (
@@ -186,21 +235,72 @@ export default function ServiceLanding() {
                 <p className="mx-auto mt-3 max-w-[560px] text-sm text-[#655f56]">{tL("Certains biens ne sont pas publiés. Décrivez votre recherche : nous vous envoyons une sélection.", "Some properties are not published. Describe your search and we will send you a selection.", "Algunos inmuebles no están publicados. Describa su búsqueda y le enviaremos una selección.")}</p>
               </div>
             )}
-            <div className="mt-10 flex flex-wrap gap-3">
-              <Link to={lp("/demande")} className="flex min-h-14 items-center gap-3 bg-[#211f1b] px-6 text-xs font-medium uppercase tracking-[0.16em] text-[#fbf8f2] transition-colors hover:bg-[#a4573e]">
-                {tL("Décrire ma recherche", "Tell us what you need", "Cuéntenos qué busca")} <ArrowRight size={16} aria-hidden="true" />
-              </Link>
-              <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="flex min-h-14 items-center gap-3 border border-[#5f6746]/50 px-6 text-xs font-medium uppercase tracking-[0.16em] text-[#5f6746] transition-colors hover:bg-[#5f6746] hover:text-white">
-                <MessageCircle size={16} aria-hidden="true" /> WhatsApp
-              </a>
-            </div>
+            {rental && rentRows.length > 0 ? (
+              <div className="mt-14 max-w-[900px]">
+                <h2 className="mb-3 text-[28px] leading-tight md:text-[34px]">{rentalText.rentsHeading}</h2>
+                <p className="mb-5 text-[15px] leading-[1.7] text-[#4f4a43]">{rentalText.rentsNote}</p>
+                <div className="overflow-x-auto border border-[#2b2722]/12 bg-white">
+                  <table className="w-full min-w-[520px] text-left text-sm">
+                    <thead className="bg-[#f6f1e8] text-[11px] uppercase tracking-[0.14em] text-[#777065]">
+                      <tr>{rentalText.rentsColumns.map((column) => <th key={column} scope="col" className="px-4 py-3 font-semibold">{column}</th>)}</tr>
+                    </thead>
+                    <tbody>
+                      {rentRows.map((row) => (
+                        <tr key={`${row.type}-${row.zone}`} className="border-t border-[#2b2722]/10">
+                          <td className="px-4 py-3">{row.type}</td>
+                          <td className="px-4 py-3">{row.zone}</td>
+                          <td className="px-4 py-3 font-medium">{row.rent}{tL(" / mois", " / month", " / mes")}</td>
+                          <td className="px-4 py-3">{row.count}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {ctaRow("mt-8")}
+              </div>
+            ) : ctaRow("mt-10")}
           </section>
 
           {/* ── Guide ────────────────────────────────────────────── */}
           <section className="border-t border-[#2b2722]/12 bg-white">
             <div className="mx-auto grid max-w-[1320px] gap-12 px-5 py-14 md:px-10 lg:grid-cols-[2fr_1fr] lg:py-20 xl:px-16">
               <article className="max-w-[760px]">
-                {copy.sections.map((section) => (
+                {rental ? (
+                  <>
+                    <section className="mb-12">
+                      <h2 className="mb-5 text-[30px] leading-tight md:text-[36px]">{rentalText.furnished.heading}</h2>
+                      {rentalText.furnished.paragraphs.map((paragraph) => <p key={paragraph.slice(0, 40)} className="mb-4 text-[15px] leading-[1.8] text-[#4f4a43] md:text-base">{paragraph}</p>)}
+                    </section>
+                    {rentalZones.length > 0 && (
+                      <section className="mb-12">
+                        <h2 className="mb-5 text-[30px] leading-tight md:text-[36px]">{rentalText.zonesHeading}</h2>
+                        <p className="mb-6 text-[15px] leading-[1.8] text-[#4f4a43] md:text-base">
+                          {rentalText.zonesIntro} <Link to={rentalText.zonesGuide.path} className="underline decoration-[#a4573e]/50 underline-offset-4 hover:text-[#a4573e]">{rentalText.zonesGuide.label}</Link>.
+                        </p>
+                        {rentalZones.map((zone) => (
+                          <div key={zone} className="mb-5">
+                            <h3 className="mb-2 font-serif text-[22px]">{ZONES[zone].label[lang]}</h3>
+                            <p className="text-[15px] leading-[1.8] text-[#4f4a43] md:text-base">{ZONES[zone].text[lang]}</p>
+                          </div>
+                        ))}
+                      </section>
+                    )}
+                    <section className="mb-12 last:mb-0">
+                      <h2 className="mb-5 text-[30px] leading-tight md:text-[36px]">{rentalText.howTo.heading}</h2>
+                      <ol className="flex flex-col gap-5">
+                        {rentalText.howTo.steps.map(([title, text], index) => (
+                          <li key={title} className="flex gap-4">
+                            <span aria-hidden="true" className="grid h-9 w-9 flex-none place-items-center rounded-full border border-[#a4573e] font-serif text-lg text-[#a4573e]">{index + 1}</span>
+                            <span><strong className="block font-medium text-[#211f1b]">{title}</strong><span className="text-[15px] leading-[1.7] text-[#4f4a43]">{text}</span></span>
+                          </li>
+                        ))}
+                      </ol>
+                      <p className="mt-6 text-[15px] leading-[1.8] text-[#4f4a43]">
+                        {tL("Pour préparer votre installation, lisez aussi", "To prepare your move, also read", "Para preparar su llegada, lea también")} <Link to={rentalText.settleGuide.path} className="underline decoration-[#a4573e]/50 underline-offset-4 hover:text-[#a4573e]">{rentalText.settleGuide.label}</Link>.
+                      </p>
+                    </section>
+                  </>
+                ) : copy.sections.map((section) => (
                   <section key={section.heading} className="mb-12 last:mb-0">
                     <h2 className="mb-5 text-[30px] leading-tight md:text-[36px]">{section.heading}</h2>
                     {section.paragraphs.map((paragraph) => <p key={paragraph.slice(0, 40)} className="mb-4 text-[15px] leading-[1.8] text-[#4f4a43] md:text-base">{paragraph}</p>)}
@@ -243,16 +343,15 @@ export default function ServiceLanding() {
             <div className="mx-auto max-w-[900px] px-5 py-14 md:px-10 lg:py-20">
               <h2 className="mb-8 text-[32px] leading-tight md:text-[40px]">{tL("Questions fréquentes", "Frequently asked questions", "Preguntas frecuentes")}</h2>
               <div className="border-t border-[#2b2722]/15">
-                {copy.faq.map(({ q, a }) => (
-                  <details key={q} className="group border-b border-[#2b2722]/15">
-                    <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 font-serif text-[20px] leading-snug [&::-webkit-details-marker]:hidden">
-                      {q}
-                      <ChevronDown size={18} aria-hidden="true" className="flex-none text-[#a4573e] transition-transform group-open:rotate-180" />
-                    </summary>
-                    <p className="pb-5 text-[15px] leading-[1.75] text-[#4f4a43]">{a}</p>
-                  </details>
+                {/* Answers stay visible: the same text as the FAQPage structured data. */}
+                {faqItems.map(({ q, a }) => (
+                  <div key={q} className="border-b border-[#2b2722]/15 py-5">
+                    <h3 className="mb-2 font-serif text-[21px] leading-snug">{q}</h3>
+                    <p className="text-[15px] leading-[1.75] text-[#4f4a43]">{a}</p>
+                  </div>
                 ))}
               </div>
+              {ctaRow("mt-10")}
             </div>
           </section>
         </main>

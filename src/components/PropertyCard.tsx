@@ -6,6 +6,8 @@ import { useLocalizedText } from "@/hooks/useLocalizedText";
 import { useLocalePath } from "@/hooks/useLocalePath";
 import { propertyPath } from "@/lib/propertyUrl";
 import { propertyText, typeName } from "@/lib/propertyI18n";
+import { zoneLabel } from "@/content/zones";
+import FurnishedBadge from "@/components/FurnishedBadge";
 import { getServices, isSoldOnly, isUnavailable } from "@/lib/propertyServices";
 
 interface PropertyCardProps {
@@ -93,8 +95,9 @@ const PropertyCard = ({ property, activeType }: PropertyCardProps) => {
           <div className="flex flex-col gap-2.5">
             <p className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs font-medium uppercase leading-[1.35] tracking-[0.12em]">
               {typeLabel && <span className="text-[#a4573e]">{typeLabel}</span>}
-              <span className="flex items-center gap-[5px] text-[#655f56]"><MapPin size={14} strokeWidth={1.6} className="flex-none" aria-hidden="true" />{property.quartier || "Marrakech"}</span>
+              <span className="flex items-center gap-[5px] text-[#655f56]"><MapPin size={14} strokeWidth={1.6} className="flex-none" aria-hidden="true" />{zoneLabel(property, lang)}</span>
             </p>
+            <FurnishedBadge property={property} />
             <h3 className="m-0 text-[clamp(25px,7.4cqi,29px)] font-medium leading-[1.12] tracking-[-0.005em] [text-wrap:pretty]">
               <Link to={href} className="text-[#211f1b] transition-colors duration-200 hover:text-[#a4573e]">{titre}</Link>
             </h3>

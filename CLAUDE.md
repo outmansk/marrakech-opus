@@ -60,6 +60,10 @@ Env (`.env`, see `.env.example`): `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`,
 - Each page shows its listings plus facts computed from the catalogue (count, price range, areas, last update). **A landing page with no available listing is `noindex, follow` and left out of the sitemap and llms.txt** (`availableFor()` in `landings.ts`, mirrored in the sitemap script); links to it are hidden in "see also", hub cards and the catalogue. Landing titles have no brand suffix (`withBrand={false}`) and stay ≤ 60 chars, metas ≤ 155: check with `npm run seo:check -- --report`. Rule for the texts: no invented market figures, legal/tax points stay general and refer to the notary.
 - Old commercial blog articles were merged into these pages: `vercel.json` `redirects` (308) — the sitemap and pre-render skip redirected sources.
 
+### Long-term rental pages
+- `/location-longue-duree` and its two sub-pages (and EN/ES) render extra blocks from `src/content/rentalCopy.ts`: intro with the computed rent range, rent table by type × area, "furnished or unfurnished", areas (only zones with an available listing, texts in `src/content/zones.ts`), "how to rent", and a generated FAQ (also the FAQPage JSON-LD). Confirmed rules: 1-year lease minimum, deposit 2 months furnished / 1 month unfurnished, passport or ID card only.
+- Area of a property: `zoneOf()`/`zoneLabel()` (quartier, else `src/content/propertyFacts.json`). Furnished status: `furnishedOf()` (DB `meuble`, else the confirmed facts file) → `FurnishedBadge`.
+
 ### Images
 Uploads go to **Cloudinary** (unsigned preset) via `src/lib/cloudinary.ts`, which also builds transformed URLs (size presets thumb/card/hero/full) and still accepts legacy Supabase Storage URLs. Render via `src/components/ui/OptimizedImage.tsx`.
 

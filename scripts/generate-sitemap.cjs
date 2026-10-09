@@ -20,6 +20,11 @@ const path = require('path');
 const LANDINGS = require('../src/content/landings.json');
 // Proposed EN/ES property texts (used by the site while the translated columns are empty).
 const SUGGESTED_TRANSLATIONS = require('../src/content/propertyTranslations.json');
+// Area of a property when its quartier is empty (same data as src/content/zones.ts).
+const PROPERTY_FACTS = require('../src/content/propertyFacts.json');
+const ZONE_NAMES = { 'route-de-fes': 'Fez road', 'sidi-rahal': 'Sidi Rahal road', chrifia: 'Chrifia', golf: 'golf area (Prestigia)', palmeraie: 'Palmeraie (Ennakhil)', 'village-touristique': 'Village Touristique' };
+const QUARTIER_ZONES = { 'Route de Fes': 'route-de-fes', Chrifia: 'chrifia', Palmeraie: 'palmeraie' };
+const areaOf = (p) => ZONE_NAMES[QUARTIER_ZONES[(p.quartier || '').trim()] || PROPERTY_FACTS[p.id]?.zone] || (p.quartier || '').trim() || null;
 // Addresses that redirect elsewhere (old blog articles merged into landing pages) stay out of the sitemap.
 const REDIRECTED = new Set((require('../vercel.json').redirects || []).map((r) => r.source));
 
@@ -183,7 +188,7 @@ const latest = (dates) => dates.filter(Boolean).sort().pop();
 function buildLlmsTxt({ properties, articles, articleLoc }) {
   const types = [...new Set(properties.map((p) => p.type))].map((t) => TYPE_NAMES[t] || t);
   const services = [...new Set(properties.flatMap((p) => p.services || []))].map((s) => SERVICE_NAMES[s] || s);
-  const areas = [...new Set(properties.map((p) => p.quartier).filter(Boolean))].sort();
+  const areas = [...new Set(properties.map(areaOf).filter(Boolean))].sort();
   const link = (label, loc) => `- [${label}](${absolute(loc)})`;
   // Landing pages without stock are noindex on the site: not listed here either.
   const landingLinks = (lang) => LANDINGS.filter((l) => landingListings(l, properties).length > 0).map((l) => link(l.label[lang], localize(l.paths[lang], lang)));

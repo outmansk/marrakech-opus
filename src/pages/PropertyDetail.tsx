@@ -19,6 +19,8 @@ import { propertyIdFromParam, propertyPath } from "@/lib/propertyUrl";
 import { useLocalePath } from "@/hooks/useLocalePath";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
 import { getImageUrl } from "@/lib/cloudinary";
+import { zoneLabel } from "@/content/zones";
+import FurnishedBadge from "@/components/FurnishedBadge";
 import { landingFor, landingPath, type Landing } from "@/content/landings";
 import { distanceLabel, equipmentName, placeName, propertyMetaDescription, propertySeoTitle, propertyText, serviceName, typeName } from "@/lib/propertyI18n";
 import { LANGS, localizePath, type Lang } from "@/i18n/routing";
@@ -138,7 +140,7 @@ const PropertyDetail = () => {
     "image": shareImages,
     "address": {
       "@type": "PostalAddress",
-      "addressLocality": property.quartier || "Marrakech",
+      "addressLocality": zoneLabel(property, lang),
       "addressRegion": "Marrakech-Safi",
       "addressCountry": "MA"
     },
@@ -389,10 +391,10 @@ const PropertyDetail = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1, ease: EASE_LUXURY }}
               >
-                {property.quartier && (
+                {(
                   <div className="flex items-center gap-1.5 mb-2 md:mb-3">
                     <MapPin size={14} strokeWidth={1.5} className="text-accent" />
-                    <span className="text-xs md:text-sm tracking-wide font-sans text-muted-foreground">{property.quartier}</span>
+                    <span className="text-xs md:text-sm tracking-wide font-sans text-muted-foreground">{zoneLabel(property, lang)}</span>
                   </div>
                 )}
                 <h1 className="text-2xl md:text-5xl font-serif text-foreground leading-tight mb-0">
@@ -426,6 +428,7 @@ const PropertyDetail = () => {
                       <span className="text-[9px] md:text-[10px] tracking-widest uppercase text-muted-foreground font-sans bg-background/80 border border-border px-2 py-0.5 rounded">{serviceName("location-courte-duree", lang)}</span>
                     </div>
                   )}
+                  <FurnishedBadge property={property} className="mt-1" />
                   {!property.prix_vente && !property.prix_location_longue && !property.prix_location_courte && property.prix && (
                     <p className="text-2xl md:text-3xl font-serif text-foreground">{formatPrice(property.prix, property.devise)}</p>
                   )}
@@ -519,10 +522,10 @@ const PropertyDetail = () => {
                       <span className="font-light tracking-wide">{equipmentName("Parking", lang)}</span>
                     </div>
                   )}
-                  {property.quartier && (
+                  {(
                     <div className="flex items-center gap-3">
                       <MapPin size={22} strokeWidth={1} className="text-muted-foreground" />
-                      <span className="font-light tracking-wide">{property.quartier}</span>
+                      <span className="font-light tracking-wide">{zoneLabel(property, lang)}</span>
                     </div>
                   )}
                 </div>

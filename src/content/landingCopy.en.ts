@@ -237,7 +237,7 @@ const copy: Record<LandingId, LandingCopy> = {
     description: "Villas and apartments for long-term rent in Marrakech, furnished or not: 1-year lease, monthly rent shown, in-person or video viewings.",
     eyebrow: "Rent by the year",
     h1: "Long-term rentals in Marrakech",
-    answer: "Live In Marrakech offers apartments and villas to rent long term in Marrakech, furnished or unfurnished. The monthly rent is shown on each listing. We support tenants, expats and residents alike, from the viewing to signing the lease.",
+    answer: "Live In Marrakech rents villas and apartments by the year in and around Marrakech, furnished or unfurnished, for expats, families, retirees, remote workers and Moroccan residents or Moroccans living abroad. The lease is one year minimum, the monthly rent is shown on each listing and a passport or national ID card is all you need to rent. You can view homes in person or by video on WhatsApp.",
     sections: [
       {
         heading: "Renting an apartment or a villa",
@@ -275,7 +275,7 @@ const copy: Record<LandingId, LandingCopy> = {
     description: "Apartments for long-term rent in Marrakech, in Chrifia or at the Prestigia golf estate: monthly rent shown, 1-year lease, ID is all you need.",
     eyebrow: "Long-term rental · Apartments",
     h1: "Apartments for long-term rent in Marrakech",
-    answer: "To rent an apartment long term in Marrakech, the most sought-after areas are Gueliz, Hivernage and Agdal, along with gated residences with a pool on the outskirts. Apartments come furnished or unfurnished, with a monthly rent.",
+    answer: "Live In Marrakech offers apartments for long-term rent in Marrakech, for expats, couples, remote workers and Moroccan residents or Moroccans living abroad who want a home that is easy to live in day to day. The lease is one year minimum, the monthly rent is shown on each listing and a passport or national ID card is all you need. You can view homes in person or by video on WhatsApp.",
     sections: [
       {
         heading: "Which area to rent in?",
@@ -313,7 +313,7 @@ const copy: Record<LandingId, LandingCopy> = {
     description: "Villas with a pool for long-term rent in Marrakech, on the Fez road and the Sidi Rahal road: monthly rent shown, 1-year lease minimum.",
     eyebrow: "Long-term rental · Villas",
     h1: "Villas for long-term rent in Marrakech",
-    answer: "Villas for long-term rent in Marrakech are mainly in the Palmeraie and along the Fez, Ourika and Amizmiz roads, with a garden and a private pool. Rent is shown per month.",
+    answer: "Live In Marrakech rents villas with a garden and pool around Marrakech by the year, for families, retirees, remote workers and Moroccan residents or Moroccans living abroad who want space and calm. The lease is one year minimum, the monthly rent is shown on each listing and a passport or national ID card is all you need. You can view homes in person or by video on WhatsApp.",
     sections: [
       {
         heading: "Where to rent a villa in Marrakech?",

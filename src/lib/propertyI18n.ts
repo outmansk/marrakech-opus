@@ -2,6 +2,7 @@ import type { Bien, BienService, BienType } from "@/types/property";
 import type { Lang } from "@/i18n/routing";
 import { getServices } from "@/lib/propertyServices";
 import suggestions from "@/content/propertyTranslations.json";
+import { zoneLabel } from "@/content/zones";
 
 // Property texts and labels in the visitor's language.
 // Texts: the translated columns of properties_v2 (edited in the admin) win; while they are empty,
@@ -120,7 +121,6 @@ function headlinePrice(bien: Bien, lang: Lang) {
   return null;
 }
 
-const zoneOf = (bien: Bien) => bien.quartier?.trim() || "Marrakech";
 
 /** <title> of a property page: "Villa 5 ch. Route de Fes – 25 000 MAD/mois", shortened to fit 60 characters. */
 export function propertySeoTitle(bien: Bien, lang: Lang) {
@@ -129,8 +129,8 @@ export function propertySeoTitle(bien: Bien, lang: Lang) {
   const head = lang === "en" && beds ? `${beds.trim()} ${type.toLowerCase()}` : `${type}${beds}`;
   const price = headlinePrice(bien, lang);
   const candidates = [
-    `${head} ${zoneOf(bien)}${price ? ` – ${price}` : ""}`,
-    `${head} ${zoneOf(bien)}`,
+    `${head} ${zoneLabel(bien, lang)}${price ? ` – ${price}` : ""}`,
+    `${head} ${zoneLabel(bien, lang)}`,
     `${head} Marrakech`,
   ];
   return candidates.find((title) => title.length <= 60) ?? candidates[candidates.length - 1].slice(0, 60);
@@ -150,7 +150,7 @@ export function propertyMetaDescription(bien: Bien, lang: Lang) {
     headlinePrice(bien, lang),
   ].filter(Boolean).join(", ");
   const cta = pick(lang, "Visite et infos sur WhatsApp.", "Book a visit on WhatsApp.", "Visita e info por WhatsApp.");
-  const text = [type, service].filter(Boolean).join(" ") + pick(lang, " à ", " in ", " en ") + zoneOf(bien);
+  const text = [type, service].filter(Boolean).join(" ") + pick(lang, " à ", " in ", " en ") + zoneLabel(bien, lang);
   const full = `${text}${facts ? `${lang === "fr" ? " : " : ": "}${facts}` : ""}. ${cta}`;
   return full.length <= 155 ? full : `${full.slice(0, 152).replace(/\s+\S*$/, "")}…`;
 }

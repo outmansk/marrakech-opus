@@ -238,7 +238,7 @@ const copy: Record<LandingId, LandingCopy> = {
     description: "Villas et appartements à louer à l’année à Marrakech, meublés ou vides : bail d’1 an, loyer mensuel affiché, visite sur place ou en vidéo.",
     eyebrow: "Louer à l’année",
     h1: "Location longue durée à Marrakech",
-    answer: "Live In Marrakech propose des appartements et des villas à louer à l’année à Marrakech, meublés ou vides. Le loyer est indiqué par mois sur chaque fiche. Nous accompagnons les locataires, expatriés comme résidents, de la visite à la signature du bail.",
+    answer: "Live In Marrakech loue à l’année des villas et des appartements à Marrakech et dans ses environs, meublés ou vides, pour les expatriés, les familles, les retraités, les personnes en télétravail et les résidents marocains ou MRE. Le bail est d’un an minimum, le loyer est affiché par mois sur chaque annonce et un passeport ou une carte d’identité suffit pour louer. Vous pouvez visiter sur place ou en vidéo sur WhatsApp.",
     sections: [
       {
         heading: "Louer un appartement ou une villa",
@@ -276,7 +276,7 @@ const copy: Record<LandingId, LandingCopy> = {
     description: "Appartements à louer à l’année à Marrakech, à Chrifia ou au golf Prestigia : loyer mensuel affiché, bail d’1 an, pièce d’identité suffit.",
     eyebrow: "Location longue durée · Appartements",
     h1: "Appartements à louer à l’année à Marrakech",
-    answer: "Pour louer un appartement à l’année à Marrakech, les quartiers les plus demandés sont Guéliz, l’Hivernage et Agdal, ainsi que les résidences sécurisées avec piscine en périphérie. Les appartements sont proposés meublés ou vides, avec un loyer mensuel.",
+    answer: "Live In Marrakech propose des appartements à louer à l’année à Marrakech, pour les expatriés, les couples, les personnes en télétravail et les résidents marocains ou MRE qui cherchent un logement simple à vivre au quotidien. Le bail est d’un an minimum, le loyer est affiché par mois et un passeport ou une carte d’identité suffit pour louer. Vous pouvez visiter sur place ou en vidéo sur WhatsApp.",
     sections: [
       {
         heading: "Dans quel quartier louer ?",
@@ -314,7 +314,7 @@ const copy: Record<LandingId, LandingCopy> = {
     description: "Villas avec piscine à louer à l’année à Marrakech, route de Fès et route de Sidi Rahal : loyer mensuel affiché et bail d’1 an minimum.",
     eyebrow: "Location longue durée · Villas",
     h1: "Villas à louer à l’année à Marrakech",
-    answer: "Les villas à louer à l’année à Marrakech se trouvent surtout dans la Palmeraie, sur la route de Fès, la route de l’Ourika et la route d’Amizmiz, avec jardin et piscine privée. Le loyer est indiqué par mois.",
+    answer: "Live In Marrakech loue à l’année des villas avec jardin et piscine autour de Marrakech, pour les familles, les retraités, les personnes en télétravail et les résidents marocains ou MRE qui cherchent de l’espace et du calme. Le bail est d’un an minimum, le loyer est affiché par mois et un passeport ou une carte d’identité suffit pour louer. Vous pouvez visiter sur place ou en vidéo sur WhatsApp.",
     sections: [
       {
         heading: "Où louer une villa à Marrakech ?",

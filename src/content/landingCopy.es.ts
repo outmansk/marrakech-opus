@@ -237,7 +237,7 @@ const copy: Record<LandingId, LandingCopy> = {
     description: "Villas y pisos en alquiler de larga duración en Marrakech, amueblados o no: contrato de 1 año, alquiler mensual indicado, visita o vídeo.",
     eyebrow: "Alquilar por años",
     h1: "Alquiler de larga duración en Marrakech",
-    answer: "Live In Marrakech ofrece apartamentos y villas en alquiler de larga duración en Marrakech, amueblados o vacíos. El alquiler mensual figura en cada ficha. Acompañamos a los inquilinos, expatriados y residentes, desde la visita hasta la firma del contrato.",
+    answer: "Live In Marrakech alquila por años villas y pisos en Marrakech y alrededores, amueblados o sin amueblar, para expatriados, familias, jubilados, teletrabajadores y residentes marroquíes o marroquíes residentes en el extranjero. El contrato es de un año como mínimo, el alquiler mensual figura en cada anuncio y basta con un pasaporte o un documento de identidad. Puede visitar en persona o por vídeo en WhatsApp.",
     sections: [
       {
         heading: "Alquilar un apartamento o una villa",
@@ -275,7 +275,7 @@ const copy: Record<LandingId, LandingCopy> = {
     description: "Pisos en alquiler de larga duración en Marrakech, en Chrifia o en el golf Prestigia: alquiler mensual indicado, contrato de 1 año.",
     eyebrow: "Larga duración · Apartamentos",
     h1: "Apartamentos en alquiler de larga duración en Marrakech",
-    answer: "Para alquilar un apartamento de larga duración en Marrakech, los barrios más solicitados son Gueliz, Hivernage y Agdal, además de las residencias cerradas con piscina de las afueras. Los apartamentos se ofrecen amueblados o vacíos, con un alquiler mensual.",
+    answer: "Live In Marrakech ofrece pisos en alquiler de larga duración en Marrakech, para expatriados, parejas, teletrabajadores y residentes marroquíes o marroquíes residentes en el extranjero que buscan una vivienda práctica para el día a día. El contrato es de un año como mínimo, el alquiler mensual figura en cada anuncio y basta con un pasaporte o un documento de identidad. Puede visitar en persona o por vídeo en WhatsApp.",
     sections: [
       {
         heading: "¿En qué barrio alquilar?",
@@ -313,7 +313,7 @@ const copy: Record<LandingId, LandingCopy> = {
     description: "Villas con piscina en alquiler de larga duración en Marrakech, carretera de Fez y de Sidi Rahal: alquiler mensual indicado, contrato de 1 año.",
     eyebrow: "Larga duración · Villas",
     h1: "Villas en alquiler de larga duración en Marrakech",
-    answer: "Las villas en alquiler de larga duración en Marrakech están sobre todo en la Palmeraie y en las carreteras de Fez, Ourika y Amizmiz, con jardín y piscina privada. El alquiler se indica por mes.",
+    answer: "Live In Marrakech alquila por años villas con jardín y piscina alrededor de Marrakech, para familias, jubilados, teletrabajadores y residentes marroquíes o marroquíes residentes en el extranjero que buscan espacio y calma. El contrato es de un año como mínimo, el alquiler mensual figura en cada anuncio y basta con un pasaporte o un documento de identidad. Puede visitar en persona o por vídeo en WhatsApp.",
     sections: [
       {
         heading: "¿Dónde alquilar una villa en Marrakech?",

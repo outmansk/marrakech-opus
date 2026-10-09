@@ -1,0 +1,10 @@
+{
+  "_comment": "Facts confirmed by the agency for properties whose database fields are still empty. The database wins as soon as the field is filled in the admin. zone: area shown when properties_v2.quartier is empty (taken from the property's own description). meuble: furnished status confirmed by the owner (true = furnished, false = unfurnished).",
+  "4b731349-1a9e-4c53-84fb-c082b44dd38e": { "meuble": true },
+  "97560a47-a9c0-4014-863a-af48298b0bed": { "meuble": false },
+  "b0289e1e-6ef6-4b79-b6de-edca28490c2c": { "zone": "sidi-rahal" },
+  "c951debd-927c-4df8-80e0-1000d77ab8e1": { "zone": "sidi-rahal" },
+  "b0b1924e-b9a3-46f2-92f1-7b10017db25d": { "zone": "golf" },
+  "cad5f7d0-ef06-4795-893f-81b7fd3dc7e4": { "zone": "golf" },
+  "74b6e091-4e35-470b-9f65-b2e1c05f5100": { "zone": "village-touristique" }
+}
