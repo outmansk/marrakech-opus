@@ -16,7 +16,7 @@ import { useLocalePath } from "@/hooks/useLocalePath";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
 import "./PropertyRequest.css";
 
-type Language = "fr" | "ar" | "en";
+type Language = "fr" | "ar" | "en" | "es";
 type RequestForm = {
   intent: "location-longue-duree" | "location-courte-duree" | "vente";
   types: string[];
@@ -120,6 +120,31 @@ const copy = {
     typesError: "Choose at least one property type.", rationale: "A more relevant selection from the first conversation.",
     rationaleText: "Tell us what matters most. We’ll focus on properties that fit your request.",
   },
+  es: {
+    eyebrow: "Su búsqueda inmobiliaria en Marrakech", title: "Encontremos el lugar que le encaja.",
+    intro: "Con unas pocas respuestas entendemos lo que necesita y le enviamos una selección a medida.",
+    stay: "Estancia corta", stayBudget: "Presupuesto por noche (MAD)", arrival: "Fecha de llegada deseada",
+    idealArea: "Su barrio ideal", allAreas: "Todos los barrios", start: "Empezar",
+    chooseProject: "Elija su proyecto para continuar.", areaLocked: "Elija primero su proyecto para ver los barrios.",
+    details: "Afine su búsqueda", editProject: "Cambiar mi proyecto", nameError: "Indique su nombre (al menos 2 caracteres).",
+    privacy: "Sus datos son confidenciales.", search: "Su búsqueda", contact: "Cómo contactarle",
+    intent: "¿Qué busca?", rent: "Alquiler de larga duración", buy: "Comprar", type: "Tipo de inmueble",
+    villa: "Villa", apartment: "Piso", riad: "Riad", house: "Casa", other: "Otro / terreno",
+    rentBudget: "Presupuesto de alquiler mensual (MAD)", buyBudget: "Presupuesto total de compra (MAD)", min: "Mínimo", max: "Máximo",
+    areas: "Zonas preferidas", areasHint: "Route de Fès, Targa, Guéliz…", bedrooms: "Dormitorios mínimos",
+    furnished: "¿Amueblado?", either: "Me da igual", yes: "Amueblado", no: "Sin amueblar",
+    date: "Fecha de entrada deseada", distance: "Distancia máxima (km)", reference: "¿Un lugar cercano importante?",
+    referenceHint: "Trabajo, colegio, centro…", next: "Continuar", back: "Atrás", name: "Su nombre",
+    phone: "Número de WhatsApp", email: "Correo electrónico (opcional)", profession: "Su profesión (opcional)",
+    profile: "¿Quién vivirá allí? (opcional)", profileHint: "Pareja, familia, una persona…",
+    notes: "¿Algo más que debamos saber?", notesHint: "Mascotas, equipamiento, fechas flexibles…",
+    consent: "Acepto que me contacten sobre mi búsqueda inmobiliaria.", send: "Enviar mi búsqueda", sending: "Enviando…",
+    success: "Gracias, hemos recibido su solicitud.", successText: "Revisaremos sus criterios y le contactaremos con los inmuebles disponibles que encajen.",
+    whatsapp: "Continuar en WhatsApp", catalogue: "Ver los inmuebles", error: "No hemos podido enviar su solicitud. Inténtelo de nuevo o escríbanos por WhatsApp.",
+    phoneError: "Indique un número de WhatsApp válido.", budgetError: "El presupuesto máximo debe ser superior al mínimo.",
+    typesError: "Elija al menos un tipo de inmueble.", rationale: "Una selección más acertada desde la primera conversación.",
+    rationaleText: "Díganos qué es lo más importante. Nos centraremos en los inmuebles que encajen con su solicitud.",
+  },
 } as const;
 
 const propertyTypes = ["villa", "appartement", "riad", "maison", "other"] as const;
@@ -127,8 +152,8 @@ const propertyTypes = ["villa", "appartement", "riad", "maison", "other"] as con
 export default function PropertyRequest() {
   const { lang, lp } = useLocalePath();
   const tL = useLocalizedText();
-  // The form has its own FR / AR / EN copy; the English site opens it in English.
-  const [language, setLanguage] = useState<Language>(lang === "en" ? "en" : "fr");
+  // The form has its own FR / AR / EN / ES copy; it opens in the language of the URL.
+  const [language, setLanguage] = useState<Language>(lang);
   const [step, setStep] = useState<0 | 1 | 2>(0);
   const [projectChosen, setProjectChosen] = useState(false);
   const [projectError, setProjectError] = useState(false);
@@ -209,6 +234,8 @@ export default function PropertyRequest() {
     ? `السلام عليكم، أرسلت طلب عقار عبر الموقع. مشروعي: ${projectLabel} في مراكش.`
     : language === "en"
       ? `Hello, I just submitted my property search. My project: ${projectLabel} in Marrakech.`
+      : language === "es"
+      ? `Hola, acabo de enviar mi búsqueda inmobiliaria. Mi proyecto: ${projectLabel} en Marrakech.`
       : `Bonjour, je viens d'envoyer ma recherche immobilière. Mon projet : ${projectLabel} à Marrakech.`);
 
   const crumbs = [
@@ -615,8 +642,8 @@ export default function PropertyRequest() {
           </form>
         )}
         </div>
-        <div className="request-languages" aria-label="Language">
-          {(["fr", "ar", "en"] as const).map((code) => (
+        <div className="request-languages" aria-label={tL("Langue du formulaire", "Form language", "Idioma del formulario")}>
+          {(["fr", "en", "es", "ar"] as const).map((code) => (
             <button key={code} type="button" onClick={() => setLanguage(code)} aria-pressed={language === code} lang={code}>
               {code.toUpperCase()}
             </button>
