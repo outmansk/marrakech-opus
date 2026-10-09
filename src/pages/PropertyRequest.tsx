@@ -212,6 +212,7 @@ export default function PropertyRequest() {
   return (
     <div className="request-page min-h-screen font-sans selection:bg-[#5d6647] selection:text-white" lang={language} dir={rtl ? "rtl" : "ltr"}>
       <SEOHead
+        withBrand={false}
         title={tL("Décrire ma recherche immobilière à Marrakech", "Describe your property search in Marrakech", "Describa su búsqueda inmobiliaria en Marrakech")}
         description={tL(
           "Location longue durée, achat ou séjour : décrivez le bien que vous cherchez à Marrakech, notre agence vous propose une sélection sur mesure.",

@@ -4,7 +4,7 @@
 
 Contact: +212 6 05 38 70 41 (phone and WhatsApp) · contact@liveinmarrakech.com · https://liveinmarrakech.com
 
-## Current offer (generated from the listings on 2026-10-08)
+## Current offer (generated from the listings on 2026-10-09)
 
 - Property types currently listed: villas, houses, apartments, riads.
 - Services currently offered: long-term rental, subletting, sale.
@@ -33,10 +33,8 @@ Contact: +212 6 05 38 70 41 (phone and WhatsApp) · contact@liveinmarrakech.com 
 
 - [Biens à vendre](https://liveinmarrakech.com/vente)
 - [Villas à vendre](https://liveinmarrakech.com/vente/villas-marrakech)
-- [Appartements à vendre](https://liveinmarrakech.com/vente/appartements-marrakech)
 - [Riads à vendre](https://liveinmarrakech.com/vente/riads-marrakech)
 - [Maisons à vendre](https://liveinmarrakech.com/vente/maisons-marrakech)
-- [Terrains à vendre](https://liveinmarrakech.com/vente/terrains-marrakech)
 - [Location longue durée](https://liveinmarrakech.com/location-longue-duree)
 - [Appartements à louer à l’année](https://liveinmarrakech.com/location-longue-duree/appartements-marrakech)
 - [Villas à louer à l’année](https://liveinmarrakech.com/location-longue-duree/villas-marrakech)
@@ -45,10 +43,8 @@ Contact: +212 6 05 38 70 41 (phone and WhatsApp) · contact@liveinmarrakech.com 
 
 - [Property for sale](https://liveinmarrakech.com/en/for-sale)
 - [Villas for sale](https://liveinmarrakech.com/en/for-sale/villas-marrakech)
-- [Apartments for sale](https://liveinmarrakech.com/en/for-sale/apartments-marrakech)
 - [Riads for sale](https://liveinmarrakech.com/en/for-sale/riads-marrakech)
 - [Houses for sale](https://liveinmarrakech.com/en/for-sale/houses-marrakech)
-- [Land for sale](https://liveinmarrakech.com/en/for-sale/land-marrakech)
 - [Long-term rentals](https://liveinmarrakech.com/en/long-term-rental)
 - [Apartments for long-term rent](https://liveinmarrakech.com/en/long-term-rental/apartments-marrakech)
 - [Villas for long-term rent](https://liveinmarrakech.com/en/long-term-rental/villas-marrakech)
@@ -57,10 +53,8 @@ Contact: +212 6 05 38 70 41 (phone and WhatsApp) · contact@liveinmarrakech.com 
 
 - [Inmuebles en venta](https://liveinmarrakech.com/es/venta)
 - [Villas en venta](https://liveinmarrakech.com/es/venta/villas-marrakech)
-- [Apartamentos en venta](https://liveinmarrakech.com/es/venta/apartamentos-marrakech)
 - [Riads en venta](https://liveinmarrakech.com/es/venta/riads-marrakech)
 - [Casas en venta](https://liveinmarrakech.com/es/venta/casas-marrakech)
-- [Terrenos en venta](https://liveinmarrakech.com/es/venta/terrenos-marrakech)
 - [Alquiler de larga duración](https://liveinmarrakech.com/es/alquiler-larga-duracion)
 - [Apartamentos en alquiler de larga duración](https://liveinmarrakech.com/es/alquiler-larga-duracion/apartamentos-marrakech)
 - [Villas en alquiler de larga duración](https://liveinmarrakech.com/es/alquiler-larga-duracion/villas-marrakech)

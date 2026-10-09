@@ -22,7 +22,7 @@ const Footer = () => {
           {/* Colonne 1 — Brand + tagline + socials */}
           <div className="space-y-6">
             <div>
-              <h3 className="font-serif text-2xl text-white mb-3">Live In Marrakech</h3>
+              <p className="font-serif text-2xl text-white mb-3">Live In Marrakech</p>
               <div className="w-8 h-[1px] bg-white/20" />
             </div>
             <p className="text-white/50 font-light leading-relaxed text-sm max-w-xs">

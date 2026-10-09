@@ -172,6 +172,10 @@ const SERVICE_NAMES = {
   'sous-location': 'subletting',
 };
 
+/** Available listings a landing page shows (same rule as availableFor() in src/content/landings.ts). */
+const landingListings = (landing, properties) =>
+  properties.filter((p) => (p.services || []).includes(landing.service) && (!landing.type || p.type === landing.type));
+
 const day = (iso) => (iso ? new Date(iso).toISOString().split('T')[0] : undefined);
 const latest = (dates) => dates.filter(Boolean).sort().pop();
 
@@ -181,7 +185,8 @@ function buildLlmsTxt({ properties, articles, articleLoc }) {
   const services = [...new Set(properties.flatMap((p) => p.services || []))].map((s) => SERVICE_NAMES[s] || s);
   const areas = [...new Set(properties.map((p) => p.quartier).filter(Boolean))].sort();
   const link = (label, loc) => `- [${label}](${absolute(loc)})`;
-  const landingLinks = (lang) => LANDINGS.map((l) => link(l.label[lang], localize(l.paths[lang], lang)));
+  // Landing pages without stock are noindex on the site: not listed here either.
+  const landingLinks = (lang) => LANDINGS.filter((l) => landingListings(l, properties).length > 0).map((l) => link(l.label[lang], localize(l.paths[lang], lang)));
   const guide = (a) => link(`${a.title} (${(a.lang || 'fr').toUpperCase()})`, articleLoc(a));
 
   return `# Live In Marrakech
@@ -272,7 +277,8 @@ async function main() {
 
   // Search landing pages, each listing its translations; lastmod = last change of the listings they show.
   for (const landing of LANDINGS) {
-    const listed = properties.filter((p) => (p.services || []).includes(landing.service) && (!landing.type || p.type === landing.type));
+    const listed = landingListings(landing, properties);
+    if (!listed.length) continue; // no stock → noindex on the site, so not in the sitemap
     const alternates = Object.fromEntries(LANGUAGES.map((lang) => [lang, localize(landing.paths[lang], lang)]));
     const lastmod = day(latest(listed.map((p) => p.updated_at)));
     for (const lang of LANGUAGES) {

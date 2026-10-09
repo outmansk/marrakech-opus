@@ -3,6 +3,7 @@
  *
  *   npm run seo:check                         → the live site (https://liveinmarrakech.com)
  *   npm run seo:check -- --base https://…      → another deployment
+ *   npm run seo:check -- --report              → also writes docs/seo/rapport-urls.md (one row per URL)
  *   npm run seo:check -- --dist                → the local build (dist/), HTML checks only:
  *                                               status codes and redirects need Vercel (vercel.json, middleware.ts)
  *
@@ -19,6 +20,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = 'https://liveinmarrakech.com';
 const args = process.argv.slice(2);
 const distMode = args.includes('--dist');
+const reportMode = args.includes('--report');
 const base = (args[args.indexOf('--base') + 1] && args.includes('--base') ? args[args.indexOf('--base') + 1] : SITE).replace(/\/$/, '');
 
 const failures = [];
@@ -47,7 +49,23 @@ function inspect(html) {
   const head = html.slice(0, html.indexOf('</head>') + 1 || undefined);
   const links = [...head.matchAll(/<link\b[^>]*>/gi)].map((m) => m[0]);
   const robots = [...head.matchAll(/<meta\b[^>]*name="robots"[^>]*>/gi)].map((m) => attr(m[0], 'content') || '');
+  const decode = (v) => v.replace(/&amp;/g, '&').replace(/&#x27;/g, "'").replace(/&quot;/g, '"');
+  const body = html.slice(Math.max(0, html.indexOf('<div id="root"')))
+    .replace(/<script[\s\S]*?<\/script>|<header[\s\S]*?<\/header>|<footer[\s\S]*?<\/footer>/gi, ' ');
+  const jsonLdTypes = [...html.matchAll(/<script[^>]*application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi)].map((m) => {
+    try {
+      const data = JSON.parse(m[1]);
+      return data['@type'] || (data['@graph'] ? 'graph' : '?');
+    } catch {
+      return 'INVALIDE';
+    }
+  });
   return {
+    title: decode(head.match(/<title[^>]*>([^<]*)<\/title>/i)?.[1] ?? ''),
+    description: decode(head.match(/<meta[^>]*name="description"[^>]*content="([^"]*)"/i)?.[1] ?? ''),
+    h1Text: decode((html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1] ?? '').replace(/<[^>]+>/g, '').trim()),
+    jsonLd: jsonLdTypes,
+    words: body.replace(/<[^>]+>/g, ' ').split(/\s+/).filter((w) => /\p{L}/u.test(w)).length,
     h1: (html.match(/<h1[\s>]/gi) || []).length,
     canonical: links.filter((l) => /rel="canonical"/i.test(l)).map((l) => attr(l, 'href')),
     hreflang: Object.fromEntries(links.filter((l) => /rel="alternate"/i.test(l) && /hreflang=/i.test(l)).map((l) => [attr(l, 'hreflang'), attr(l, 'href')])),
@@ -106,6 +124,25 @@ if (!distMode) {
 
   const slash = await get(`${SITE}/vente/`);
   if (![301, 308].includes(slash.status)) fail(`${SITE}/vente/`, `slash final : attendu 301/308, reçu ${slash.status}`);
+}
+
+// ── Table (--report) ───────────────────────────────────────
+if (reportMode) {
+  const cell = (v) => String(v).replace(/\|/g, '/');
+  const rows = urls.map((url) => {
+    const p = pages.get(url);
+    if (!p) return `| ${url} | erreur | | | | | | | | |`;
+    const hreflangOk = !failures.some((f) => f.startsWith(url) && f.includes('hreflang'));
+    const invalidJsonLd = p.jsonLd.includes('INVALIDE');
+    return `| ${url.replace(SITE, '') || '/'} | 200 | ${cell(p.title)} | ${p.title.length} | ${p.description.length} | ${cell(p.h1Text)} | ${p.canonical[0] === url ? 'oui' : 'NON'} | ${hreflangOk ? 'oui' : 'NON'} | ${p.jsonLd.join(', ')}${invalidJsonLd ? ' ⚠️' : ''} | ${p.words} |`;
+  });
+  const header = '| URL | Statut | Title | Car. | Meta car. | H1 | Canonical | hreflang | JSON-LD | Mots |\n|---|---|---|---|---|---|---|---|---|---|';
+  const md = `# Tableau des URL indexables\n\nGénéré par \`npm run seo:check -- --report\` le ${new Date().toISOString().slice(0, 10)} (${distMode ? 'build local' : base}).\n\n${header}\n${rows.join('\n')}\n`;
+  fs.mkdirSync(path.join(root, 'docs', 'seo'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'docs', 'seo', 'rapport-urls.md'), md);
+  const long = [...pages].filter(([, p]) => p.title.length > 60 || p.description.length > 155);
+  console.log(`📝  docs/seo/rapport-urls.md écrit — ${long.length} page(s) avec title > 60 ou meta > 155`);
+  for (const [url, p] of long) console.log(`   ${p.title.length}/${p.description.length}  ${url}`);
 }
 
 // ── Report ─────────────────────────────────────────────────

@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
-import type { BienService, BienType } from "@/types/property";
+import type { Bien, BienService, BienType } from "@/types/property";
+import { getServices, isUnavailable } from "@/lib/propertyServices";
 import { localizePath, type Lang } from "@/i18n/routing";
 import registry from "./landings.json";
 
@@ -50,6 +51,16 @@ export const findLanding = (lang: Lang, basePath: string) =>
 /** The landing page for a service and property type, e.g. to link a property to its listing page. */
 export const landingFor = (service: string, type?: string) =>
   LANDINGS.find((landing) => landing.service === service && landing.type === type);
+
+/** Listings a landing page shows (available first, then rented/sold). */
+export const listingsFor = (landing: Landing, properties: Bien[]) =>
+  properties
+    .filter((property) => getServices(property).includes(landing.service) && (!landing.type || property.type === landing.type))
+    .sort((a, b) => Number(isUnavailable(a)) - Number(isUnavailable(b)));
+
+/** Available listings only. A landing page without any is noindex and left out of the sitemap. */
+export const availableFor = (landing: Landing, properties: Bien[]) =>
+  listingsFor(landing, properties).filter((property) => !isUnavailable(property));
 
 const copyModules = import.meta.glob<{ default: Record<LandingId, LandingCopy> }>("./landingCopy.*.ts");
 

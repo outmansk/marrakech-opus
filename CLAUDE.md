@@ -57,7 +57,7 @@ Env (`.env`, see `.env.example`): `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`,
 
 ### Search landing pages (SEO)
 - 9 pages: hubs `vente` / `location` + type pages (`vente-villas`, `location-appartements`…). Registry with translated paths and short labels: `src/content/landings.json` (also read by the sitemap script); texts per language in `src/content/landingCopy.{fr,en,es}.ts`, loaded per language through `landingCopyQueryOptions`. Rendered by `src/pages/ServiceLanding.tsx` from the catch-all routes `:section` / `:section/:slug` (falls back to the 404 page).
-- Each page shows its listings plus facts computed from the catalogue (count, price range, areas, last update). Rule for the texts: no invented market figures, legal/tax points stay general and refer to the notary.
+- Each page shows its listings plus facts computed from the catalogue (count, price range, areas, last update). **A landing page with no available listing is `noindex, follow` and left out of the sitemap and llms.txt** (`availableFor()` in `landings.ts`, mirrored in the sitemap script); links to it are hidden in "see also", hub cards and the catalogue. Landing titles have no brand suffix (`withBrand={false}`) and stay ≤ 60 chars, metas ≤ 155: check with `npm run seo:check -- --report`. Rule for the texts: no invented market figures, legal/tax points stay general and refer to the notary.
 - Old commercial blog articles were merged into these pages: `vercel.json` `redirects` (308) — the sitemap and pre-render skip redirected sources.
 
 ### Images

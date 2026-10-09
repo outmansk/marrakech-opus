@@ -191,7 +191,7 @@ const BlogPost = () => {
             </ul>
 
             <div className="mt-16 bg-secondary p-8 text-center">
-              <h3 className="font-serif text-2xl mb-4">{tL("Besoin d'un expert ?", "Need an expert?", "¿Necesita un experto?")}</h3>
+              <p className="font-serif text-2xl mb-4">{tL("Besoin d'un expert ?", "Need an expert?", "¿Necesita un experto?")}</p>
               <p className="text-muted-foreground text-sm font-light mb-8">{tL("Notre agence vous accompagne dans votre projet immobilier à Marrakech.", "Our agency supports your real estate project in Marrakech.", "Nuestra agencia le acompaña en su proyecto inmobiliario en Marrakech.")}</p>
               <Link to={lp("/catalogue")}>
                 <Button variant="luxury" className="w-full">

@@ -12,19 +12,17 @@ import { propertiesQueryOptions } from "@/hooks/useBiens";
 import { useLocalePath } from "@/hooks/useLocalePath";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
 import { BASE_URL } from "@/hooks/useSEO";
-import { LANDINGS, findLanding, landingCopyQueryOptions, landingPath, type Landing } from "@/content/landings";
-import { getServices, isUnavailable } from "@/lib/propertyServices";
+import { LANDINGS, availableFor, findLanding, landingCopyQueryOptions, landingPath, listingsFor } from "@/content/landings";
+import { isUnavailable } from "@/lib/propertyServices";
 import { propertyPath } from "@/lib/propertyUrl";
 import { propertyText } from "@/lib/propertyI18n";
 import { LANGS, stripLang, type Lang } from "@/i18n/routing";
 import type { Bien } from "@/types/property";
+import type { Landing } from "@/content/landings";
 
 const WHATSAPP_URL = "https://wa.me/212605387041";
 // Same filter as the catalogue: the pre-render loads this list once for both pages.
 const PUBLIC_STATUTS = ["publie", "vendu-loue"];
-
-const matches = (landing: Landing) => (property: Bien) =>
-  getServices(property).includes(landing.service) && (!landing.type || property.type === landing.type);
 
 const priceOf = (property: Bien, landing: Landing) =>
   (landing.service === "vente" ? property.prix_vente : property.prix_location_longue) || null;
@@ -40,11 +38,7 @@ export default function ServiceLanding() {
   const { data: copies } = useQuery(landingCopyQueryOptions(lang));
   const { data: properties = [], isLoading } = useQuery(propertiesQueryOptions({ statut: PUBLIC_STATUTS }));
 
-  const listed = useMemo(() => {
-    if (!landing) return [];
-    // Available first, already rented/sold at the end.
-    return properties.filter(matches(landing)).sort((a, b) => Number(isUnavailable(a)) - Number(isUnavailable(b)));
-  }, [properties, landing]);
+  const listed = useMemo(() => (landing ? listingsFor(landing, properties) : []), [properties, landing]);
 
   if (!landing) return <NotFound />;
   const copy = copies?.[landing.id];
@@ -52,7 +46,9 @@ export default function ServiceLanding() {
 
   const available = listed.filter((property) => !isUnavailable(property));
   const hub = LANDINGS.find((other) => other.service === landing.service && !other.type)!;
-  const siblings = LANDINGS.filter((other) => other.service === landing.service && other.type);
+  // Pages without stock are noindex: link only to the ones that list something.
+  const siblings = LANDINGS.filter((other) => other.service === landing.service && other.type && availableFor(other, properties).length > 0);
+  const empty = !isLoading && available.length === 0;
   const otherHub = LANDINGS.find((other) => other.service !== landing.service && !other.type)!;
   const alternates = Object.fromEntries(LANGS.map((l) => [l, landingPath(landing.id, l)])) as Record<Lang, string>;
   const selfPath = landingPath(landing.id, lang);
@@ -113,7 +109,7 @@ export default function ServiceLanding() {
   return (
     <PageTransition>
       <div className="min-h-screen bg-[#fbf8f2] text-[#211f1b]">
-        <SEOHead title={copy.title} description={copy.description} alternates={alternates} schema={schema} />
+        <SEOHead title={copy.title} withBrand={false} description={copy.description} alternates={alternates} schema={schema} noindex={empty} />
         <Header />
 
         <main className="pt-16">
@@ -130,7 +126,16 @@ export default function ServiceLanding() {
               </nav>
               <p className="mb-4 text-[11px] font-medium uppercase tracking-[0.24em] text-[#a4573e]">{copy.eyebrow}</p>
               <h1 className="max-w-[900px] text-[38px] leading-[1.05] tracking-[-0.02em] md:text-[56px]">{copy.h1}</h1>
-              <p className="mt-6 max-w-[760px] text-[15px] leading-[1.75] text-[#4f4a43] md:text-base">{copy.answer}</p>
+              <p className="mt-6 max-w-[760px] text-[15px] leading-[1.75] text-[#4f4a43] md:text-base">
+                {copy.answer}{" "}
+                {empty
+                  ? tL("Aucun bien de ce type n’est disponible pour le moment : décrivez votre recherche, nous vous envoyons une sélection.", "No property of this type is available right now: describe your search and we will send you a selection.", "No hay ningún inmueble de este tipo disponible ahora mismo: describa su búsqueda y le enviaremos una selección.")
+                  : available.length > 0 && tL(
+                    `Live In Marrakech propose actuellement ${available.length} ${available.length > 1 ? "biens" : "bien"} de ce type, présentés ci-dessous.`,
+                    `Live In Marrakech currently offers ${available.length} ${available.length > 1 ? "properties" : "property"} of this type, shown below.`,
+                    `Live In Marrakech ofrece actualmente ${available.length} ${available.length > 1 ? "inmuebles" : "inmueble"} de este tipo, que verá a continuación.`,
+                  )}
+              </p>
 
               <dl className="mt-8 grid max-w-[900px] gap-px overflow-hidden border border-[#2b2722]/12 bg-[#2b2722]/12 sm:grid-cols-3">
                 {facts.map((fact) => (
@@ -149,7 +154,7 @@ export default function ServiceLanding() {
             <section className="mx-auto max-w-[1320px] px-5 pt-10 md:px-10 xl:px-16">
               <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {siblings.map((sibling) => {
-                  const count = properties.filter(matches(sibling)).filter((property) => !isUnavailable(property)).length;
+                  const count = availableFor(sibling, properties).length;
                   return (
                     <li key={sibling.id}>
                       <Link to={landingPath(sibling.id, lang)} className="group flex min-h-[72px] items-center justify-between gap-4 border border-[#2b2722]/15 bg-white px-5 py-4 transition-colors hover:border-[#a4573e]">
@@ -168,6 +173,7 @@ export default function ServiceLanding() {
 
           {/* ── Listings ─────────────────────────────────────────── */}
           <section className="mx-auto max-w-[1320px] px-5 py-10 md:px-10 lg:py-14 xl:px-16">
+            <h2 className="mb-6 text-[28px] leading-tight md:text-[34px]">{landing.label[lang]}{!isLoading && listed.length > 0 && ` (${available.length})`}</h2>
             {isLoading ? (
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">{[0, 1, 2].map((item) => <div key={item} className="aspect-[4/3] animate-pulse bg-[#e9e1d5]" />)}</div>
             ) : listed.length > 0 ? (
@@ -176,7 +182,7 @@ export default function ServiceLanding() {
               </div>
             ) : (
               <div className="border-y border-[#2b2722]/12 py-14 text-center">
-                <h2 className="text-3xl">{tL("Aucun bien de ce type en ligne pour le moment", "No property of this type online right now", "Ningún inmueble de este tipo publicado por ahora")}</h2>
+                <p className="font-serif text-3xl">{tL("Aucun bien disponible pour le moment — décrivez votre recherche", "No property available right now — describe your search", "Ningún inmueble disponible por ahora — describa su búsqueda")}</p>
                 <p className="mx-auto mt-3 max-w-[560px] text-sm text-[#655f56]">{tL("Certains biens ne sont pas publiés. Décrivez votre recherche : nous vous envoyons une sélection.", "Some properties are not published. Describe your search and we will send you a selection.", "Algunos inmuebles no están publicados. Describa su búsqueda y le enviaremos una selección.")}</p>
               </div>
             )}
@@ -203,14 +209,14 @@ export default function ServiceLanding() {
               </article>
 
               <aside className="flex flex-col gap-10">
-                <div>
+                {listedAreas.length > 0 && <div>
                   <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#777065]">{tL("Par quartier", "By area", "Por barrio")}</h2>
                   <ul className="flex flex-wrap gap-2">
-                    {copy.areas.map((area) => (
+                    {listedAreas.map((area) => (
                       <li key={area}><Link to={catalogueLink(area)} className="flex min-h-11 items-center border border-[#2b2722]/15 px-4 font-serif text-[18px] transition-colors hover:border-[#a4573e] hover:text-[#a4573e]">{area}</Link></li>
                     ))}
                   </ul>
-                </div>
+                </div>}
                 <div>
                   <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#777065]">{tL("Voir aussi", "See also", "Ver también")}</h2>
                   <ul className="flex flex-col border-t border-[#2b2722]/12">

@@ -153,7 +153,7 @@ const Contact = () => {
                         <MapPin size={18} strokeWidth={1.25} />
                       </div>
                       <div>
-                        <h4 className="font-serif text-base mb-1">{tL("Notre Adresse", "Our Address", "Nuestra Dirección")}</h4>
+                        <h3 className="font-serif text-base mb-1">{tL("Notre Adresse", "Our Address", "Nuestra Dirección")}</h3>
                         <p className="text-muted-foreground text-sm font-light leading-relaxed">
                           {t("footer.adresse")}
                         </p>
@@ -167,7 +167,7 @@ const Contact = () => {
                         <Phone size={18} strokeWidth={1.25} />
                       </div>
                       <div>
-                        <h4 className="font-serif text-base mb-1">{tL("Téléphone & WhatsApp", "Phone & WhatsApp", "Teléfono & WhatsApp")}</h4>
+                        <h3 className="font-serif text-base mb-1">{tL("Téléphone & WhatsApp", "Phone & WhatsApp", "Teléfono & WhatsApp")}</h3>
                         <a
                           href="tel:+212605387041"
                           className="block text-[#0A0A0A] hover:underline text-sm font-light leading-relaxed"
@@ -193,7 +193,7 @@ const Contact = () => {
                         <Mail size={18} strokeWidth={1.25} />
                       </div>
                       <div>
-                        <h4 className="font-serif text-base mb-1">{tL("Adresse E-mail", "Email Address", "Dirección de Correo")}</h4>
+                        <h3 className="font-serif text-base mb-1">{tL("Adresse E-mail", "Email Address", "Dirección de Correo")}</h3>
                         <a
                           href="mailto:contact@liveinmarrakech.com"
                           className="block text-[#0A0A0A] hover:underline text-sm font-light leading-relaxed"

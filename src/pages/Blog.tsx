@@ -31,7 +31,7 @@ const Blog = () => {
     { id: 'terrain', label: tL('Terrain', 'Land', 'Terreno') },
   ];
 
-  const pageTitle = tL("Blog immobilier Marrakech — Conseils & actualités", "Marrakech real estate blog — Advice & news", "Blog inmobiliario Marrakech — Consejos y noticias");
+  const pageTitle = tL("Blog immobilier Marrakech : guides pour louer et acheter", "Marrakech real estate blog: guides to rent and buy", "Blog inmobiliario Marrakech: guías para alquilar y comprar");
   const schema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -45,6 +45,7 @@ const Blog = () => {
     <div className="min-h-screen bg-background text-foreground">
       <SEOHead
         title={pageTitle}
+        withBrand={false}
         description={tL(
           "Actualités, conseils et analyses du marché immobilier à Marrakech : location, vente, investissement et sous-location.",
           "News, advice and analysis of the Marrakech property market: renting, buying, investing and subletting.",
@@ -127,9 +128,9 @@ const Blog = () => {
                      <p className="text-muted-foreground text-xs mb-3 font-light">
                       {new Date(article.created_at).toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}
                     </p>
-                    <h3 className="font-serif text-xl mb-3 line-clamp-2 transition-colors duration-300">
+                    <h2 className="font-serif text-xl mb-3 line-clamp-2 transition-colors duration-300">
                       {article.title}
-                    </h3>
+                    </h2>
                     <p className="text-muted-foreground font-light text-sm line-clamp-3 mb-6">
                       {article.excerpt}
                     </p>

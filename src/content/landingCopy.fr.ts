@@ -6,11 +6,11 @@ import type { LandingCopy, LandingId } from "./landings";
 
 const copy: Record<LandingId, LandingCopy> = {
   vente: {
-    title: "Immobilier à vendre à Marrakech : villas, appartements, riads",
-    description: "Villas, appartements, riads, maisons et terrains à vendre à Marrakech, sélectionnés et visités par notre agence. Accompagnement de la visite à la signature chez le notaire.",
+    title: "Immobilier à vendre à Marrakech : villas, maisons, riads",
+    description: "Villas, maisons et riads à vendre à Marrakech, visités par notre agence : prix réels, vraies photos et accompagnement jusqu’au notaire.",
     eyebrow: "Acheter à Marrakech",
     h1: "Immobilier à vendre à Marrakech",
-    answer: "Live In Marrakech propose une sélection de villas, appartements, riads, maisons et terrains à vendre à Marrakech et dans ses environs. Chaque bien est visité par l’agence avant d’être publié, et nous accompagnons l’acheteur, résident ou non, jusqu’à la signature chez le notaire.",
+    answer: "Live In Marrakech propose des biens à vendre à Marrakech et dans ses environs, selon les disponibilités : villas, maisons, riads. Chaque bien est visité par l’agence avant d’être publié, et nous accompagnons l’acheteur, résident ou non, jusqu’à la signature chez le notaire.",
     sections: [
       {
         heading: "Quel type de bien acheter à Marrakech ?",
@@ -52,11 +52,11 @@ const copy: Record<LandingId, LandingCopy> = {
   },
 
   "vente-villas": {
-    title: "Villa à vendre à Marrakech : villas avec piscine et jardin",
-    description: "Villas à vendre à Marrakech : Palmeraie, route de Fès, route de l’Ourika. Villas avec piscine et jardin visitées par notre agence, prix et photos réels.",
+    title: "Villa à vendre à Marrakech avec piscine et jardin",
+    description: "Villas à vendre à Marrakech, route de Fès ou route de Sidi Rahal : piscine, jardin, photos réelles et prix confirmé par le propriétaire.",
     eyebrow: "Vente · Villas",
     h1: "Villas à vendre à Marrakech",
-    answer: "Les villas à vendre à Marrakech se trouvent surtout en périphérie de la ville, dans la Palmeraie, sur la route de Fès, la route de l’Ourika et la route d’Amizmiz, souvent avec jardin et piscine privée. Ci-dessous, les villas actuellement proposées par Live In Marrakech, avec leur prix réel.",
+    answer: "Les villas à vendre à Marrakech se trouvent surtout en périphérie de la ville, dans la Palmeraie, sur la route de Fès, la route de l’Ourika et la route d’Amizmiz, souvent avec jardin et piscine privée.",
     sections: [
       {
         heading: "Où acheter une villa à Marrakech ?",
@@ -90,11 +90,11 @@ const copy: Record<LandingId, LandingCopy> = {
   },
 
   "vente-appartements": {
-    title: "Appartement à vendre à Marrakech : Guéliz, Hivernage, Agdal",
-    description: "Appartements à vendre à Marrakech : Guéliz, Hivernage, Agdal, résidences avec piscine. Biens visités par notre agence, accompagnement jusqu’au notaire.",
+    title: "Appartement à vendre à Marrakech",
+    description: "Vous cherchez un appartement à acheter à Marrakech ? Décrivez votre budget et votre quartier : nous vous envoyons une sélection sur mesure.",
     eyebrow: "Vente · Appartements",
     h1: "Appartements à vendre à Marrakech",
-    answer: "Les appartements à vendre à Marrakech se trouvent principalement à Guéliz, à l’Hivernage, à Agdal et dans des résidences sécurisées avec piscine en périphérie. Un étranger peut en règle générale acheter un appartement en pleine propriété. Voici les appartements actuellement proposés par Live In Marrakech.",
+    answer: "Les appartements à vendre à Marrakech se trouvent principalement à Guéliz, à l’Hivernage, à Agdal et dans des résidences sécurisées avec piscine en périphérie. Un étranger peut en règle générale acheter un appartement en pleine propriété.",
     sections: [
       {
         heading: "Les quartiers pour acheter un appartement",
@@ -128,49 +128,49 @@ const copy: Record<LandingId, LandingCopy> = {
   },
 
   "vente-riads": {
-    title: "Riad à vendre à Marrakech : riads dans la médina",
-    description: "Riads à vendre à Marrakech, dans la médina et ses environs. Titre foncier, accès, travaux : nos conseils et les riads visités par notre agence.",
+    title: "Riad à vendre à Marrakech avec piscine",
+    description: "Riad à vendre à Marrakech avec piscine et patio. Titre foncier, accès, travaux : ce qu’il faut vérifier avant d’acheter un riad.",
     eyebrow: "Vente · Riads",
     h1: "Riads à vendre à Marrakech",
-    answer: "Un riad est une maison traditionnelle marocaine organisée autour d’un patio intérieur, le plus souvent située dans la médina de Marrakech, inscrite au patrimoine mondial de l’UNESCO. Avant d’acheter, vérifiez surtout que le riad dispose d’un titre foncier et regardez son accès. Voici les riads actuellement proposés par Live In Marrakech.",
+    answer: "Un riad est une maison traditionnelle marocaine organisée autour d’un patio intérieur, souvent avec un bassin ou une piscine. Avant d’acheter, vérifiez surtout que le riad dispose d’un titre foncier, puis regardez son accès en voiture et l’état de la structure.",
     sections: [
       {
         heading: "Vivre dans un riad",
         paragraphs: [
-          "Derrière une façade discrète, le riad s’ouvre sur un patio planté, parfois avec un bassin ou une petite piscine, et sur une terrasse en toit qui donne sur la ville. On y vit au rythme de la médina, à quelques minutes à pied des souks et des monuments.",
-          "C’est aussi un mode de vie particulier : ruelles étroites, livraisons à pied ou en charrette, bruit de la ville. Visitez à différents moments de la journée pour vous faire une idée juste.",
+          "Derrière une façade discrète, le riad s’ouvre sur un patio planté, parfois avec une piscine, sur lequel donnent les pièces de vie et les chambres. Une terrasse sur le toit complète souvent la maison. C’est un mode de vie tourné vers l’intérieur, calme et intime.",
+          "Visitez à différents moments de la journée pour juger de la lumière, du bruit et de l’accès, qui varient beaucoup d’un riad à l’autre.",
         ],
       },
       {
         heading: "Les points à vérifier avant d’acheter",
         paragraphs: [
-          "Le statut juridique est essentiel. Dans la médina, certains biens sont encore détenus sous forme de « melkia » (acte adoulaire traditionnel), sans titre foncier. Privilégiez un riad titré, ou faites mener la procédure d’immatriculation par votre notaire avant la vente.",
-          "Regardez aussi l’accès en voiture (une ruelle proche d’une porte de la médina est un vrai confort), l’état de la structure, l’humidité et l’étanchéité de la terrasse. Les travaux dans la médina sont soumis à des autorisations : renseignez-vous avant d’acheter un riad à rénover.",
+          "Le statut juridique est essentiel. Certains biens anciens sont encore détenus sous forme de « melkia » (acte adoulaire traditionnel), sans titre foncier. Privilégiez un riad titré, ou faites mener la procédure d’immatriculation par votre notaire avant la vente.",
+          "Regardez aussi l’accès en voiture, l’état de la structure, l’humidité et l’étanchéité de la terrasse. Les travaux sur ce type de bâti peuvent être soumis à autorisation : renseignez-vous avant d’acheter un riad à rénover.",
         ],
       },
       {
         heading: "Riad privé ou maison d’hôtes",
         paragraphs: [
-          "Beaucoup de riads sont transformés en maisons d’hôtes. Si c’est votre projet, l’exploitation touristique demande des autorisations et un classement spécifiques : vérifiez si le riad en dispose déjà et ce qu’il faudrait pour les obtenir. Nous vous orientons vers les bons interlocuteurs.",
+          "Beaucoup de riads sont transformés en maisons d’hôtes. Si c’est votre projet, l’exploitation touristique demande des autorisations et un classement spécifiques : vérifiez si le riad en dispose déjà et ce qu’il faudrait pour les obtenir.",
         ],
       },
     ],
     faq: [
-      { q: "Qu’est-ce qu’un riad ?", a: "Une maison traditionnelle marocaine construite autour d’un patio intérieur, souvent planté, avec des pièces qui s’ouvrent sur ce patio et une terrasse sur le toit. On en trouve surtout dans la médina." },
+      { q: "Qu’est-ce qu’un riad ?", a: "Une maison traditionnelle marocaine construite autour d’un patio intérieur, souvent planté, avec des pièces qui s’ouvrent sur ce patio et une terrasse sur le toit." },
       { q: "Pourquoi le titre foncier est-il si important pour un riad ?", a: "Le titre foncier garantit la propriété et sa surface, inscrites à la Conservation foncière. Un bien sous simple « melkia » est plus risqué : il faut le faire immatriculer, ce qui prend du temps." },
-      { q: "Un étranger peut-il acheter un riad dans la médina ?", a: "Oui, en règle générale un étranger peut acheter un riad en pleine propriété. Le notaire vérifie le statut du bien et l’origine de propriété avant la signature." },
-      { q: "Peut-on rénover un riad librement ?", a: "Non. Les travaux dans la médina sont soumis à autorisation et doivent respecter le caractère traditionnel du bâti. Renseignez-vous avant l’achat si le riad demande une rénovation." },
+      { q: "Un étranger peut-il acheter un riad ?", a: "Oui, en règle générale un étranger peut acheter un riad en pleine propriété. Le notaire vérifie le statut du bien et l’origine de propriété avant la signature." },
+      { q: "Peut-on rénover un riad librement ?", a: "Pas toujours : les travaux peuvent être soumis à autorisation et doivent respecter le caractère du bâti. Renseignez-vous avant l’achat si le riad demande une rénovation." },
       { q: "Peut-on transformer un riad en maison d’hôtes ?", a: "C’est possible, mais l’activité touristique nécessite des autorisations et un classement. Vérifiez si le riad est déjà exploité légalement ou ce qu’il faudrait pour le devenir." },
     ],
-    areas: ["Medina"],
+    areas: [],
   },
 
   "vente-maisons": {
     title: "Maison à vendre à Marrakech",
-    description: "Maisons à vendre à Marrakech et dans ses environs : maisons avec jardin, maisons de ville, Palmeraie. Biens visités par notre agence.",
+    description: "Maisons à vendre à Marrakech et alentours, dont une demeure traditionnelle avec jardin à Ennakhil (Palmeraie). Biens visités par l’agence.",
     eyebrow: "Vente · Maisons",
     h1: "Maisons à vendre à Marrakech",
-    answer: "À Marrakech, les maisons à vendre sont des habitations individuelles plus simples ou plus compactes qu’une villa : maisons avec jardin en périphérie, comme dans la Palmeraie, ou maisons de ville dans les quartiers résidentiels. Voici les maisons actuellement proposées par Live In Marrakech.",
+    answer: "À Marrakech, les maisons à vendre sont des habitations individuelles plus simples ou plus compactes qu’une villa : maisons avec jardin en périphérie, comme dans la Palmeraie, ou maisons de ville dans les quartiers résidentiels.",
     sections: [
       {
         heading: "Maison ou villa : quelle différence ?",
@@ -197,8 +197,8 @@ const copy: Record<LandingId, LandingCopy> = {
   },
 
   "vente-terrains": {
-    title: "Terrain à vendre à Marrakech : terrains constructibles",
-    description: "Terrains à vendre à Marrakech : terrains constructibles, lotissements, grandes parcelles en périphérie. Ce qu’il faut vérifier avant d’acheter.",
+    title: "Terrain à vendre à Marrakech",
+    description: "Acheter un terrain à Marrakech : note de renseignements, titre foncier, viabilisation. Décrivez votre projet, nous cherchons pour vous.",
     eyebrow: "Vente · Terrains",
     h1: "Terrains à vendre à Marrakech",
     answer: "Acheter un terrain à Marrakech permet de faire construire une villa sur mesure. Avant tout achat, demandez la note de renseignements urbanistiques à l’Agence urbaine pour savoir ce qui peut y être construit, et vérifiez le titre foncier. Les terres agricoles relèvent d’un régime particulier pour les acheteurs étrangers.",
@@ -234,8 +234,8 @@ const copy: Record<LandingId, LandingCopy> = {
   },
 
   location: {
-    title: "Location longue durée à Marrakech : appartements et villas",
-    description: "Location longue durée à Marrakech : appartements et villas à louer à l’année, meublés ou vides. Biens visités par notre agence, réponse rapide sur WhatsApp.",
+    title: "Location longue durée Marrakech : villas & appartements",
+    description: "Villas et appartements à louer à l’année à Marrakech, meublés ou vides : bail d’1 an, loyer mensuel affiché, visite sur place ou en vidéo.",
     eyebrow: "Louer à l’année",
     h1: "Location longue durée à Marrakech",
     answer: "Live In Marrakech propose des appartements et des villas à louer à l’année à Marrakech, meublés ou vides. Le loyer est indiqué par mois sur chaque fiche. Nous accompagnons les locataires, expatriés comme résidents, de la visite à la signature du bail.",
@@ -272,11 +272,11 @@ const copy: Record<LandingId, LandingCopy> = {
   },
 
   "location-appartements": {
-    title: "Location appartement longue durée Marrakech : meublé ou vide",
-    description: "Appartements à louer à l’année à Marrakech, meublés ou vides : Guéliz, Hivernage, Agdal, résidences avec piscine. Loyer mensuel affiché, visite rapide.",
+    title: "Appartement à louer à Marrakech à l’année, meublé ou vide",
+    description: "Appartements à louer à l’année à Marrakech, à Chrifia ou au golf Prestigia : loyer mensuel affiché, bail d’1 an, pièce d’identité suffit.",
     eyebrow: "Location longue durée · Appartements",
     h1: "Appartements à louer à l’année à Marrakech",
-    answer: "Pour louer un appartement à l’année à Marrakech, les quartiers les plus demandés sont Guéliz, l’Hivernage et Agdal, ainsi que les résidences sécurisées avec piscine en périphérie. Les appartements sont proposés meublés ou vides, avec un loyer mensuel. Voici les appartements actuellement disponibles chez Live In Marrakech.",
+    answer: "Pour louer un appartement à l’année à Marrakech, les quartiers les plus demandés sont Guéliz, l’Hivernage et Agdal, ainsi que les résidences sécurisées avec piscine en périphérie. Les appartements sont proposés meublés ou vides, avec un loyer mensuel.",
     sections: [
       {
         heading: "Dans quel quartier louer ?",
@@ -310,11 +310,11 @@ const copy: Record<LandingId, LandingCopy> = {
   },
 
   "location-villas": {
-    title: "Location villa longue durée Marrakech : villas avec piscine",
-    description: "Villas à louer à l’année à Marrakech : Palmeraie, route de Fès, route de l’Ourika. Villas avec piscine et jardin, loyer mensuel affiché.",
+    title: "Location villa Marrakech longue durée, avec piscine",
+    description: "Villas avec piscine à louer à l’année à Marrakech, route de Fès et route de Sidi Rahal : loyer mensuel affiché et bail d’1 an minimum.",
     eyebrow: "Location longue durée · Villas",
     h1: "Villas à louer à l’année à Marrakech",
-    answer: "Les villas à louer à l’année à Marrakech se trouvent surtout dans la Palmeraie, sur la route de Fès, la route de l’Ourika et la route d’Amizmiz, avec jardin et piscine privée. Le loyer est indiqué par mois. Voici les villas actuellement proposées en location longue durée par Live In Marrakech.",
+    answer: "Les villas à louer à l’année à Marrakech se trouvent surtout dans la Palmeraie, sur la route de Fès, la route de l’Ourika et la route d’Amizmiz, avec jardin et piscine privée. Le loyer est indiqué par mois.",
     sections: [
       {
         heading: "Où louer une villa à Marrakech ?",

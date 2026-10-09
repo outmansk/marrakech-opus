@@ -12,11 +12,15 @@ import SEOHead from "@/components/SEOHead";
 import { PageTransition } from "@/components/motion/Animations";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
 import { useLocalePath } from "@/hooks/useLocalePath";
-import { LANDINGS, landingPath } from "@/content/landings";
+import { LANDINGS, availableFor, landingPath } from "@/content/landings";
+import { useQuery } from "@tanstack/react-query";
+import { propertiesQueryOptions } from "@/hooks/useBiens";
 
 const Catalogue = () => {
   const tL = useLocalizedText();
   const { lang } = useLocalePath();
+  // Unfiltered list (same query as the pre-render) to link only to search pages that have stock.
+  const { data: allProperties = [] } = useQuery(propertiesQueryOptions({ statut: ["publie", "vendu-loue"] }));
   const [searchParams, setSearchParams] = useSearchParams();
   const [mobileFilters, setMobileFilters] = useState(false);
 
@@ -102,6 +106,7 @@ const Catalogue = () => {
           </section>
 
           <div className="mx-auto max-w-[1320px] px-5 pb-10 pt-5 md:px-10 lg:py-8 xl:px-16">
+            <h2 className="sr-only">{tL("Biens correspondant à votre recherche", "Properties matching your search", "Inmuebles que coinciden con su búsqueda")}</h2>
             {!loading && <div className="mb-5 hidden items-center gap-4 lg:flex"><p aria-live="polite" className="text-xs font-medium text-[#655f56]">{resultCount}</p><span className="h-px flex-1 bg-[#2b2722]/12" /></div>}
             {loading ? <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">{[0,1,2,3,4,5].map((item) => <div key={item} className="animate-pulse"><div className="aspect-[4/3] bg-[#e9e1d5]" /><div className="mt-4 h-6 w-2/3 bg-[#e9e1d5]" /></div>)}</div> : visibleProperties.length > 0 ? <div className="grid gap-x-7 gap-y-12 md:grid-cols-2 lg:grid-cols-3">{visibleProperties.map((property, index) => <PropertyCard key={property.id} property={property} activeType={activeType} revealDelay={index * 50} />)}</div> : <div className="border-y border-[#2b2722]/12 py-20 text-center"><h2 className="text-4xl">{tL("Aucun bien trouvé", "No property found", "No se encontró ninguna propiedad")}</h2><p className="mt-3 text-sm text-[#655f56]">{tL("Essayez de modifier ou d'effacer vos filtres.", "Try changing or clearing your filters.", "Pruebe a cambiar o borrar los filtros.")}</p><button onClick={clear} className="mt-7 bg-[#a4573e] px-7 py-4 text-[10px] font-semibold uppercase tracking-[0.17em] text-white">{tL("Effacer les filtres", "Clear filters", "Borrar filtros")}</button></div>}
           </div>
@@ -109,7 +114,7 @@ const Catalogue = () => {
           <nav aria-label={tL("Recherches fréquentes", "Popular searches", "Búsquedas frecuentes")} className="mx-auto max-w-[1320px] border-t border-[#2b2722]/12 px-5 py-10 md:px-10 xl:px-16">
             <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#777065]">{tL("Recherches fréquentes", "Popular searches", "Búsquedas frecuentes")}</h2>
             <ul className="flex flex-wrap gap-2">
-              {LANDINGS.filter((landing) => landing.type).map((landing) => (
+              {LANDINGS.filter((landing) => landing.type && availableFor(landing, allProperties).length > 0).map((landing) => (
                 <li key={landing.id}><Link to={landingPath(landing.id, lang)} className="flex min-h-11 items-center border border-[#2b2722]/15 bg-white px-4 text-sm transition-colors hover:border-[#a4573e] hover:text-[#a4573e]">{landing.label[lang]}</Link></li>
               ))}
             </ul>

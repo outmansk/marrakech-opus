@@ -5,11 +5,11 @@ import type { LandingCopy, LandingId } from "./landings";
 
 const copy: Record<LandingId, LandingCopy> = {
   vente: {
-    title: "Property for sale in Marrakech: villas, apartments, riads",
-    description: "Villas, apartments, riads, houses and land for sale in Marrakech, selected and visited by our agency. Support from the first viewing to signing at the notary.",
+    title: "Property for sale in Marrakech: villas, houses, riads",
+    description: "Villas, houses and riads for sale in Marrakech, visited by our agency: real prices, real photos and support all the way to the notary.",
     eyebrow: "Buy in Marrakech",
     h1: "Property for sale in Marrakech",
-    answer: "Live In Marrakech offers a selection of villas, apartments, riads, houses and land for sale in and around Marrakech. Every property is visited by the agency before it is listed, and we support buyers, Moroccan residents or not, all the way to signing at the notary.",
+    answer: "Live In Marrakech offers property for sale in and around Marrakech, depending on availability: villas, houses, riads. Every property is visited by the agency before it is listed, and we support buyers, Moroccan residents or not, all the way to signing at the notary.",
     sections: [
       {
         heading: "What kind of property to buy in Marrakech?",
@@ -51,11 +51,11 @@ const copy: Record<LandingId, LandingCopy> = {
   },
 
   "vente-villas": {
-    title: "Villa for sale in Marrakech: villas with pool and garden",
-    description: "Villas for sale in Marrakech: Palmeraie, Fez road, Ourika road. Villas with pool and garden visited by our agency, with real photos and prices.",
+    title: "Villa for sale in Marrakech with pool and garden",
+    description: "Villas for sale in Marrakech on the Fez road and the Sidi Rahal road: pool, garden, real photos and prices confirmed by the owner.",
     eyebrow: "For sale · Villas",
     h1: "Villas for sale in Marrakech",
-    answer: "Villas for sale in Marrakech are mainly on the outskirts of the city, in the Palmeraie and along the Fez, Ourika and Amizmiz roads, usually with a garden and a private pool. Below are the villas currently offered by Live In Marrakech, with their actual prices.",
+    answer: "Villas for sale in Marrakech are mainly on the outskirts of the city, in the Palmeraie and along the Fez, Ourika and Amizmiz roads, usually with a garden and a private pool.",
     sections: [
       {
         heading: "Where to buy a villa in Marrakech?",
@@ -89,11 +89,11 @@ const copy: Record<LandingId, LandingCopy> = {
   },
 
   "vente-appartements": {
-    title: "Apartment for sale in Marrakech: Gueliz, Hivernage, Agdal",
-    description: "Apartments for sale in Marrakech: Gueliz, Hivernage, Agdal and residences with pool. Properties visited by our agency, support until the notary.",
+    title: "Apartment for sale in Marrakech",
+    description: "Looking to buy an apartment in Marrakech? Tell us your budget and preferred area and we will send you a tailored selection.",
     eyebrow: "For sale · Apartments",
     h1: "Apartments for sale in Marrakech",
-    answer: "Apartments for sale in Marrakech are mainly in Gueliz, Hivernage and Agdal, and in gated residences with a pool on the outskirts. As a general rule, foreigners can buy an apartment outright. Here are the apartments currently offered by Live In Marrakech.",
+    answer: "Apartments for sale in Marrakech are mainly in Gueliz, Hivernage and Agdal, and in gated residences with a pool on the outskirts. As a general rule, foreigners can buy an apartment outright.",
     sections: [
       {
         heading: "Where to buy an apartment",
@@ -127,49 +127,49 @@ const copy: Record<LandingId, LandingCopy> = {
   },
 
   "vente-riads": {
-    title: "Riad for sale in Marrakech: riads in the medina",
-    description: "Riads for sale in Marrakech, in the medina and nearby. Land title, access, renovation: our advice and the riads visited by our agency.",
+    title: "Riad for sale in Marrakech with pool",
+    description: "Riad for sale in Marrakech with a pool and patio. Land title, access, renovation: what to check before buying a riad.",
     eyebrow: "For sale · Riads",
     h1: "Riads for sale in Marrakech",
-    answer: "A riad is a traditional Moroccan house built around an inner courtyard, usually located in the medina of Marrakech, a UNESCO World Heritage site. Before buying, check above all that the riad has a land title, and look at its access. Here are the riads currently offered by Live In Marrakech.",
+    answer: "A riad is a traditional Moroccan house built around an inner courtyard, often with a fountain or a pool. Before buying, check above all that the riad has a land title, then look at car access and the condition of the structure.",
     sections: [
       {
         heading: "Living in a riad",
         paragraphs: [
-          "Behind a discreet façade, a riad opens onto a planted courtyard, sometimes with a fountain or a plunge pool, and onto a roof terrace overlooking the city. You live at the rhythm of the medina, a few minutes’ walk from the souks and monuments.",
-          "It is also a particular way of life: narrow alleys, deliveries on foot or by cart, the sounds of the city. Visit at different times of day to get a fair picture.",
+          "Behind a discreet façade, a riad opens onto a planted courtyard, sometimes with a pool, onto which the living rooms and bedrooms open. A roof terrace often completes the house. It is an inward-looking way of life, calm and private.",
+          "Visit at different times of day to judge the light, noise and access, which vary a lot from one riad to another.",
         ],
       },
       {
         heading: "What to check before buying",
         paragraphs: [
-          "Legal status is essential. In the medina, some properties are still held under a “melkia” (traditional adoul deed) without a land title. Prefer a titled riad, or have your notary complete the registration before the sale.",
-          "Also check car access (an alley near a medina gate is a real comfort), the structure, damp and the roof terrace’s waterproofing. Building work in the medina requires permits: look into it before buying a riad that needs renovation.",
+          "Legal status is essential. Some older properties are still held under a “melkia” (traditional adoul deed) without a land title. Prefer a titled riad, or have your notary complete the registration before the sale.",
+          "Also check car access, the structure, damp and the roof terrace’s waterproofing. Work on this type of building may require permits: look into it before buying a riad that needs renovation.",
         ],
       },
       {
         heading: "Private home or guesthouse",
         paragraphs: [
-          "Many riads are run as guesthouses. If that is your plan, tourist operation requires specific permits and a classification: check whether the riad already has them and what it would take to obtain them. We can point you to the right contacts.",
+          "Many riads are run as guesthouses. If that is your plan, tourist operation requires specific permits and a classification: check whether the riad already has them and what it would take to obtain them.",
         ],
       },
     ],
     faq: [
-      { q: "What is a riad?", a: "A traditional Moroccan house built around an inner, often planted courtyard, with rooms opening onto it and a roof terrace. Most are found in the medina." },
+      { q: "What is a riad?", a: "A traditional Moroccan house built around an inner, often planted courtyard, with rooms opening onto it and a roof terrace." },
       { q: "Why does the land title matter so much for a riad?", a: "The land title guarantees ownership and surface area, recorded at the Land Registry. A property held only under a “melkia” is riskier and must be registered, which takes time." },
-      { q: "Can a foreigner buy a riad in the medina?", a: "Yes. As a general rule, foreigners can buy a riad outright. The notary checks the property’s status and chain of ownership before signing." },
-      { q: "Can I renovate a riad freely?", a: "No. Building work in the medina requires permits and must respect the traditional architecture. Look into it before buying if the riad needs work." },
+      { q: "Can a foreigner buy a riad?", a: "Yes. As a general rule, foreigners can buy a riad outright. The notary checks the property’s status and chain of ownership before signing." },
+      { q: "Can I renovate a riad freely?", a: "Not always: work may require permits and must respect the character of the building. Look into it before buying if the riad needs work." },
       { q: "Can a riad become a guesthouse?", a: "Yes, but tourist activity requires permits and a classification. Check whether the riad already operates legally, or what it would take." },
     ],
-    areas: ["Medina"],
+    areas: [],
   },
 
   "vente-maisons": {
     title: "House for sale in Marrakech",
-    description: "Houses for sale in and around Marrakech: houses with garden, town houses, Palmeraie. Properties visited by our agency.",
+    description: "Houses for sale in and around Marrakech, including a traditional house with a garden in Ennakhil (Palmeraie). Visited by our agency.",
     eyebrow: "For sale · Houses",
     h1: "Houses for sale in Marrakech",
-    answer: "In Marrakech, houses for sale are detached homes that are simpler or more compact than a villa: houses with a garden on the outskirts, as in the Palmeraie, or town houses in residential areas. Here are the houses currently offered by Live In Marrakech.",
+    answer: "In Marrakech, houses for sale are detached homes that are simpler or more compact than a villa: houses with a garden on the outskirts, as in the Palmeraie, or town houses in residential areas.",
     sections: [
       {
         heading: "House or villa: what’s the difference?",
@@ -196,8 +196,8 @@ const copy: Record<LandingId, LandingCopy> = {
   },
 
   "vente-terrains": {
-    title: "Land for sale in Marrakech: building plots",
-    description: "Land for sale in Marrakech: building plots, subdivisions, large plots on the outskirts. What to check before you buy.",
+    title: "Land for sale in Marrakech",
+    description: "Buying land in Marrakech: planning note, land title, utilities. Describe your project and we will search for you.",
     eyebrow: "For sale · Land",
     h1: "Land for sale in Marrakech",
     answer: "Buying land in Marrakech lets you build a villa to your own design. Before any purchase, ask the Urban Agency for the planning information note to know what can be built, and check the land title. Agricultural land follows specific rules for foreign buyers.",
@@ -233,8 +233,8 @@ const copy: Record<LandingId, LandingCopy> = {
   },
 
   location: {
-    title: "Long-term rental in Marrakech: apartments and villas",
-    description: "Long-term rentals in Marrakech: apartments and villas to rent by the year, furnished or unfurnished. Properties visited by our agency, quick reply on WhatsApp.",
+    title: "Long-term rentals in Marrakech: villas & apartments",
+    description: "Villas and apartments for long-term rent in Marrakech, furnished or not: 1-year lease, monthly rent shown, in-person or video viewings.",
     eyebrow: "Rent by the year",
     h1: "Long-term rentals in Marrakech",
     answer: "Live In Marrakech offers apartments and villas to rent long term in Marrakech, furnished or unfurnished. The monthly rent is shown on each listing. We support tenants, expats and residents alike, from the viewing to signing the lease.",
@@ -271,11 +271,11 @@ const copy: Record<LandingId, LandingCopy> = {
   },
 
   "location-appartements": {
-    title: "Long-term apartment rental in Marrakech: furnished or not",
-    description: "Apartments to rent long term in Marrakech, furnished or unfurnished: Gueliz, Hivernage, Agdal, residences with pool. Monthly rent shown, quick viewings.",
+    title: "Long-term apartment rental in Marrakech, furnished or not",
+    description: "Apartments for long-term rent in Marrakech, in Chrifia or at the Prestigia golf estate: monthly rent shown, 1-year lease, ID is all you need.",
     eyebrow: "Long-term rental · Apartments",
     h1: "Apartments for long-term rent in Marrakech",
-    answer: "To rent an apartment long term in Marrakech, the most sought-after areas are Gueliz, Hivernage and Agdal, along with gated residences with a pool on the outskirts. Apartments come furnished or unfurnished, with a monthly rent. Here are the apartments currently available at Live In Marrakech.",
+    answer: "To rent an apartment long term in Marrakech, the most sought-after areas are Gueliz, Hivernage and Agdal, along with gated residences with a pool on the outskirts. Apartments come furnished or unfurnished, with a monthly rent.",
     sections: [
       {
         heading: "Which area to rent in?",
@@ -309,11 +309,11 @@ const copy: Record<LandingId, LandingCopy> = {
   },
 
   "location-villas": {
-    title: "Long-term villa rental in Marrakech: villas with pool",
-    description: "Villas to rent long term in Marrakech: Palmeraie, Fez road, Ourika road. Villas with pool and garden, monthly rent shown.",
+    title: "Long-term villa rental in Marrakech with private pool",
+    description: "Villas with a pool for long-term rent in Marrakech, on the Fez road and the Sidi Rahal road: monthly rent shown, 1-year lease minimum.",
     eyebrow: "Long-term rental · Villas",
     h1: "Villas for long-term rent in Marrakech",
-    answer: "Villas for long-term rent in Marrakech are mainly in the Palmeraie and along the Fez, Ourika and Amizmiz roads, with a garden and a private pool. Rent is shown per month. Here are the villas currently offered for long-term rental by Live In Marrakech.",
+    answer: "Villas for long-term rent in Marrakech are mainly in the Palmeraie and along the Fez, Ourika and Amizmiz roads, with a garden and a private pool. Rent is shown per month.",
     sections: [
       {
         heading: "Where to rent a villa in Marrakech?",
