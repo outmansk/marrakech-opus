@@ -8,7 +8,7 @@ import facts from "./propertyFacts.json";
 type Facts = { zone?: ZoneId; meuble?: boolean };
 const FACTS = facts as unknown as Record<string, Facts>;
 
-export type ZoneId = "route-de-fes" | "sidi-rahal" | "chrifia" | "golf" | "palmeraie" | "village-touristique";
+export type ZoneId = "route-de-fes" | "sidi-rahal" | "chrifia" | "golf" | "palmeraie" | "village-touristique" | "medina";
 
 export const ZONES: Record<ZoneId, { label: Record<Lang, string>; text: Record<Lang, string> }> = {
   "route-de-fes": {
@@ -59,12 +59,21 @@ export const ZONES: Record<ZoneId, { label: Record<Lang, string>; text: Record<L
       es: "En el Village Touristique, nuestro riad está en una zona tranquila, a pocos minutos de Gueliz según el anuncio.",
     },
   },
+  medina: {
+    label: { fr: "Médina", en: "Medina", es: "Medina" },
+    text: {
+      fr: "Au cœur de la ville historique, la médina de Marrakech est le quartier des riads, organisés autour d’un patio. Notre riad se trouve dans le secteur Touareg.",
+      en: "In the heart of the historic city, the Marrakech medina is the home of riads, built around a central patio. Our riad is in the Touareg area.",
+      es: "En el corazón de la ciudad histórica, la medina de Marrakech es el barrio de los riads, construidos alrededor de un patio. Nuestro riad está en el sector Touareg.",
+    },
+  },
 };
 
 const QUARTIER_TO_ZONE: Record<string, ZoneId> = {
   "Route de Fes": "route-de-fes",
   Chrifia: "chrifia",
   Palmeraie: "palmeraie",
+  Medina: "medina",
 };
 
 /** Zone of a property: from its quartier, else from the confirmed facts file. */
@@ -86,6 +95,7 @@ const ZONE_IN: Record<ZoneId, Record<Lang, string>> = {
   golf: { fr: "dans le secteur des golfs", en: "in the golf area", es: "en la zona de los golfs" },
   palmeraie: { fr: "à la Palmeraie", en: "in the Palmeraie", es: "en la Palmeraie" },
   "village-touristique": { fr: "au Village Touristique", en: "in the Village Touristique", es: "en el Village Touristique" },
+  medina: { fr: "dans la médina", en: "in the medina", es: "en la medina" },
 };
 
 /** "sur la route de Fès", "in Chrifia"…: the area with the right preposition, for sentences. */
