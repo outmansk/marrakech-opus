@@ -1,0 +1,13 @@
+{
+  "_comment": "Displayed title of a property (H1, cards, structured data): its name plus what makes it different, per language. Display only: the page address is still built from properties_v2.titre, so it never changes. Do not repeat what the card already shows (price, furnished, bedrooms, area). A title saved in the admin for EN/ES still wins.",
+  "ccb89162-f950-4f65-b33b-2d1f7a551153": {
+    "fr": "Villa Machmam, piscine et jardin de 800 m² en résidence sécurisée",
+    "en": "Villa Machmam: pool and 800 m² garden in a gated residence",
+    "es": "Villa Machmam: piscina y jardín de 800 m² en urbanización vigilada"
+  },
+  "97560a47-a9c0-4014-863a-af48298b0bed": {
+    "fr": "Villa Elhaj, piscine et grand jardin au cœur d’une ferme",
+    "en": "Villa Elhaj: pool and large garden on a working farm",
+    "es": "Villa Elhaj: piscina y gran jardín dentro de una finca agrícola"
+  }
+}

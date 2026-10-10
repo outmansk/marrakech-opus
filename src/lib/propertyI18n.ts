@@ -2,6 +2,7 @@ import type { Bien, BienService, BienType } from "@/types/property";
 import type { Lang } from "@/i18n/routing";
 import { getServices } from "@/lib/propertyServices";
 import suggestions from "@/content/propertyTranslations.json";
+import headlines from "@/content/propertyHeadlines.json";
 import { inZone, zoneLabel } from "@/content/zones";
 
 // Property texts and labels in the visitor's language.
@@ -11,6 +12,8 @@ import { inZone, zoneLabel } from "@/content/zones";
 
 type TextFields = { titre: string; description_courte: string; description_longue: string };
 const SUGGESTED = suggestions as unknown as Record<string, Partial<Record<Lang, TextFields>>>;
+/** Displayed titles (name + what makes the property different); the URL keeps using properties_v2.titre. */
+const HEADLINES = headlines as unknown as Record<string, Partial<Record<Lang, string>>>;
 
 export interface PropertyText extends TextFields {
   /** False when /en or /es has to fall back to the French text. */
@@ -18,7 +21,7 @@ export interface PropertyText extends TextFields {
 }
 
 export function propertyText(bien: Bien, lang: Lang): PropertyText {
-  const fr = { titre: bien.titre, description_courte: bien.description_courte ?? "", description_longue: bien.description_longue ?? "" };
+  const fr = { titre: HEADLINES[bien.id]?.fr || bien.titre, description_courte: bien.description_courte ?? "", description_longue: bien.description_longue ?? "" };
   if (lang === "fr") return { ...fr, translated: true };
   const fromDb = {
     titre: bien[`titre_${lang}`] ?? "",
@@ -26,7 +29,7 @@ export function propertyText(bien: Bien, lang: Lang): PropertyText {
     description_longue: bien[`description_longue_${lang}`] ?? "",
   };
   const suggested = SUGGESTED[bien.id]?.[lang];
-  const titre = fromDb.titre || suggested?.titre || "";
+  const titre = fromDb.titre || HEADLINES[bien.id]?.[lang] || suggested?.titre || "";
   if (!titre) return { ...fr, translated: false };
   return {
     titre,
