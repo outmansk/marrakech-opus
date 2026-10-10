@@ -63,7 +63,7 @@ export default function About() {
         <h2>{tL("Nos règles de location à l’année", "Our long-term rental rules", "Nuestras condiciones de alquiler")}</h2>
         <ul>
           <li>{tL("Bail d’un an minimum.", "One-year minimum lease.", "Contrato de un año como mínimo.")}</li>
-          <li>{tL("Dépôt de garantie : deux mois de loyer pour un logement meublé, un mois pour un logement vide.", "Security deposit: two months’ rent for a furnished home, one month for an unfurnished one.", "Fianza: dos meses de alquiler para una vivienda amueblada, un mes para una sin amueblar.")}</li>
+          <li>{tL("Dépôt de garantie : un mois de loyer, meublé ou vide.", "Security deposit: one month’s rent, furnished or unfurnished.", "Fianza: un mes de alquiler, amueblada o sin amueblar.")}</li>
           <li>{tL("Document demandé : un passeport ou une carte d’identité, rien d’autre.", "Document required: a passport or a national ID card, nothing else.", "Documento necesario: un pasaporte o un documento de identidad, nada más.")}</li>
           <li>{tL("Visite sur place ou en vidéo sur WhatsApp.", "In-person or video viewings on WhatsApp.", "Visita en persona o por vídeo en WhatsApp.")}</li>
         </ul>

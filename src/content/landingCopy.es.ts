@@ -249,7 +249,7 @@ const copy: Record<LandingId, LandingCopy> = {
       {
         heading: "Cómo funciona un alquiler de larga duración",
         paragraphs: [
-          "Tras la visita, propietario e inquilino firman un contrato escrito; los arrendamientos de vivienda se rigen por la Ley n.º 67-12. La fianza, a menudo de uno o dos meses de alquiler, y la primera mensualidad se pagan a la firma. Estas condiciones se negocian con cada propietario.",
+          "Tras la visita, propietario e inquilino firman un contrato escrito; los arrendamientos de vivienda se rigen por la Ley n.º 67-12. La fianza (un mes de alquiler en nuestros inmuebles) y la primera mensualidad se pagan a la firma.",
           "Tenga preparados su pasaporte o documento de identidad y justificantes de ingresos. Se hace un inventario de entrada y de salida, idealmente con fotos.",
         ],
       },
@@ -262,7 +262,7 @@ const copy: Record<LandingId, LandingCopy> = {
     ],
     faq: [
       { q: "¿Qué documentos se necesitan para alquilar en Marrakech?", a: "Un documento de identidad o pasaporte y, en general, justificantes de ingresos o un aval. El propietario puede pedir documentos adicionales." },
-      { q: "¿Cuánto es la fianza?", a: "A menudo de uno a dos meses de alquiler, a acordar con el propietario y a precisar en el contrato." },
+      { q: "¿Cuánto es la fianza?", a: "En nuestros inmuebles, la fianza es de un mes de alquiler, amueblado o sin amueblar. Se indica en el contrato." },
       { q: "¿Los suministros están incluidos en el alquiler?", a: "Depende del inmueble. Agua, electricidad e internet suelen correr a cargo del inquilino; los gastos de la residencia pueden estar incluidos o no. La ficha o el contrato lo precisan." },
       { q: "¿Se puede alquilar a distancia antes de llegar a Marruecos?", a: "Sí. Hacemos una visita en vídeo por WhatsApp y preparamos el contrato; la firma y el inventario se hacen a su llegada." },
       { q: "¿Cuánto dura un contrato de larga duración?", a: "Lo más habitual es un año renovable, pero se pueden acordar otras duraciones con el propietario." },

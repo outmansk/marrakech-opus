@@ -249,7 +249,7 @@ const copy: Record<LandingId, LandingCopy> = {
       {
         heading: "How a long-term rental works",
         paragraphs: [
-          "After the viewing, a written lease is signed between landlord and tenant; residential leases are governed by Law No. 67-12. The security deposit, often one or two months’ rent, and the first month are paid on signing. These terms are of course negotiated with each landlord.",
+          "After the viewing, a written lease is signed between landlord and tenant; residential leases are governed by Law No. 67-12. The security deposit (one month’s rent for our properties) and the first month are paid on signing.",
           "Have your passport or ID and proof of income ready. A check-in inventory, ideally with photos, is done when you move in and out.",
         ],
       },
@@ -262,7 +262,7 @@ const copy: Record<LandingId, LandingCopy> = {
     ],
     faq: [
       { q: "What documents do I need to rent in Marrakech?", a: "An ID or passport, and usually proof of income or a guarantee. The landlord may ask for additional documents." },
-      { q: "How much is the security deposit?", a: "Often one to two months’ rent, to be agreed with the landlord and written into the lease." },
+      { q: "How much is the security deposit?", a: "For our properties, the security deposit is one month’s rent, furnished or unfurnished. It is written into the lease." },
       { q: "Are utilities included in the rent?", a: "It depends on the property. Water, electricity and internet are usually paid by the tenant; residence charges may or may not be included. The listing or the lease specifies this." },
       { q: "Can I rent remotely before arriving in Morocco?", a: "Yes. We do a video viewing on WhatsApp and prepare the lease; signing and the check-in inventory take place when you arrive." },
       { q: "How long is a long-term lease?", a: "Usually one year, renewable, but other durations can be agreed with the landlord." },

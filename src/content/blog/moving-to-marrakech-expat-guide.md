@@ -69,4 +69,4 @@ It is the safest approach: renting by the year lets you get to know the areas da
 
 ### What documents do I need to rent with Live In Marrakech?
 
-A passport or a national ID card is enough. The lease is one year minimum, and the security deposit is one month’s rent for an unfurnished home or two months for a furnished one.
+A passport or a national ID card is enough. The lease is one year minimum, and the security deposit is one month’s rent, furnished or unfurnished.

@@ -50,7 +50,7 @@ Le tableau complet des URL indexables (statut, title et nombre de caractères, m
   - une FAQ générée, également en JSON-LD FAQPage.
 - Seules les règles confirmées sont utilisées :
   - bail d'un an minimum ;
-  - caution de 2 mois en meublé, 1 mois en vide ;
+  - caution d’un mois de loyer, meublé ou vide (règle mise à jour le 10/10/2026, auparavant 2 mois en meublé) ;
   - passeport ou carte d'identité uniquement.
 
 ### Phase 5 — Blog

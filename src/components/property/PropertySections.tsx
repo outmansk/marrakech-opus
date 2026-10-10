@@ -210,10 +210,8 @@ export function RentalTerms({ property }: { property: Bien }) {
   const tL = useLocalizedText();
   const rent = property.prix_location_longue;
   const furnished = furnishedOf(property);
-  const months = furnished === null ? null : furnished ? 2 : 1;
-  const deposit = months === null
-    ? tL("2 mois (meublé) · 1 mois (vide)", "2 months (furnished) · 1 month (unfurnished)", "2 meses (amueblado) · 1 mes (sin amueblar)")
-    : `${months === 2 ? tL("2 mois de loyer", "2 months’ rent", "2 meses de alquiler") : tL("1 mois de loyer", "1 month’s rent", "1 mes de alquiler")}${rent ? ` (${formatPrice(rent * months, property.devise)})` : ""}`;
+  // Confirmed rule: one month's rent, furnished or not.
+  const deposit = `${tL("1 mois de loyer", "1 month’s rent", "1 mes de alquiler")}${rent ? ` (${formatPrice(rent, property.devise)})` : ""}`;
   const rows = [
     { label: tL("Durée du bail", "Lease", "Contrato"), value: tL("1 an minimum", "1 year minimum", "1 año como mínimo") },
     ...(furnished !== null ? [{ label: tL("Logement", "Home", "Vivienda"), value: furnished ? tL("Meublé", "Furnished", "Amueblado") : tL("Vide (non meublé)", "Unfurnished", "Sin amueblar") }] : []),

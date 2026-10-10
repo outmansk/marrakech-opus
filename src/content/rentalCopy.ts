@@ -1,7 +1,7 @@
 import type { Lang } from "@/i18n/routing";
 
 // Long-term rental pages: texts built from the listings and from the rules confirmed by the agency
-// (1-year lease minimum; deposit 2 months furnished / 1 month unfurnished; passport or ID card only).
+// (1-year lease minimum; deposit 1 month's rent, furnished or not; passport or ID card only).
 // No market averages: every figure is computed from the available listings.
 
 export const PHONE_DISPLAY = "+212 6 05 38 70 41";
@@ -56,17 +56,17 @@ export function rentalSections(lang: Lang) {
       paragraphs: {
         fr: [
           "Un logement meublé est livré avec le mobilier et l’équipement nécessaires pour s’installer rapidement. Un logement vide se loue sans mobilier : vous apportez le vôtre.",
-          "Chez Live In Marrakech, le bail est d’un an minimum dans les deux cas. Le dépôt de garantie est de deux mois de loyer pour un meublé et d’un mois pour un logement vide. Le badge « Meublé » ou « Vide » l’indique sur chaque annonce dès que l’information est renseignée.",
+          "Chez Live In Marrakech, le bail est d’un an minimum dans les deux cas. Le dépôt de garantie est d’un mois de loyer, meublé ou vide. Le badge « Meublé » ou « Vide » l’indique sur chaque annonce dès que l’information est renseignée.",
           "Avant de signer, faites l’inventaire du mobilier et de l’électroménager pour un meublé, et vérifiez la climatisation et le chauffage dans tous les cas.",
         ],
         en: [
           "A furnished home comes with the furniture and equipment you need to move in quickly. An unfurnished home is rented without furniture: you bring your own.",
-          "At Live In Marrakech, the lease is one year minimum in both cases. The security deposit is two months’ rent for a furnished home and one month for an unfurnished one. A “Furnished” or “Unfurnished” badge shows it on each listing once the information is filled in.",
+          "At Live In Marrakech, the lease is one year minimum in both cases. The security deposit is one month’s rent, furnished or unfurnished. A “Furnished” or “Unfurnished” badge shows it on each listing once the information is filled in.",
           "Before signing, check the furniture and appliance inventory of a furnished home, and test the air conditioning and heating in every case.",
         ],
         es: [
           "Una vivienda amueblada se entrega con los muebles y el equipamiento necesarios para instalarse rápido. Una vivienda sin amueblar se alquila vacía: usted aporta sus muebles.",
-          "En Live In Marrakech, el contrato es de un año como mínimo en ambos casos. La fianza es de dos meses de alquiler para una vivienda amueblada y de un mes para una sin amueblar. La etiqueta « Amueblado » o « Sin amueblar » lo indica en cada anuncio cuando el dato está informado.",
+          "En Live In Marrakech, el contrato es de un año como mínimo en ambos casos. La fianza es de un mes de alquiler, amueblada o sin amueblar. La etiqueta « Amueblado » o « Sin amueblar » lo indica en cada anuncio cuando el dato está informado.",
           "Antes de firmar, revise el inventario de muebles y electrodomésticos de una vivienda amueblada, y compruebe el aire acondicionado y la calefacción en todos los casos.",
         ],
       }[lang],
@@ -94,19 +94,19 @@ export function rentalSections(lang: Lang) {
           ["Décrivez votre recherche", "Budget, zone, nombre de chambres, meublé ou vide : remplissez le formulaire ou écrivez-nous sur WhatsApp."],
           ["Recevez une sélection", "Nous vous envoyons les biens qui correspondent, y compris ceux qui ne sont pas encore en ligne."],
           ["Visitez sur place ou en vidéo", "Visite privée à Marrakech, ou en direct sur WhatsApp si vous êtes encore à l’étranger."],
-          ["Signez le bail", "Bail d’un an minimum, dépôt de garantie (un mois en vide, deux mois en meublé) et une pièce d’identité : passeport ou carte d’identité."],
+          ["Signez le bail", "Bail d’un an minimum, dépôt de garantie d’un mois de loyer et une pièce d’identité : passeport ou carte d’identité."],
         ],
         en: [
           ["Describe your search", "Budget, area, number of bedrooms, furnished or not: fill in the form or message us on WhatsApp."],
           ["Get a selection", "We send you the matching homes, including some that are not online yet."],
           ["Visit in person or by video", "A private viewing in Marrakech, or live on WhatsApp if you are still abroad."],
-          ["Sign the lease", "One-year lease minimum, a security deposit (one month unfurnished, two months furnished) and one ID: passport or national ID card."],
+          ["Sign the lease", "One-year lease minimum, a security deposit of one month’s rent and one ID: passport or national ID card."],
         ],
         es: [
           ["Describa su búsqueda", "Presupuesto, zona, número de dormitorios, amueblado o no: rellene el formulario o escríbanos por WhatsApp."],
           ["Reciba una selección", "Le enviamos los inmuebles que encajan, incluidos algunos que aún no están publicados."],
           ["Visite en persona o por vídeo", "Visita privada en Marrakech, o en directo por WhatsApp si todavía está en el extranjero."],
-          ["Firme el contrato", "Contrato de un año como mínimo, fianza (un mes sin amueblar, dos meses amueblado) y un documento: pasaporte o documento de identidad."],
+          ["Firme el contrato", "Contrato de un año como mínimo, fianza de un mes de alquiler y un documento: pasaporte o documento de identidad."],
         ],
       }[lang],
     },
@@ -188,21 +188,21 @@ export function rentalFaq(lang: Lang, f: RentalFacts): { q: string; a: string }[
 
   const fixed = {
     fr: [
-      { q: "Peut-on louer meublé à l’année ?", a: "Oui. Une partie de nos biens se loue meublée, avec un bail d’un an minimum comme pour une location vide. Le statut meublé ou vide est indiqué sur chaque annonce dès qu’il est renseigné. Pour un logement meublé, le dépôt de garantie est de deux mois de loyer." },
-      { q: "Quels documents faut-il pour louer ?", a: "Un passeport ou une carte d’identité suffit. Nous ne demandons pas d’autre document pour louer à l’année avec Live In Marrakech. Le bail est signé pour un an minimum, et le dépôt de garantie est d’un mois de loyer en vide ou de deux mois en meublé." },
-      { q: "Quelle est la caution ?", a: "Le dépôt de garantie est d’un mois de loyer pour un logement vide et de deux mois pour un logement meublé. Il est restitué en fin de bail, selon l’état des lieux de sortie comparé à celui de l’entrée. Son montant exact figure dans le bail d’un an." },
+      { q: "Peut-on louer meublé à l’année ?", a: "Oui. Une partie de nos biens se loue meublée, avec un bail d’un an minimum comme pour une location vide. Le statut meublé ou vide est indiqué sur chaque annonce dès qu’il est renseigné. Le dépôt de garantie est d’un mois de loyer, comme pour un logement vide." },
+      { q: "Quels documents faut-il pour louer ?", a: "Un passeport ou une carte d’identité suffit. Nous ne demandons pas d’autre document pour louer à l’année avec Live In Marrakech. Le bail est signé pour un an minimum, et le dépôt de garantie est d’un mois de loyer, meublé ou vide." },
+      { q: "Quelle est la caution ?", a: "Le dépôt de garantie est d’un mois de loyer, que le logement soit meublé ou vide. Il est restitué en fin de bail, selon l’état des lieux de sortie comparé à celui de l’entrée. Son montant exact figure dans le bail d’un an." },
       { q: "Peut-on visiter à distance ?", a: `Oui. Nous organisons des visites en vidéo en direct sur WhatsApp, au ${PHONE_DISPLAY}, pour que vous voyiez le bien avant de venir à Marrakech. La visite sur place et la signature du bail d’un an peuvent ensuite se faire à votre arrivée.` },
     ],
     en: [
-      { q: "Can I rent a furnished home for a year?", a: "Yes. Some of our homes are rented furnished, with a one-year minimum lease just like an unfurnished rental. Each listing shows whether it is furnished or unfurnished once the information is filled in. For a furnished home, the security deposit is two months’ rent." },
-      { q: "What documents do I need to rent?", a: "A passport or a national ID card is enough. We ask for no other document to rent long term with Live In Marrakech. The lease is signed for one year minimum, and the security deposit is one month’s rent unfurnished or two months furnished." },
-      { q: "How much is the security deposit?", a: "The security deposit is one month’s rent for an unfurnished home and two months for a furnished one. It is returned at the end of the lease, based on the check-out inventory compared with the check-in one. The exact amount is written in the one-year lease." },
+      { q: "Can I rent a furnished home for a year?", a: "Yes. Some of our homes are rented furnished, with a one-year minimum lease just like an unfurnished rental. Each listing shows whether it is furnished or unfurnished once the information is filled in. The security deposit is one month’s rent, as for an unfurnished home." },
+      { q: "What documents do I need to rent?", a: "A passport or a national ID card is enough. We ask for no other document to rent long term with Live In Marrakech. The lease is signed for one year minimum, and the security deposit is one month’s rent, furnished or unfurnished." },
+      { q: "How much is the security deposit?", a: "The security deposit is one month’s rent, whether the home is furnished or unfurnished. It is returned at the end of the lease, based on the check-out inventory compared with the check-in one. The exact amount is written in the one-year lease." },
       { q: "Can I view a home remotely?", a: `Yes. We run live video viewings on WhatsApp, on ${PHONE_DISPLAY}, so you can see the home before coming to Marrakech. The in-person visit and the signing of the one-year lease can then take place when you arrive.` },
     ],
     es: [
-      { q: "¿Se puede alquilar amueblado por un año?", a: "Sí. Parte de nuestros inmuebles se alquila amueblada, con un contrato de un año como mínimo, igual que un alquiler sin amueblar. Cada anuncio indica si está amueblado o no cuando el dato está informado. Para una vivienda amueblada, la fianza es de dos meses de alquiler." },
-      { q: "¿Qué documentos se necesitan para alquilar?", a: "Basta con un pasaporte o un documento de identidad. No pedimos ningún otro documento para alquilar por años con Live In Marrakech. El contrato se firma por un año como mínimo, y la fianza es de un mes de alquiler sin amueblar o de dos meses amueblado." },
-      { q: "¿Cuánto es la fianza?", a: "La fianza es de un mes de alquiler para una vivienda sin amueblar y de dos meses para una amueblada. Se devuelve al final del contrato, según el estado de salida comparado con el de entrada. El importe exacto figura en el contrato de un año." },
+      { q: "¿Se puede alquilar amueblado por un año?", a: "Sí. Parte de nuestros inmuebles se alquila amueblada, con un contrato de un año como mínimo, igual que un alquiler sin amueblar. Cada anuncio indica si está amueblado o no cuando el dato está informado. La fianza es de un mes de alquiler, igual que sin amueblar." },
+      { q: "¿Qué documentos se necesitan para alquilar?", a: "Basta con un pasaporte o un documento de identidad. No pedimos ningún otro documento para alquilar por años con Live In Marrakech. El contrato se firma por un año como mínimo, y la fianza es de un mes de alquiler, amueblado o sin amueblar." },
+      { q: "¿Cuánto es la fianza?", a: "La fianza es de un mes de alquiler, tanto si la vivienda está amueblada como si no. Se devuelve al final del contrato, según el estado de salida comparado con el de entrada. El importe exacto figura en el contrato de un año." },
       { q: "¿Se puede visitar a distancia?", a: `Sí. Hacemos visitas en vídeo en directo por WhatsApp, en el ${PHONE_DISPLAY}, para que vea el inmueble antes de venir a Marrakech. La visita presencial y la firma del contrato de un año pueden hacerse después, a su llegada.` },
     ],
   }[lang];

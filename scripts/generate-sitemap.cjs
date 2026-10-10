@@ -179,7 +179,7 @@ function readFileArticles() {
 // ── Confirmed rental rules (from the owner, Oct 2026) — keep in sync with the site texts ──
 const RENTAL_RULES = [
   'Long-term rental: 1-year lease minimum.',
-  'Security deposit: 2 months of rent for a furnished home, 1 month for an unfurnished one.',
+  'Security deposit: 1 month of rent, furnished or unfurnished.',
   'Documents required from the tenant: passport or national ID card only.',
 ];
 const CONTACT = { phone: '+212 6 05 38 70 41', email: 'contact@liveinmarrakech.com' };
