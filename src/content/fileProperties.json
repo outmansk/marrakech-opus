@@ -80,14 +80,14 @@
         "Meublé"
       ],
       "photos": [
+        "/biens/riad-medina-touareg/patio-vue-du-dessus.webp",
         "/biens/riad-medina-touareg/piscine-interieure.webp",
         "/biens/riad-medina-touareg/patio.webp",
-        "/biens/riad-medina-touareg/patio-vue-du-dessus.webp",
         "/biens/riad-medina-touareg/chambre-double.webp",
         "/biens/riad-medina-touareg/chambre-triple.webp",
         "/biens/riad-medina-touareg/chambre-triple-2.webp"
       ],
-      "photo_principale": "/biens/riad-medina-touareg/piscine-interieure.webp",
+      "photo_principale": "/biens/riad-medina-touareg/patio-vue-du-dessus.webp",
       "proximites": [],
       "statut": "publie",
       "disponible_le": null,
