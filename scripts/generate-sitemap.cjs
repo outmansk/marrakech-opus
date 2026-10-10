@@ -22,6 +22,14 @@ const LANDINGS = require('../src/content/landings.json');
 const SUGGESTED_TRANSLATIONS = require('../src/content/propertyTranslations.json');
 // Area of a property when its quartier is empty (same data as src/content/zones.ts).
 const PROPERTY_FACTS = require('../src/content/propertyFacts.json');
+const PROPERTY_OVERRIDES = require('../src/content/propertyOverrides.json');
+// Same rule as src/lib/propertyOverrides.ts: confirmed corrections apply until the row is edited in the admin.
+const withOverrides = (p) => {
+  const o = PROPERTY_OVERRIDES[p.id];
+  if (!o || !p.updated_at || new Date(p.updated_at) > new Date(o.dbUpdatedAt)) return p;
+  const fields = Object.fromEntries(Object.entries(o.fields).filter(([key]) => key in p));
+  return { ...p, ...fields };
+};
 const ZONE_NAMES = { 'route-de-fes': 'Fez road', 'sidi-rahal': 'Sidi Rahal road', chrifia: 'Chrifia', golf: 'golf area (Prestigia)', palmeraie: 'Palmeraie (Ennakhil)', 'village-touristique': 'Village Touristique' };
 const QUARTIER_ZONES = { 'Route de Fes': 'route-de-fes', Chrifia: 'chrifia', Palmeraie: 'palmeraie' };
 const areaOf = (p) => ZONE_NAMES[QUARTIER_ZONES[(p.quartier || '').trim()] || PROPERTY_FACTS[p.id]?.zone] || (p.quartier || '').trim() || null;
@@ -272,6 +280,7 @@ async function main() {
   let properties = await supabaseQuery('properties_v2', `${baseColumns},titre_en,titre_es`, '&statut=eq.publie');
   if (!properties.length) properties = await supabaseQuery('properties_v2', baseColumns, '&statut=eq.publie'); // before the translation columns exist
 
+  properties = properties.map(withOverrides);
   console.log(`  📦  ${properties.length} propriétés disponibles`);
   console.log(`  📝  ${articles.length} articles publiés\n`);
 

@@ -1,4 +1,5 @@
 import { queryOptions, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { withOverrides } from "@/lib/propertyOverrides";
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import type { Bien, BienInsert, BienUpdate } from '@/types/property';
@@ -58,7 +59,7 @@ export const propertiesQueryOptions = (filters?: PropertyFilters) => queryOption
 
     const { data, error } = await query;
     if (error) throw error;
-    return (data ?? []) as Bien[];
+    return ((data ?? []) as Bien[]).map(withOverrides);
   },
 });
 
@@ -67,7 +68,7 @@ export const propertyQueryOptions = (id: string | null) => queryOptions<Bien>({
   queryFn: async () => {
     const { data, error } = await supabase.from(TABLE).select('*').eq('id', id!).single();
     if (error) throw error;
-    return data as Bien;
+    return withOverrides(data as Bien);
   },
   enabled: !!id,
 });

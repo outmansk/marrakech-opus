@@ -609,7 +609,7 @@ const PropertyDetail = () => {
                     <p className="text-sm font-light text-muted-foreground leading-relaxed">
                       {unavailable
                         ? tL("Ce bien n'est plus disponible. Contactez-nous : nous vous proposerons des biens similaires.", "This property is no longer available. Contact us and we will suggest similar properties.", "Este inmueble ya no está disponible. Contáctenos y le propondremos inmuebles similares.")
-                        : tL("Ce bien vous intéresse ? Nos experts sont à votre disposition pour organiser une visite privée.", "Interested in this property? Our team can arrange a private viewing.", "¿Le interesa este inmueble? Nuestro equipo puede organizar una visita privada.")}
+                        : tL("Ce bien vous intéresse ? Nous organisons la visite, sur place ou en vidéo sur WhatsApp.", "Interested in this property? We arrange the viewing, in person or by video on WhatsApp.", "¿Le interesa este inmueble? Organizamos la visita, en persona o por vídeo en WhatsApp.")}
                     </p>
                   </div>
 
