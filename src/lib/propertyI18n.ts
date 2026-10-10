@@ -2,7 +2,7 @@ import type { Bien, BienService, BienType } from "@/types/property";
 import type { Lang } from "@/i18n/routing";
 import { getServices } from "@/lib/propertyServices";
 import suggestions from "@/content/propertyTranslations.json";
-import { zoneLabel } from "@/content/zones";
+import { inZone, zoneLabel } from "@/content/zones";
 
 // Property texts and labels in the visitor's language.
 // Texts: the translated columns of properties_v2 (edited in the admin) win; while they are empty,
@@ -150,7 +150,7 @@ export function propertyMetaDescription(bien: Bien, lang: Lang) {
     headlinePrice(bien, lang),
   ].filter(Boolean).join(", ");
   const cta = pick(lang, "Visite et infos sur WhatsApp.", "Book a visit on WhatsApp.", "Visita e info por WhatsApp.");
-  const text = [type, service].filter(Boolean).join(" ") + pick(lang, " à ", " in ", " en ") + zoneLabel(bien, lang);
+  const text = `${[type, service].filter(Boolean).join(" ")} ${inZone(bien, lang)}`;
   const full = `${text}${facts ? `${lang === "fr" ? " : " : ": "}${facts}` : ""}. ${cta}`;
   return full.length <= 155 ? full : `${full.slice(0, 152).replace(/\s+\S*$/, "")}…`;
 }

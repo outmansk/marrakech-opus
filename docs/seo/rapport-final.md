@@ -123,7 +123,7 @@ Le tableau complet des URL indexables (statut, title et nombre de caractères, m
 | villa avec piscine himri (`himri`) | Statut « vendu-loué ». Les surfaces sont inversées par rapport au texte. Le texte dit « non meublée », mais le champ meublé n'est pas renseigné. |
 | Villa Swigya (DP-26-A1VZZ) | `prix_location_longue` et `prix_location_courte` sont remplis alors que ces services ne sont pas cochés. |
 | 6 biens sans quartier | DP-26-IJT6K, DP-26-Y32KM, DP-26-CH2SX, DP-26-E0KBE, REF-APP-AMBR-582, REF-RIA-VILL-841. Pour l'affichage, la zone est déduite du texte de l'annonce (`propertyFacts.json`). |
-| **Villa Machmam** | Absente de la base. À créer : meublée, 16 500 DH/mois. |
+| **Villa Machmam** | Absente de la base. **Publiée depuis le code** (`src/content/fileProperties.json`) le 10/10/2026 : meublée, 16 500 DH/mois. À créer dans l’admin plus tard, puis supprimer l’entrée du fichier. |
 
 ## 4. Biens dont le statut meublé est vide (`meuble = null`)
 

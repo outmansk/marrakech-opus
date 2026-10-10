@@ -23,6 +23,8 @@ const SUGGESTED_TRANSLATIONS = require('../src/content/propertyTranslations.json
 // Area of a property when its quartier is empty (same data as src/content/zones.ts).
 const PROPERTY_FACTS = require('../src/content/propertyFacts.json');
 const PROPERTY_OVERRIDES = require('../src/content/propertyOverrides.json');
+// Properties written in the code before they exist in the database (src/lib/fileProperties.ts).
+const FILE_PROPERTIES = require('../src/content/fileProperties.json').properties;
 // Same rule as src/lib/propertyOverrides.ts: confirmed corrections apply until the row is edited in the admin.
 const withOverrides = (p) => {
   const o = PROPERTY_OVERRIDES[p.id];
@@ -61,6 +63,7 @@ const CLOUD_NAME = env.VITE_CLOUDINARY_CLOUD_NAME;
 // Photos are stored as Cloudinary public_ids (legacy rows may hold full URLs).
 function imageUrl(idOrUrl) {
   if (/^https?:\/\//.test(idOrUrl)) return idOrUrl;
+  if (idOrUrl.startsWith('/')) return `${SITE_URL}${idOrUrl}`; // photo stored in public/
   return CLOUD_NAME ? `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${idOrUrl}` : null;
 }
 
@@ -281,6 +284,7 @@ async function main() {
   if (!properties.length) properties = await supabaseQuery('properties_v2', baseColumns, '&statut=eq.publie'); // before the translation columns exist
 
   properties = properties.map(withOverrides);
+  properties.push(...FILE_PROPERTIES.filter((p) => p.statut === 'publie' && !properties.some((row) => row.id === p.id)));
   console.log(`  📦  ${properties.length} propriétés disponibles`);
   console.log(`  📝  ${articles.length} articles publiés\n`);
 

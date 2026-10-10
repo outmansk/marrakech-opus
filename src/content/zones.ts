@@ -79,6 +79,22 @@ export function zoneLabel(property: Pick<Bien, "id" | "quartier">, lang: Lang) {
   return zone ? ZONES[zone].label[lang] : property.quartier?.trim() || "Marrakech";
 }
 
+const ZONE_IN: Record<ZoneId, Record<Lang, string>> = {
+  "route-de-fes": { fr: "sur la route de Fès", en: "on the Fez road", es: "en la carretera de Fez" },
+  "sidi-rahal": { fr: "sur la route de Sidi Rahal", en: "on the Sidi Rahal road", es: "en la carretera de Sidi Rahal" },
+  chrifia: { fr: "à Chrifia", en: "in Chrifia", es: "en Chrifia" },
+  golf: { fr: "dans le secteur des golfs", en: "in the golf area", es: "en la zona de los golfs" },
+  palmeraie: { fr: "à la Palmeraie", en: "in the Palmeraie", es: "en la Palmeraie" },
+  "village-touristique": { fr: "au Village Touristique", en: "in the Village Touristique", es: "en el Village Touristique" },
+};
+
+/** "sur la route de Fès", "in Chrifia"…: the area with the right preposition, for sentences. */
+export function inZone(property: Pick<Bien, "id" | "quartier">, lang: Lang) {
+  const zone = zoneOf(property);
+  if (zone) return ZONE_IN[zone][lang];
+  return `${lang === "fr" ? "à" : lang === "en" ? "in" : "en"} ${property.quartier?.trim() || "Marrakech"}`;
+}
+
 /** Furnished status: database first, then the facts confirmed by the agency; null = not specified. */
 export function furnishedOf(property: Pick<Bien, "id" | "meuble">): boolean | null {
   if (property.meuble === true || property.meuble === false) return property.meuble;

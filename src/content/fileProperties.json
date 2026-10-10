@@ -1,0 +1,46 @@
+{
+  "_comment": "Properties confirmed by the agency but not yet created in the database. Shown on the public site (listings, landing pages, property page, pre-render, sitemap) exactly like database rows; photos live in public/biens/<slug>/. Not shown in the admin. Once the property is created in the admin, delete its entry here (and keep the photos or re-upload them to Cloudinary).",
+  "properties": [
+    {
+      "id": "ccb89162-f950-4f65-b33b-2d1f7a551153",
+      "titre": "Villa Machmam",
+      "type": "villa",
+      "services": ["location-longue-duree"],
+      "service": "location-longue-duree",
+      "prix_vente": null,
+      "prix_location_longue": 16500,
+      "prix_location_courte": null,
+      "prix": null,
+      "devise": "MAD",
+      "surface_habitable": 150,
+      "surface_terrain": 800,
+      "chambres": 3,
+      "salles_de_bain": 3,
+      "quartier": "Route de Fes",
+      "meuble": true,
+      "description_courte": "Villa meublée de 3 suites à louer à l’année dans une résidence sécurisée de la route de Fès : piscine, jardin de 800 m², salon avec cheminée.",
+      "description_longue": "Villa meublée à louer à l’année (location longue durée), dans une résidence sécurisée 24 h/24 et 7 j/7 sur la route de Fès, à 18 km de Marrakech. Loyer : 16 500 DH par mois.\n\nLa villa (150 m²)\n• 3 suites, chacune avec sa salle de bain\n• Grand salon avec cheminée\n• Cuisine équipée ouverte sur le salon\n• Entièrement meublée\n\nL’extérieur\n• Piscine privée entourée de transats\n• Jardin de 800 m² planté d’oliviers, de palmiers et de lauriers-roses\n• Pergola avec salon et table à manger extérieurs\n\nLa résidence\nLa villa se trouve dans une résidence fermée et gardée jour et nuit, au calme, à l’écart de la ville.\n\nConditions\n• Bail d’un an minimum\n• Caution : 2 mois de loyer (logement meublé)\n• Document demandé : passeport ou carte d’identité\n\nUne villa prête à vivre pour une famille ou un couple qui cherche l’espace, une piscine et la sécurité d’une résidence, à 18 km de Marrakech. Visite sur place ou en vidéo sur WhatsApp.",
+      "equipements": ["Piscine", "Jardin", "Cheminée", "Cuisine équipée", "Gardiennage 24/7", "Meublé"],
+      "photos": [
+        "/biens/villa-machmam/piscine-jardin.webp",
+        "/biens/villa-machmam/salon.webp",
+        "/biens/villa-machmam/pergola-salon-exterieur.webp",
+        "/biens/villa-machmam/facade-jardin.webp",
+        "/biens/villa-machmam/suite.webp",
+        "/biens/villa-machmam/cuisine.webp",
+        "/biens/villa-machmam/salle-de-bain.webp",
+        "/biens/villa-machmam/jardin.webp",
+        "/biens/villa-machmam/transats-piscine.webp"
+      ],
+      "photo_principale": "/biens/villa-machmam/piscine-jardin.webp",
+      "proximites": [],
+      "statut": "publie",
+      "disponible_le": null,
+      "reference": "DP-26-MCHMM",
+      "latitude": null,
+      "longitude": null,
+      "created_at": "2026-10-10T09:00:00+00:00",
+      "updated_at": "2026-10-10T09:00:00+00:00"
+    }
+  ]
+}

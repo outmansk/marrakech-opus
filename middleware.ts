@@ -8,6 +8,7 @@
  * Every other request continues untouched.
  */
 import { propertyPath } from "./src/lib/propertyUrl";
+import fileProperties from "./src/content/fileProperties.json";
 
 export const config = {
   matcher: ["/bien/:id", "/en/bien/:id", "/es/bien/:id"],
@@ -22,6 +23,8 @@ export default async function middleware(request: Request) {
 
   const [, lang, id] = match;
   const prefix = lang ? `/${lang}` : "";
+  const file = fileProperties.properties.find((property) => property.id === id);
+  if (file) return Response.redirect(new URL(`${prefix}${propertyPath(file)}`, url.origin), 301);
   const supabaseUrl = process.env.VITE_SUPABASE_URL;
   const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !anonKey) return; // the page still redirects in the browser
