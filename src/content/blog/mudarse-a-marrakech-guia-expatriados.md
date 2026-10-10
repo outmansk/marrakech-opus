@@ -69,4 +69,4 @@ Es lo más prudente: alquilar por un año permite conocer los barrios en el día
 
 ### ¿Qué documentos necesito para alquilar con Live In Marrakech?
 
-Basta con un pasaporte o un documento de identidad. El contrato es de un año como mínimo, y la fianza es de un mes de alquiler sin amueblar o de dos meses amueblado.
+Basta con un pasaporte o un documento de identidad. El contrato es de un año como mínimo, y la fianza es de un mes de alquiler, amueblado o sin amueblar.

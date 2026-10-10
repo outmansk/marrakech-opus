@@ -250,7 +250,7 @@ const copy: Record<LandingId, LandingCopy> = {
       {
         heading: "Comment se passe une location à l’année",
         paragraphs: [
-          "Après la visite, un bail écrit est signé entre le propriétaire et le locataire ; les baux d’habitation sont encadrés par la loi n° 67-12. Le dépôt de garantie, souvent d’un ou deux mois de loyer, et le premier loyer sont réglés à la signature. Ces conditions se négocient bien sûr avec chaque propriétaire.",
+          "Après la visite, un bail écrit est signé entre le propriétaire et le locataire ; les baux d’habitation sont encadrés par la loi n° 67-12. Le dépôt de garantie (un mois de loyer pour nos biens) et le premier loyer sont réglés à la signature.",
           "Préparez votre passeport ou votre pièce d’identité et des justificatifs de revenus. Un état des lieux, idéalement avec photos, est fait à l’entrée et à la sortie.",
         ],
       },
@@ -263,7 +263,7 @@ const copy: Record<LandingId, LandingCopy> = {
     ],
     faq: [
       { q: "Quels documents faut-il pour louer à Marrakech ?", a: "Une pièce d’identité ou un passeport, et en général des justificatifs de revenus ou une garantie. Le propriétaire peut demander des pièces complémentaires." },
-      { q: "Combien de caution faut-il prévoir ?", a: "Le dépôt de garantie représente souvent un à deux mois de loyer, à négocier avec le propriétaire et à préciser dans le bail." },
+      { q: "Combien de caution faut-il prévoir ?", a: "Pour nos biens, le dépôt de garantie est d’un mois de loyer, meublé ou vide. Il est indiqué dans le bail." },
       { q: "Les charges sont-elles comprises dans le loyer ?", a: "Cela dépend du bien. En général l’eau, l’électricité et Internet sont à la charge du locataire ; les charges de résidence peuvent être incluses ou non. Chaque fiche ou le bail le précise." },
       { q: "Peut-on louer à distance avant d’arriver au Maroc ?", a: "Oui. Nous faisons une visite vidéo sur WhatsApp et préparons le bail ; la signature et l’état des lieux se font à votre arrivée." },
       { q: "Quelle est la durée d’un bail longue durée ?", a: "Le plus souvent un an renouvelable, mais d’autres durées peuvent être convenues avec le propriétaire." },

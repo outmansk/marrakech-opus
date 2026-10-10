@@ -16,6 +16,7 @@ import { supabase } from "./lib/supabase";
 import { propertyIdFromParam, propertyPath } from "./lib/propertyUrl";
 import { propertiesQueryOptions, propertyQueryOptions } from "./hooks/useBiens";
 import { FILE_PROPERTIES } from "./lib/fileProperties";
+import { SIMILAR_QUERY } from "./lib/propertyDetail";
 import { articleQueryOptions, publishedArticlesQueryOptions } from "./hooks/useArticles";
 import { withFileArticles } from "./content/blog";
 import type { Article } from "./types/article";
@@ -68,7 +69,13 @@ async function prefetch(queryClient: QueryClient, url: string) {
   }
   else if (path === "/") await queryClient.prefetchQuery(propertiesQueryOptions({ statut: "publie" }));
   else if (section === "catalogue" || section === "a-propos") await queryClient.prefetchQuery(propertiesQueryOptions({ statut: ["publie", "vendu-loue"] }));
-  else if (section === "bien" && param) await queryClient.prefetchQuery(propertyQueryOptions(propertyIdFromParam(param)));
+  else if (section === "bien" && param) {
+    // The property and the list its "similar properties" are picked from.
+    await Promise.all([
+      queryClient.prefetchQuery(propertyQueryOptions(propertyIdFromParam(param))),
+      queryClient.prefetchQuery(propertiesQueryOptions(SIMILAR_QUERY)),
+    ]);
+  }
   else if (section === "blog" && param) await queryClient.prefetchQuery(articleQueryOptions(param));
   else if (section === "blog") await queryClient.prefetchQuery(publishedArticlesQueryOptions(lang));
 }

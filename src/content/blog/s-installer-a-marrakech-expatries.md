@@ -69,4 +69,4 @@ C’est le plus prudent : louer à l’année permet de découvrir les quartiers
 
 ### Quels documents faut-il pour louer avec Live In Marrakech ?
 
-Un passeport ou une carte d’identité suffit. Le bail est d’un an minimum, et le dépôt de garantie est d’un mois de loyer pour un logement vide ou de deux mois pour un logement meublé.
+Un passeport ou une carte d’identité suffit. Le bail est d’un an minimum, et le dépôt de garantie est d’un mois de loyer, meublé ou vide.
