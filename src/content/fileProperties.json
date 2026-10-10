@@ -5,7 +5,9 @@
       "id": "ccb89162-f950-4f65-b33b-2d1f7a551153",
       "titre": "Villa Machmam",
       "type": "villa",
-      "services": ["location-longue-duree"],
+      "services": [
+        "location-longue-duree"
+      ],
       "service": "location-longue-duree",
       "prix_vente": null,
       "prix_location_longue": 16500,
@@ -20,7 +22,14 @@
       "meuble": true,
       "description_courte": "Villa meublée de 3 suites à louer à l’année dans une résidence sécurisée de la route de Fès : piscine, jardin de 800 m², salon avec cheminée.",
       "description_longue": "Villa meublée à louer à l’année (location longue durée), dans une résidence sécurisée 24 h/24 et 7 j/7 sur la route de Fès, à 18 km de Marrakech. Loyer : 16 500 DH par mois.\n\nLa villa (150 m²)\n• 3 suites, chacune avec sa salle de bain\n• Grand salon avec cheminée\n• Cuisine équipée ouverte sur le salon\n• Entièrement meublée\n\nL’extérieur\n• Piscine privée entourée de transats\n• Jardin de 800 m² planté d’oliviers, de palmiers et de lauriers-roses\n• Pergola avec salon et table à manger extérieurs\n\nLa résidence\nLa villa se trouve dans une résidence fermée et gardée jour et nuit, au calme, à l’écart de la ville.\n\nConditions\n• Bail d’un an minimum\n• Caution : 1 mois de loyer\n• Document demandé : passeport ou carte d’identité\n\nUne villa prête à vivre pour une famille ou un couple qui cherche l’espace, une piscine et la sécurité d’une résidence, à 18 km de Marrakech. Visite sur place ou en vidéo sur WhatsApp.",
-      "equipements": ["Piscine", "Jardin", "Cheminée", "Cuisine équipée", "Gardiennage 24/7", "Meublé"],
+      "equipements": [
+        "Piscine",
+        "Jardin",
+        "Cheminée",
+        "Cuisine équipée",
+        "Gardiennage 24/7",
+        "Meublé"
+      ],
       "photos": [
         "/biens/villa-machmam/piscine-jardin.webp",
         "/biens/villa-machmam/salon.webp",
@@ -41,6 +50,45 @@
       "longitude": null,
       "created_at": "2026-10-10T09:00:00+00:00",
       "updated_at": "2026-10-10T09:00:00+00:00"
+    },
+    {
+      "id": "f0590681-c07d-4fdb-88b0-b480e958b40a",
+      "titre": "Riad d’hôtes Médina Touareg",
+      "type": "riad",
+      "services": [
+        "vente"
+      ],
+      "service": "vente",
+      "prix_vente": 5400000,
+      "prix_location_longue": null,
+      "prix_location_courte": null,
+      "prix": null,
+      "devise": "MAD",
+      "surface_habitable": null,
+      "surface_terrain": 103,
+      "chambres": 5,
+      "salles_de_bain": 5,
+      "quartier": "Medina",
+      "meuble": true,
+      "description_courte": "Riad d’hôtes titré à vendre dans la médina de Marrakech : 5 chambres avec salle de bain, patio avec piscine chauffée et jacuzzi, toit-terrasse. Vendu meublé, en activité.",
+      "description_longue": "Riad d’hôtes à vendre dans la médina de Marrakech, secteur Touareg. Titre foncier, autorisation de maison d’hôtes active, vendu entièrement meublé et équipé, sans travaux à prévoir. Prix : 5 400 000 DH.\n\nLe riad\n• 5 chambres climatisées, chacune avec sa salle de bain privative\n• Salon, salle de restauration et cuisine équipée\n• Capacité d’accueil : jusqu’à 12 personnes\n• Superficie au sol : 103 m²\n\nLe patio et le toit\n• Patio avec piscine chauffée et jacuzzi\n• Toit-terrasse aménagé avec solarium\n\nUne maison d’hôtes en activité\nL’établissement reçoit des clients aujourd’hui et il est noté 9,9/10 sur Booking. Il est vendu avec son mobilier et son équipement, sans travaux à prévoir.\n\nConditions de vente\n• Prix : 5 400 000 DH\n• Honoraires d’agence : 2,5 %\n• Statut juridique : titre foncier\n• Visite sur place ou en vidéo sur WhatsApp\n\nUn riad prêt à l’emploi pour reprendre une maison d’hôtes de la médina avec la sécurité d’un titre foncier.",
+      "equipements": [
+        "Piscine",
+        "Climatisation",
+        "Cuisine équipée",
+        "Terrasse",
+        "Meublé"
+      ],
+      "photos": [],
+      "photo_principale": null,
+      "proximites": [],
+      "statut": "publie",
+      "disponible_le": null,
+      "reference": "DP-26-RDTRG",
+      "latitude": null,
+      "longitude": null,
+      "created_at": "2026-10-10T15:00:00+00:00",
+      "updated_at": "2026-10-10T15:00:00+00:00"
     }
   ]
 }
