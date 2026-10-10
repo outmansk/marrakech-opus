@@ -59,7 +59,7 @@
         "vente"
       ],
       "service": "vente",
-      "prix_vente": 5400000,
+      "prix_vente": 5800000,
       "prix_location_longue": null,
       "prix_location_courte": null,
       "prix": null,
@@ -70,8 +70,8 @@
       "salles_de_bain": 5,
       "quartier": "Medina",
       "meuble": true,
-      "description_courte": "Riad d’hôtes titré à vendre dans la médina de Marrakech : 5 chambres avec salle de bain, patio avec piscine chauffée et jacuzzi, toit-terrasse. Vendu meublé, en activité.",
-      "description_longue": "Riad d’hôtes à vendre dans la médina de Marrakech, secteur Touareg. Titre foncier, autorisation de maison d’hôtes active, vendu entièrement meublé et équipé, sans travaux à prévoir. Prix : 5 400 000 DH.\n\nLe riad\n• 5 chambres climatisées, chacune avec sa salle de bain privative\n• Salon, salle de restauration et cuisine équipée\n• Capacité d’accueil : jusqu’à 12 personnes\n• Superficie au sol : 103 m²\n\nLe patio et le toit\n• Patio avec piscine chauffée et jacuzzi\n• Toit-terrasse aménagé avec solarium\n\nUne maison d’hôtes en activité\nL’établissement reçoit des clients aujourd’hui et il est noté 9,9/10 sur Booking. Il est vendu avec son mobilier et son équipement, sans travaux à prévoir.\n\nConditions de vente\n• Prix : 5 400 000 DH\n• Honoraires d’agence : 2,5 %\n• Statut juridique : titre foncier\n• Visite sur place ou en vidéo sur WhatsApp\n\nUn riad prêt à l’emploi pour reprendre une maison d’hôtes de la médina avec la sécurité d’un titre foncier.",
+      "description_courte": "Riad d’hôtes titré à vendre dans la médina, à 2 minutes de Jemaa el-Fna : 5 chambres avec salle de bain, piscine chauffée et jacuzzi, toit-terrasse. Rénové en 2023, vendu meublé.",
+      "description_longue": "Riad d’hôtes à vendre dans la médina de Marrakech, secteur Touareg, à 2 minutes à pied de Jemaa el-Fna. Titre foncier, autorisation de maison d’hôtes active, rénové en 2023 et vendu entièrement meublé et équipé : aucun travaux à prévoir. Prix : 5 800 000 DH.\n\nLe riad (2 niveaux)\n• 5 chambres climatisées avec salle de bain privative : 3 chambres triples et 2 chambres doubles\n• Salon, salle de restauration et cuisine équipée\n• Capacité d’accueil : jusqu’à 12 personnes\n• Superficie au sol : 103 m²\n\nLe patio et le toit\n• Patio en zellige avec fontaine\n• Piscine chauffée et jacuzzi\n• Toit-terrasse aménagé avec solarium\n\nUne maison d’hôtes en activité\nL’établissement reçoit des clients aujourd’hui et il est noté 9,9/10 sur Booking. Rénové en 2023, il est vendu avec son mobilier et son équipement.\n\nAccès\nAu cœur de la médina, à 2 minutes à pied de Jemaa el-Fna. Le riad n’est pas accessible en voiture jusqu’à la porte, comme la plupart des riads de la médina.\n\nConditions de vente\n• Prix : 5 800 000 DH\n• Honoraires d’agence : 2,5 %\n• Statut juridique : titre foncier\n• Visite sur place ou en vidéo sur WhatsApp\n\nUn riad prêt à l’emploi pour reprendre une maison d’hôtes à deux pas de Jemaa el-Fna, avec la sécurité d’un titre foncier.",
       "equipements": [
         "Piscine",
         "Climatisation",
@@ -79,8 +79,15 @@
         "Terrasse",
         "Meublé"
       ],
-      "photos": [],
-      "photo_principale": null,
+      "photos": [
+        "/biens/riad-medina-touareg/piscine-interieure.webp",
+        "/biens/riad-medina-touareg/patio.webp",
+        "/biens/riad-medina-touareg/patio-vue-du-dessus.webp",
+        "/biens/riad-medina-touareg/chambre-double.webp",
+        "/biens/riad-medina-touareg/chambre-triple.webp",
+        "/biens/riad-medina-touareg/chambre-triple-2.webp"
+      ],
+      "photo_principale": "/biens/riad-medina-touareg/piscine-interieure.webp",
       "proximites": [],
       "statut": "publie",
       "disponible_le": null,
