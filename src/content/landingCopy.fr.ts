@@ -56,13 +56,13 @@ const copy: Record<LandingId, LandingCopy> = {
     description: "Villas à vendre à Marrakech, route de Fès ou route de Sidi Rahal : piscine, jardin, photos et prix affichés sur chaque annonce.",
     eyebrow: "Vente · Villas",
     h1: "Villas à vendre à Marrakech",
-    answer: "Les villas à vendre à Marrakech se trouvent surtout en périphérie de la ville, dans la Palmeraie, sur la route de Fès, la route de l’Ourika et la route d’Amizmiz, souvent avec jardin et piscine privée.",
+    answer: "Nos villas à vendre à Marrakech se trouvent en périphérie de la ville, sur la route de Fès et sur la route de Sidi Rahal, avec jardin et piscine privée. Chaque annonce affiche le prix, les photos et les surfaces.",
     sections: [
       {
         heading: "Où acheter une villa à Marrakech ?",
         paragraphs: [
           "La Palmeraie, au nord-est de la ville, reste l’adresse historique des grandes villas : terrains arborés, calme, proximité des golfs et accès rapide au centre. La route de Fès prolonge ce cadre avec de vastes propriétés, souvent sur plusieurs milliers de mètres carrés.",
-          "Au sud, la route de l’Ourika et la route d’Amizmiz offrent des villas plus récentes avec vue sur l’Atlas, dans un environnement plus rural. Plus près du centre, quelques villas existent à l’Hivernage, à Targa ou à Agdal, sur des parcelles plus petites mais à quelques minutes des commerces.",
+          "À l’est, la route de Sidi Rahal offre des villas au calme, sans vis-à-vis, dont certaines avec une vue panoramique sur l’Atlas.",
         ],
       },
       {
@@ -80,7 +80,7 @@ const copy: Record<LandingId, LandingCopy> = {
       },
     ],
     faq: [
-      { q: "Dans quel quartier acheter une villa à Marrakech ?", a: "La Palmeraie et la route de Fès pour les grandes propriétés au calme, la route de l’Ourika et la route d’Amizmiz pour les villas récentes avec vue sur l’Atlas, l’Hivernage ou Agdal pour être proche du centre." },
+      { q: "Dans quel quartier acheter une villa à Marrakech ?", a: "Nos villas à vendre sont sur la route de Fès pour les grandes propriétés au calme, et sur la route de Sidi Rahal pour la vue sur l’Atlas sans vis-à-vis. La liste ci-dessus montre les biens disponibles aujourd’hui." },
       { q: "Les villas sont-elles vendues meublées ?", a: "Cela dépend du propriétaire. Certaines villas sont vendues meublées et équipées, d’autres vides ; c’est indiqué sur chaque fiche ou précisé à la demande." },
       { q: "Quels documents vérifier avant d’acheter une villa ?", a: "Le certificat de propriété du titre foncier, le plan cadastral, le permis de construire et le permis d’habiter, ainsi que l’absence d’hypothèque. Votre notaire contrôle ces pièces avant la signature." },
       { q: "Peut-on louer sa villa quand on ne l’occupe pas ?", a: "Oui, la location longue durée est la plus simple à mettre en place. Pour la location saisonnière, des autorisations et une déclaration des revenus sont nécessaires : renseignez-vous avant l’achat." },

@@ -55,13 +55,13 @@ const copy: Record<LandingId, LandingCopy> = {
     description: "Villas en venta en Marrakech, en la carretera de Fez y la de Sidi Rahal: piscina, jardín, fotos y precio indicados en cada anuncio.",
     eyebrow: "Venta · Villas",
     h1: "Villas en venta en Marrakech",
-    answer: "Las villas en venta en Marrakech están sobre todo en las afueras de la ciudad, en la Palmeraie y en las carreteras de Fez, Ourika y Amizmiz, normalmente con jardín y piscina privada.",
+    answer: "Nuestras villas en venta en Marrakech están en las afueras de la ciudad, en la carretera de Fez y la carretera de Sidi Rahal, con jardín y piscina privada. Cada anuncio muestra el precio, las fotos y las superficies.",
     sections: [
       {
         heading: "¿Dónde comprar una villa en Marrakech?",
         paragraphs: [
           "La Palmeraie, al noreste de la ciudad, es la dirección histórica de las grandes villas: jardines frondosos, tranquilidad, campos de golf cercanos y acceso rápido al centro. La carretera de Fez continúa en la misma línea, con grandes fincas de varios miles de metros cuadrados.",
-          "Al sur, las carreteras de Ourika y de Amizmiz ofrecen villas más recientes con vistas al Atlas, en un entorno más rural. Más cerca del centro hay algunas villas en Hivernage, Targa o Agdal, en parcelas más pequeñas pero a pocos minutos de los comercios.",
+          "Al este, la carretera de Sidi Rahal ofrece villas tranquilas, sin vecinos a la vista, algunas con vistas panorámicas al Atlas.",
         ],
       },
       {
@@ -79,7 +79,7 @@ const copy: Record<LandingId, LandingCopy> = {
       },
     ],
     faq: [
-      { q: "¿En qué barrio comprar una villa en Marrakech?", a: "La Palmeraie y la carretera de Fez para grandes propiedades tranquilas; las carreteras de Ourika y Amizmiz para villas recientes con vistas al Atlas; Hivernage o Agdal para estar cerca del centro." },
+      { q: "¿En qué barrio comprar una villa en Marrakech?", a: "Nuestras villas en venta están en la carretera de Fez para grandes propiedades tranquilas, y en la carretera de Sidi Rahal para vistas al Atlas sin vecinos a la vista. La lista de arriba muestra los inmuebles disponibles hoy." },
       { q: "¿Las villas se venden amuebladas?", a: "Depende del propietario. Algunas se venden amuebladas y equipadas, otras vacías; se indica en cada ficha o se confirma a petición." },
       { q: "¿Qué documentos revisar antes de comprar una villa?", a: "El certificado de propiedad del título, el plano catastral, la licencia de obra y el permiso de habitar, y que no haya hipoteca. Su notario controla estos documentos antes de la firma." },
       { q: "¿Puedo alquilar mi villa cuando no la uso?", a: "Sí. El alquiler de larga duración es el más sencillo. El alquiler vacacional requiere autorizaciones y declarar los ingresos: infórmese antes de comprar." },

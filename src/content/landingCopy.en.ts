@@ -55,13 +55,13 @@ const copy: Record<LandingId, LandingCopy> = {
     description: "Villas for sale in Marrakech on the Fez road and the Sidi Rahal road: pool, garden, photos and price shown on every listing.",
     eyebrow: "For sale · Villas",
     h1: "Villas for sale in Marrakech",
-    answer: "Villas for sale in Marrakech are mainly on the outskirts of the city, in the Palmeraie and along the Fez, Ourika and Amizmiz roads, usually with a garden and a private pool.",
+    answer: "Our villas for sale in Marrakech are on the outskirts of the city, on the Fez road and the Sidi Rahal road, with a garden and a private pool. Every listing shows the price, photos and floor areas.",
     sections: [
       {
         heading: "Where to buy a villa in Marrakech?",
         paragraphs: [
           "The Palmeraie, north-east of the city, is the historic address for large villas: mature gardens, quiet surroundings, golf courses nearby and quick access to the centre. The Fez road continues in the same spirit, with large estates often covering several thousand square metres.",
-          "To the south, the Ourika and Amizmiz roads offer newer villas with views of the Atlas mountains in a more rural setting. Closer to town, a few villas can be found in Hivernage, Targa or Agdal, on smaller plots but minutes from shops.",
+          "To the east, the Sidi Rahal road offers quiet villas with no overlooking neighbours, some with a panoramic view of the Atlas.",
         ],
       },
       {
@@ -79,7 +79,7 @@ const copy: Record<LandingId, LandingCopy> = {
       },
     ],
     faq: [
-      { q: "Which area is best to buy a villa in Marrakech?", a: "The Palmeraie and the Fez road for large, quiet properties; the Ourika and Amizmiz roads for newer villas with Atlas views; Hivernage or Agdal to be close to the centre." },
+      { q: "Which area is best to buy a villa in Marrakech?", a: "Our villas for sale are on the Fez road for large, quiet properties, and on the Sidi Rahal road for Atlas views with no overlooking neighbours. The list above shows the properties available today." },
       { q: "Are villas sold furnished?", a: "It depends on the owner. Some villas are sold furnished and equipped, others empty; this is shown on each listing or confirmed on request." },
       { q: "Which documents should I check before buying a villa?", a: "The land title certificate, the cadastral plan, the building permit and the certificate of occupancy, and that there is no mortgage. Your notary checks these before signing." },
       { q: "Can I rent out my villa when I’m not there?", a: "Yes. Long-term rental is the simplest to set up. Holiday lets require permits and declaring the income: look into it before buying." },
