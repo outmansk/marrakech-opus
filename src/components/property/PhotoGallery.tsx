@@ -7,12 +7,14 @@ import { useLocalizedText } from "@/hooks/useLocalizedText";
 /**
  * Property photos. Mobile: full-width carousel swiped with the finger (CSS scroll snap, works
  * without JavaScript), badges on top, photo counter and "see the gallery" button.
- * Desktop: mosaic (large photo + 4). Both open a full-screen viewer.
+ * Arrows on both sides show the previous / next photo.
+ * Desktop: mosaic (large photo + 4), with arrows on the large photo. Both open a full-screen viewer.
  */
 export default function PhotoGallery({ images, alt, badges }: { images: string[]; alt: string; badges?: ReactNode }) {
   const tL = useLocalizedText();
   const [index, setIndex] = useState(0);
   const [viewer, setViewer] = useState<number | null>(null);
+  const [main, setMain] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);
   const count = images.length;
 
@@ -20,6 +22,16 @@ export default function PhotoGallery({ images, alt, badges }: { images: string[]
     const track = trackRef.current;
     if (track) setIndex(Math.round(track.scrollLeft / track.clientWidth));
   };
+  // Mobile: scroll the carousel one photo left or right (loops at both ends).
+  const slide = (step: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const next = (index + step + count) % count;
+    track.scrollTo({ left: next * track.clientWidth, behavior: "smooth" });
+  };
+  const arrow = "absolute top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-background/90 text-primary shadow-md backdrop-blur-md transition-colors hover:bg-background";
+  const prevLabel = tL("Photo précédente", "Previous photo", "Foto anterior");
+  const nextLabel = tL("Photo suivante", "Next photo", "Foto siguiente");
   const photoAlt = (i: number) => (i === 0 ? alt : `${alt} — ${tL("photo", "photo", "foto")} ${i + 1}`);
   // Mosaic: large photo + 4 (or + 2 when there are fewer photos).
   const shown = count >= 5 ? 5 : count >= 3 ? 3 : 1;
@@ -50,6 +62,16 @@ export default function PhotoGallery({ images, alt, badges }: { images: string[]
         </div>
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/10" />
         {badges && <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">{badges}</div>}
+        {count > 1 && (
+          <>
+            <button type="button" onClick={() => slide(-1)} className={`${arrow} left-3`} aria-label={prevLabel}>
+              <ChevronLeft size={22} strokeWidth={1.75} />
+            </button>
+            <button type="button" onClick={() => slide(1)} className={`${arrow} right-3`} aria-label={nextLabel}>
+              <ChevronRight size={22} strokeWidth={1.75} />
+            </button>
+          </>
+        )}
         <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
           <span className="flex items-center gap-1.5 rounded-md bg-black/55 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-md">
             <Camera size={14} strokeWidth={1.75} aria-hidden="true" />
@@ -71,17 +93,17 @@ export default function PhotoGallery({ images, alt, badges }: { images: string[]
       {/* Desktop mosaic */}
       <div className="container mx-auto hidden px-6 md:block md:px-12">
         <div className={`relative grid h-[460px] gap-2 overflow-hidden rounded-xl ${mosaic}`}>
-          {images.slice(0, shown).map((src, i) => (
+          {[images[main], ...images.slice(1, shown)].map((src, i) => (
             <button
               key={`${src}-${i}`}
               type="button"
-              onClick={() => setViewer(i)}
+              onClick={() => setViewer(i === 0 ? main : i)}
               className={`group relative overflow-hidden bg-muted ${i === 0 && shown > 1 ? "row-span-2" : ""}`}
               aria-label={tL(`Agrandir la photo ${i + 1}`, `Enlarge photo ${i + 1}`, `Ampliar la foto ${i + 1}`)}
             >
               <OptimizedImage
                 src={src}
-                alt={photoAlt(i)}
+                alt={photoAlt(i === 0 ? main : i)}
                 eager={i === 0}
                 size={i === 0 ? "hero" : "card"}
                 className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
@@ -90,6 +112,18 @@ export default function PhotoGallery({ images, alt, badges }: { images: string[]
             </button>
           ))}
           {badges && <div className="absolute left-4 top-4 flex flex-wrap gap-1.5">{badges}</div>}
+          {count > 1 && (
+            // Arrows on the large photo (left column of the mosaic).
+            <div className={`pointer-events-none absolute inset-y-0 left-0 ${shown === 5 ? "w-1/2" : shown === 3 ? "w-2/3" : "w-full"}`}>
+              <button type="button" onClick={() => setMain((main - 1 + count) % count)} className={`${arrow} pointer-events-auto left-4`} aria-label={prevLabel}>
+                <ChevronLeft size={22} strokeWidth={1.75} />
+              </button>
+              <button type="button" onClick={() => setMain((main + 1) % count)} className={`${arrow} pointer-events-auto right-4`} aria-label={nextLabel}>
+                <ChevronRight size={22} strokeWidth={1.75} />
+              </button>
+              <span className="absolute bottom-4 left-4 rounded-md bg-black/55 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-md">{main + 1} / {count}</span>
+            </div>
+          )}
           {count > 1 && (
             <button
               type="button"
