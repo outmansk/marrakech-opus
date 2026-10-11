@@ -101,6 +101,9 @@ const PLACES: Record<string, [string, string]> = {
   "Quartier de l'Hivernage": ["Hivernage district", "Barrio de Hivernage"],
   "Jardin Majorelle": ["Majorelle Garden", "Jardín Majorelle"],
   "Place Jemaa el-Fna": ["Jemaa el-Fna Square", "Plaza Jemaa el-Fna"],
+  "Boulangerie Josef": ["Josef bakery", "Panadería Josef"],
+  Atacadão: ["Atacadão hypermarket", "Hipermercado Atacadão"],
+  Atacadao: ["Atacadão hypermarket", "Hipermercado Atacadão"],
 };
 export function placeName(place: string, lang: Lang) {
   const entry = PLACES[place.trim()];

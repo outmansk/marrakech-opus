@@ -243,7 +243,7 @@ const PropertyDetail = () => {
                 <h1 className="font-serif text-[30px] leading-[1.15] text-foreground md:text-5xl">{text.titre}</h1>
                 <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
                   <MapPin size={16} strokeWidth={1.75} className="text-primary" aria-hidden="true" />
-                  {zoneLabel(property, lang)}, Marrakech
+                  {zoneLabel(property, lang) === "Marrakech" ? "Marrakech" : `${zoneLabel(property, lang)}, Marrakech`}
                 </p>
 
                 {mainPrice && (

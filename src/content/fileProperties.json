@@ -96,6 +96,70 @@
       "longitude": null,
       "created_at": "2026-10-10T15:00:00+00:00",
       "updated_at": "2026-10-10T15:00:00+00:00"
+    },
+    {
+      "id": "5e990dd2-cd67-487b-a201-f0b46b7721e3",
+      "titre": "Villa Bouzar",
+      "type": "villa",
+      "services": [
+        "vente"
+      ],
+      "service": "vente",
+      "prix_vente": 5000000,
+      "prix_location_longue": null,
+      "prix_location_courte": null,
+      "prix": null,
+      "devise": "MAD",
+      "surface_habitable": 420,
+      "surface_terrain": 2500,
+      "chambres": 5,
+      "salles_de_bain": 5,
+      "quartier": null,
+      "meuble": null,
+      "description_courte": "Villa de 420 m² à vendre sur un terrain de 2 500 m² : 5 chambres avec salle de bain, piscine privée, jardin d’oliviers, cheminée. 5 000 000 DH non meublée, 5 300 000 DH meublée.",
+      "description_longue": "Villa à vendre à Marrakech sur un terrain de 2 500 m², avec 420 m² habitables, piscine privée et grand jardin planté d’oliviers et de palmiers. Prix : 5 000 000 DH non meublée, 5 300 000 DH meublée.\n\nLa villa (420 m²)\n• 5 chambres avec salle de bain, télévision, placards et climatisation\n• Salon et séjour avec cheminée\n• Cuisine équipée\n• Sols en marbre et grandes baies vitrées ouvertes sur la piscine\n• Petite chambre pour le gardien\n\nL’extérieur (2 500 m²)\n• Piscine privée bordée de transats et de parasols\n• Jardin arboré : oliviers, palmiers et pelouse\n• Terrasse avec table à manger extérieure\n• Balcon à l’étage avec vue sur la piscine et le jardin\n• Parking privé\n\nÀ proximité\n• Boulangerie Josef : 3 km\n• Palais Bleu : 6 km\n• Atacadão : 12 km\n\nConditions de vente\n• Non meublée : 5 000 000 DH\n• Meublée : 5 300 000 DH\n• Visite sur place ou en vidéo sur WhatsApp\n\nUne grande villa familiale au calme, avec un vrai jardin et une piscine, pour vivre à l’année à Marrakech ou y recevoir famille et amis.",
+      "equipements": [
+        "Piscine",
+        "Jardin",
+        "Climatisation",
+        "Cuisine équipée",
+        "Cheminée",
+        "Parking",
+        "Terrasse"
+      ],
+      "photos": [
+        "/biens/villa-bouzar/piscine-villa.webp",
+        "/biens/villa-bouzar/salon-cheminee.webp",
+        "/biens/villa-bouzar/piscine-oliviers.webp",
+        "/biens/villa-bouzar/facade-entree.webp",
+        "/biens/villa-bouzar/chambre-1.webp",
+        "/biens/villa-bouzar/chambre-2.webp",
+        "/biens/villa-bouzar/vue-etage-piscine.webp",
+        "/biens/villa-bouzar/jardin.webp",
+        "/biens/villa-bouzar/entree.webp"
+      ],
+      "photo_principale": "/biens/villa-bouzar/piscine-villa.webp",
+      "proximites": [
+        {
+          "time": "3 km",
+          "place": "Boulangerie Josef"
+        },
+        {
+          "time": "6 km",
+          "place": "Palais Bleu"
+        },
+        {
+          "time": "12 km",
+          "place": "Atacadão"
+        }
+      ],
+      "statut": "publie",
+      "disponible_le": null,
+      "reference": "DP-26-BOUZR",
+      "latitude": null,
+      "longitude": null,
+      "created_at": "2026-10-11T09:00:00+00:00",
+      "updated_at": "2026-10-11T09:00:00+00:00"
     }
   ]
 }
