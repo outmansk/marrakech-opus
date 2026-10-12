@@ -160,6 +160,62 @@
       "longitude": null,
       "created_at": "2026-10-11T09:00:00+00:00",
       "updated_at": "2026-10-11T09:00:00+00:00"
+    },
+    {
+      "id": "8e584940-602f-4e2f-8db2-b8cdc28e18c6",
+      "titre": "Villa Bensilam",
+      "type": "villa",
+      "services": [
+        "vente"
+      ],
+      "service": "vente",
+      "prix_vente": 6500000,
+      "prix_location_longue": null,
+      "prix_location_courte": null,
+      "prix": null,
+      "devise": "MAD",
+      "surface_habitable": 400,
+      "surface_terrain": 3000,
+      "chambres": 5,
+      "salles_de_bain": 5,
+      "quartier": "Route de Fes",
+      "meuble": null,
+      "description_courte": "Villa de 400 m² à vendre sur un terrain de 3 000 m², route de Fès : 5 chambres, 5 salles de bain, piscine privée, grand jardin de palmiers et vue sur l’Atlas.",
+      "description_longue": "Villa à vendre sur la route de Fès, dans une résidence au calme à 16 km de Marrakech (environ 20 minutes). Construite sur un terrain de 3 000 m², elle offre 400 m² habitables, une piscine privée, un grand jardin arboré et une vue sur les montagnes de l’Atlas. Prix : 6 500 000 DH.\n\nLa villa (400 m²)\n• 5 chambres et 5 salles de bain\n• Grand salon lumineux, ouvert sur le jardin par de larges baies vitrées\n• Cuisine équipée\n• Cave\n• Escalier en marbre\n• Plusieurs terrasses et balcons, dont des chambres avec terrasse privée\n\nL’extérieur (3 000 m²)\n• Piscine privée\n• Grand jardin arboré : palmiers, oliviers et pelouse\n• Salon de jardin au bord de la piscine\n• Parking privé\n• Puits\n\nVue sur l’Atlas\nDepuis les terrasses de l’étage, la vue s’ouvre sur le jardin et sur les montagnes de l’Atlas.\n\nEmplacement\nDans une résidence sur la route de Fès, à 16 km de Marrakech, soit environ 20 minutes en voiture.\n\nConditions de vente\n• Prix : 6 500 000 DH\n• Visite sur place ou en vidéo sur WhatsApp\n\nBeaucoup d’espace, le calme et une vue sur les montagnes : une adresse pour une grande famille, ou pour un projet touristique.",
+      "equipements": [
+        "Piscine",
+        "Jardin",
+        "Climatisation",
+        "Cuisine équipée",
+        "Parking",
+        "Terrasse"
+      ],
+      "photos": [
+        "/biens/villa-bensilam/facade-piscine.webp",
+        "/biens/villa-bensilam/piscine.webp",
+        "/biens/villa-bensilam/salon.webp",
+        "/biens/villa-bensilam/salon-2.webp",
+        "/biens/villa-bensilam/chambre-vue-atlas.webp",
+        "/biens/villa-bensilam/chambre-terrasse.webp",
+        "/biens/villa-bensilam/salon-de-jardin.webp",
+        "/biens/villa-bensilam/jardin-vue-atlas.webp",
+        "/biens/villa-bensilam/allee-palmiers.webp",
+        "/biens/villa-bensilam/escalier-marbre.webp"
+      ],
+      "photo_principale": "/biens/villa-bensilam/facade-piscine.webp",
+      "proximites": [
+        {
+          "time": "16 km · 20 min",
+          "place": "Marrakech"
+        }
+      ],
+      "statut": "publie",
+      "disponible_le": null,
+      "reference": "DP-26-BNSLM",
+      "latitude": null,
+      "longitude": null,
+      "created_at": "2026-10-12T09:00:00+00:00",
+      "updated_at": "2026-10-12T09:00:00+00:00"
     }
   ]
 }
