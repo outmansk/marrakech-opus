@@ -21,7 +21,7 @@
       "quartier": "Route de Fes",
       "meuble": true,
       "description_courte": "Villa meublée de 3 suites à louer à l’année dans une résidence sécurisée de la route de Fès : piscine, jardin de 800 m², salon avec cheminée.",
-      "description_longue": "Villa meublée à louer à l’année (location longue durée), dans une résidence sécurisée 24 h/24 et 7 j/7 sur la route de Fès, à 18 km de Marrakech. Loyer : 16 500 DH par mois.\n\nLa villa (150 m²)\n• 3 suites, chacune avec sa salle de bain\n• Grand salon avec cheminée\n• Cuisine équipée ouverte sur le salon\n• Entièrement meublée\n\nL’extérieur\n• Piscine privée entourée de transats\n• Jardin de 800 m² planté d’oliviers, de palmiers et de lauriers-roses\n• Pergola avec salon et table à manger extérieurs\n\nLa résidence\nLa villa se trouve dans une résidence fermée et gardée jour et nuit, au calme, à l’écart de la ville.\n\nConditions\n• Bail d’un an minimum\n• Caution : 1 mois de loyer\n• Document demandé : passeport ou carte d’identité\n\nUne villa prête à vivre pour une famille ou un couple qui cherche l’espace, une piscine et la sécurité d’une résidence, à 18 km de Marrakech. Visite sur place ou en vidéo sur WhatsApp.",
+      "description_longue": "Villa meublée à louer à l’année (location longue durée), dans une résidence sécurisée 24 h/24 et 7 j/7 sur la route de Fès, à 18 km de Marrakech. Loyer : 16 500 DH par mois.\n\nLa villa (150 m²)\n• 3 suites, chacune avec sa salle de bain\n• Grand salon avec cheminée\n• Cuisine équipée ouverte sur le salon\n• Entièrement meublée\n\nL’extérieur\n• Piscine privée entourée de transats\n• Jardin de 800 m² planté d’oliviers, de palmiers et de lauriers-roses\n• Pergola avec salon et table à manger extérieurs\n\nLa résidence\nLa villa se trouve dans une résidence fermée et gardée jour et nuit, au calme, à l’écart de la ville.\n\nConditions\n• Bail d’un an minimum\n• Caution : 2 mois de loyer (logement meublé)\n• Document demandé : passeport ou carte d’identité\n\nUne villa prête à vivre pour une famille ou un couple qui cherche l’espace, une piscine et la sécurité d’une résidence, à 18 km de Marrakech. Visite sur place ou en vidéo sur WhatsApp.",
       "equipements": [
         "Piscine",
         "Jardin",
@@ -217,6 +217,61 @@
       "longitude": null,
       "created_at": "2026-10-12T09:00:00+00:00",
       "updated_at": "2026-10-12T09:00:00+00:00"
+    },
+    {
+      "id": "5909c6c4-a5e9-4502-80c9-be6b944f737b",
+      "titre": "Maison Route d’Essaouira",
+      "type": "maison",
+      "services": [
+        "location-longue-duree"
+      ],
+      "service": "location-longue-duree",
+      "prix_vente": null,
+      "prix_location_longue": 12000,
+      "prix_location_courte": null,
+      "prix": null,
+      "devise": "MAD",
+      "surface_habitable": null,
+      "surface_terrain": null,
+      "chambres": 2,
+      "salles_de_bain": 1,
+      "quartier": "Route d'Essaouira",
+      "meuble": true,
+      "description_courte": "Maison meublée avec piscine à louer à l’année, route d’Essaouira à 12 km de Marrakech : 2 chambres, salon avec cheminée, toit accessible. 12 000 DH/mois, eau et électricité comprises.",
+      "description_longue": "Maison meublée avec piscine à louer à l’année sur la route d’Essaouira, à 12 km du centre de Marrakech. Loyer : 12 000 DH par mois, eau et électricité comprises.\n\nLa maison\n• 2 chambres, dont une avec dressing\n• Salon avec cheminée\n• Grande cuisine équipée\n• Une salle de bain et un WC invités\n• Climatisation dans le salon et les deux chambres\n• Entièrement meublée\n\nL’extérieur\n• Piscine\n• Petit jardin\n• Toit accessible avec une belle vue dégagée\n• Garage intérieur\n\nCharges et frais d’entrée\n• Eau et électricité comprises dans le loyer\n• À l’entrée : 2 mois de caution (24 000 DH), 1 mois de loyer d’avance (12 000 DH) et 1 mois de frais d’agence (12 000 DH)\n\nUne maison prête à vivre, avec piscine et toit-terrasse, sans facture d’eau ni d’électricité à gérer. Visite sur place ou en vidéo sur WhatsApp.",
+      "equipements": [
+        "Piscine",
+        "Jardin",
+        "Climatisation",
+        "Cuisine équipée",
+        "Cheminée",
+        "Parking",
+        "Terrasse",
+        "Meublé"
+      ],
+      "photos": [
+        "/biens/maison-route-essaouira/piscine-maison.webp",
+        "/biens/maison-route-essaouira/salon.webp",
+        "/biens/maison-route-essaouira/piscine-jardin.webp",
+        "/biens/maison-route-essaouira/cheminee.webp",
+        "/biens/maison-route-essaouira/cuisine.webp",
+        "/biens/maison-route-essaouira/chambre-dressing.webp",
+        "/biens/maison-route-essaouira/chambre-2.webp"
+      ],
+      "photo_principale": "/biens/maison-route-essaouira/piscine-maison.webp",
+      "proximites": [
+        {
+          "time": "12 km",
+          "place": "Marrakech (centre)"
+        }
+      ],
+      "statut": "publie",
+      "disponible_le": null,
+      "reference": "DP-26-ESSAO",
+      "latitude": null,
+      "longitude": null,
+      "created_at": "2026-10-13T09:00:00+00:00",
+      "updated_at": "2026-10-13T09:00:00+00:00"
     }
   ]
 }

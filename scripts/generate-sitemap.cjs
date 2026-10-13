@@ -32,8 +32,8 @@ const withOverrides = (p) => {
   const fields = Object.fromEntries(Object.entries(o.fields).filter(([key]) => key in p));
   return { ...p, ...fields };
 };
-const ZONE_NAMES = { 'route-de-fes': 'Fez road', 'sidi-rahal': 'Sidi Rahal road', chrifia: 'Chrifia', golf: 'golf area (Prestigia)', palmeraie: 'Palmeraie (Ennakhil)', 'village-touristique': 'Village Touristique', medina: 'Medina' };
-const QUARTIER_ZONES = { 'Route de Fes': 'route-de-fes', Chrifia: 'chrifia', Palmeraie: 'palmeraie', Medina: 'medina' };
+const ZONE_NAMES = { 'route-de-fes': 'Fez road', 'sidi-rahal': 'Sidi Rahal road', chrifia: 'Chrifia', golf: 'golf area (Prestigia)', palmeraie: 'Palmeraie (Ennakhil)', 'village-touristique': 'Village Touristique', medina: 'Medina', 'route-essaouira': 'Essaouira road' };
+const QUARTIER_ZONES = { 'Route de Fes': 'route-de-fes', Chrifia: 'chrifia', Palmeraie: 'palmeraie', Medina: 'medina', "Route d'Essaouira": 'route-essaouira' };
 const areaOf = (p) => ZONE_NAMES[QUARTIER_ZONES[(p.quartier || '').trim()] || PROPERTY_FACTS[p.id]?.zone] || (p.quartier || '').trim() || null;
 // Addresses that redirect elsewhere (old blog articles merged into landing pages) stay out of the sitemap.
 const REDIRECTED = new Set((require('../vercel.json').redirects || []).map((r) => r.source));
@@ -179,7 +179,7 @@ function readFileArticles() {
 // ── Confirmed rental rules (from the owner, Oct 2026) — keep in sync with the site texts ──
 const RENTAL_RULES = [
   'Long-term rental: 1-year lease minimum.',
-  'Security deposit: 1 month of rent, furnished or unfurnished.',
+  'Security deposit: 2 months of rent for a furnished home, 1 month for an unfurnished one.',
   'Documents required from the tenant: passport or national ID card only.',
 ];
 const CONTACT = { phone: '+212 6 05 38 70 41', email: 'contact@liveinmarrakech.com' };

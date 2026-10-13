@@ -169,8 +169,9 @@ const PropertyDetail = () => {
   const mainPrice = prices[0];
   const longTerm = property.services.includes("location-longue-duree");
   const furnished = longTerm ? furnishedOf(property) : null;
-  // Deposit: one month's rent, furnished or not (confirmed rule).
-  const deposit = longTerm ? property.prix_location_longue : null;
+  // Deposit (confirmed rule): two months' rent furnished, one month unfurnished.
+  const depositMonths = furnished === null ? null : furnished ? 2 : 1;
+  const deposit = depositMonths && property.prix_location_longue ? property.prix_location_longue * depositMonths : null;
 
   const share = async () => {
     try {
@@ -255,14 +256,12 @@ const PropertyDetail = () => {
                         {prices.length > 1 && <span className="ml-auto text-[11px] uppercase tracking-[0.12em] text-muted-foreground">{serviceName(price.service, lang)}</span>}
                       </div>
                     ))}
-                    {longTerm && (
+                    {furnished !== null && (
                       <p className="flex flex-wrap items-center gap-2 text-[13px] text-muted-foreground">
-                        {furnished !== null && (
-                          <span className="rounded-md bg-primary-soft px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-primary">
-                            {furnished ? tL("Meublé", "Furnished", "Amueblado") : tL("Vide", "Unfurnished", "Sin amueblar")}
-                          </span>
-                        )}
-                        {tL("Caution : 1 mois de loyer", "Deposit: 1 month’s rent", "Fianza: 1 mes de alquiler")}
+                        <span className="rounded-md bg-primary-soft px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-primary">
+                          {furnished ? tL("Meublé", "Furnished", "Amueblado") : tL("Vide", "Unfurnished", "Sin amueblar")}
+                        </span>
+                        {furnished ? tL("Caution : 2 mois de loyer", "Deposit: 2 months’ rent", "Fianza: 2 meses de alquiler") : tL("Caution : 1 mois de loyer", "Deposit: 1 month’s rent", "Fianza: 1 mes de alquiler")}
                         {deposit && ` (${formatPrice(deposit, property.devise)})`}
                       </p>
                     )}

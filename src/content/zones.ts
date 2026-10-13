@@ -8,7 +8,7 @@ import facts from "./propertyFacts.json";
 type Facts = { zone?: ZoneId; meuble?: boolean };
 const FACTS = facts as unknown as Record<string, Facts>;
 
-export type ZoneId = "route-de-fes" | "sidi-rahal" | "chrifia" | "golf" | "palmeraie" | "village-touristique" | "medina";
+export type ZoneId = "route-de-fes" | "sidi-rahal" | "chrifia" | "golf" | "palmeraie" | "village-touristique" | "medina" | "route-essaouira";
 
 export const ZONES: Record<ZoneId, { label: Record<Lang, string>; text: Record<Lang, string> }> = {
   "route-de-fes": {
@@ -67,6 +67,14 @@ export const ZONES: Record<ZoneId, { label: Record<Lang, string>; text: Record<L
       es: "En el corazón de la ciudad histórica, la medina de Marrakech es el barrio de los riads, construidos alrededor de un patio. Nuestro riad está en el sector Touareg.",
     },
   },
+  "route-essaouira": {
+    label: { fr: "Route d’Essaouira", en: "Essaouira road", es: "Carretera de Esauira" },
+    text: {
+      fr: "À l’ouest de Marrakech, la route d’Essaouira mène vers la côte atlantique. Notre maison s’y trouve à environ 12 km du centre de Marrakech.",
+      en: "West of Marrakech, the Essaouira road leads towards the Atlantic coast. Our house there is about 12 km from the centre of Marrakech.",
+      es: "Al oeste de Marrakech, la carretera de Esauira lleva hacia la costa atlántica. Nuestra casa está a unos 12 km del centro de Marrakech.",
+    },
+  },
 };
 
 const QUARTIER_TO_ZONE: Record<string, ZoneId> = {
@@ -74,6 +82,7 @@ const QUARTIER_TO_ZONE: Record<string, ZoneId> = {
   Chrifia: "chrifia",
   Palmeraie: "palmeraie",
   Medina: "medina",
+  "Route d'Essaouira": "route-essaouira",
 };
 
 /** Zone of a property: from its quartier, else from the confirmed facts file. */
@@ -96,6 +105,7 @@ const ZONE_IN: Record<ZoneId, Record<Lang, string>> = {
   palmeraie: { fr: "à la Palmeraie", en: "in the Palmeraie", es: "en la Palmeraie" },
   "village-touristique": { fr: "au Village Touristique", en: "in the Village Touristique", es: "en el Village Touristique" },
   medina: { fr: "dans la médina", en: "in the medina", es: "en la medina" },
+  "route-essaouira": { fr: "sur la route d’Essaouira", en: "on the Essaouira road", es: "en la carretera de Esauira" },
 };
 
 /** "sur la route de Fès", "in Chrifia"…: the area with the right preposition, for sentences. */
