@@ -18,9 +18,18 @@ const pick = (lang: Lang, fr: string, en: string, es: string) => (lang === "en" 
 const amount = (value: number, lang: Lang) => new Intl.NumberFormat(lang === "en" ? "en-GB" : lang).format(value);
 
 /** Requête des biens conclus (préchargée pour le pré-rendu de l'accueil dans entry-server.tsx). */
+/** Carrousel « Nos biens » de l'accueil (préchargé aussi). */
+export const CAROUSEL_QUERY = { statut: ["publie", "vendu-loue"] };
+
 export const RECENT_DEALS_QUERY = { statut: "vendu-loue" };
 
 export const dealOf = (property: Pick<Bien, "id" | "statut">) => (isUnavailable(property) ? DEALS[property.id] ?? null : null);
+
+/** Ordre des listes publiques : biens conclus avec fiche (confiance) d'abord, puis disponibles, puis les autres loués/vendus. */
+export const dealsFirst = <T extends Bien>(list: T[]) => {
+  const rank = (property: T) => (dealOf(property) ? 0 : isUnavailable(property) ? 2 : 1);
+  return [...list].sort((a, b) => rank(a) - rank(b));
+};
 
 /** « Louée à une cliente française en octobre 2026 · 10 000 MAD / mois ». Null sans fiche de conclusion. */
 export function dealLine(property: Bien, lang: Lang): string | null {

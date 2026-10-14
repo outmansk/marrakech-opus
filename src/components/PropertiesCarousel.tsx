@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Bien } from "@/types/property";
 import PropertyCard from "@/components/PropertyCard";
+import { CAROUSEL_QUERY, dealOf, dealsFirst } from "@/lib/propertyDeals";
 import { useProperties } from "@/hooks/useBiens";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
 import { useLocalePath } from "@/hooks/useLocalePath";
@@ -25,7 +26,9 @@ const PropertiesCarousel = () => {
   const { lp } = useLocalePath();
 
   // Use React Query via the shared hook — cached, retried, deduped
-  const { data: properties = [], isLoading: loading } = useProperties({ statut: "publie" });
+  const { data: all = [], isLoading: loading } = useProperties(CAROUSEL_QUERY);
+  // Biens disponibles + biens conclus avec fiche « Louée à … » (placés en premier pour la confiance).
+  const properties = useMemo(() => dealsFirst(all.filter((p) => p.statut === "publie" || dealOf(p))), [all]);
 
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [slide, setSlide] = useState(0);

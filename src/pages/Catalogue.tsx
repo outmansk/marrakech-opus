@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { useProperties } from "@/hooks/useBiens";
-import { isUnavailable } from "@/lib/propertyServices";
+import { dealsFirst } from "@/lib/propertyDeals";
 import { BIEN_TYPES, QUARTIERS } from "@/types/property";
 import SEOHead from "@/components/SEOHead";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -41,8 +41,8 @@ const Catalogue = () => {
 
   const visibleProperties = useMemo(() => {
     const needle = queryText.trim().toLocaleLowerCase("fr");
-    // Available listings first, sold/rented ones at the end (sort is stable).
-    const ordered = [...properties].sort((a, b) => Number(isUnavailable(a)) - Number(isUnavailable(b)));
+    // Rented/sold listings with a client profile first (trust), then available ones, then other sold/rented ones.
+    const ordered = dealsFirst(properties);
     if (!needle) return ordered;
     return ordered.filter((property) => [property.titre, property.quartier, property.type, property.description_courte, property.reference].filter(Boolean).join(" ").toLocaleLowerCase("fr").includes(needle));
   }, [properties, queryText]);

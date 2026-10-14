@@ -17,7 +17,7 @@ import { propertyIdFromParam, propertyPath } from "./lib/propertyUrl";
 import { propertiesQueryOptions, propertyQueryOptions } from "./hooks/useBiens";
 import { FILE_PROPERTIES } from "./lib/fileProperties";
 import { SIMILAR_QUERY } from "./lib/propertyDetail";
-import { RECENT_DEALS_QUERY } from "./lib/propertyDeals";
+import { CAROUSEL_QUERY, RECENT_DEALS_QUERY } from "./lib/propertyDeals";
 import { articleQueryOptions, publishedArticlesQueryOptions } from "./hooks/useArticles";
 import { withFileArticles } from "./content/blog";
 import type { Article } from "./types/article";
@@ -69,7 +69,7 @@ async function prefetch(queryClient: QueryClient, url: string) {
     ]);
   }
   else if (path === "/") await Promise.all([
-    queryClient.prefetchQuery(propertiesQueryOptions({ statut: "publie" })),
+    queryClient.prefetchQuery(propertiesQueryOptions(CAROUSEL_QUERY)),
     queryClient.prefetchQuery(propertiesQueryOptions(RECENT_DEALS_QUERY)),
   ]);
   else if (section === "catalogue" || section === "a-propos") await queryClient.prefetchQuery(propertiesQueryOptions({ statut: ["publie", "vendu-loue"] }));
