@@ -1,7 +1,7 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, Home, MessageCircle, PenLine, Phone, Plus } from "lucide-react";
+import { Check, ChevronRight, Home, MessageCircle, PenLine, Phone, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
@@ -101,6 +101,9 @@ export default function AdminDashboard() {
   const { data, isLoading, isError, refetch } = useDashboardData();
   // Réseaux sociaux : vide tant que le SQL de la section n'est pas lancé.
   const { data: social } = useSocialData();
+  // Téléphone : liste « À faire » raccourcie et graphiques repliés par défaut.
+  const [showAllTodo, setShowAllTodo] = useState(false);
+  const [showCharts, setShowCharts] = useState(false);
   const queryClient = useQueryClient();
 
   const view = useMemo(() => {
@@ -217,14 +220,15 @@ export default function AdminDashboard() {
   const hour = new Date().getHours();
 
   return (
-    <div className="mx-auto flex max-w-[1180px] flex-col gap-6 px-4 py-5 lg:gap-7 lg:px-10 lg:py-8">
+    <div className="mx-auto flex max-w-[1180px] flex-col gap-4 px-4 pb-28 pt-4 lg:gap-7 lg:px-10 lg:py-8">
       {/* En-tête */}
       <section className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div className="flex flex-col gap-1">
-          <span className="text-[13px] font-medium text-muted-foreground first-letter:uppercase lg:text-sm">{today}</span>
-          <h1 className="m-0 font-serif text-[30px] font-semibold leading-tight lg:text-[38px]">{hour >= 18 ? "Bonsoir" : "Bonjour"}</h1>
+        <div className="flex items-baseline justify-between gap-3 lg:flex-col lg:items-start lg:gap-1">
+          <span className="order-2 text-[13px] font-medium text-muted-foreground first-letter:uppercase lg:order-1 lg:text-sm">{today}</span>
+          <h1 className="order-1 m-0 font-serif text-[26px] font-semibold leading-tight lg:order-2 lg:text-[38px]">{hour >= 18 ? "Bonsoir" : "Bonjour"}</h1>
         </div>
-        <div className="grid grid-cols-2 gap-2.5 lg:flex">
+        {/* Sur téléphone, le bouton « + » flottant propose déjà ces actions. */}
+        <div className="hidden gap-2.5 lg:flex">
           <Link to={`${BASE}/biens?new=1`} className="flex h-12 items-center justify-center gap-2 rounded-md bg-primary px-[18px] text-sm font-semibold text-white hover:bg-[hsl(70_19%_28%)] lg:order-2 lg:h-11">
             <Plus size={18} strokeWidth={1.9} aria-hidden="true" />Ajouter un bien
           </Link>
@@ -245,45 +249,61 @@ export default function AdminDashboard() {
             <p className="m-0 border-t border-[hsl(20_47%_85%)] bg-card px-4 py-6 text-center text-sm text-muted-foreground lg:px-5">Tout est à jour : aucune tâche, visite ou relance prévue aujourd’hui.</p>
           ) : (
             <ul className="m-0 list-none p-0">
-              {todo.map((item) => (
-                <li key={item.key} className="flex flex-col gap-2.5 border-t border-[hsl(25_38%_90%)] bg-card px-4 py-3 lg:grid lg:grid-cols-[130px_minmax(0,1fr)_auto] lg:items-center lg:gap-4 lg:px-5">
-                  <span className={cn("text-xs font-semibold uppercase tracking-[0.06em]", item.late ? "text-destructive" : item.kind === "Visite" ? "text-warning-foreground" : item.kind === "Relance" ? "text-accent" : "text-[hsl(72_19%_23%)]")}>{item.kind}</span>
-                  <span className="flex min-w-0 flex-col gap-0.5">
-                    <span className="text-[15px] font-semibold leading-snug">{item.name}</span>
-                    {item.detail && <span className="text-[13px] leading-snug text-muted-foreground">{item.detail}</span>}
+              {todo.map((item, index) => (
+                <li key={item.key} className={cn("flex items-center gap-3 border-t border-[hsl(25_38%_90%)] bg-card px-4 py-2.5 lg:grid lg:grid-cols-[130px_minmax(0,1fr)_auto] lg:gap-4 lg:px-5 lg:py-3", !showAllTodo && index >= 4 && "hidden lg:grid")}>
+                  <span className="flex min-w-0 flex-1 flex-col gap-0.5 lg:contents">
+                    <span className={cn("text-[11px] font-semibold uppercase tracking-[0.06em] lg:text-xs", item.late ? "text-destructive" : item.kind === "Visite" ? "text-warning-foreground" : item.kind === "Relance" ? "text-accent" : "text-[hsl(72_19%_23%)]")}>{item.kind}</span>
+                    <span className="flex min-w-0 flex-col gap-0.5">
+                      <span className="truncate text-[15px] font-semibold leading-snug lg:whitespace-normal">{item.name}</span>
+                      {item.detail && <span className="line-clamp-2 text-[13px] leading-snug text-muted-foreground lg:line-clamp-none">{item.detail}</span>}
+                    </span>
                   </span>
-                  <span className="flex gap-2">
+                  <span className="flex shrink-0 gap-1.5 lg:gap-2">
                     {item.phone && (
                       <>
-                        <a href={telHref(item.phone)} aria-label={`Appeler ${item.name}`} className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-primary-soft text-[hsl(72_19%_23%)] lg:h-10 lg:w-10"><Phone size={18} strokeWidth={1.7} aria-hidden="true" /></a>
-                        <a href={whatsappHref(item.phone)} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${item.name}`} className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-whatsapp text-white lg:h-10 lg:w-10"><MessageCircle size={18} strokeWidth={1.7} aria-hidden="true" /></a>
+                        <a href={telHref(item.phone)} aria-label={`Appeler ${item.name}`} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary-soft text-[hsl(72_19%_23%)] lg:h-10 lg:w-10 lg:rounded-md"><Phone size={18} strokeWidth={1.7} aria-hidden="true" /></a>
+                        <a href={whatsappHref(item.phone)} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${item.name}`} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-whatsapp text-white lg:h-10 lg:w-10 lg:rounded-md"><MessageCircle size={18} strokeWidth={1.7} aria-hidden="true" /></a>
                       </>
                     )}
                     {item.action.to ? (
-                      <Link to={item.action.to} className="flex h-11 flex-1 items-center justify-center rounded-md bg-primary px-3.5 text-[13px] font-semibold text-white lg:h-10 lg:flex-none">{item.action.label}</Link>
+                      <Link to={item.action.to} aria-label={`${item.action.label} : ${item.name}`} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-white lg:flex lg:h-10 lg:w-auto lg:rounded-md lg:px-3.5 lg:text-[13px] lg:font-semibold">
+                        <ChevronRight size={20} aria-hidden="true" className="lg:hidden" /><span className="hidden lg:inline">{item.action.label}</span>
+                      </Link>
                     ) : (
-                      <button type="button" onClick={item.action.run} className="h-11 flex-1 rounded-md bg-primary px-3.5 text-[13px] font-semibold text-white lg:h-10 lg:flex-none">{item.action.label}</button>
+                      <button type="button" onClick={item.action.run} aria-label={`${item.action.label} : ${item.name}`} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-white lg:flex lg:h-10 lg:w-auto lg:rounded-md lg:px-3.5 lg:text-[13px] lg:font-semibold">
+                        <Check size={20} aria-hidden="true" className="lg:hidden" /><span className="hidden lg:inline">{item.action.label}</span>
+                      </button>
                     )}
                   </span>
                 </li>
               ))}
+              {todo.length > 4 && (
+                <li className="border-t border-[hsl(25_38%_90%)] bg-card lg:hidden">
+                  <button type="button" onClick={() => setShowAllTodo((v) => !v)} className="flex min-h-11 w-full items-center justify-center text-sm font-semibold text-primary">
+                    {showAllTodo ? "Réduire" : `Tout afficher (${todo.length})`}
+                  </button>
+                </li>
+              )}
             </ul>
           )}
         </section>
 
         {/* Indicateurs */}
-        <section aria-label="Indicateurs" className={cn("grid grid-cols-2 gap-2.5 lg:col-span-2 lg:row-start-1 lg:gap-3.5", kpis.length > 6 ? "lg:grid-cols-7" : "lg:grid-cols-6")}>
+        <section aria-label="Indicateurs" className={cn("grid grid-cols-3 gap-2 lg:col-span-2 lg:row-start-1 lg:gap-3.5", kpis.length > 6 ? "lg:grid-cols-7" : "lg:grid-cols-6")}>
           {kpis.map((kpi) => (
-            <Link key={kpi.label} to={kpi.to} className="flex flex-col gap-2 rounded-[10px] border border-border bg-card p-3.5 shadow-[0_1px_2px_rgba(33,31,27,0.05)] hover:border-input lg:p-4">
-              <span className="text-[13px] font-medium leading-snug text-muted-foreground">{kpi.label}</span>
-              <span className={cn("font-serif text-[32px] font-semibold leading-none lg:text-[36px]", kpi.alert && kpi.value > 0 ? "text-accent" : "text-foreground")}>{kpi.value}</span>
-              <span className="text-xs leading-snug text-muted-foreground">{kpi.sub}</span>
+            <Link key={kpi.label} to={kpi.to} className="flex min-h-[84px] flex-col justify-between gap-1 rounded-[10px] border border-border bg-card p-2.5 shadow-[0_1px_2px_rgba(33,31,27,0.05)] hover:border-input lg:min-h-0 lg:justify-start lg:gap-2 lg:p-4">
+              <span className="text-[11px] font-medium leading-tight text-muted-foreground lg:text-[13px] lg:leading-snug">{kpi.label}</span>
+              <span className={cn("font-serif text-[26px] font-semibold leading-none lg:text-[36px]", kpi.alert && kpi.value > 0 ? "text-accent" : "text-foreground")}>{kpi.value}</span>
+              <span className="hidden text-xs leading-snug text-muted-foreground lg:block">{kpi.sub}</span>
             </Link>
           ))}
         </section>
 
         {/* Graphiques */}
-        <section aria-labelledby="charts-title" className="flex flex-col gap-3 rounded-[10px] border border-border bg-card p-4 lg:p-5">
+        <button type="button" onClick={() => setShowCharts((v) => !v)} aria-expanded={showCharts} className="flex min-h-11 items-center justify-between rounded-[10px] border border-border bg-card px-4 text-sm font-semibold lg:hidden">
+          Statistiques des biens<ChevronRight size={18} aria-hidden="true" className={cn("transition-transform", showCharts && "rotate-90")} />
+        </button>
+        <section aria-labelledby="charts-title" className={cn("flex-col gap-3 rounded-[10px] border border-border bg-card p-4 lg:flex lg:p-5", showCharts ? "flex" : "hidden")}>
           <SectionTitle id="charts-title">Biens par type</SectionTitle>
           <HBarChart data={view.byType} color="hsl(70 19% 34%)" label="Nombre de biens par type" />
           <SectionTitle>Biens par service</SectionTitle>
