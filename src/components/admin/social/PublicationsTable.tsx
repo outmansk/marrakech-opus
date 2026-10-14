@@ -107,8 +107,8 @@ export default function PublicationsTable({ pubs, biens, groupes, clics, leads, 
             {rows.map((p) => (
               <tr key={p.id} className="border-t border-border align-middle">
                 <td className="whitespace-nowrap px-3 py-2"><span className="flex flex-col"><span>{formatDateTime(p.publie_le)}</span><span className="text-xs text-muted-foreground">{pubRef(p)}</span></span></td>
-                {!hideBien && <td className="max-w-[220px] truncate px-3 py-2 font-medium">{bienName(p)}</td>}
-                {!hideGroupe && <td className="max-w-[220px] truncate px-3 py-2">{groupeName(p)}</td>}
+                {!hideBien && <td className="max-w-[170px] truncate px-3 py-2 font-medium">{bienName(p)}</td>}
+                {!hideGroupe && <td className="max-w-[170px] truncate px-3 py-2">{groupeName(p)}</td>}
                 <td className="px-3 py-2">{RESEAUX[p.reseau].label}</td>
                 <td className="px-3 py-2">{LANGUES[p.langue]}</td>
                 <td className="px-3 py-2"><StatutSelect pub={p} /></td>

@@ -44,7 +44,6 @@ export default function AdminReseauxGroupes() {
           <PageHeader title="Groupes" count={data.missing ? undefined : `${data.groupes.length} groupe${data.groupes.length > 1 ? "s" : ""}`}>
             <button type="button" onClick={() => open(null)} disabled={data.missing} className={btn.primary}><Plus size={18} aria-hidden="true" />Ajouter un groupe</button>
           </PageHeader>
-          <h1 className="m-0 font-serif text-[30px] font-semibold leading-tight lg:hidden">Groupes</h1>
           <SocialNav />
           {data.missing ? <SetupNotice /> : (
             <>

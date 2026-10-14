@@ -64,7 +64,6 @@ export default function AdminReseauxJournal() {
         <button type="button" onClick={exportCsv} disabled={data.missing || !rows.length} className={btn.outline}><Download size={18} aria-hidden="true" />Exporter (CSV / Excel)</button>
         <button type="button" onClick={() => { setEditing(null); setFormOpen(true); }} disabled={data.missing} className={btn.primary}><Plus size={18} aria-hidden="true" />Ajouter</button>
       </PageHeader>
-      <h1 className="m-0 font-serif text-[30px] font-semibold leading-tight lg:hidden">Journal</h1>
       <SocialNav />
       {data.missing ? <SetupNotice /> : (
         <>

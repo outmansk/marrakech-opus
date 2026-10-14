@@ -14,8 +14,8 @@ export function SectionTitle({ children, id }: { children: React.ReactNode; id?:
 }
 
 /** Barres horizontales (une série). `unit` sert à l'infobulle : « 3 biens ». */
-export function HBarChart({ data, color, label, unit = ["bien", "biens"], empty = "Aucun bien pour l’instant." }: {
-  data: { name: string; value: number }[]; color: string; label: string; unit?: [string, string]; empty?: string;
+export function HBarChart({ data, color, label, unit = ["bien", "biens"], empty = "Aucun bien pour l’instant.", nameWidth = 132 }: {
+  data: { name: string; value: number }[]; color: string; label: string; unit?: [string, string]; empty?: string; nameWidth?: number;
 }) {
   if (!data.length) return <p className="text-sm text-muted-foreground">{empty}</p>;
   return (
@@ -23,7 +23,7 @@ export function HBarChart({ data, color, label, unit = ["bien", "biens"], empty 
       <ResponsiveContainer width="100%" height={data.length * 34 + 8}>
         <BarChart data={data} layout="vertical" margin={{ top: 0, right: 32, bottom: 0, left: 0 }} barCategoryGap={10}>
           <XAxis type="number" hide allowDecimals={false} />
-          <YAxis type="category" dataKey="name" width={132} tickLine={false} axisLine={false} tick={{ fontSize: 13, fill: "hsl(40 10% 12%)", fontFamily: FONT }} />
+          <YAxis type="category" dataKey="name" width={nameWidth} tickLine={false} axisLine={false} tick={{ fontSize: 13, fill: "hsl(40 10% 12%)", fontFamily: FONT }} />
           <Tooltip cursor={{ fill: "hsl(39 47% 94%)" }} formatter={(value: number) => [`${value} ${value > 1 ? unit[1] : unit[0]}`, ""]} separator="" contentStyle={TOOLTIP_STYLE} />
           <Bar dataKey="value" fill={color} radius={[0, 4, 4, 0]} barSize={12} isAnimationActive={false}>
             <LabelList dataKey="value" position="right" style={{ fontSize: 13, fontWeight: 600, fill: "hsl(40 10% 12%)", fontFamily: FONT }} />

@@ -19,6 +19,8 @@ import { formatDate, formatDateTime, pct } from "@/lib/social/format";
 
 type PeriodChoice = "7" | "30" | "90" | "custom";
 const ADMIN = "/manage-xk92p";
+/** Nom de groupe raccourci pour l’axe des graphiques (le nom complet reste dans l’infobulle du tableau accessible). */
+const short = (name: string) => (name.length > 26 ? `${name.slice(0, 25).trimEnd()}…` : name);
 
 export default function AdminReseaux() {
   const { data, isLoading, isError, refetch } = useSocialData();
@@ -64,8 +66,8 @@ export default function AdminReseaux() {
       daily: perDay(pubs, leads, periods.current),
       networks: clientsByNetwork(pubs, leads, periods.current),
       funnel: funnel(current),
-      topClients: [...stats].sort((a, b) => b.clients - a.clients).slice(0, 10).map((s) => ({ name: s.groupe.nom, value: s.clients })),
-      topPer1000: [...stats].filter((s) => s.pour1000 !== null).sort((a, b) => (b.pour1000 ?? 0) - (a.pour1000 ?? 0)).slice(0, 10).map((s) => ({ name: s.groupe.nom, value: s.pour1000 ?? 0 })),
+      topClients: [...stats].sort((a, b) => b.clients - a.clients).slice(0, 10).map((s) => ({ name: short(s.groupe.nom), value: s.clients })),
+      topPer1000: [...stats].filter((s) => s.pour1000 !== null).sort((a, b) => (b.pour1000 ?? 0) - (a.pour1000 ?? 0)).slice(0, 10).map((s) => ({ name: short(s.groupe.nom), value: s.pour1000 ?? 0 })),
       byType: splitByGroupType(pubsInPeriod, leadsInPeriod, groupes),
       byLangue: splitByLangue(pubsInPeriod, leadsInPeriod),
       slots,
@@ -88,7 +90,6 @@ export default function AdminReseaux() {
         <button type="button" onClick={() => setAlerteOpen(true)} disabled={data.missing} className={btn.outline}><BellPlus size={18} aria-hidden="true" />Alerte compte</button>
         <button type="button" onClick={() => setPubOpen(true)} disabled={data.missing} className={btn.primary}><Plus size={18} aria-hidden="true" />Ajouter une publication</button>
       </PageHeader>
-      <h1 className="m-0 font-serif text-[30px] font-semibold leading-tight lg:hidden">Réseaux sociaux</h1>
       <SocialNav />
     </>
   );
@@ -216,9 +217,9 @@ export default function AdminReseaux() {
       <div className="grid gap-5 lg:grid-cols-2">
         <section className="flex flex-col gap-3 rounded-[10px] border border-border bg-card p-4 lg:p-5">
           <SectionTitle>Top 10 des groupes par clients</SectionTitle>
-          <HBarChart data={view.topClients.filter((t) => t.value > 0)} color={OLIVE} label="Groupes qui amènent le plus de clients" unit={["client", "clients"]} empty="Aucun client rattaché à un groupe sur la période." />
+          <HBarChart data={view.topClients.filter((t) => t.value > 0)} color={OLIVE} label="Groupes qui amènent le plus de clients" unit={["client", "clients"]} empty="Aucun client rattaché à un groupe sur la période." nameWidth={190} />
           <SectionTitle>Clients pour 1 000 membres</SectionTitle>
-          <HBarChart data={view.topPer1000.filter((t) => t.value > 0)} color={BROWN} label="Clients pour 1 000 membres" unit={["", ""]} empty="Renseignez le nombre de membres des groupes pour comparer." />
+          <HBarChart data={view.topPer1000.filter((t) => t.value > 0)} color={BROWN} label="Clients pour 1 000 membres" unit={["", ""]} empty="Renseignez le nombre de membres des groupes pour comparer." nameWidth={190} />
         </section>
         <section className="flex flex-col gap-3 rounded-[10px] border border-border bg-card p-4 lg:p-5">
           <SectionTitle>Immo, expat ou quartier</SectionTitle>
