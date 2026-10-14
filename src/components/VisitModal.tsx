@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { insertWithOrigin } from "@/lib/social/attribution";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,7 +26,7 @@ const VisitModal = ({ open, onOpenChange, propertyId, propertyTitle }: VisitModa
     if (!name.trim() || !phone.trim() || !date) return;
 
     setLoading(true);
-    const { error } = await supabase.from("visit_requests").insert({
+    const { error } = await insertWithOrigin("visit_requests", {
       property_v2_id: propertyId,
       client_name: DOMPurify.sanitize(name.trim()),
       client_phone: DOMPurify.sanitize(phone.trim()),

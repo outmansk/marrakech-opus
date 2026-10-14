@@ -1,3 +1,4 @@
+import { PENDING_ALERT_DAYS } from "@/lib/social/stats";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { visitStatus } from "@/lib/labels";
@@ -16,12 +17,15 @@ export function useAdminCounts() {
     queryKey: ["admin-counts"],
     refetchInterval: 60_000,
     queryFn: async () => {
-      const [visits, leads, taches, messages] = await Promise.all([
+      const [visits, leads, taches, messages, social] = await Promise.all([
         supabase.from("visit_requests").select("status"),
         supabase.from("client_leads").select("status, next_follow_up_at"),
         // L'agenda peut ne pas être encore activé : 0 dans ce cas.
         supabase.from("taches").select("echeance").eq("fait", false).not("echeance", "is", null),
         supabase.from("contact_messages").select("id", { count: "exact", head: true }).eq("traite", false),
+        // Réseaux sociaux : publications en attente depuis plus de 3 jours (0 tant que le SQL n'est pas lancé).
+        supabase.from("social_publications").select("id", { count: "exact", head: true }).eq("statut", "en-attente")
+          .lt("publie_le", new Date(Date.now() - PENDING_ALERT_DAYS * 24 * 3600 * 1000).toISOString()),
       ]);
       const pendingVisits = (visits.data ?? []).filter((v) => visitStatus(v.status) === "pending").length;
       const limit = endOfToday();
@@ -30,7 +34,8 @@ export function useAdminCounts() {
       const tasksDue = ((taches.data ?? []) as { echeance: string }[]).filter((t) => new Date(t.echeance) <= limit).length;
       // Colonne « traite » absente tant que le SQL n'est pas lancé : 0 dans ce cas.
       const newMessages = messages.count ?? 0;
-      return { pendingVisits, followUps, tasksDue, newMessages };
+      const socialPending = social.count ?? 0;
+      return { pendingVisits, followUps, tasksDue, newMessages, socialPending };
     },
   });
 }

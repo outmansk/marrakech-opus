@@ -4,6 +4,7 @@ import { MessageCircle, Phone, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import type { VisitRequest } from "@/types/property";
+import OriginTag from "@/components/admin/social/OriginTag";
 import StatusBadge, { CountBadge } from "@/components/admin/StatusBadge";
 import { ConfirmDialog, EmptyState, ErrorState, PageHeader } from "@/components/admin/ui";
 import { btn } from "@/components/admin/styles";
@@ -173,6 +174,7 @@ export default function AdminVisites() {
                     </span>
                   </div>
                   <span className="text-xs text-muted-foreground">Reçue {receivedLabel(v.created_at)}</span>
+                  <OriginTag row={v} />
                   <div className="grid grid-cols-2 gap-2"><ContactButtons v={v} /></div>
                   <div className="flex gap-2">
                     <StatusActions v={v} />
@@ -204,7 +206,7 @@ export default function AdminVisites() {
                     <tr key={v.id} className={cn("border-b border-[hsl(37_32%_90%)] last:border-b-0", s === "pending" && "bg-[hsl(40_80%_97%)]")}>
                       <td className="px-4 py-3"><span className="flex flex-col gap-0.5"><span className="text-[15px] font-semibold">{v.client_name}</span><a href={telHref(v.client_phone)} className="text-[13px] font-medium text-[hsl(36_8%_21%)]">{v.client_phone}</a></span></td>
                       <td className="px-3 py-3"><span className="flex gap-1.5"><ContactButtons v={v} compact /></span></td>
-                      <td className="max-w-[260px] px-3 py-3 text-sm font-semibold">{v.properties_v2?.titre ?? "—"}</td>
+                      <td className="max-w-[260px] px-3 py-3 text-sm font-semibold"><span className="flex flex-col items-start gap-1">{v.properties_v2?.titre ?? "—"}<OriginTag row={v} /></span></td>
                       <td className="whitespace-nowrap px-3 py-3 text-sm font-semibold first-letter:uppercase">{formatWhen(v.requested_date)}</td>
                       <td className="whitespace-nowrap px-3 py-3 text-[13px] text-muted-foreground first-letter:uppercase">{receivedLabel(v.created_at)}</td>
                       <td className="px-3 py-3"><StatusBadge tone={VISIT_TONE[s]}>{VISIT_LABELS[s]}</StatusBadge></td>

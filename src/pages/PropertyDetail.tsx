@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link, Navigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CalendarDays, MapPin, MessageCircle, Phone, Share2 } from "lucide-react";
@@ -24,6 +24,7 @@ import { equipmentName, propertyMetaDescription, propertySeoTitle, propertyText,
 import { LANGS, localizePath, type Lang } from "@/i18n/routing";
 import type { BienService } from "@/types/property";
 import { formatPrice } from "@/lib/propertyDetail";
+import { originRef } from "@/lib/social/attribution";
 import PhotoGallery from "@/components/property/PhotoGallery";
 import SimilarProperties from "@/components/property/SimilarProperties";
 import { AmenitiesGrid, DescriptionSections, LocationBlock, Reassurance, RentalTerms, SpecsGrid } from "@/components/property/PropertySections";
@@ -38,6 +39,9 @@ const PropertyDetail = () => {
   const { id: param } = useParams();
   const { data: property, isLoading: loading } = useProperty(propertyIdFromParam(param));
   const [visitOpen, setVisitOpen] = useState(false);
+  // Référence du lien suivi (« FB-12 ») lue après le rendu : le HTML pré-rendu reste identique.
+  const [origin, setOrigin] = useState<string | null>(null);
+  useEffect(() => { setOrigin(originRef()); }, []);
 
   if (loading) {
     return (
@@ -83,10 +87,11 @@ const PropertyDetail = () => {
   // Texts in the page language; without a translation /en and /es show French and stay out of search results.
   const text = propertyText(property, lang);
   const translatedLangs = LANGS.filter((l) => propertyText(property, l).translated);
+  const originSuffix = origin ? ` [${origin}]` : "";
   const whatsappUrl = `https://wa.me/212605387041?text=${encodeURIComponent(tL(
-    `Bonjour, je suis intéressé(e) par le bien : ${property.titre} (Réf. ${property.reference})`,
-    `Hello, I am interested in this property: ${text.titre} (Ref. ${property.reference})`,
-    `Hola, me interesa este inmueble: ${text.titre} (Ref. ${property.reference})`,
+    `Bonjour, je suis intéressé(e) par le bien : ${property.titre} (Réf. ${property.reference})${originSuffix}`,
+    `Hello, I am interested in this property: ${text.titre} (Ref. ${property.reference})${originSuffix}`,
+    `Hola, me interesa este inmueble: ${text.titre} (Ref. ${property.reference})${originSuffix}`,
   ))}`;
 
   // Prix de l'offre (priorité à la vente, puis location)

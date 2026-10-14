@@ -10,7 +10,7 @@ import { breadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { motion } from "framer-motion";
 import { Reveal, PageTransition, EASE_LUXURY } from "@/components/motion/Animations";
 import { toast } from "sonner";
-import { supabase } from "@/lib/supabase";
+import { insertWithOrigin } from "@/lib/social/attribution";
 import slide3 from "@/assets/slide2.webp";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
 import { useLocalePath } from "@/hooks/useLocalePath";
@@ -45,7 +45,7 @@ const Contact = () => {
 
     setLoading(true);
     try {
-      const { error } = await supabase.from("contact_messages").insert({
+      const { error } = await insertWithOrigin("contact_messages", {
         name: formData.name,
         email: formData.email,
         phone: formData.phone || null,

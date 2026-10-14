@@ -8,6 +8,7 @@ import DOMPurify from "dompurify";
 import { toast } from "sonner";
 import { ArrowRight, Camera, Check, ChevronDown, ChevronUp, Code, Eye, GripVertical, ImagePlus, MapPin, Minus, Plus, Star, Trash2, X } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
+import BienSocialPanel from "@/components/admin/social/BienSocialPanel";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import { uploadToCloudinary } from "@/lib/cloudinary";
@@ -189,10 +190,14 @@ interface BienFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   bien?: Bien | null;
+  /** Onglet ouvert à l'ouverture d'un bien existant. */
+  initialTab?: "infos" | "reseaux";
 }
 
-export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
+export function BienForm({ open, onOpenChange, bien, initialTab = "infos" }: BienFormProps) {
   const isEditing = !!bien;
+  const [tab, setTab] = useState<"infos" | "reseaux">(initialTab);
+  useEffect(() => { if (open) setTab(bien ? initialTab : "infos"); }, [open, bien, initialTab]);
   const createMutation = useCreateProperty();
   const updateMutation = useUpdateProperty();
   const isPending = createMutation.isPending || updateMutation.isPending;
@@ -366,6 +371,20 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
           )}
         </header>
 
+        {isEditing && (
+          <div role="tablist" aria-label="Fiche du bien" className="flex shrink-0 gap-1 border-b border-border bg-card px-3 lg:px-6">
+            {([["infos", "Informations"], ["reseaux", "Réseaux sociaux"]] as const).map(([key, label]) => (
+              <button key={key} type="button" role="tab" aria-selected={tab === key} onClick={() => setTab(key)}
+                className={cn("min-h-11 border-b-2 px-3 text-sm font-semibold", tab === key ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground")}>
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {tab === "reseaux" && bien ? (
+          <div className="min-h-0 flex-1 overflow-y-auto"><BienSocialPanel bienId={bien.id} /></div>
+        ) : (<>
         {/* Progression mobile */}
         <div className="flex shrink-0 flex-col gap-2.5 border-b border-border bg-card px-4 pb-4 pt-3 lg:hidden">
           <div className="flex items-baseline justify-between">
@@ -643,6 +662,7 @@ export function BienForm({ open, onOpenChange, bien }: BienFormProps) {
           <button type="button" onClick={() => requestClose(false)} disabled={isPending} className={cn(btn.outline, "hidden lg:inline-flex")}>Annuler</button>
           <button type="submit" form="bien-form" disabled={isPending || uploading} className={cn(btn.primary, "hidden px-6 lg:inline-flex")}>{isPending ? "Enregistrement…" : isEditing ? "Enregistrer" : "Créer le bien"}</button>
         </footer>
+        </>)}
       </SheetContent>
 
       <Dialog open={jsonOpen} onOpenChange={setJsonOpen}>

@@ -28,6 +28,11 @@ export interface VisitRequest {
   requested_date: string;
   status: string;
   created_at: string;
+  /** Origine réseaux sociaux (colonnes ajoutées par le SQL de la section Réseaux sociaux). */
+  origine_reseau?: string | null;
+  origine_groupe_id?: string | null;
+  origine_publication_id?: string | null;
+  origine_ref?: string | null;
 }
 
 // ─── Bien (nouvelle table properties_v2) ─────────────────────────────────────

@@ -13,6 +13,7 @@ import {
   ListTodo,
   LogOut,
   Mail,
+  Megaphone,
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
@@ -95,6 +96,7 @@ export default function AdminLayout() {
     { path: `${BASE}/dashboard`, label: "Tableau de bord", short: "Accueil", icon: LayoutDashboard },
     { path: `${BASE}/agenda`, label: "Agenda & contacts", short: "Agenda", icon: CalendarClock, count: counts?.tasksDue },
     { path: `${BASE}/biens`, label: "Biens", short: "Biens", icon: Building2 },
+    { path: `${BASE}/reseaux`, label: "Réseaux sociaux", short: "Réseaux", icon: Megaphone, count: counts?.socialPending },
     { path: `${BASE}/blog`, label: "Blog", short: "Blog", icon: FileText },
     { path: `${BASE}/visites`, label: "Demandes de visite", short: "Visites", icon: CalendarCheck, count: counts?.pendingVisits },
     { path: `${BASE}/clients`, label: "Clients & demandes", short: "Clients", icon: UsersRound, count: counts?.followUps },
@@ -103,8 +105,8 @@ export default function AdminLayout() {
   ];
   const isActive = (path: string) => location.pathname.startsWith(path);
   const current = nav.find((item) => isActive(item.path));
-  // nav : 0 accueil, 1 agenda, 2 biens, 3 blog, 4 visites, 5 clients, 6 contrats, 7 messages
-  const tabs = [nav[0], nav[1], nav[2], nav[5]];
+  const byPath = (slug: string) => nav.find((item) => item.path === `${BASE}/${slug}`)!;
+  const tabs = [byPath("dashboard"), byPath("agenda"), byPath("biens"), byPath("clients")];
   const moreActive = !tabs.some((item) => isActive(item.path));
 
   const addActions = [
@@ -235,7 +237,7 @@ export default function AdminLayout() {
             ))}
             {sheet === "more" && (
               <>
-                {[nav[7], nav[4], nav[3], nav[6]].map((item) => (
+                {[byPath("messages"), byPath("visites"), byPath("reseaux"), byPath("blog"), byPath("documents")].map((item) => (
                   <Link key={item.path} to={item.path} className={cn("flex min-h-[52px] items-center gap-3 rounded-md px-3 text-[15px] hover:bg-muted", isActive(item.path) ? "font-semibold text-primary" : "font-medium")}>
                     <item.icon size={20} strokeWidth={1.7} aria-hidden="true" /><span className="flex-1">{item.label}</span><CountBadge count={item.count ?? 0} />
                   </Link>

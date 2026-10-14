@@ -5,6 +5,7 @@ import { LANGS, DEFAULT_LANG, type Lang } from "@/i18n/routing";
 
 // Animation infrastructure
 import SmoothScroll from "@/components/SmoothScroll";
+import AttributionCapture from "@/components/AttributionCapture";
 import ScrollProgress from "@/components/ScrollProgress";
 
 /**
@@ -36,6 +37,9 @@ const AdminClients = lazy(() => import("./pages/admin/AdminClients"));
 const AdminDocuments = lazy(() => import("./pages/admin/AdminDocuments"));
 const AdminAgenda = lazy(() => import("./pages/admin/AdminAgenda"));
 const AdminMessages = lazy(() => import("./pages/admin/AdminMessages"));
+const AdminReseaux = lazy(() => import("./pages/admin/AdminReseaux"));
+const AdminReseauxJournal = lazy(() => import("./pages/admin/AdminReseauxJournal"));
+const AdminReseauxGroupes = lazy(() => import("./pages/admin/AdminReseauxGroupes"));
 const ProtectedRoute = lazy(() => import("./components/ProtectedRoute"));
 
 const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
@@ -71,6 +75,7 @@ export default function AppRoutes({ pages }: { pages: PublicPages }) {
   return (
     <>
       <SmoothScroll />
+      <AttributionCapture />
       <ScrollProgress />
       <Suspense fallback={<div className="min-h-screen bg-background" aria-label="Chargement" />}>
         <Routes>
@@ -102,6 +107,10 @@ export default function AppRoutes({ pages }: { pages: PublicPages }) {
             <Route path="documents" element={<AdminDocuments />} />
             <Route path="agenda" element={<AdminAgenda />} />
             <Route path="messages" element={<AdminMessages />} />
+            <Route path="reseaux" element={<AdminReseaux />} />
+            <Route path="reseaux/journal" element={<AdminReseauxJournal />} />
+            <Route path="reseaux/groupes" element={<AdminReseauxGroupes />} />
+            <Route path="reseaux/groupes/:id" element={<AdminReseauxGroupes />} />
           </Route>
         </Routes>
       </Suspense>
