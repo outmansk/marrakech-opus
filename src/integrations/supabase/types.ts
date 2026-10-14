@@ -67,6 +67,11 @@ export type Database = {
       }
       client_leads: {
         Row: {
+          bien_id: string | null
+          origine_reseau: string | null
+          origine_groupe_id: string | null
+          origine_publication_id: string | null
+          origine_ref: string | null
           id: string
           name: string
           phone: string
@@ -92,6 +97,11 @@ export type Database = {
           created_by: string | null
         }
         Insert: {
+          bien_id?: string | null
+          origine_reseau?: string | null
+          origine_groupe_id?: string | null
+          origine_publication_id?: string | null
+          origine_ref?: string | null
           id?: string
           name: string
           phone: string
@@ -117,6 +127,11 @@ export type Database = {
           created_by?: string | null
         }
         Update: {
+          bien_id?: string | null
+          origine_reseau?: string | null
+          origine_groupe_id?: string | null
+          origine_publication_id?: string | null
+          origine_ref?: string | null
           id?: string
           name?: string
           phone?: string
@@ -187,6 +202,11 @@ export type Database = {
       }
       contact_messages: {
         Row: {
+          bien_id: string | null
+          origine_reseau: string | null
+          origine_groupe_id: string | null
+          origine_publication_id: string | null
+          origine_ref: string | null
           id: string
           name: string
           email: string
@@ -196,6 +216,11 @@ export type Database = {
           created_at: string
         }
         Insert: {
+          bien_id?: string | null
+          origine_reseau?: string | null
+          origine_groupe_id?: string | null
+          origine_publication_id?: string | null
+          origine_ref?: string | null
           id?: string
           name: string
           email: string
@@ -205,6 +230,11 @@ export type Database = {
           created_at?: string
         }
         Update: {
+          bien_id?: string | null
+          origine_reseau?: string | null
+          origine_groupe_id?: string | null
+          origine_publication_id?: string | null
+          origine_ref?: string | null
           id?: string
           name?: string
           email?: string
@@ -404,6 +434,186 @@ export type Database = {
         }
         Relationships: []
       }
+      social_account_alerts: {
+        Row: {
+          id: string
+          survenue_le: string
+          reseau: string
+          type: string
+          compte: string | null
+          remarque: string | null
+          is_demo: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          survenue_le?: string
+          reseau?: string
+          type: string
+          compte?: string | null
+          remarque?: string | null
+          is_demo?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          survenue_le?: string
+          reseau?: string
+          type?: string
+          compte?: string | null
+          remarque?: string | null
+          is_demo?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
+      social_clicks: {
+        Row: {
+          id: number
+          publication_id: string
+          path: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: number
+          publication_id: string
+          path?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: number
+          publication_id?: string
+          path?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      social_groups: {
+        Row: {
+          id: string
+          code: number
+          nom: string
+          lien: string | null
+          reseau: string
+          membres: number | null
+          type: string
+          langue: string
+          regles: string | null
+          agences_interdites: boolean
+          immobilier_interdit: boolean
+          approbation_obligatoire: boolean
+          statut: string
+          statut_raison: string | null
+          is_demo: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          code?: number
+          nom: string
+          lien?: string | null
+          reseau?: string
+          membres?: number | null
+          type?: string
+          langue?: string
+          regles?: string | null
+          agences_interdites?: boolean
+          immobilier_interdit?: boolean
+          approbation_obligatoire?: boolean
+          statut?: string
+          statut_raison?: string | null
+          is_demo?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          code?: number
+          nom?: string
+          lien?: string | null
+          reseau?: string
+          membres?: number | null
+          type?: string
+          langue?: string
+          regles?: string | null
+          agences_interdites?: boolean
+          immobilier_interdit?: boolean
+          approbation_obligatoire?: boolean
+          statut?: string
+          statut_raison?: string | null
+          is_demo?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      social_publications: {
+        Row: {
+          id: string
+          code: number
+          bien_id: string | null
+          bien_hors_site: string | null
+          groupe_id: string | null
+          reseau: string
+          publie_le: string
+          langue: string
+          texte_debut: string | null
+          nb_photos: number | null
+          lien: string | null
+          publie_par: string
+          statut: string
+          statut_change_le: string
+          remarque: string | null
+          origine: string
+          is_demo: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          code?: number
+          bien_id?: string | null
+          bien_hors_site?: string | null
+          groupe_id?: string | null
+          reseau?: string
+          publie_le?: string
+          langue?: string
+          texte_debut?: string | null
+          nb_photos?: number | null
+          lien?: string | null
+          publie_par?: string
+          statut?: string
+          statut_change_le?: string
+          remarque?: string | null
+          origine?: string
+          is_demo?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          code?: number
+          bien_id?: string | null
+          bien_hors_site?: string | null
+          groupe_id?: string | null
+          reseau?: string
+          publie_le?: string
+          langue?: string
+          texte_debut?: string | null
+          nb_photos?: number | null
+          lien?: string | null
+          publie_par?: string
+          statut?: string
+          statut_change_le?: string
+          remarque?: string | null
+          origine?: string
+          is_demo?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       taches: {
         Row: {
           id: string
@@ -457,6 +667,10 @@ export type Database = {
       }
       visit_requests: {
         Row: {
+          origine_reseau: string | null
+          origine_groupe_id: string | null
+          origine_publication_id: string | null
+          origine_ref: string | null
           client_name: string
           client_phone: string
           created_at: string
@@ -467,6 +681,10 @@ export type Database = {
           status: string
         }
         Insert: {
+          origine_reseau?: string | null
+          origine_groupe_id?: string | null
+          origine_publication_id?: string | null
+          origine_ref?: string | null
           client_name: string
           client_phone: string
           created_at?: string
@@ -477,6 +695,10 @@ export type Database = {
           status?: string
         }
         Update: {
+          origine_reseau?: string | null
+          origine_groupe_id?: string | null
+          origine_publication_id?: string | null
+          origine_ref?: string | null
           client_name?: string
           client_phone?: string
           created_at?: string
@@ -508,7 +730,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      track_social_click: {
+        Args: { p_code: number; p_path?: string | null }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

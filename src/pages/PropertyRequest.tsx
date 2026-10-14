@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/lib/supabase";
+import { insertWithOrigin } from "@/lib/social/attribution";
 import { toast } from "sonner";
 import { QUARTIERS } from "@/types/property";
 import SEOHead from "@/components/SEOHead";
@@ -219,7 +219,7 @@ export default function PropertyRequest() {
       notes: form.notes.trim() || null, status: "nouveau", created_by: null,
     };
     try {
-      const { error } = await supabase.from("client_leads").insert(payload);
+      const { error } = await insertWithOrigin("client_leads", payload);
       if (error) return void toast.error(t.error);
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: "smooth" });

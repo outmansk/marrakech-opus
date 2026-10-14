@@ -7,6 +7,7 @@ import { CONTACT_ROLE, type Contact } from "@/lib/agenda";
 import { telHref } from "@/lib/contact";
 import { supabase } from "@/lib/supabase";
 import { useDeleteProperty, useProperties, useSetStatut } from "@/hooks/useBiens";
+import { useSocialData } from "@/hooks/useSocial";
 import { BienForm } from "@/components/admin/BienForm";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import StatusBadge from "@/components/admin/StatusBadge";
@@ -112,8 +113,31 @@ export default function AdminBiens() {
 
   const [sheetOpen, setSheetOpen] = useState(false);
   const [selectedBien, setSelectedBien] = useState<Bien | null>(null);
-  const handleAddNew = () => { setSelectedBien(null); setSheetOpen(true); };
-  const handleEdit = (bien: Bien) => { setSelectedBien(bien); setSheetOpen(true); };
+  const [sheetTab, setSheetTab] = useState<"infos" | "reseaux">("infos");
+  const handleAddNew = () => { setSelectedBien(null); setSheetTab("infos"); setSheetOpen(true); };
+  const handleEdit = (bien: Bien, tab: "infos" | "reseaux" = "infos") => { setSelectedBien(bien); setSheetTab(tab); setSheetOpen(true); };
+  // Réseaux sociaux : publications et clients par bien (vide tant que le SQL n'est pas lancé).
+  const { data: social } = useSocialData();
+  const socialByBien = useMemo(() => {
+    const map = new Map<string, { pubs: number; clients: number }>();
+    if (!social || social.missing) return map;
+    const pubBien = new Map(social.pubs.map((p) => [p.id, p.bien_id]));
+    for (const p of social.pubs) if (p.bien_id) map.set(p.bien_id, { pubs: (map.get(p.bien_id)?.pubs ?? 0) + 1, clients: map.get(p.bien_id)?.clients ?? 0 });
+    for (const l of social.leads) {
+      const id = (l.origine_publication_id && pubBien.get(l.origine_publication_id)) || null;
+      if (id) map.set(id, { pubs: map.get(id)?.pubs ?? 0, clients: (map.get(id)?.clients ?? 0) + 1 });
+    }
+    return map;
+  }, [social]);
+  const SocialCell = ({ bien }: { bien: Bien }) => {
+    const s = socialByBien.get(bien.id);
+    return (
+      <button type="button" onClick={() => handleEdit(bien, "reseaux")} className="flex min-h-10 flex-col items-start text-left text-[13px] hover:text-primary" aria-label={`Réseaux sociaux de ${bien.titre}`}>
+        <span className="font-semibold">{s?.pubs ?? 0} publication{(s?.pubs ?? 0) > 1 ? "s" : ""}</span>
+        <span className="text-muted-foreground">{s?.clients ?? 0} client{(s?.clients ?? 0) > 1 ? "s" : ""}</span>
+      </button>
+    );
+  };
   const actions = useBienActions(handleEdit);
 
   // Liens directs depuis le tableau de bord ou le bouton « + » : ?new=1 ou ?edit=<id>
@@ -155,7 +179,7 @@ export default function AdminBiens() {
 
   return (
     <div className="mx-auto flex max-w-[1240px] flex-col gap-4 px-4 py-4 lg:gap-5 lg:px-10 lg:py-8">
-      <BienForm open={sheetOpen} onOpenChange={setSheetOpen} bien={selectedBien} />
+      <BienForm open={sheetOpen} onOpenChange={setSheetOpen} bien={selectedBien} initialTab={sheetTab} />
       {actions.dialog}
 
       <PageHeader title="Biens" count={isLoading ? undefined : `${visible.length} sur ${biens.length}`}>
@@ -239,6 +263,7 @@ export default function AdminBiens() {
                   </span>
                 </button>
                 <div className="px-3 pb-2"><OwnerLine bien={bien} contacts={ownersByBien.get(bien.id) ?? []} /></div>
+                <div className="px-3 pb-2"><button type="button" onClick={() => handleEdit(bien, "reseaux")} className="min-h-10 text-[13px] font-medium text-muted-foreground hover:text-primary">Réseaux : {socialByBien.get(bien.id)?.pubs ?? 0} publication(s) · {socialByBien.get(bien.id)?.clients ?? 0} client(s)</button></div>
                 <div className="flex gap-2 px-3 pb-3">
                   <button type="button" onClick={() => handleEdit(bien)} className={cn(btn.soft, "flex-1 px-2")}><Pencil size={16} aria-hidden="true" />Modifier</button>
                   <button type="button" onClick={() => actions.toggle(bien)} disabled={actions.busy} className={cn(btn.outline, "flex-1 px-2")}>{actions.toggleLabel(bien)}</button>
@@ -260,6 +285,7 @@ export default function AdminBiens() {
                   <th scope="col" className="px-3 py-3 font-semibold">Services</th>
                   <th scope="col" className="px-3 py-3 font-semibold">Prix</th>
                   <th scope="col" className="px-3 py-3 font-semibold">Statut</th>
+                  <th scope="col" className="px-3 py-3 font-semibold">Réseaux</th>
                   <th scope="col" className="px-4 py-3 text-right font-semibold">Actions</th>
                 </tr>
               </thead>
@@ -283,6 +309,7 @@ export default function AdminBiens() {
                     </td>
                     <td className="whitespace-nowrap px-3 py-3 text-sm font-semibold">{mainPrice(bien)}</td>
                     <td className="px-3 py-3"><StatusBadge tone={STATUT_TONE[bien.statut] ?? "warning"}>{bien.statut === "vendu-loue" ? "Loué / vendu" : STATUT_LABELS[bien.statut]}</StatusBadge></td>
+                    <td className="px-3 py-3"><SocialCell bien={bien} /></td>
                     <td className="px-4 py-3">
                       <span className="flex justify-end gap-1.5">
                         <button type="button" onClick={() => handleEdit(bien)} className={cn(btn.soft, "h-10 px-3 text-[13px]")}>Modifier</button>

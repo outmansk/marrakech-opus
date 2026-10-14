@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronRight, Home, MessageCircle, PenLine, Phone, Plus } from "lucide-react";
-import { Bar, BarChart, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
@@ -11,6 +10,10 @@ import type { Article } from "@/types/article";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import StatusBadge, { CountBadge } from "@/components/admin/StatusBadge";
 import { endOfToday } from "@/hooks/useAdminCounts";
+import { HBarChart, SectionTitle } from "@/components/admin/charts";
+import { useSocialData } from "@/hooks/useSocial";
+import { fromOrigin } from "@/lib/social/model";
+import { pendingTooLong, rentedStillOnline } from "@/lib/social/stats";
 import { telHref, whatsappHref } from "@/lib/contact";
 import { TACHE_TYPE, echeanceLabel, isLate, type Contact, type Tache } from "@/lib/agenda";
 import {
@@ -82,32 +85,6 @@ type TodoItem = {
   action: { label: string; to?: string; run?: () => void };
 };
 
-function SectionTitle({ children, id }: { children: React.ReactNode; id?: string }) {
-  return <h2 id={id} className="m-0 font-serif text-[22px] font-semibold leading-tight">{children}</h2>;
-}
-
-function HBarChart({ data, color, label }: { data: { name: string; value: number }[]; color: string; label: string }) {
-  if (!data.length) return <p className="text-sm text-muted-foreground">Aucun bien pour l’instant.</p>;
-  return (
-    <figure className="m-0" aria-label={label}>
-      <ResponsiveContainer width="100%" height={data.length * 34 + 8}>
-        <BarChart data={data} layout="vertical" margin={{ top: 0, right: 32, bottom: 0, left: 0 }} barCategoryGap={10}>
-          <XAxis type="number" hide allowDecimals={false} />
-          <YAxis type="category" dataKey="name" width={132} tickLine={false} axisLine={false} tick={{ fontSize: 13, fill: "hsl(40 10% 12%)", fontFamily: "Montserrat, sans-serif" }} />
-          <Tooltip cursor={{ fill: "hsl(39 47% 94%)" }} formatter={(value: number) => [`${value} bien${value > 1 ? "s" : ""}`, ""]} separator="" contentStyle={{ borderRadius: 8, border: "1px solid hsl(35 30% 86%)", fontFamily: "Montserrat, sans-serif", fontSize: 13 }} />
-          <Bar dataKey="value" fill={color} radius={[0, 4, 4, 0]} barSize={12} isAnimationActive={false}>
-            <LabelList dataKey="value" position="right" style={{ fontSize: 13, fontWeight: 600, fill: "hsl(40 10% 12%)", fontFamily: "Montserrat, sans-serif" }} />
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-      <table className="sr-only">
-        <caption>{label}</caption>
-        <tbody>{data.map((row) => <tr key={row.name}><th scope="row">{row.name}</th><td>{row.value}</td></tr>)}</tbody>
-      </table>
-    </figure>
-  );
-}
-
 function DashboardSkeleton() {
   return (
     <div className="mx-auto flex max-w-[1180px] flex-col gap-6 px-4 py-5 lg:px-10 lg:py-8" aria-busy="true" aria-label="Chargement du tableau de bord">
@@ -122,6 +99,8 @@ function DashboardSkeleton() {
 
 export default function AdminDashboard() {
   const { data, isLoading, isError, refetch } = useDashboardData();
+  // Réseaux sociaux : vide tant que le SQL de la section n'est pas lancé.
+  const { data: social } = useSocialData();
   const queryClient = useQueryClient();
 
   const view = useMemo(() => {
@@ -181,6 +160,21 @@ export default function AdminDashboard() {
         action: { label: "Ouvrir", to: `${BASE}/agenda?edit=${t.id}` },
       };
     }),
+    ...(social && !social.missing ? [
+      ...rentedStillOnline(social.pubs, social.biens).map(({ bien, pubs }) => ({
+        key: `sr-${bien.id}`, kind: "Réseaux", name: bien.titre, late: true,
+        detail: `Loué ou vendu, mais ${pubs.length} publication(s) encore en ligne ou en attente : à retirer.`,
+        action: { label: "Ouvrir", to: `${BASE}/reseaux/journal?bien=${bien.id}` },
+      })),
+      ...(() => {
+        const pending = pendingTooLong(social.pubs);
+        return pending.length ? [{
+          key: "sp", kind: "Réseaux", name: `${pending.length} publication(s) en attente`,
+          detail: "En attente d’approbation depuis plus de 3 jours : relancez les admins ou retirez-les.",
+          action: { label: "Ouvrir", to: `${BASE}/reseaux/journal?statut=en-attente` },
+        }] : [];
+      })(),
+    ] : []),
     ...data!.messages.map((m) => ({
       key: `m-${m.id}`, kind: "Message", name: m.name, phone: m.phone ?? undefined,
       detail: m.message.length > 90 ? `${m.message.slice(0, 90)}…` : m.message,
@@ -210,6 +204,13 @@ export default function AdminDashboard() {
     { label: "Relances du jour", value: view.followUps.length, sub: "à faire aujourd’hui", to: `${BASE}/clients`, alert: true },
     { label: "Biens publiés", value: view.published, sub: "visibles sur le site", to: `${BASE}/biens` },
     { label: "Articles publiés", value: view.publishedArticles, sub: `sur ${view.articles.length} articles`, to: `${BASE}/blog` },
+    ...(() => {
+      if (!social || social.missing) return [];
+      const weekAgo = Date.now() - 7 * 24 * 3600 * 1000;
+      const pubs = social.pubs.filter((p) => new Date(p.publie_le).getTime() >= weekAgo).length;
+      const clients = social.leads.filter((l) => fromOrigin(l) && new Date(l.created_at).getTime() >= weekAgo).length;
+      return [{ label: "Réseaux sociaux", value: pubs, sub: `publications en 7 jours · ${clients} client${clients > 1 ? "s" : ""}`, to: `${BASE}/reseaux` }];
+    })(),
   ];
 
   const today = new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
@@ -271,7 +272,7 @@ export default function AdminDashboard() {
         </section>
 
         {/* Indicateurs */}
-        <section aria-label="Indicateurs" className="grid grid-cols-2 gap-2.5 lg:col-span-2 lg:row-start-1 lg:grid-cols-6 lg:gap-3.5">
+        <section aria-label="Indicateurs" className={cn("grid grid-cols-2 gap-2.5 lg:col-span-2 lg:row-start-1 lg:gap-3.5", kpis.length > 6 ? "lg:grid-cols-7" : "lg:grid-cols-6")}>
           {kpis.map((kpi) => (
             <Link key={kpi.label} to={kpi.to} className="flex flex-col gap-2 rounded-[10px] border border-border bg-card p-3.5 shadow-[0_1px_2px_rgba(33,31,27,0.05)] hover:border-input lg:p-4">
               <span className="text-[13px] font-medium leading-snug text-muted-foreground">{kpi.label}</span>

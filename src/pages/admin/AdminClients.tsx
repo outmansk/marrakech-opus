@@ -16,6 +16,9 @@ import { endOfToday } from "@/hooks/useAdminCounts";
 import { LEAD_LABELS, TYPE_LABELS, formatPrix, type LeadStatus } from "@/lib/labels";
 import { telHref, whatsappHref } from "@/lib/contact";
 import { cn } from "@/lib/utils";
+import { useSocialData } from "@/hooks/useSocial";
+import { RESEAUX, pubRef, type Reseau } from "@/lib/social/model";
+import type { Database } from "@/integrations/supabase/types";
 
 type Furnishing = "any" | "furnished" | "unfurnished";
 type Transaction = "location-longue-duree" | "location-courte-duree" | "vente";
@@ -25,6 +28,8 @@ type ClientLead = {
   bedrooms_min: number | null; furnishing: Furnishing; available_from: string | null; reference_location: string | null;
   max_distance_km: number | null; profession: string | null; client_profile: string | null; status: LeadStatus;
   next_follow_up_at: string | null; notes: string | null; created_at: string;
+  // Réseaux sociaux (colonnes facultatives, présentes une fois le SQL de la section lancé).
+  bien_id?: string | null; origine_reseau?: string | null; origine_groupe_id?: string | null; origine_publication_id?: string | null; origine_ref?: string | null;
 };
 type LeadForm = Omit<ClientLead, "id" | "created_at"> & { areas_text: string };
 
@@ -42,6 +47,7 @@ const blankLead: LeadForm = {
   budget_min: null, budget_max: null, preferred_areas: [], areas_text: "", bedrooms_min: null, furnishing: "any",
   available_from: null, reference_location: "", max_distance_km: null, profession: "", client_profile: "",
   status: "nouveau", next_follow_up_at: null, notes: "",
+  bien_id: null, origine_reseau: null, origine_groupe_id: null, origine_publication_id: null,
 };
 
 const priceOf = (p: Bien, t: Transaction) => (t === "vente" ? p.prix_vente ?? p.prix : t === "location-courte-duree" ? p.prix_location_courte ?? p.prix : p.prix_location_longue ?? p.prix);
@@ -157,7 +163,8 @@ export default function AdminClients() {
   };
 
   const saveLead = async (form: LeadForm) => {
-    const { areas_text, ...values } = form;
+     
+    const { areas_text, origine_ref, ...values } = form;
     const payload = {
       ...values,
       email: values.email || null, preferred_areas: areas_text.split(",").map((a) => a.trim()).filter(Boolean),
@@ -167,9 +174,19 @@ export default function AdminClients() {
       client_profile: values.client_profile || null, reference_location: values.reference_location || null, notes: values.notes || null,
     };
     const existing = openId ? leads.find((l) => l.id === openId) : null;
-    const result = existing
-      ? await supabase.from("client_leads").update(payload).eq("id", existing.id).select().single()
-      : await supabase.from("client_leads").insert({ ...payload, created_by: (await supabase.auth.getUser()).data.user?.id }).select().single();
+    const createdBy = existing ? undefined : (await supabase.auth.getUser()).data.user?.id;
+    // Typage volontairement simple : le corps varie selon que les colonnes d'origine existent ou non.
+    type LeadRow = Database["public"]["Tables"]["client_leads"]["Insert"];
+    const write = (body: object) => existing
+      ? supabase.from("client_leads").update(body as LeadRow).eq("id", existing.id).select().single()
+      : supabase.from("client_leads").insert({ ...(body as LeadRow), created_by: createdBy }).select().single();
+    let result = await write(payload);
+    // Avant le SQL des réseaux sociaux, les colonnes d'origine n'existent pas : on enregistre sans elles.
+    if (result.error && (result.error.code === "PGRST204" || result.error.code === "42703")) {
+       
+      const { bien_id, origine_reseau, origine_groupe_id, origine_publication_id, ...legacy } = payload;
+      result = await write(legacy);
+    }
     if (result.error) {
       toast.error("Le dossier n’a pas pu être enregistré. Vérifiez le nom et le téléphone, puis réessayez.");
       return false;
@@ -376,6 +393,7 @@ function ClientSheet({ lead, form, properties, onClose, onEdit, onCancelEdit, on
                   <div className="flex min-w-0 flex-col gap-1">
                     <h2 className="m-0 font-serif text-[28px] font-semibold leading-none">{lead.name}</h2>
                     <span className="text-[13px] text-muted-foreground">Source : {lead.source}{lead.profession ? ` · ${lead.profession}` : ""}</span>
+                    <OriginLine lead={lead} />
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
@@ -502,6 +520,8 @@ function LeadEditor({ initial, onCancel, onSave }: { initial: LeadForm; onCancel
             <Field label="Profil / foyer"><input value={form.client_profile ?? ""} onChange={(e) => up("client_profile", e.target.value)} placeholder="Famille, couple, salarié…" className={field.input} /></Field>
           </section>
 
+          <OriginSection form={form} setForm={setForm} />
+
           <section className="grid gap-3.5 rounded-[10px] border border-border bg-card p-4 sm:grid-cols-2">
             <h3 className="m-0 font-serif text-[22px] font-semibold sm:col-span-2">Ce que le client cherche</h3>
             <Field label="Projet" className="sm:col-span-2"><SelectField label="Projet" value={form.transaction_type} onChange={(v) => up("transaction_type", v as Transaction)}>{(Object.keys(PROJECTS) as Transaction[]).map((t) => <option key={t} value={t}>{PROJECTS[t]}</option>)}</SelectField></Field>
@@ -537,5 +557,76 @@ function LeadEditor({ initial, onCancel, onSave }: { initial: LeadForm; onCancel
         <button type="submit" disabled={saving} className={cn(btn.primary, "h-12 flex-[2] lg:h-11 lg:flex-none lg:px-6")}>{saving ? "Enregistrement…" : "Enregistrer le dossier"}</button>
       </footer>
     </form>
+  );
+}
+
+/** Origine réseaux sociaux d'un client (affichée seulement quand elle est connue). */
+function OriginLine({ lead }: { lead: ClientLead }) {
+  const { data } = useSocialData();
+  if (!data || data.missing || !(lead.origine_publication_id || lead.origine_reseau || lead.bien_id)) return null;
+  const pub = lead.origine_publication_id ? data.pubs.find((p) => p.id === lead.origine_publication_id) : undefined;
+  const groupe = data.groupes.find((g) => g.id === (pub?.groupe_id ?? lead.origine_groupe_id));
+  const bien = data.biens.find((b) => b.id === lead.bien_id);
+  const reseau = pub?.reseau ?? lead.origine_reseau;
+  return (
+    <span className="text-[13px] text-muted-foreground">
+      {[reseau && `Origine : ${RESEAUX[reseau as Reseau]?.label ?? reseau}`, groupe?.nom, pub && pubRef(pub), bien && `Bien : ${bien.titre}`].filter(Boolean).join(" · ")}
+    </span>
+  );
+}
+
+const NO_ORIGIN = "";
+const OTHER_NETWORK = "__reseau__";
+
+/** « D'où vient ce client ? » : bien concerné puis dernières publications de ce bien. */
+function OriginSection({ form, setForm }: { form: LeadForm; setForm: React.Dispatch<React.SetStateAction<LeadForm>> }) {
+  const { data } = useSocialData();
+  if (!data || data.missing) return null;
+  const pubs = data.pubs.filter((p) => !form.bien_id || p.bien_id === form.bien_id).slice(0, 15);
+  const groupes = new Map(data.groupes.map((g) => [g.id, g]));
+  const choice = form.origine_publication_id ?? (form.origine_reseau ? OTHER_NETWORK : NO_ORIGIN);
+  const pick = (value: string) => {
+    if (value === NO_ORIGIN) return setForm((f) => ({ ...f, origine_publication_id: null, origine_groupe_id: null, origine_reseau: null }));
+    if (value === OTHER_NETWORK) return setForm((f) => ({ ...f, origine_publication_id: null, origine_groupe_id: null, origine_reseau: f.origine_reseau ?? "facebook" }));
+    const pub = data.pubs.find((p) => p.id === value);
+    if (pub) setForm((f) => ({ ...f, origine_publication_id: pub.id, origine_groupe_id: pub.groupe_id, origine_reseau: pub.reseau, bien_id: f.bien_id ?? pub.bien_id }));
+  };
+  return (
+    <section className="grid gap-3.5 rounded-[10px] border border-border bg-card p-4 sm:grid-cols-2">
+      <h3 className="m-0 font-serif text-[22px] font-semibold sm:col-span-2">Origine</h3>
+      <Field label="Bien concerné" className="sm:col-span-2">
+        <SelectField label="Bien concerné" value={form.bien_id ?? ""} onChange={(v) => setForm((f) => ({ ...f, bien_id: v || null }))}>
+          <option value="">Aucun bien précis</option>
+          {data.biens.map((b) => <option key={b.id} value={b.id}>{b.titre}</option>)}
+        </SelectField>
+      </Field>
+      <Field label="D’où vient ce client ?" className="sm:col-span-2">
+        <SelectField label="D’où vient ce client ?" value={choice} onChange={pick}>
+          <option value={NO_ORIGIN}>Pas des réseaux sociaux / inconnu</option>
+          {pubs.map((p) => (
+            <option key={p.id} value={p.id}>
+              {pubRef(p)} · {p.groupe_id ? groupes.get(p.groupe_id)?.nom ?? "Groupe" : RESEAUX[p.reseau].label} · {new Date(p.publie_le).toLocaleDateString("fr-FR", { day: "numeric", month: "short", timeZone: "Africa/Casablanca" })}
+            </option>
+          ))}
+          <option value={OTHER_NETWORK}>Un réseau social, sans publication précise…</option>
+        </SelectField>
+      </Field>
+      {choice === OTHER_NETWORK && (
+        <Field label="Réseau">
+          <SelectField label="Réseau" value={form.origine_reseau ?? "facebook"} onChange={(v) => setForm((f) => ({ ...f, origine_reseau: v }))}>
+            {Object.entries(RESEAUX).map(([k, r]) => <option key={k} value={k}>{r.label}</option>)}
+          </SelectField>
+        </Field>
+      )}
+      {choice === OTHER_NETWORK && (
+        <Field label="Groupe (facultatif)">
+          <SelectField label="Groupe" value={form.origine_groupe_id ?? ""} onChange={(v) => setForm((f) => ({ ...f, origine_groupe_id: v || null }))}>
+            <option value="">Aucun</option>
+            {data.groupes.filter((g) => g.reseau === (form.origine_reseau ?? "facebook")).map((g) => <option key={g.id} value={g.id}>{g.nom}</option>)}
+          </SelectField>
+        </Field>
+      )}
+      <p className="m-0 text-xs text-muted-foreground sm:col-span-2">La liste montre les dernières publications {form.bien_id ? "de ce bien" : "(choisissez un bien pour la réduire)"}. Un client arrivé par un lien suivi du site est rattaché automatiquement.</p>
+    </section>
   );
 }

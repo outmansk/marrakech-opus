@@ -1,3 +1,4 @@
+import OriginTag from "@/components/admin/social/OriginTag";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -11,7 +12,7 @@ import { btn } from "@/components/admin/styles";
 
 const BASE = "/manage-xk92p";
 
-type Message = { id: string; name: string; email: string; phone: string | null; message: string; traite?: boolean; created_at: string };
+type Message = { id: string; name: string; email: string; phone: string | null; message: string; traite?: boolean; created_at: string; origine_reseau?: string | null; origine_groupe_id?: string | null; origine_publication_id?: string | null; origine_ref?: string | null };
 type Filtre = "a-traiter" | "traites" | "tous";
 
 function useMessages() {
@@ -112,6 +113,7 @@ export default function AdminMessages() {
                   </span>
                   <span className="text-[13px] text-muted-foreground">{[m.email, m.phone].filter(Boolean).join(" · ")}</span>
                   <span className="text-xs text-muted-foreground first-letter:uppercase">Reçu {received(m.created_at)}</span>
+                  <OriginTag row={m} />
                 </div>
                 <ActionMenu label={`Actions pour le message de ${m.name}`} items={[
                   { label: m.traite ? "Remettre à traiter" : "Marquer comme traité", onSelect: () => void toggle(m) },
