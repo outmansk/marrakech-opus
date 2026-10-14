@@ -15,5 +15,9 @@
         { "time": "17 min", "place": "Marrakech" }
       ]
     }
+  },
+  "28342b88-f26c-48fc-be40-52cb54342e9b": {
+    "dbUpdatedAt": "2026-10-06T14:40:08.33485+00:00",
+    "fields": { "surface_terrain": 300, "surface_habitable": 100 }
   }
 }
