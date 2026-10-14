@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroSlideshow from "@/components/HeroSlideshow";
 import PropertiesCarousel from "@/components/PropertiesCarousel";
+import RecentDeals from "@/components/RecentDeals";
 import servicesImage from "@/assets/slide1.webp";
 import approachImage from "@/assets/slide4.webp";
 import districtsImage from "@/assets/slide2.webp";
@@ -62,6 +63,8 @@ const Index = () => {
         </section>
 
         <PropertiesCarousel />
+
+        <RecentDeals />
 
         {/* Nos services */}
         <section className="bg-[#ede5d8] px-5 py-16 lg:px-0 lg:py-[120px]">

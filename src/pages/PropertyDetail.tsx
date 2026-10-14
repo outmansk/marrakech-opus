@@ -25,6 +25,7 @@ import { LANGS, localizePath, type Lang } from "@/i18n/routing";
 import type { BienService } from "@/types/property";
 import { formatPrice } from "@/lib/propertyDetail";
 import { originRef } from "@/lib/social/attribution";
+import { dealLine } from "@/lib/propertyDeals";
 import PhotoGallery from "@/components/property/PhotoGallery";
 import SimilarProperties from "@/components/property/SimilarProperties";
 import { AmenitiesGrid, DescriptionSections, LocationBlock, Reassurance, RentalTerms, SpecsGrid } from "@/components/property/PropertySections";
@@ -275,6 +276,15 @@ const PropertyDetail = () => {
               </div>
 
               <SpecsGrid property={property} />
+              {unavailable && (
+                <div className="flex flex-col gap-1.5 rounded-xl border border-primary/30 bg-primary-soft p-4">
+                  <p className="m-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">{unavailableLabel}</p>
+                  {dealLine(property, lang) && <p className="m-0 text-[15px] font-semibold text-foreground">{dealLine(property, lang)}</p>}
+                  <p className="m-0 text-sm text-muted-foreground">
+                    {tL("Vous cherchez un bien comparable ? Écrivez-nous sur WhatsApp : nous vous proposons les biens disponibles.", "Looking for something similar? Message us on WhatsApp and we will send you the available properties.", "¿Busca algo parecido? Escríbanos por WhatsApp y le enviaremos los inmuebles disponibles.")}
+                  </p>
+                </div>
+              )}
               {!unavailable && <Reassurance rental={longTerm} />}
 
               {(text.description_longue || text.description_courte) && (

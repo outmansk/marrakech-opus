@@ -1,0 +1,9 @@
+{
+  "_comment": "Biens loués ou vendus par l'agence, montrés sur le site pour rassurer les clients (badge « Déjà loué », encart sur la fiche, section « Récemment loués et vendus »). Le bien doit être au statut « vendu-loue ». Profil ANONYME uniquement (type de client, nationalité) : jamais de nom ni de prénom sans l'accord écrit du client (loi 09-08). loyer / prix : montant conclu, facultatif. mois : AAAA-MM, facultatif.",
+  "28342b88-f26c-48fc-be40-52cb54342e9b": {
+    "profil": { "fr": "une cliente française", "en": "a French client", "es": "una clienta francesa" },
+    "loyer": 10000,
+    "prix": null,
+    "mois": null
+  }
+}
