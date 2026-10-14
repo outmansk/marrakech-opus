@@ -34,8 +34,8 @@ export function SpecsGrid({ property }: { property: Bien }) {
   const specs: { icon: LucideIcon; value: string; label: string }[] = [];
   if (property.chambres != null) specs.push({ icon: BedDouble, value: String(property.chambres), label: property.chambres > 1 ? tL("Chambres", "Bedrooms", "Dormitorios") : tL("Chambre", "Bedroom", "Dormitorio") });
   if (property.salles_de_bain != null) specs.push({ icon: Bath, value: String(property.salles_de_bain), label: property.salles_de_bain > 1 ? tL("Salles de bain", "Bathrooms", "Baños") : tL("Salle de bain", "Bathroom", "Baño") });
-  if (property.surface_habitable) specs.push({ icon: Ruler, value: `${property.surface_habitable} m²`, label: tL("Surface habitable", "Living area", "Superficie habitable") });
-  if (property.surface_terrain && property.surface_terrain !== property.surface_habitable) specs.push({ icon: LandPlot, value: `${property.surface_terrain} m²`, label: tL("Terrain", "Plot", "Parcela") });
+  if (property.surface_terrain) specs.push({ icon: LandPlot, value: `${property.surface_terrain} m²`, label: tL("Terrain", "Plot", "Parcela") });
+  if (property.surface_habitable && property.surface_habitable !== property.surface_terrain) specs.push({ icon: Ruler, value: `${property.surface_habitable} m²`, label: tL("Surface habitable", "Living area", "Superficie habitable") });
   if (!specs.length) return null;
   return (
     <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4 md:gap-3">

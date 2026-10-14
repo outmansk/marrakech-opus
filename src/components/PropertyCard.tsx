@@ -61,7 +61,9 @@ const PropertyCard = ({ property, activeType }: PropertyCardProps) => {
   const priceSuffix = kind === "location-longue-duree" ? tL("/ mois", "/ month", "/ mes") : kind === "location-courte-duree" ? tL("/ nuit", "/ night", "/ noche") : null;
 
   const image = property.photo_principale || property.photos?.[0] || "/placeholder.svg";
-  const surface = property.surface_habitable || property.surface_terrain;
+  // Règle de l'agence : la carte montre toujours la surface du terrain, sinon la surface habitable.
+  const surface = property.surface_terrain || property.surface_habitable;
+  const surfaceLabel = property.surface_terrain ? tL("Terrain", "Plot", "Parcela") : tL("Surface", "Area", "Superficie");
   const typeLabel = property.type ? typeName(property.type, lang) : null;
   const href = lp(propertyPath(property));
   const viewLabel = tL("Voir le bien", "View property", "Ver la propiedad");
@@ -74,7 +76,7 @@ const PropertyCard = ({ property, activeType }: PropertyCardProps) => {
   const specs = [
     property.chambres != null && property.chambres > 0 && { icon: Bed, value: String(property.chambres), label: property.chambres > 1 ? tL("Chambres", "Bedrooms", "Dormitorios") : tL("Chambre", "Bedroom", "Dormitorio") },
     property.salles_de_bain != null && property.salles_de_bain > 0 && { icon: Bath, value: String(property.salles_de_bain), label: property.salles_de_bain > 1 ? tL("Salles de bain", "Bathrooms", "Baños") : tL("Salle de bain", "Bathroom", "Baño") },
-    surface != null && surface > 0 && { icon: Maximize, value: `${surface} m²`, label: tL("Surface", "Area", "Superficie") },
+    surface != null && surface > 0 && { icon: Maximize, value: `${surface} m²`, label: surfaceLabel },
   ].filter(Boolean) as { icon: typeof Bed; value: string; label: string }[];
 
   return (

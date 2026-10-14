@@ -152,7 +152,9 @@ export function propertyMetaDescription(bien: Bien, lang: Lang) {
       : "";
   const facts = [
     bien.chambres ? pick(lang, `${bien.chambres} chambres`, `${bien.chambres} bedrooms`, `${bien.chambres} dormitorios`) : null,
-    bien.surface_habitable ? `${bien.surface_habitable} m²` : null,
+    bien.surface_terrain
+      ? pick(lang, `terrain de ${bien.surface_terrain} m²`, `${bien.surface_terrain} m² plot`, `parcela de ${bien.surface_terrain} m²`)
+      : bien.surface_habitable ? `${bien.surface_habitable} m²` : null,
     headlinePrice(bien, lang),
   ].filter(Boolean).join(", ");
   const cta = pick(lang, "Visite et infos sur WhatsApp.", "Book a visit on WhatsApp.", "Visita e info por WhatsApp.");
