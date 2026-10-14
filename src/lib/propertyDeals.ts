@@ -6,7 +6,7 @@ import { isSoldOnly, isUnavailable } from "@/lib/propertyServices";
 // Biens conclus par l'agence (src/content/propertyDeals.json) : profil anonyme et montant,
 // affichés seulement quand le bien est au statut « vendu-loue ».
 
-interface Deal { profil: Record<Lang, string>; loyer: number | null; prix: number | null; mois: string | null }
+interface Deal { profil: Record<Lang, string> | null; loyer: number | null; prix: number | null; mois: string | null }
 const DEALS = deals as unknown as Record<string, Deal>;
 
 const MONTHS: Record<Lang, string[]> = {
@@ -46,5 +46,7 @@ export function dealLine(property: Bien, lang: Lang): string | null {
   const when = year && month ? ` ${pick(lang, "en", "in", "en")} ${MONTHS[lang][month - 1]} ${year}` : "";
   const value = sold ? deal.prix : deal.loyer;
   const price = value ? ` · ${amount(value, lang)} ${property.devise || "MAD"}${sold ? "" : pick(lang, " / mois", " / month", " / mes")}` : "";
-  return `${verb} ${deal.profil[lang]}${when}${price}`;
+  // Sans profil client : « Louée · 16 500 MAD / mois ».
+  const head = deal.profil ? `${verb} ${deal.profil[lang]}` : verb.replace(/ (à|to|a)$/, "");
+  return `${head}${when}${price}`;
 }
