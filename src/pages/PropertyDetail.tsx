@@ -18,7 +18,7 @@ import { propertyIdFromParam, propertyPath } from "@/lib/propertyUrl";
 import { useLocalePath } from "@/hooks/useLocalePath";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
 import { getImageUrl } from "@/lib/cloudinary";
-import { furnishedOf, zoneLabel } from "@/content/zones";
+import { depositMonthsOf, furnishedOf, zoneLabel } from "@/content/zones";
 import { AGENCY } from "@/content/agency";
 import { equipmentName, propertyMetaDescription, propertySeoTitle, propertyText, serviceName, typeName } from "@/lib/propertyI18n";
 import { LANGS, localizePath, type Lang } from "@/i18n/routing";
@@ -175,8 +175,8 @@ const PropertyDetail = () => {
   const mainPrice = prices[0];
   const longTerm = property.services.includes("location-longue-duree");
   const furnished = longTerm ? furnishedOf(property) : null;
-  // Deposit (confirmed rule): two months' rent furnished, one month unfurnished.
-  const depositMonths = furnished === null ? null : furnished ? 2 : 1;
+  // Deposit: the owner's figure when given, else the rule (two months furnished, one month unfurnished).
+  const depositMonths = longTerm ? depositMonthsOf(property) : null;
   const deposit = depositMonths && property.prix_location_longue ? property.prix_location_longue * depositMonths : null;
 
   const share = async () => {
@@ -267,7 +267,7 @@ const PropertyDetail = () => {
                         <span className="rounded-md bg-primary-soft px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-primary">
                           {furnished ? tL("Meublé", "Furnished", "Amueblado") : tL("Vide", "Unfurnished", "Sin amueblar")}
                         </span>
-                        {furnished ? tL("Caution : 2 mois de loyer", "Deposit: 2 months’ rent", "Fianza: 2 meses de alquiler") : tL("Caution : 1 mois de loyer", "Deposit: 1 month’s rent", "Fianza: 1 mes de alquiler")}
+                        {depositMonths === 1 ? tL("Caution : 1 mois de loyer", "Deposit: 1 month’s rent", "Fianza: 1 mes de alquiler") : tL(`Caution : ${depositMonths} mois de loyer`, `Deposit: ${depositMonths} months’ rent`, `Fianza: ${depositMonths} meses de alquiler`)}
                         {deposit && ` (${formatPrice(deposit, property.devise)})`}
                       </p>
                     )}

@@ -5,7 +5,7 @@ import facts from "./propertyFacts.json";
 // Areas where the agency actually has properties. The descriptions only restate what the
 // listings themselves say (distances, setting); nothing here comes from market data.
 
-type Facts = { zone?: ZoneId; meuble?: boolean };
+type Facts = { zone?: ZoneId; meuble?: boolean; caution_mois?: number };
 const FACTS = facts as unknown as Record<string, Facts>;
 
 export type ZoneId = "route-de-fes" | "sidi-rahal" | "chrifia" | "golf" | "palmeraie" | "village-touristique" | "medina" | "route-essaouira" | "gueliz";
@@ -123,6 +123,14 @@ export function inZone(property: Pick<Bien, "id" | "quartier">, lang: Lang) {
   const zone = zoneOf(property);
   if (zone) return ZONE_IN[zone][lang];
   return `${lang === "fr" ? "à" : lang === "en" ? "in" : "en"} ${property.quartier?.trim() || "Marrakech"}`;
+}
+
+/** Deposit in months of rent: the owner's figure when given, else the rule (2 furnished, 1 unfurnished); null = unknown. */
+export function depositMonthsOf(property: Pick<Bien, "id" | "meuble">): number | null {
+  const owner = FACTS[property.id]?.caution_mois;
+  if (owner) return owner;
+  const furnished = furnishedOf(property);
+  return furnished === null ? null : furnished ? 2 : 1;
 }
 
 /** Furnished status: database first, then the facts confirmed by the agency; null = not specified. */

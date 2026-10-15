@@ -320,6 +320,80 @@
       "longitude": null,
       "created_at": "2026-10-15T09:00:00+00:00",
       "updated_at": "2026-10-15T09:00:00+00:00"
+    },
+    {
+      "id": "5ae8e008-1dc3-4e27-8e5f-d056dfd0daca",
+      "titre": "Villa Golf Atlas",
+      "type": "villa",
+      "services": [
+        "location-longue-duree",
+        "vente"
+      ],
+      "service": "location-longue-duree",
+      "prix_vente": 4000000,
+      "prix_location_longue": 18000,
+      "prix_location_courte": null,
+      "prix": null,
+      "devise": "MAD",
+      "surface_habitable": 150,
+      "surface_terrain": 500,
+      "chambres": 3,
+      "salles_de_bain": 3,
+      "quartier": "Golf Atlas",
+      "meuble": false,
+      "description_courte": "Villa beldi moderne non meublée avec piscine et grand jardin, secteur Golf Atlas : 3 chambres, 3 salles de bain, cheminée, toit-terrasse. 18 000 DH/mois ou 4 000 000 DH à la vente.",
+      "description_longue": "Villa de style beldi moderne, non meublée, à louer à l’année ou à vendre, dans le secteur Golf Atlas à Marrakech. Loyer : 18 000 DH par mois. Prix de vente : 4 000 000 DH.\n\nLa villa\n• 150 m² habitables sur un terrain de 500 m²\n• 3 chambres spacieuses\n• 3 salles de bain\n• Salon avec cheminée\n• Cuisine équipée\n• Style beldi moderne, finitions artisanales et matériaux de qualité\n\nL’extérieur\n• Grand jardin privé\n• Piscine\n• Toit-terrasse avec véranda vitrée\n\nEmplacement\nEnvironnement calme et recherché, proche des golfs et des écoles internationales :\n• Golf Amelkis : 5 km\n• American School of Marrakech : 5 km\n• Atacadão : 5 km\n• Centre-ville / Guéliz : 10 km\n• Jardin Majorelle : 10 km\n\nFrais d’entrée (location)\n• 2 mois de caution (36 000 DH), à la demande du propriétaire\n• 1 mois de loyer d’avance (18 000 DH)\n\nConditions\n• Bail d’un an minimum\n• Document demandé : passeport ou carte d’identité\n\nUne villa idéale pour une résidence longue durée, au calme et en toute intimité, à quelques minutes des principales commodités. Visite sur place ou en vidéo sur WhatsApp.",
+      "equipements": [
+        "Piscine",
+        "Jardin",
+        "Cheminée",
+        "Climatisation",
+        "Cuisine équipée",
+        "Terrasse"
+      ],
+      "photos": [
+        "/biens/villa-golf-atlas/facade-piscine.webp",
+        "/biens/villa-golf-atlas/piscine-jardin.webp",
+        "/biens/villa-golf-atlas/jardin.webp",
+        "/biens/villa-golf-atlas/salon.webp",
+        "/biens/villa-golf-atlas/salon-2.webp",
+        "/biens/villa-golf-atlas/cuisine.webp",
+        "/biens/villa-golf-atlas/entree.webp",
+        "/biens/villa-golf-atlas/chambre-1.webp",
+        "/biens/villa-golf-atlas/chambre-2.webp",
+        "/biens/villa-golf-atlas/terrasse-veranda.webp",
+        "/biens/villa-golf-atlas/escalier.webp"
+      ],
+      "photo_principale": "/biens/villa-golf-atlas/facade-piscine.webp",
+      "proximites": [
+        {
+          "time": "5 km",
+          "place": "Golf Amelkis"
+        },
+        {
+          "time": "5 km",
+          "place": "American School of Marrakech"
+        },
+        {
+          "time": "5 km",
+          "place": "Atacadão"
+        },
+        {
+          "time": "10 km",
+          "place": "Guéliz (centre-ville)"
+        },
+        {
+          "time": "10 km",
+          "place": "Jardin Majorelle"
+        }
+      ],
+      "statut": "publie",
+      "disponible_le": null,
+      "reference": "DP-26-GATLS",
+      "latitude": null,
+      "longitude": null,
+      "created_at": "2026-10-16T09:00:00+00:00",
+      "updated_at": "2026-10-16T09:00:00+00:00"
     }
   ]
 }
