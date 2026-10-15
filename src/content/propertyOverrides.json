@@ -19,5 +19,12 @@
   "28342b88-f26c-48fc-be40-52cb54342e9b": {
     "dbUpdatedAt": "2026-10-06T14:40:08.33485+00:00",
     "fields": { "surface_terrain": 300, "surface_habitable": 100 }
+  },
+  "4b731349-1a9e-4c53-84fb-c082b44dd38e": {
+    "dbUpdatedAt": "2026-05-24T16:49:45.037651+00:00",
+    "fields": {
+      "photo_principale": "properties/dljcretvfqtnmkrpfakk",
+      "photos": ["properties/dljcretvfqtnmkrpfakk","properties/a1b73dk1wenvjbjensi4","properties/dm0ed9pebp2tfwe8yiwt","properties/gg3uquoloutl88jceeam","properties/dlpquzrzrbpkthb8mocx","properties/l50ykadc0tnzs1p6a54o","properties/wvvybnb7vargtseljgis","properties/vovpwpohaxnvnvrsilkp","properties/zm4lkfeuxmn3gkibez4q","properties/sskoi0zu5wjfyimwbibk","properties/oc3juwpjv5lrrbho7ol7","properties/vd12ilmmwv8gyqfv3bws"]
+    }
   }
 }
