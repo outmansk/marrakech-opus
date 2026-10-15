@@ -25,7 +25,7 @@ Remplir à partir du descriptif + photos uniquement :
 - `proximites` : seulement les distances/temps donnés par l'annonce (`{ "time": "12 km", "place": "Marrakech (centre)" }`), sinon `[]`.
 
 Règles confirmées par l'agence (ne pas les contredire) :
-- Location longue durée : bail 1 an minimum ; **caution 2 mois si meublé, 1 mois si non meublé** ; document : passeport ou carte d'identité. Si l'annonce donne d'autres frais d'entrée (loyer d'avance, frais d'agence), les écrire avec les montants calculés.
+- Location longue durée : bail 1 an minimum ; **caution 2 mois si meublé, 1 mois si non meublé** ; document : passeport ou carte d'identité. Si le propriétaire exige autre chose (ex. 2 mois pour un bien vide), demander confirmation puis ajouter `"caution_mois": 2` à l'entrée du bien dans `src/content/propertyFacts.json` (lu par `depositMonthsOf()` : badge, fiche, conditions). Si l'annonce donne d'autres frais d'entrée (loyer d'avance, frais d'agence), les écrire avec les montants calculés.
 - Vente : honoraires d'agence seulement s'ils sont donnés (ex. 3 %). Points juridiques généraux, renvoyer au notaire.
 - Pas de chiffres de marché inventés, pas d'emojis ni de « 🔥 À saisir » dans les textes du site.
 
