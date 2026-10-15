@@ -272,6 +272,54 @@
       "longitude": null,
       "created_at": "2026-10-13T09:00:00+00:00",
       "updated_at": "2026-10-13T09:00:00+00:00"
+    },
+    {
+      "id": "76b25b2d-43f5-45a0-bd3e-abf31d386dd3",
+      "titre": "Appartement Zara Guéliz",
+      "type": "appartement",
+      "services": [
+        "location-longue-duree"
+      ],
+      "service": "location-longue-duree",
+      "prix_vente": null,
+      "prix_location_longue": 14500,
+      "prix_location_courte": null,
+      "prix": null,
+      "devise": "MAD",
+      "surface_habitable": 98,
+      "surface_terrain": null,
+      "chambres": 2,
+      "salles_de_bain": 2,
+      "quartier": "Gueliz",
+      "meuble": true,
+      "description_courte": "Appartement meublé de 98 m² à louer à l’année dans la résidence Zara, en plein centre de Marrakech (Guéliz) : 2 chambres, 2 salles de bain, balcon, ascenseur et parking en sous-sol. 14 500 DH/mois.",
+      "description_longue": "Appartement moderne et meublé de 98 m² à louer à l’année dans la résidence Zara, en hyper centre de Marrakech (Guéliz), dans un secteur sécurisé à proximité immédiate de toutes les commodités. Loyer : 14 500 DH par mois.\n\nL’appartement\n• 2 chambres\n• 2 salles de bain\n• Salon lumineux\n• Cuisine équipée ouverte sur le salon\n• Joli espace extérieur : balcon avec vue sur la ville\n• Entièrement meublé\n\nL’immeuble\n• 4ᵉ étage avec ascenseur\n• Parking en sous-sol\n\nFrais d’entrée\n• 2 mois de caution (29 000 DH)\n• 1 mois de loyer d’avance (14 500 DH)\n• 1 mois de frais d’agence (14 500 DH)\n\nConditions\n• Bail d’un an minimum\n• Document demandé : passeport ou carte d’identité\n\nUn appartement prêt à vivre au cœur de Marrakech, pour profiter de la ville à pied. Visite sur place ou en vidéo sur WhatsApp.",
+      "equipements": [
+        "Cuisine équipée",
+        "Ascenseur",
+        "Parking",
+        "Terrasse",
+        "Meublé"
+      ],
+      "photos": [
+        "/biens/appartement-zara-gueliz/salon.webp",
+        "/biens/appartement-zara-gueliz/balcon.webp",
+        "/biens/appartement-zara-gueliz/cuisine.webp",
+        "/biens/appartement-zara-gueliz/chambre-1.webp",
+        "/biens/appartement-zara-gueliz/chambre-2.webp",
+        "/biens/appartement-zara-gueliz/salle-de-bain.webp",
+        "/biens/appartement-zara-gueliz/salle-de-bain-2.webp",
+        "/biens/appartement-zara-gueliz/couloir.webp"
+      ],
+      "photo_principale": "/biens/appartement-zara-gueliz/salon.webp",
+      "proximites": [],
+      "statut": "publie",
+      "disponible_le": null,
+      "reference": "DP-26-ZARA",
+      "latitude": null,
+      "longitude": null,
+      "created_at": "2026-10-15T09:00:00+00:00",
+      "updated_at": "2026-10-15T09:00:00+00:00"
     }
   ]
 }
