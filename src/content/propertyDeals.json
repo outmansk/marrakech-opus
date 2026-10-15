@@ -7,8 +7,8 @@
     "mois": null
   },
   "ccb89162-f950-4f65-b33b-2d1f7a551153": {
-    "profil": null,
-    "loyer": 16500,
+    "profil": { "fr": "un couple belge", "en": "a Belgian couple", "es": "una pareja belga" },
+    "loyer": 16000,
     "prix": null,
     "mois": null
   }
