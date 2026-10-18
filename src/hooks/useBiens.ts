@@ -1,6 +1,7 @@
 import { queryOptions, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { withOverrides } from "@/lib/propertyOverrides";
-import { fileProperty, withFileProperties } from "@/lib/fileProperties";
+import { isUuid, shortSlug } from "@/lib/propertyUrl";
+import { FILE_PROPERTIES, fileProperty, withFileProperties } from "@/lib/fileProperties";
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import type { Bien, BienInsert, BienUpdate } from '@/types/property';
@@ -39,6 +40,17 @@ function invalidateAll(queryClient: ReturnType<typeof useQueryClient>) {
   queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] });
 }
 
+/** Candidate short address; the SQL trigger resolves simultaneous inserts atomically. */
+async function uniqueSlug(title: string): Promise<string> {
+  const base = shortSlug(title) || "bien";
+  const { data, error } = await supabase.from(TABLE).select('slug').like('slug', `${base}%`);
+  if (error) throw new Error("Impossible de créer une adresse courte. Vérifiez la connexion et appliquez la migration des URL dans Supabase.");
+  const taken = new Set([...(data ?? []).map((row: { slug: string | null }) => row.slug), ...FILE_PROPERTIES.map((property) => property.slug)]);
+  let slug = base;
+  for (let n = 2; taken.has(slug); n++) slug = `${base}-${n}`;
+  return slug;
+}
+
 // ─── Query definitions (shared with the build-time pre-render) ─────────────
 export type PropertyFilters = {
   type?: string;
@@ -69,7 +81,7 @@ export const propertyQueryOptions = (id: string | null) => queryOptions<Bien>({
   queryFn: async () => {
     const file = fileProperty(id);
     if (file) return file;
-    const { data, error } = await supabase.from(TABLE).select('*').eq('id', id!).single();
+    const { data, error } = await supabase.from(TABLE).select('*').eq(isUuid(id!) ? 'id' : 'slug', id!).single();
     if (error) throw error;
     return withOverrides(data as Bien);
   },
@@ -95,6 +107,7 @@ export function useCreateProperty() {
       const withRef = {
         ...payload,
         reference: payload.reference || generateReference(),
+        slug: payload.slug || (await uniqueSlug(payload.titre)),
       };
       return saveBien((row) => supabase.from(TABLE).insert(row as BienInsert).select().single(), withRef);
     },

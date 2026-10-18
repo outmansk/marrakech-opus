@@ -302,6 +302,7 @@ export type Database = {
           description_longue_es: string | null
           traduction_a_relire: boolean
           meuble: boolean | null
+          slug: string | null
           type: string
           updated_at: string
         }
@@ -340,6 +341,7 @@ export type Database = {
           description_longue_es?: string | null
           traduction_a_relire?: boolean
           meuble?: boolean | null
+          slug?: string | null
           type: string
           updated_at?: string
         }
@@ -378,6 +380,7 @@ export type Database = {
           description_longue_es?: string | null
           traduction_a_relire?: boolean
           meuble?: boolean | null
+          slug?: string | null
           type?: string
           updated_at?: string
         }

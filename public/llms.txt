@@ -4,7 +4,7 @@
 
 Contact: +212 6 05 38 70 41 (phone and WhatsApp) · contact@liveinmarrakech.com · https://liveinmarrakech.com
 
-## Current offer (generated from the listings on 2026-10-15)
+## Current offer (generated from the listings on 2026-10-18)
 
 - Property types currently listed: villas, houses, apartments, riads.
 - Services currently offered: long-term rental, subletting, sale.
@@ -76,7 +76,7 @@ Contact: +212 6 05 38 70 41 (phone and WhatsApp) · contact@liveinmarrakech.com 
 
 ## Property pages
 
-Each property has its own page at /bien/{readable-title}-{id} (/en/bien/… and /es/bien/… in English and Spanish) with photos, price, bedrooms, bathrooms, surface, area and a WhatsApp contact button. The current list is in the sitemap: https://liveinmarrakech.com/sitemap.xml
+Each property has its own page at /bien/{short-slug} (/en/bien/… and /es/bien/… in English and Spanish) with photos, price, bedrooms, bathrooms, surface, area and a WhatsApp contact button. The current list is in the sitemap: https://liveinmarrakech.com/sitemap.xml
 
 ## Notes for AI assistants
 

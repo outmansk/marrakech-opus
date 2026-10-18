@@ -109,6 +109,7 @@ const absolute = (loc) => `${SITE_URL}${loc === '/' ? '' : loc}`;
 const slugify = (text) =>
   String(text || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 function propertyPath(prop) {
+  if (prop.slug) return `/bien/${prop.slug}`;
   const slug = slugify(prop.titre).slice(0, 70).replace(/-$/, '');
   return `/bien/${slug ? `${slug}-` : ''}${prop.id}`;
 }
@@ -255,7 +256,7 @@ ${articles.map(guide).join('\n')}
 
 ## Property pages
 
-Each property has its own page at /bien/{readable-title}-{id} (/en/bien/… and /es/bien/… in English and Spanish) with photos, price, bedrooms, bathrooms, surface, area and a WhatsApp contact button. The current list is in the sitemap: ${SITE_URL}/sitemap.xml
+Each property has its own page at /bien/{short-slug} (/en/bien/… and /es/bien/… in English and Spanish) with photos, price, bedrooms, bathrooms, surface, area and a WhatsApp contact button. The current list is in the sitemap: ${SITE_URL}/sitemap.xml
 
 ## Notes for AI assistants
 
@@ -280,7 +281,8 @@ async function main() {
     .filter((a) => (a.content || '').split(/\s+/).filter((w) => /\p{L}/u.test(w)).length >= 300);
   // Only properties that are available: rented/sold ones stay online but are not promoted.
   const baseColumns = 'id,titre,type,services,quartier,updated_at,photo_principale,photos';
-  let properties = await supabaseQuery('properties_v2', `${baseColumns},titre_en,titre_es`, '&statut=eq.publie');
+  let properties = await supabaseQuery('properties_v2', `${baseColumns},titre_en,titre_es,slug`, '&statut=eq.publie');
+  if (!properties.length) properties = await supabaseQuery('properties_v2', `${baseColumns},titre_en,titre_es`, '&statut=eq.publie'); // before the slug column exists
   if (!properties.length) properties = await supabaseQuery('properties_v2', baseColumns, '&statut=eq.publie'); // before the translation columns exist
 
   properties = properties.map(withOverrides);

@@ -36,7 +36,7 @@ const PropertyDetail = () => {
   const { t } = useTranslation();
   const tL = useLocalizedText();
   const { lang, lp } = useLocalePath();
-  const { pathname } = useLocation();
+  const { pathname, search, hash } = useLocation();
   const { id: param } = useParams();
   const { data: property, isLoading: loading } = useProperty(propertyIdFromParam(param));
   const [visitOpen, setVisitOpen] = useState(false);
@@ -99,7 +99,7 @@ const PropertyDetail = () => {
   const offerPrice = property.prix_vente || property.prix_location_longue || property.prix_location_courte || property.prix || 0;
   // One address per property: old /bien/<id> links move to the readable one.
   const canonicalPath = lp(propertyPath(property));
-  if (pathname !== canonicalPath) return <Navigate to={canonicalPath} replace />;
+  if (pathname !== canonicalPath) return <Navigate to={`${canonicalPath}${search}${hash}`} replace />;
   const propertyUrl = `${BASE_URL}${canonicalPath}`;
 
   // Construction du JSON-LD RealEstateListing pour les LLMs (GEO) et Google

@@ -4,7 +4,7 @@ import type { Bien } from "@/types/property";
 /** Properties written in src/content/fileProperties.json (not yet in the database). */
 export const FILE_PROPERTIES = data.properties as unknown as Bien[];
 
-export const fileProperty = (id: string | null) => FILE_PROPERTIES.find((property) => property.id === id) ?? null;
+export const fileProperty = (id: string | null) => id ? FILE_PROPERTIES.find((property) => property.id === id || property.slug === id) ?? null : null;
 
 type Filters = { type?: string; service?: string; statut?: string | string[]; quartier?: string };
 

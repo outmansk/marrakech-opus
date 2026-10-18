@@ -42,13 +42,13 @@ const STATIC_PATHS = ["/", "/catalogue", "/blog", "/contact", "/demande", "/a-pr
 /** Every public address to pre-render, in every language. */
 export async function getPrerenderPaths(): Promise<string[]> {
   const [{ data: properties, error: propertiesError }, { data: articles, error: articlesError }] = await Promise.all([
-    supabase.from("properties_v2").select("id, titre").in("statut", ["publie", "vendu-loue"]),
+    supabase.from("properties_v2").select("*").in("statut", ["publie", "vendu-loue"]),
     supabase.from("articles").select("*").eq("est_publie", true),
   ]);
   if (propertiesError) throw propertiesError;
   if (articlesError) throw articlesError;
 
-  const paths = LANGS.flatMap((lang) => [...STATIC_PATHS, ...[...(properties ?? []), ...FILE_PROPERTIES].map(propertyPath)].map((path) => localizePath(path, lang)));
+  const paths = LANGS.flatMap((lang) => [...STATIC_PATHS, ...[...(properties ?? []), ...FILE_PROPERTIES.filter((file) => !(properties ?? []).some((property) => property.id === file.id))].map(propertyPath)].map((path) => localizePath(path, lang)));
   for (const landing of LANDINGS) paths.push(...LANGS.map((lang) => landingPath(landing.id, lang)));
   for (const article of withFileArticles((articles ?? []) as Article[], () => true)) {
     paths.push(localizePath(`/blog/${article.slug}`, LANGS.find((l) => l === article.lang) ?? "fr"));

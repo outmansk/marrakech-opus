@@ -60,7 +60,14 @@ function inspect(html) {
       return 'INVALIDE';
     }
   });
+  let property;
+  try {
+    const state = JSON.parse(html.match(/<script>window\.__RQ_STATE__=([\s\S]*?)<\/script>/)?.[1] || "null");
+    property = state?.queries?.find((query) => query.queryKey?.[0] === 'biens' && query.state?.data?.id)?.state.data;
+  } catch { /* Other pages may have no property query. */ }
+  const legacyTitle = property?.titre?.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 70).replace(/-$/, '');
   return {
+    legacyPropertyParams: property ? [property.id, `${legacyTitle ? `${legacyTitle}-` : ''}${property.id}`] : [],
     title: decode(head.match(/<title[^>]*>([^<]*)<\/title>/i)?.[1] ?? ''),
     description: decode(head.match(/<meta[^>]*name="description"[^>]*content="([^"]*)"/i)?.[1] ?? ''),
     h1Text: decode((html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1] ?? '').replace(/<[^>]+>/g, '').trim()),
@@ -112,14 +119,19 @@ if (!distMode) {
     if (status !== 404) fail(SITE + p, `attendu 404, reçu ${status}`);
   }
 
-  const propertyUrls = urls.filter((u) => /\/bien\/.+-[0-9a-f-]{36}$/.test(u)).slice(0, 2);
-  for (const url of propertyUrls) {
-    const uuid = url.slice(-36);
-    const old = url.replace(/\/bien\/.+$/, `/bien/${uuid}`);
-    const { status, location } = await get(old);
-    const target = location && new URL(location, SITE).href.replace(base, SITE);
-    if (status !== 301) fail(old, `attendu 301, reçu ${status}`);
-    else if (target !== url) fail(old, `301 vers ${target}, attendu ${url}`);
+  for (const prefix of ['', '/en', '/es']) {
+    const property = [...pages].find(([url, page]) => new URL(url).pathname.startsWith(`${prefix}/bien/`) && page.legacyPropertyParams.length);
+    if (!property) continue; // A language may have no translated property in its sitemap.
+    const [url, page] = property;
+    for (const param of page.legacyPropertyParams) {
+      const old = `${SITE}${prefix}/bien/${param}`;
+      if (old === url) continue; // Before migration this may still be the canonical address.
+      const tracking = '?src=fb&g=3&p=12';
+      const { status, location } = await get(old + tracking);
+      const target = location && new URL(location, base).href.replace(base, SITE);
+      if (status !== 301) fail(old, `attendu 301, reçu ${status}`);
+      else if (target !== url + tracking) fail(old, `301 vers ${target}, attendu ${url + tracking}`);
+    }
   }
 
   const slash = await get(`${SITE}/vente/`);

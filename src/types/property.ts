@@ -109,6 +109,8 @@ export interface Bien {
   traduction_a_relire?: boolean;
   /** true = furnished, false = unfurnished, null = not specified yet. */
   meuble?: boolean | null;
+  /** Short stored address (/bien/<slug>) of properties created after October 2026; null = legacy <title>-<uuid> address. */
+  slug?: string | null;
   equipements: string[];
   photos: string[];
   photo_principale: string | null;

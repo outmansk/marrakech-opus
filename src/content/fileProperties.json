@@ -49,7 +49,8 @@
       "latitude": null,
       "longitude": null,
       "created_at": "2026-10-10T09:00:00+00:00",
-      "updated_at": "2026-10-10T09:00:00+00:00"
+      "updated_at": "2026-10-10T09:00:00+00:00",
+      "slug": "villa-machmam"
     },
     {
       "id": "f0590681-c07d-4fdb-88b0-b480e958b40a",
@@ -95,7 +96,8 @@
       "latitude": null,
       "longitude": null,
       "created_at": "2026-10-10T15:00:00+00:00",
-      "updated_at": "2026-10-10T15:00:00+00:00"
+      "updated_at": "2026-10-10T15:00:00+00:00",
+      "slug": "riad-medina-touareg"
     },
     {
       "id": "5e990dd2-cd67-487b-a201-f0b46b7721e3",
@@ -159,7 +161,8 @@
       "latitude": null,
       "longitude": null,
       "created_at": "2026-10-11T09:00:00+00:00",
-      "updated_at": "2026-10-11T09:00:00+00:00"
+      "updated_at": "2026-10-11T09:00:00+00:00",
+      "slug": "villa-bouzar"
     },
     {
       "id": "8e584940-602f-4e2f-8db2-b8cdc28e18c6",
@@ -216,7 +219,8 @@
       "latitude": null,
       "longitude": null,
       "created_at": "2026-10-12T09:00:00+00:00",
-      "updated_at": "2026-10-12T09:00:00+00:00"
+      "updated_at": "2026-10-12T09:00:00+00:00",
+      "slug": "villa-bensilam"
     },
     {
       "id": "5909c6c4-a5e9-4502-80c9-be6b944f737b",
@@ -271,7 +275,8 @@
       "latitude": null,
       "longitude": null,
       "created_at": "2026-10-13T09:00:00+00:00",
-      "updated_at": "2026-10-13T09:00:00+00:00"
+      "updated_at": "2026-10-13T09:00:00+00:00",
+      "slug": "maison-route-essaouira"
     },
     {
       "id": "76b25b2d-43f5-45a0-bd3e-abf31d386dd3",
@@ -319,7 +324,8 @@
       "latitude": null,
       "longitude": null,
       "created_at": "2026-10-15T09:00:00+00:00",
-      "updated_at": "2026-10-15T09:00:00+00:00"
+      "updated_at": "2026-10-15T09:00:00+00:00",
+      "slug": "appartement-zara-gueliz"
     },
     {
       "id": "5ae8e008-1dc3-4e27-8e5f-d056dfd0daca",
@@ -393,7 +399,8 @@
       "latitude": null,
       "longitude": null,
       "created_at": "2026-10-16T09:00:00+00:00",
-      "updated_at": "2026-10-16T09:00:00+00:00"
+      "updated_at": "2026-10-16T09:00:00+00:00",
+      "slug": "villa-golf-atlas"
     }
   ]
 }
