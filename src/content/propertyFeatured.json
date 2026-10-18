@@ -1,0 +1,4 @@
+{
+  "_comment": "Biens mis en avant : affichés en premier (dans cet ordre) dans le catalogue et le carrousel de l'accueil, tant qu'ils sont disponibles. Ids de properties_v2 ou de fileProperties.json.",
+  "ids": ["4b731349-1a9e-4c53-84fb-c082b44dd38e"]
+}

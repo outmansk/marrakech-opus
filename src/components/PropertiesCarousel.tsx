@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { ArrowRight, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Bien } from "@/types/property";
 import PropertyCard from "@/components/PropertyCard";
-import { CAROUSEL_QUERY, dealOf, dealsFirst } from "@/lib/propertyDeals";
+import { CAROUSEL_QUERY, publicOrder } from "@/lib/propertyDeals";
+import { isUnavailable } from "@/lib/propertyServices";
 import { useProperties } from "@/hooks/useBiens";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
 import { useLocalePath } from "@/hooks/useLocalePath";
@@ -27,8 +28,8 @@ const PropertiesCarousel = () => {
 
   // Use React Query via the shared hook — cached, retried, deduped
   const { data: all = [], isLoading: loading } = useProperties(CAROUSEL_QUERY);
-  // Biens disponibles + biens conclus avec fiche « Louée à … » (placés en premier pour la confiance).
-  const properties = useMemo(() => dealsFirst(all.filter((p) => p.statut === "publie" || dealOf(p))), [all]);
+  // Biens disponibles seulement, mis en avant d'abord (les biens conclus ont leur section « Récemment loués et vendus »).
+  const properties = useMemo(() => publicOrder(all.filter((p) => p.statut === "publie" && !isUnavailable(p))), [all]);
 
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [slide, setSlide] = useState(0);

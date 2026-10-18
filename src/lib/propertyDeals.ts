@@ -1,4 +1,5 @@
 import deals from "@/content/propertyDeals.json";
+import featured from "@/content/propertyFeatured.json";
 import type { Lang } from "@/i18n/routing";
 import type { Bien } from "@/types/property";
 import { isSoldOnly, isUnavailable } from "@/lib/propertyServices";
@@ -25,9 +26,18 @@ export const RECENT_DEALS_QUERY = { statut: "vendu-loue" };
 
 export const dealOf = (property: Pick<Bien, "id" | "statut">) => (isUnavailable(property) ? DEALS[property.id] ?? null : null);
 
-/** Ordre des listes publiques : biens conclus avec fiche (confiance) d'abord, puis disponibles, puis les autres loués/vendus. */
-export const dealsFirst = <T extends Bien>(list: T[]) => {
-  const rank = (property: T) => (dealOf(property) ? 0 : isUnavailable(property) ? 2 : 1);
+const FEATURED: string[] = featured.ids;
+
+/**
+ * Ordre des listes publiques : biens mis en avant (src/content/propertyFeatured.json) d'abord, puis les
+ * autres biens disponibles, puis les biens loués/vendus (ceux avec un profil client en premier). Tri stable.
+ */
+export const publicOrder = <T extends Bien>(list: T[]) => {
+  const rank = (property: T) => {
+    if (isUnavailable(property)) return dealOf(property) ? 1000 : 1001;
+    const pin = FEATURED.indexOf(property.id);
+    return pin === -1 ? 999 : pin;
+  };
   return [...list].sort((a, b) => rank(a) - rank(b));
 };
 

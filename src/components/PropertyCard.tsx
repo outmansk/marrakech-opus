@@ -48,7 +48,11 @@ const PropertyCard = ({ property, activeType }: PropertyCardProps) => {
   const isSale = kind === "vente";
   const isSublet = !isSale && getServices(property).includes("sous-location");
 
-  const badge = isSale
+  // Bien à vendre ET à louer à l'année (sans filtre de service) : les deux sur la carte.
+  const alsoRent = (!activeType || activeType === "all") && isSale && getServices(property).includes("location-longue-duree") && property.prix_location_longue ? property.prix_location_longue : null;
+  const badge = alsoRent
+    ? tL("À vendre · À louer", "For sale · For rent", "En venta · En alquiler")
+    : isSale
     ? tL("À vendre", "For sale", "En venta")
     : kind === "location-longue-duree"
       ? tL("Location longue durée", "Long-term rent", "Alquiler de larga duración")
@@ -119,6 +123,12 @@ const PropertyCard = ({ property, activeType }: PropertyCardProps) => {
                 </p>
               ) : (
                 <p className="font-serif text-[27px] font-medium leading-[1.1]">{tL("Prix sur demande", "Price on request", "Precio bajo petición")}</p>
+              )}
+              {alsoRent && (
+                <p className="text-sm leading-snug text-[#655f56]">
+                  {tL("ou à louer à l’année :", "or long-term rent:", "o alquiler de larga duración:")}{" "}
+                  <span className="whitespace-nowrap font-semibold text-[#211f1b]">{formatPrice(alsoRent, devise)} {tL("/ mois", "/ month", "/ mes")}</span>
+                </p>
               )}
             </div>
 
