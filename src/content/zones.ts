@@ -8,7 +8,7 @@ import facts from "./propertyFacts.json";
 type Facts = { zone?: ZoneId; meuble?: boolean; caution_mois?: number };
 const FACTS = facts as unknown as Record<string, Facts>;
 
-export type ZoneId = "route-de-fes" | "sidi-rahal" | "chrifia" | "golf" | "palmeraie" | "village-touristique" | "medina" | "route-essaouira" | "gueliz";
+export type ZoneId = "route-de-fes" | "sidi-rahal" | "chrifia" | "golf" | "palmeraie" | "village-touristique" | "medina" | "route-essaouira" | "gueliz" | "route-ourika";
 
 export const ZONES: Record<ZoneId, { label: Record<Lang, string>; text: Record<Lang, string> }> = {
   "route-de-fes": {
@@ -83,6 +83,14 @@ export const ZONES: Record<ZoneId, { label: Record<Lang, string>; text: Record<L
       es: "Gueliz es el centro moderno de Marrakech, con tiendas, cafés y servicios a pie. Nuestro apartamento está en la residencia Zara, en pleno centro.",
     },
   },
+  "route-ourika": {
+    label: { fr: "Route de l’Ourika", en: "Ourika road", es: "Carretera de Ourika" },
+    text: {
+      fr: "Au sud de Marrakech, la route de l’Ourika mène vers l’Atlas. Notre villa s’y trouve dans une résidence calme, à environ 11 km de Marrakech, avec vue sur le golf.",
+      en: "South of Marrakech, the Ourika road leads towards the Atlas. Our villa is in a quiet residence about 11 km from Marrakech, with a view of the golf course.",
+      es: "Al sur de Marrakech, la carretera de Ourika lleva hacia el Atlas. Nuestra villa está en una urbanización tranquila a unos 11 km de Marrakech, con vistas al campo de golf.",
+    },
+  },
 };
 
 const QUARTIER_TO_ZONE: Record<string, ZoneId> = {
@@ -92,6 +100,7 @@ const QUARTIER_TO_ZONE: Record<string, ZoneId> = {
   Medina: "medina",
   "Route d'Essaouira": "route-essaouira",
   Gueliz: "gueliz",
+  "Route de l'Ourika": "route-ourika",
 };
 
 /** Zone of a property: from its quartier, else from the confirmed facts file. */
@@ -116,6 +125,7 @@ const ZONE_IN: Record<ZoneId, Record<Lang, string>> = {
   medina: { fr: "dans la médina", en: "in the medina", es: "en la medina" },
   "route-essaouira": { fr: "sur la route d’Essaouira", en: "on the Essaouira road", es: "en la carretera de Esauira" },
   gueliz: { fr: "à Guéliz", en: "in Gueliz", es: "en Gueliz" },
+  "route-ourika": { fr: "sur la route de l’Ourika", en: "on the Ourika road", es: "en la carretera de Ourika" },
 };
 
 /** "sur la route de Fès", "in Chrifia"…: the area with the right preposition, for sentences. */
