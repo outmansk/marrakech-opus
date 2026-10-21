@@ -11,10 +11,10 @@ ALTER TABLE public.properties_v2
 
 -- Riad Palmeraie (DP-26-RPALM)
 INSERT INTO public.properties_v2 (id, titre, type, service, services, prix_vente, prix_location_longue, prix_location_courte, devise, surface_habitable, surface_terrain, chambres, salles_de_bain, quartier, meuble, description_courte, description_longue, titre_en, titre_es, description_courte_en, description_courte_es, description_longue_en, description_longue_es, traduction_a_relire, equipements, proximites, photos, photo_principale, statut, disponible_le, reference, created_at)
-VALUES ('80e1d306-944b-4fd5-ac9e-e22d52f883e1', $q$Riad Palmeraie$q$, $q$riad$q$, $q$vente$q$, ARRAY[$q$vente$q$, $q$location-longue-duree$q$]::text[], 4000000, 25000, NULL, $q$MAD$q$, 260, NULL, 4, 5, $q$Palmeraie$q$, true, $q$Riad meublé de 260 m² avec piscine privée et double terrasse, dans une résidence fermée de la Palmeraie : 4 chambres, 5 salles de bain. 4 000 000 DH ou 25 000 DH/mois.$q$, $q$Riad meublé de 260 m², à vendre ou à louer à l’année, au cœur de la Palmeraie de Marrakech, dans une résidence fermée et sécurisée. Un cadre de vie paisible, tout en restant proche des commerces et du centre-ville. Prix de vente : 4 000 000 DH. Loyer : 25 000 DH par mois.
+VALUES ('80e1d306-944b-4fd5-ac9e-e22d52f883e1', $q$Riad Palmeraie$q$, $q$riad$q$, $q$vente$q$, ARRAY[$q$vente$q$, $q$location-longue-duree$q$]::text[], 4000000, 25000, NULL, $q$MAD$q$, NULL, 260, 4, 5, $q$Palmeraie$q$, true, $q$Riad meublé sur 260 m² de terrain avec piscine privée et double terrasse, dans une résidence fermée de la Palmeraie : 4 chambres, 5 salles de bain. 4 000 000 DH ou 25 000 DH/mois.$q$, $q$Riad meublé sur un terrain de 260 m², à vendre ou à louer à l’année, au cœur de la Palmeraie de Marrakech, dans une résidence fermée et sécurisée. Un cadre de vie paisible, tout en restant proche des commerces et du centre-ville. Prix de vente : 4 000 000 DH. Loyer : 25 000 DH par mois.
 
 Le riad
-• Surface : 260 m²
+• Terrain de 260 m²
 • 4 chambres
 • 5 salles de bain
 • Salon spacieux
@@ -37,10 +37,10 @@ Conditions de location
 • Caution : 2 mois de loyer (50 000 DH, logement meublé)
 • Document demandé : passeport ou carte d’identité
 
-Visite sur place ou en vidéo sur WhatsApp.$q$, $q$Furnished riad with private pool, Palmeraie$q$, $q$Riad amueblado con piscina privada, Palmeraie$q$, $q$Furnished 260 m² riad with a private pool and two terraces in a gated Palmeraie residence: 4 bedrooms, 5 bathrooms. 4,000,000 MAD or 25,000 MAD/month.$q$, $q$Riad amueblado de 260 m² con piscina privada y doble terraza en una urbanización cerrada de la Palmeraie: 4 dormitorios, 5 baños. 4.000.000 MAD o 25.000 MAD/mes.$q$, $q$Furnished 260 m² riad for sale or long-term rent in the heart of the Marrakech Palmeraie, in a gated and secure residence. A peaceful setting, close to the shops and the city centre. Sale price: 4,000,000 MAD. Rent: 25,000 MAD per month.
+Visite sur place ou en vidéo sur WhatsApp.$q$, $q$Furnished riad with private pool, Palmeraie$q$, $q$Riad amueblado con piscina privada, Palmeraie$q$, $q$Furnished riad on a 260 m² plot with a private pool and two terraces in a gated Palmeraie residence: 4 bedrooms, 5 bathrooms. 4,000,000 MAD or 25,000 MAD/month.$q$, $q$Riad amueblado en una parcela de 260 m² con piscina privada y doble terraza en una urbanización cerrada de la Palmeraie: 4 dormitorios, 5 baños. 4.000.000 MAD o 25.000 MAD/mes.$q$, $q$Furnished riad on a 260 m² plot for sale or long-term rent in the heart of the Marrakech Palmeraie, in a gated and secure residence. A peaceful setting, close to the shops and the city centre. Sale price: 4,000,000 MAD. Rent: 25,000 MAD per month.
 
 The riad
-• Area: 260 m²
+• 260 m² plot
 • 4 bedrooms
 • 5 bathrooms
 • Spacious living room
@@ -63,10 +63,10 @@ Rental terms
 • Deposit: two months’ rent (50,000 MAD, furnished home)
 • Document required: passport or national ID card
 
-In-person or video viewings on WhatsApp.$q$, $q$Riad amueblado de 260 m², en venta o en alquiler de larga duración, en el corazón de la Palmeraie de Marrakech, en una urbanización cerrada y segura. Un entorno tranquilo, cerca de las tiendas y del centro. Precio de venta: 4.000.000 MAD. Alquiler: 25.000 MAD al mes.
+In-person or video viewings on WhatsApp.$q$, $q$Riad amueblado en una parcela de 260 m², en venta o en alquiler de larga duración, en el corazón de la Palmeraie de Marrakech, en una urbanización cerrada y segura. Un entorno tranquilo, cerca de las tiendas y del centro. Precio de venta: 4.000.000 MAD. Alquiler: 25.000 MAD al mes.
 
 El riad
-• Superficie: 260 m²
+• Parcela de 260 m²
 • 4 dormitorios
 • 5 baños
 • Salón amplio
