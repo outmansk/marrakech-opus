@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { Camera, ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
+import { ArrowLeft, Camera, ChevronLeft, ChevronRight, Expand } from "lucide-react";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
@@ -153,6 +153,27 @@ function PhotoViewer({ images, alt, start, onClose }: { images: string[]; alt: s
     if (start !== null) setCurrent(start);
   }, [start]);
 
+  // Le bouton « retour » du téléphone ferme la galerie au lieu de quitter la page :
+  // une entrée d'historique est ajoutée à l'ouverture et retirée à la fermeture.
+  const open = start !== null;
+  const closedByBack = useRef(false);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
+  useEffect(() => {
+    if (!open) return;
+    closedByBack.current = false;
+    window.history.pushState({ ...(window.history.state ?? {}), photoViewer: true }, "");
+    const onPop = () => {
+      closedByBack.current = true;
+      closeRef.current();
+    };
+    window.addEventListener("popstate", onPop);
+    return () => {
+      window.removeEventListener("popstate", onPop);
+      if (!closedByBack.current && (window.history.state as { photoViewer?: boolean } | null)?.photoViewer) window.history.back();
+    };
+  }, [open]);
+
   const go = useCallback((step: number) => setCurrent((value) => (value + step + count) % count), [count]);
 
   return (
@@ -165,11 +186,12 @@ function PhotoViewer({ images, alt, start, onClose }: { images: string[]; alt: s
         }}
       >
         <DialogTitle className="sr-only">{alt}</DialogTitle>
-        <div className="flex items-center justify-between px-4 py-3 text-sm text-white/80">
-          <span>{current + 1} / {count}</span>
-          <button type="button" onClick={onClose} className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-white/10" aria-label={tL("Fermer", "Close", "Cerrar")}>
-            <X size={22} strokeWidth={1.5} />
+        <div className="flex items-center justify-between gap-3 px-3 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] text-sm text-white/85">
+          <button type="button" onClick={onClose} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-4 text-[14px] font-semibold text-black shadow-md hover:bg-white/90">
+            <ArrowLeft size={18} strokeWidth={2} aria-hidden="true" />
+            {tL("Retour à l’annonce", "Back to listing", "Volver al anuncio")}
           </button>
+          <span className="rounded-full bg-white/10 px-3 py-1.5 font-medium">{current + 1} / {count}</span>
         </div>
         <div
           className="relative flex flex-1 items-center justify-center overflow-hidden"
