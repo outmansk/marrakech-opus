@@ -176,25 +176,43 @@ function PhotoViewer({ images, alt, start, onClose }: { images: string[]; alt: s
 
   const go = useCallback((step: number) => setCurrent((value) => (value + step + count) % count), [count]);
 
+  // Garde la miniature active visible dans la bande du bas.
+  const stripRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    stripRef.current?.querySelector<HTMLElement>(`[data-thumb="${current}"]`)?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  }, [current]);
+
+  const glass = "flex items-center justify-center rounded-full bg-white/10 text-white ring-1 ring-white/15 backdrop-blur-xl transition hover:bg-white/20 active:scale-95";
+
   return (
     <Dialog open={start !== null} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="z-[100] flex h-[100dvh] w-screen max-w-none flex-col gap-0 border-0 bg-black p-0 sm:rounded-none [&>button]:hidden"
+        className="z-[100] flex h-[100dvh] w-screen max-w-none flex-col gap-0 border-0 bg-[#0d0c0b] p-0 sm:rounded-none [&>button]:hidden"
         onKeyDown={(event) => {
           if (event.key === "ArrowRight") go(1);
           if (event.key === "ArrowLeft") go(-1);
         }}
       >
         <DialogTitle className="sr-only">{alt}</DialogTitle>
-        <div className="flex items-center justify-between gap-3 px-3 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] text-sm text-white/85">
-          <button type="button" onClick={onClose} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-4 text-[14px] font-semibold text-black shadow-md hover:bg-white/90">
+
+        {/* Fond : la photo floutée, pour une ambiance immersive */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+          <OptimizedImage key={`bg-${images[current]}`} src={images[current]} alt="" size="thumb" className="h-full w-full scale-110 object-cover opacity-40 blur-3xl" wrapperClassName="h-full w-full bg-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/70" />
+        </div>
+
+        {/* Barre du haut */}
+        <div className="relative z-10 flex items-center justify-between gap-3 px-3 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))]">
+          <button type="button" onClick={onClose} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-4 text-[14px] font-semibold text-[#211f1b] shadow-lg transition hover:bg-white/90 active:scale-95">
             <ArrowLeft size={18} strokeWidth={2} aria-hidden="true" />
             {tL("Retour à l’annonce", "Back to listing", "Volver al anuncio")}
           </button>
-          <span className="rounded-full bg-white/10 px-3 py-1.5 font-medium">{current + 1} / {count}</span>
+          <span className="rounded-full bg-white/10 px-3.5 py-2 text-[13px] font-semibold tabular-nums text-white ring-1 ring-white/15 backdrop-blur-xl">{current + 1} / {count}</span>
         </div>
+
+        {/* Photo */}
         <div
-          className="relative flex flex-1 items-center justify-center overflow-hidden"
+          className="relative z-10 flex min-h-0 flex-1 items-center justify-center px-2 md:px-20"
           onTouchStart={(event) => { touchX.current = event.touches[0].clientX; }}
           onTouchEnd={(event) => {
             if (touchX.current === null) return;
@@ -209,20 +227,39 @@ function PhotoViewer({ images, alt, start, onClose }: { images: string[]; alt: s
             alt={`${alt} — ${tL("photo", "photo", "foto")} ${current + 1}`}
             eager
             size="full"
-            className="max-h-full max-w-full object-contain"
-            wrapperClassName="flex h-full w-full items-center justify-center"
+            className="max-h-full max-w-full rounded-xl object-contain shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)] animate-in fade-in-0 zoom-in-[0.98] duration-300"
+            wrapperClassName="flex h-full w-full items-center justify-center bg-transparent"
           />
           {count > 1 && (
             <>
-              <button type="button" onClick={() => go(-1)} className="absolute left-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 md:left-6" aria-label={tL("Photo précédente", "Previous photo", "Foto anterior")}>
-                <ChevronLeft size={24} strokeWidth={1.5} />
+              <button type="button" onClick={() => go(-1)} className={`${glass} absolute left-3 top-1/2 h-11 w-11 -translate-y-1/2 md:left-6 md:h-12 md:w-12`} aria-label={tL("Photo précédente", "Previous photo", "Foto anterior")}>
+                <ChevronLeft size={24} strokeWidth={1.75} />
               </button>
-              <button type="button" onClick={() => go(1)} className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 md:right-6" aria-label={tL("Photo suivante", "Next photo", "Foto siguiente")}>
-                <ChevronRight size={24} strokeWidth={1.5} />
+              <button type="button" onClick={() => go(1)} className={`${glass} absolute right-3 top-1/2 h-11 w-11 -translate-y-1/2 md:right-6 md:h-12 md:w-12`} aria-label={tL("Photo suivante", "Next photo", "Foto siguiente")}>
+                <ChevronRight size={24} strokeWidth={1.75} />
               </button>
             </>
           )}
         </div>
+
+        {/* Miniatures */}
+        {count > 1 && (
+          <div ref={stripRef} className="relative z-10 flex gap-2 overflow-x-auto px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 [scrollbar-width:none] md:justify-center [&::-webkit-scrollbar]:hidden">
+            {images.map((image, i) => (
+              <button
+                key={image + i}
+                type="button"
+                data-thumb={i}
+                onClick={() => setCurrent(i)}
+                aria-label={`${tL("Photo", "Photo", "Foto")} ${i + 1}`}
+                aria-current={i === current}
+                className={`h-14 w-20 flex-none overflow-hidden rounded-lg transition-all duration-200 ${i === current ? "opacity-100 ring-2 ring-white" : "opacity-50 hover:opacity-80"}`}
+              >
+                <OptimizedImage src={image} alt="" size="thumb" className="h-full w-full object-cover" wrapperClassName="h-full w-full" />
+              </button>
+            ))}
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
