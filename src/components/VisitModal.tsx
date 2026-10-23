@@ -48,7 +48,7 @@ const VisitModal = ({ open, onOpenChange, propertyId, propertyTitle }: VisitModa
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-background border-border p-8">
+      <DialogContent className="z-[100] max-h-[90dvh] overflow-y-auto sm:max-w-md bg-background border-border p-8">
         <DialogHeader>
           <DialogTitle className="font-serif text-2xl font-normal">Demander une visite</DialogTitle>
           <p className="text-muted-foreground font-light text-sm mt-1">{propertyTitle}</p>

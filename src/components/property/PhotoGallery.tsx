@@ -179,7 +179,7 @@ function PhotoViewer({ images, alt, start, onClose }: { images: string[]; alt: s
   return (
     <Dialog open={start !== null} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="flex h-[100dvh] w-screen max-w-none flex-col gap-0 border-0 bg-black p-0 sm:rounded-none [&>button]:hidden"
+        className="z-[100] flex h-[100dvh] w-screen max-w-none flex-col gap-0 border-0 bg-black p-0 sm:rounded-none [&>button]:hidden"
         onKeyDown={(event) => {
           if (event.key === "ArrowRight") go(1);
           if (event.key === "ArrowLeft") go(-1);
