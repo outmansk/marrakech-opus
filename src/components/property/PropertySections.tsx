@@ -218,6 +218,7 @@ export function RentalTerms({ property }: { property: Bien }) {
     { label: tL("Durée du bail", "Lease", "Contrato"), value: tL("1 an minimum", "1 year minimum", "1 año como mínimo") },
     ...(furnished !== null ? [{ label: tL("Logement", "Home", "Vivienda"), value: furnished ? tL("Meublé", "Furnished", "Amueblado") : tL("Vide (non meublé)", "Unfurnished", "Sin amueblar") }] : []),
     { label: tL("Dépôt de garantie", "Security deposit", "Fianza"), value: deposit, strong: true },
+    { label: tL("Frais d’agence", "Agency fee", "Honorarios de agencia"), value: `${tL("1 mois de loyer", "1 month’s rent", "1 mes de alquiler")}${rent ? ` (${formatPrice(rent, property.devise)})` : ""}` },
     { label: tL("Pièces à fournir", "Documents", "Documentos"), value: tL("Passeport ou carte d’identité", "Passport or national ID card", "Pasaporte o documento de identidad") },
     { label: tL("Visite", "Viewing", "Visita"), value: tL("Sur place ou en vidéo", "In person or by video", "En persona o por vídeo") },
   ];

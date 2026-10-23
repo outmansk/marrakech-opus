@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useProperty } from "@/hooks/useBiens";
 import SEOHead from "@/components/SEOHead";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import BackButton from "@/components/BackButton";
 import { breadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { BASE_URL } from "@/hooks/useSEO";
 import { PageTransition } from "@/components/motion/Animations";
@@ -221,10 +222,14 @@ const PropertyDetail = () => {
 
       <main className="pt-16 md:pt-24">
         {/* ── Reference, call and share ── */}
-        <div className="bg-muted/60 md:bg-transparent">
+        {/* Sur téléphone, la barre « Retour » reste visible en haut pendant le défilement. */}
+        <div className="sticky top-16 z-30 bg-background/95 backdrop-blur-md md:static md:bg-transparent md:backdrop-blur-none">
           <div className="container mx-auto flex items-center justify-between gap-3 px-4 py-2 md:px-12 md:py-4">
             <Breadcrumbs crumbs={crumbs} className="hidden md:flex" />
-            {reference && <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground md:hidden">{tL("Réf.", "Ref.", "Ref.")} {reference}</span>}
+            <div className="flex min-w-0 items-center gap-2.5 md:hidden">
+              <BackButton fallback={lp("/catalogue")} />
+              {reference && <span className="truncate text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{tL("Réf.", "Ref.", "Ref.")} {reference}</span>}
+            </div>
             <div className="flex items-center gap-2">
               {reference && <span className="mr-1 hidden text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground md:inline">{tL("Réf.", "Ref.", "Ref.")} {reference}</span>}
               <a href={`tel:${AGENCY.phone}`} className={iconButton} aria-label={tL("Appeler l’agence", "Call the agency", "Llamar a la agencia")}>

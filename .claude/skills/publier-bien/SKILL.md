@@ -36,7 +36,7 @@ Pas de commit nécessaire. Seule exception : un quartier nouveau ou une caution 
 
 ### Règles confirmées (ne pas les contredire)
 
-- Location longue durée : bail 1 an minimum ; **caution 2 mois si meublé, 1 mois si non meublé** ; document : passeport ou carte d'identité. Autres frais d'entrée de l'annonce (loyer d'avance, frais d'agence) : les écrire avec les montants calculés. Si le propriétaire exige une autre caution (ex. 2 mois pour un bien vide) : confirmer, puis `"caution_mois": 2` dans l'entrée du bien de `src/content/propertyFacts.json` (lu par `depositMonthsOf()`).
+- Location longue durée : bail 1 an minimum ; **caution 2 mois si meublé, 1 mois si non meublé** ; **frais d'agence : toujours 1 mois de loyer** (affichés automatiquement dans « Conditions » de la fiche, à écrire aussi dans « Frais d'entrée » avec le montant) ; document : passeport ou carte d'identité. Autres frais d'entrée de l'annonce (loyer d'avance, frais d'agence) : les écrire avec les montants calculés. Si le propriétaire exige une autre caution (ex. 2 mois pour un bien vide) : confirmer, puis `"caution_mois": 2` dans l'entrée du bien de `src/content/propertyFacts.json` (lu par `depositMonthsOf()`).
 - Vente : honoraires seulement s'ils sont donnés (ex. 3 %). Points juridiques généraux, renvoyer au notaire.
 - Pas de chiffres de marché inventés, pas d'emojis ni de « 🔥 » dans les textes du site.
 - Questions : seulement si une info **bloque** (prix absent, vente ou location ?). Sinon décider et signaler à la fin.
