@@ -10,7 +10,7 @@ ALTER TABLE public.properties_v2
   ADD COLUMN IF NOT EXISTS meuble BOOLEAN;
 
 -- Recrée le bien pour lui donner l'adresse /bien/villa-rahal-route-de-fes
--- (l'adresse d'un bien est fixée à sa création ; sans effet si l'ancienne version n'a pas été lancée).
+-- (l'adresse d'un bien est fixée à sa création ; sans effet si le bien n'existe pas encore).
 DELETE FROM public.properties_v2 WHERE id = '30dbd6c1-162b-409d-875d-5a2832dcf4cb';
 
 -- Villa Rahal Route de Fès (DP-26-RAHAL)
@@ -34,13 +34,17 @@ Sur la route de Fès, à 15 km de Marrakech par une route goudronnée, puis 300 
 Situation juridique
 • Melkiya adoulaire (ملكية عدلية)
 • Titrage foncier en cours
+• Pas de VNA (attestation de vocation non agricole)
 • Pour tout point juridique, le notaire vous renseignera avant la signature
 
 Conditions de vente
 • Prix : 1 700 000 DH, négociable
 • Visite sur place ou en vidéo sur WhatsApp
 
-Une maison au calme avec un vrai jardin et une piscine à finir à votre goût, pour une résidence principale, une maison secondaire ou un projet d’investissement.$q$, $q$Villa Rahal, Fez Road$q$, $q$Villa Rahal, carretera de Fez$q$, $q$Villa for sale on the Fez road, 15 km from Marrakech: 3 bedrooms, 2 bathrooms, large living room, 1,000 m² garden with olive trees and a pool already dug. Price: 1,700,000 MAD, negotiable.$q$, $q$Villa en venta en la carretera de Fez, a 15 km de Marrakech: 3 dormitorios, 2 baños, gran salón, jardín de 1.000 m² con olivos y vaso de piscina ya excavado. Precio: 1.700.000 MAD, negociable.$q$, $q$The villa (200 m²)
+Une belle opportunité d’investissement
+• Une fois la piscine terminée, ce sera une très belle maison
+• Plutôt que d’acheter une villa à plus de 4 000 000 DH, vous achetez celle-ci à 1 700 000 DH et faites vos travaux tranquillement, à votre rythme
+• Idéale pour une résidence principale, une maison secondaire ou un projet d’investissement$q$, $q$Villa Rahal, Fez Road$q$, $q$Villa Rahal, carretera de Fez$q$, $q$Villa for sale on the Fez road, 15 km from Marrakech: 3 bedrooms, 2 bathrooms, large living room, 1,000 m² garden with olive trees and a pool already dug. Price: 1,700,000 MAD, negotiable.$q$, $q$Villa en venta en la carretera de Fez, a 15 km de Marrakech: 3 dormitorios, 2 baños, gran salón, jardín de 1.000 m² con olivos y vaso de piscina ya excavado. Precio: 1.700.000 MAD, negociable.$q$, $q$The villa (200 m²)
 • 3 bedrooms
 • 2 bathrooms
 • Large living room and several sitting areas
@@ -59,13 +63,17 @@ On the Fez road, 15 km from Marrakech on a paved road, then 300 m of dirt track.
 Legal status
 • Melkiya adoulaire (ملكية عدلية), a traditional deed drawn up by adouls
 • Land title (titre foncier) registration in progress
+• No VNA (certificate of non-agricultural use)
 • For any legal question, the notary will advise you before signing
 
 Sale terms
 • Price: 1,700,000 MAD, negotiable
 • Viewing on site or by video on WhatsApp
 
-A quiet home with a real garden and a pool to finish to your taste, as a main residence, a second home or an investment project.$q$, $q$La villa (200 m²)
+A great investment opportunity
+• Once the pool is finished, it will be a very beautiful home
+• Rather than buying a villa for more than 4,000,000 MAD, buy this one for 1,700,000 MAD and do the work calmly, at your own pace
+• Ideal as a main residence, a second home or an investment project$q$, $q$La villa (200 m²)
 • 3 dormitorios
 • 2 baños
 • Gran salón y varias zonas de estar
@@ -84,13 +92,17 @@ En la carretera de Fez, a 15 km de Marrakech por carretera asfaltada y luego 300
 Situación jurídica
 • Melkiya adoulaire (ملكية عدلية), escritura tradicional redactada por adules
 • Título de propiedad (titre foncier) en trámite
+• Sin VNA (certificado de uso no agrícola)
 • Para cualquier cuestión jurídica, el notario le informará antes de la firma
 
 Condiciones de venta
 • Precio: 1.700.000 MAD, negociable
 • Visita in situ o por vídeo en WhatsApp
 
-Una casa tranquila con un verdadero jardín y una piscina para terminar a su gusto, para residencia principal, segunda residencia o proyecto de inversión.$q$, false, ARRAY[$q$Jardin$q$]::text[], $q$[{"time":"15 km","place":"Marrakech (centre)"}]$q$::jsonb, ARRAY[$q$properties/w65fhhdrigqvxqj7xsww$q$, $q$properties/e0bdzamedvv92lryq1qs$q$, $q$properties/fi4tjsdbxca8tzxw55up$q$, $q$properties/n4me9v4rfcde8sylvtb1$q$]::text[], $q$properties/w65fhhdrigqvxqj7xsww$q$, $q$publie$q$, NULL, $q$DP-26-RAHAL$q$, now())
+Una buena oportunidad de inversión
+• Una vez terminada la piscina, será una casa muy bonita
+• En lugar de comprar una villa por más de 4.000.000 MAD, compre esta por 1.700.000 MAD y haga las obras con calma, a su ritmo
+• Ideal como residencia principal, segunda residencia o proyecto de inversión$q$, false, ARRAY[$q$Jardin$q$]::text[], $q$[{"time":"15 km","place":"Marrakech (centre)"}]$q$::jsonb, ARRAY[$q$properties/w65fhhdrigqvxqj7xsww$q$, $q$properties/e0bdzamedvv92lryq1qs$q$, $q$properties/fi4tjsdbxca8tzxw55up$q$, $q$properties/n4me9v4rfcde8sylvtb1$q$]::text[], $q$properties/w65fhhdrigqvxqj7xsww$q$, $q$publie$q$, NULL, $q$DP-26-RAHAL$q$, now())
 ON CONFLICT (id) DO UPDATE SET
     titre = EXCLUDED.titre,
     type = EXCLUDED.type,
