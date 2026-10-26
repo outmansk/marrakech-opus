@@ -11,8 +11,9 @@ ALTER TABLE public.properties_v2
 
 -- Villa Oliviers Route de Fès (DP-26-OLIVF)
 INSERT INTO public.properties_v2 (id, titre, type, service, services, prix_vente, prix_location_longue, prix_location_courte, devise, surface_habitable, surface_terrain, chambres, salles_de_bain, quartier, meuble, description_courte, description_longue, titre_en, titre_es, description_courte_en, description_courte_es, description_longue_en, description_longue_es, traduction_a_relire, equipements, proximites, photos, photo_principale, statut, disponible_le, reference, created_at)
-VALUES ('30dbd6c1-162b-409d-875d-5a2832dcf4cb', $q$Villa Oliviers Route de Fès$q$, $q$villa$q$, $q$vente$q$, ARRAY[$q$vente$q$]::text[], 1700000, NULL, NULL, $q$MAD$q$, 200, 1000, 3, NULL, $q$Route de Fes$q$, NULL, $q$Villa à vendre sur la route de Fès, à 15 km de Marrakech : 3 chambres, grand salon, jardin arboré de 1 000 m² avec oliviers et trou de piscine déjà creusé. Prix : 1 700 000 DH, négociable.$q$, $q$La villa (200 m²)
+VALUES ('30dbd6c1-162b-409d-875d-5a2832dcf4cb', $q$Villa Oliviers Route de Fès$q$, $q$villa$q$, $q$vente$q$, ARRAY[$q$vente$q$]::text[], 1700000, NULL, NULL, $q$MAD$q$, 200, 1000, 3, 2, $q$Route de Fes$q$, NULL, $q$Villa à vendre sur la route de Fès, à 15 km de Marrakech : 3 chambres, 2 salles de bain, grand salon, jardin arboré de 1 000 m² avec oliviers et trou de piscine déjà creusé. Prix : 1 700 000 DH, négociable.$q$, $q$La villa (200 m²)
 • 3 chambres
+• 2 salles de bain
 • Grand salon et plusieurs espaces salon
 • Pièces lumineuses
 • Style marocain simple et chaleureux
@@ -24,7 +25,7 @@ L’extérieur (1 000 m²)
 • De belles possibilités d’aménagement
 
 Emplacement
-Sur la route de Fès, à 15 km de Marrakech, dans un environnement calme et verdoyant.
+Sur la route de Fès, à 15 km de Marrakech par une route goudronnée, puis 300 m de piste. Un environnement calme et verdoyant.
 
 Situation juridique
 • Melkiya adoulaire (ملكية عدلية)
@@ -35,8 +36,9 @@ Conditions de vente
 • Prix : 1 700 000 DH, négociable
 • Visite sur place ou en vidéo sur WhatsApp
 
-Une maison au calme avec un vrai jardin et une piscine à finir à votre goût, pour une résidence principale, une maison secondaire ou un projet d’investissement.$q$, $q$Olive Tree Villa, Fez Road$q$, $q$Villa de los Olivos, carretera de Fez$q$, $q$Villa for sale on the Fez road, 15 km from Marrakech: 3 bedrooms, large living room, 1,000 m² garden with olive trees and a pool already dug. Price: 1,700,000 MAD, negotiable.$q$, $q$Villa en venta en la carretera de Fez, a 15 km de Marrakech: 3 dormitorios, gran salón, jardín de 1.000 m² con olivos y vaso de piscina ya excavado. Precio: 1.700.000 MAD, negociable.$q$, $q$The villa (200 m²)
+Une maison au calme avec un vrai jardin et une piscine à finir à votre goût, pour une résidence principale, une maison secondaire ou un projet d’investissement.$q$, $q$Olive Tree Villa, Fez Road$q$, $q$Villa de los Olivos, carretera de Fez$q$, $q$Villa for sale on the Fez road, 15 km from Marrakech: 3 bedrooms, 2 bathrooms, large living room, 1,000 m² garden with olive trees and a pool already dug. Price: 1,700,000 MAD, negotiable.$q$, $q$Villa en venta en la carretera de Fez, a 15 km de Marrakech: 3 dormitorios, 2 baños, gran salón, jardín de 1.000 m² con olivos y vaso de piscina ya excavado. Precio: 1.700.000 MAD, negociable.$q$, $q$The villa (200 m²)
 • 3 bedrooms
+• 2 bathrooms
 • Large living room and several sitting areas
 • Bright rooms
 • Simple, warm Moroccan style
@@ -48,7 +50,7 @@ Outside (1,000 m²)
 • Plenty of room for further landscaping
 
 Location
-On the Fez road, 15 km from Marrakech, in a quiet, green setting.
+On the Fez road, 15 km from Marrakech on a paved road, then 300 m of dirt track. A quiet, green setting.
 
 Legal status
 • Melkiya adoulaire (ملكية عدلية), a traditional deed drawn up by adouls
@@ -61,6 +63,7 @@ Sale terms
 
 A quiet home with a real garden and a pool to finish to your taste, as a main residence, a second home or an investment project.$q$, $q$La villa (200 m²)
 • 3 dormitorios
+• 2 baños
 • Gran salón y varias zonas de estar
 • Estancias luminosas
 • Estilo marroquí sencillo y acogedor
@@ -72,7 +75,7 @@ El exterior (1.000 m²)
 • Amplias posibilidades de acondicionamiento
 
 Ubicación
-En la carretera de Fez, a 15 km de Marrakech, en un entorno tranquilo y verde.
+En la carretera de Fez, a 15 km de Marrakech por carretera asfaltada y luego 300 m de pista. Un entorno tranquilo y verde.
 
 Situación jurídica
 • Melkiya adoulaire (ملكية عدلية), escritura tradicional redactada por adules
