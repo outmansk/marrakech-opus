@@ -9,9 +9,13 @@ ALTER TABLE public.properties_v2
   ADD COLUMN IF NOT EXISTS traduction_a_relire BOOLEAN NOT NULL DEFAULT true,
   ADD COLUMN IF NOT EXISTS meuble BOOLEAN;
 
--- Villa Oliviers Route de Fès (DP-26-OLIVF)
+-- Recrée le bien pour lui donner l'adresse /bien/villa-rahal-route-de-fes
+-- (l'adresse d'un bien est fixée à sa création ; sans effet si l'ancienne version n'a pas été lancée).
+DELETE FROM public.properties_v2 WHERE id = '30dbd6c1-162b-409d-875d-5a2832dcf4cb';
+
+-- Villa Rahal Route de Fès (DP-26-RAHAL)
 INSERT INTO public.properties_v2 (id, titre, type, service, services, prix_vente, prix_location_longue, prix_location_courte, devise, surface_habitable, surface_terrain, chambres, salles_de_bain, quartier, meuble, description_courte, description_longue, titre_en, titre_es, description_courte_en, description_courte_es, description_longue_en, description_longue_es, traduction_a_relire, equipements, proximites, photos, photo_principale, statut, disponible_le, reference, created_at)
-VALUES ('30dbd6c1-162b-409d-875d-5a2832dcf4cb', $q$Villa Oliviers Route de Fès$q$, $q$villa$q$, $q$vente$q$, ARRAY[$q$vente$q$]::text[], 1700000, NULL, NULL, $q$MAD$q$, 200, 1000, 3, 2, $q$Route de Fes$q$, NULL, $q$Villa à vendre sur la route de Fès, à 15 km de Marrakech : 3 chambres, 2 salles de bain, grand salon, jardin arboré de 1 000 m² avec oliviers et trou de piscine déjà creusé. Prix : 1 700 000 DH, négociable.$q$, $q$La villa (200 m²)
+VALUES ('30dbd6c1-162b-409d-875d-5a2832dcf4cb', $q$Villa Rahal Route de Fès$q$, $q$villa$q$, $q$vente$q$, ARRAY[$q$vente$q$]::text[], 1700000, NULL, NULL, $q$MAD$q$, 200, 1000, 3, 2, $q$Route de Fes$q$, NULL, $q$Villa à vendre sur la route de Fès, à 15 km de Marrakech : 3 chambres, 2 salles de bain, grand salon, jardin arboré de 1 000 m² avec oliviers et trou de piscine déjà creusé. Prix : 1 700 000 DH, négociable.$q$, $q$La villa (200 m²)
 • 3 chambres
 • 2 salles de bain
 • Grand salon et plusieurs espaces salon
@@ -36,7 +40,7 @@ Conditions de vente
 • Prix : 1 700 000 DH, négociable
 • Visite sur place ou en vidéo sur WhatsApp
 
-Une maison au calme avec un vrai jardin et une piscine à finir à votre goût, pour une résidence principale, une maison secondaire ou un projet d’investissement.$q$, $q$Olive Tree Villa, Fez Road$q$, $q$Villa de los Olivos, carretera de Fez$q$, $q$Villa for sale on the Fez road, 15 km from Marrakech: 3 bedrooms, 2 bathrooms, large living room, 1,000 m² garden with olive trees and a pool already dug. Price: 1,700,000 MAD, negotiable.$q$, $q$Villa en venta en la carretera de Fez, a 15 km de Marrakech: 3 dormitorios, 2 baños, gran salón, jardín de 1.000 m² con olivos y vaso de piscina ya excavado. Precio: 1.700.000 MAD, negociable.$q$, $q$The villa (200 m²)
+Une maison au calme avec un vrai jardin et une piscine à finir à votre goût, pour une résidence principale, une maison secondaire ou un projet d’investissement.$q$, $q$Villa Rahal, Fez Road$q$, $q$Villa Rahal, carretera de Fez$q$, $q$Villa for sale on the Fez road, 15 km from Marrakech: 3 bedrooms, 2 bathrooms, large living room, 1,000 m² garden with olive trees and a pool already dug. Price: 1,700,000 MAD, negotiable.$q$, $q$Villa en venta en la carretera de Fez, a 15 km de Marrakech: 3 dormitorios, 2 baños, gran salón, jardín de 1.000 m² con olivos y vaso de piscina ya excavado. Precio: 1.700.000 MAD, negociable.$q$, $q$The villa (200 m²)
 • 3 bedrooms
 • 2 bathrooms
 • Large living room and several sitting areas
@@ -86,7 +90,7 @@ Condiciones de venta
 • Precio: 1.700.000 MAD, negociable
 • Visita in situ o por vídeo en WhatsApp
 
-Una casa tranquila con un verdadero jardín y una piscina para terminar a su gusto, para residencia principal, segunda residencia o proyecto de inversión.$q$, false, ARRAY[$q$Jardin$q$]::text[], $q$[{"time":"15 km","place":"Marrakech (centre)"}]$q$::jsonb, ARRAY[$q$properties/w65fhhdrigqvxqj7xsww$q$, $q$properties/e0bdzamedvv92lryq1qs$q$, $q$properties/fi4tjsdbxca8tzxw55up$q$, $q$properties/n4me9v4rfcde8sylvtb1$q$]::text[], $q$properties/w65fhhdrigqvxqj7xsww$q$, $q$publie$q$, NULL, $q$DP-26-OLIVF$q$, now())
+Una casa tranquila con un verdadero jardín y una piscina para terminar a su gusto, para residencia principal, segunda residencia o proyecto de inversión.$q$, false, ARRAY[$q$Jardin$q$]::text[], $q$[{"time":"15 km","place":"Marrakech (centre)"}]$q$::jsonb, ARRAY[$q$properties/w65fhhdrigqvxqj7xsww$q$, $q$properties/e0bdzamedvv92lryq1qs$q$, $q$properties/fi4tjsdbxca8tzxw55up$q$, $q$properties/n4me9v4rfcde8sylvtb1$q$]::text[], $q$properties/w65fhhdrigqvxqj7xsww$q$, $q$publie$q$, NULL, $q$DP-26-RAHAL$q$, now())
 ON CONFLICT (id) DO UPDATE SET
     titre = EXCLUDED.titre,
     type = EXCLUDED.type,
