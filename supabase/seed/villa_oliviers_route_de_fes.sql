@@ -11,76 +11,79 @@ ALTER TABLE public.properties_v2
 
 -- Villa Oliviers Route de Fès (DP-26-OLIVF)
 INSERT INTO public.properties_v2 (id, titre, type, service, services, prix_vente, prix_location_longue, prix_location_courte, devise, surface_habitable, surface_terrain, chambres, salles_de_bain, quartier, meuble, description_courte, description_longue, titre_en, titre_es, description_courte_en, description_courte_es, description_longue_en, description_longue_es, traduction_a_relire, equipements, proximites, photos, photo_principale, statut, disponible_le, reference, created_at)
-VALUES ('30dbd6c1-162b-409d-875d-5a2832dcf4cb', $q$Villa Oliviers Route de Fès$q$, $q$villa$q$, $q$vente$q$, ARRAY[$q$vente$q$]::text[], 1700000, NULL, NULL, $q$MAD$q$, 200, 1000, NULL, NULL, $q$Route de Fes$q$, NULL, $q$Villa à vendre sur la route de Fès à Marrakech : 200 m² habitables sur un terrain de 1 000 m², grand jardin arboré planté d’oliviers, dans un environnement calme et verdoyant. Prix : 1 700 000 DH.$q$, $q$La villa (200 m²)
+VALUES ('30dbd6c1-162b-409d-875d-5a2832dcf4cb', $q$Villa Oliviers Route de Fès$q$, $q$villa$q$, $q$vente$q$, ARRAY[$q$vente$q$]::text[], 1700000, NULL, NULL, $q$MAD$q$, 200, 1000, 3, NULL, $q$Route de Fes$q$, NULL, $q$Villa à vendre sur la route de Fès, à 15 km de Marrakech : 3 chambres, grand salon, jardin arboré de 1 000 m² avec oliviers et trou de piscine déjà creusé. Prix : 1 700 000 DH, négociable.$q$, $q$La villa (200 m²)
+• 3 chambres
+• Grand salon et plusieurs espaces salon
 • Pièces lumineuses
-• Plusieurs espaces salon
 • Style marocain simple et chaleureux
 • Cour intérieure
 
 L’extérieur (1 000 m²)
 • Grand jardin arboré, planté de plusieurs oliviers
-• Beaux espaces extérieurs
+• Trou de piscine déjà creusé : vous réalisez la piscine comme vous le souhaitez
 • De belles possibilités d’aménagement
 
 Emplacement
-Sur la route de Fès à Marrakech, dans un environnement calme et verdoyant.
+Sur la route de Fès, à 15 km de Marrakech, dans un environnement calme et verdoyant.
 
 Situation juridique
-• Melkiya adliya (ملكية عدلية)
-• Titre foncier en cours de procédure
+• Melkiya adoulaire (ملكية عدلية)
+• Titrage foncier en cours
 • Pour tout point juridique, le notaire vous renseignera avant la signature
 
 Conditions de vente
-• Prix : 1 700 000 DH
+• Prix : 1 700 000 DH, négociable
 • Visite sur place ou en vidéo sur WhatsApp
 
-Une maison au calme avec un vrai jardin, pour une résidence principale, une maison secondaire ou un projet d’investissement.$q$, $q$Olive Tree Villa, Fez Road$q$, $q$Villa de los Olivos, carretera de Fez$q$, $q$Villa for sale on the Fez road in Marrakech: 200 m² of living space on a 1,000 m² plot, large garden planted with olive trees, in a quiet, green setting. Price: 1,700,000 MAD.$q$, $q$Villa en venta en la carretera de Fez, Marrakech: 200 m² habitables en una parcela de 1.000 m², gran jardín con olivos, en un entorno tranquilo y verde. Precio: 1.700.000 MAD.$q$, $q$The villa (200 m²)
+Une maison au calme avec un vrai jardin et une piscine à finir à votre goût, pour une résidence principale, une maison secondaire ou un projet d’investissement.$q$, $q$Olive Tree Villa, Fez Road$q$, $q$Villa de los Olivos, carretera de Fez$q$, $q$Villa for sale on the Fez road, 15 km from Marrakech: 3 bedrooms, large living room, 1,000 m² garden with olive trees and a pool already dug. Price: 1,700,000 MAD, negotiable.$q$, $q$Villa en venta en la carretera de Fez, a 15 km de Marrakech: 3 dormitorios, gran salón, jardín de 1.000 m² con olivos y vaso de piscina ya excavado. Precio: 1.700.000 MAD, negociable.$q$, $q$The villa (200 m²)
+• 3 bedrooms
+• Large living room and several sitting areas
 • Bright rooms
-• Several living areas
 • Simple, warm Moroccan style
 • Inner courtyard
 
 Outside (1,000 m²)
 • Large garden with trees, including several olive trees
-• Pleasant outdoor spaces
+• Pool already dug: finish it exactly the way you want
 • Plenty of room for further landscaping
 
 Location
-On the Fez road in Marrakech, in a quiet, green setting.
+On the Fez road, 15 km from Marrakech, in a quiet, green setting.
 
 Legal status
-• Melkiya adliya (ملكية عدلية), a traditional deed of ownership
-• Land title (titre foncier) application in progress
+• Melkiya adoulaire (ملكية عدلية), a traditional deed drawn up by adouls
+• Land title (titre foncier) registration in progress
 • For any legal question, the notary will advise you before signing
 
 Sale terms
-• Price: 1,700,000 MAD
+• Price: 1,700,000 MAD, negotiable
 • Viewing on site or by video on WhatsApp
 
-A quiet home with a real garden, as a main residence, a second home or an investment project.$q$, $q$La villa (200 m²)
+A quiet home with a real garden and a pool to finish to your taste, as a main residence, a second home or an investment project.$q$, $q$La villa (200 m²)
+• 3 dormitorios
+• Gran salón y varias zonas de estar
 • Estancias luminosas
-• Varios salones
 • Estilo marroquí sencillo y acogedor
 • Patio interior
 
 El exterior (1.000 m²)
 • Gran jardín arbolado, con varios olivos
-• Agradables espacios exteriores
+• Vaso de piscina ya excavado: termine la piscina a su gusto
 • Amplias posibilidades de acondicionamiento
 
 Ubicación
-En la carretera de Fez, Marrakech, en un entorno tranquilo y verde.
+En la carretera de Fez, a 15 km de Marrakech, en un entorno tranquilo y verde.
 
 Situación jurídica
-• Melkiya adliya (ملكية عدلية), escritura tradicional de propiedad
+• Melkiya adoulaire (ملكية عدلية), escritura tradicional redactada por adules
 • Título de propiedad (titre foncier) en trámite
 • Para cualquier cuestión jurídica, el notario le informará antes de la firma
 
 Condiciones de venta
-• Precio: 1.700.000 MAD
+• Precio: 1.700.000 MAD, negociable
 • Visita in situ o por vídeo en WhatsApp
 
-Una casa tranquila con un verdadero jardín, para residencia principal, segunda residencia o proyecto de inversión.$q$, false, ARRAY[$q$Jardin$q$]::text[], $q$[]$q$::jsonb, ARRAY[$q$properties/w65fhhdrigqvxqj7xsww$q$, $q$properties/e0bdzamedvv92lryq1qs$q$, $q$properties/fi4tjsdbxca8tzxw55up$q$, $q$properties/n4me9v4rfcde8sylvtb1$q$]::text[], $q$properties/w65fhhdrigqvxqj7xsww$q$, $q$publie$q$, NULL, $q$DP-26-OLIVF$q$, now())
+Una casa tranquila con un verdadero jardín y una piscina para terminar a su gusto, para residencia principal, segunda residencia o proyecto de inversión.$q$, false, ARRAY[$q$Jardin$q$]::text[], $q$[{"time":"15 km","place":"Marrakech (centre)"}]$q$::jsonb, ARRAY[$q$properties/w65fhhdrigqvxqj7xsww$q$, $q$properties/e0bdzamedvv92lryq1qs$q$, $q$properties/fi4tjsdbxca8tzxw55up$q$, $q$properties/n4me9v4rfcde8sylvtb1$q$]::text[], $q$properties/w65fhhdrigqvxqj7xsww$q$, $q$publie$q$, NULL, $q$DP-26-OLIVF$q$, now())
 ON CONFLICT (id) DO UPDATE SET
     titre = EXCLUDED.titre,
     type = EXCLUDED.type,
