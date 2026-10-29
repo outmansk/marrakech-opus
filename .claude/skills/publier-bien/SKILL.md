@@ -1,54 +1,85 @@
 ---
 name: publier-bien
-description: Publier rapidement un nouveau bien (villa, appartement, riad, maison, terrain) sur liveinmarrakech.com à partir d'un dossier local (photos + description.txt), de photos/texte collés dans le chat ou d'un lien d'annonce. Méthode par défaut : photos envoyées sur Cloudinary + code SQL que l'utilisateur colle dans Supabase. Couvre aussi « marquer un bien loué / vendu » avec un profil client anonyme. À utiliser dès que l'utilisateur dit « ajouter un bien », « publier cette annonce », « nouveau bien », ou donne un dossier de photos.
+description: Publier ou mettre à jour une annonce de bien (villa, appartement, riad, maison, terrain) sur liveinmarrakech.com à partir du chemin d'un dossier local (photos + fichier descriptif, souvent le texte brut de l'annonce Facebook/WhatsApp) et/ou d'infos données dans le chat. Claude réécrit un meilleur descriptif FR/EN/ES pour le site, envoie les photos sur Cloudinary et donne le code SQL à coller dans Supabase (aussi enregistré dans le dossier). Couvre aussi : changer les photos ou compléter une annonce existante, mettre un bien en tête du catalogue, marquer un bien loué / vendu. À utiliser dès que l'utilisateur donne un chemin de dossier de bien, dit « publier cette annonce », « ajouter un bien », « mettre cette villa dans mon catalogue », « donne-moi le SQL », « change les photos », ou « mets-le parmi les premiers ».
 ---
 
 # Publier un bien sur le site
 
-Répondre en français. L'utilisateur veut que ce soit fait vite et **avec peu de tokens** : ne pas regarder les photos une par une, ne pas lancer de build ni de navigateur pour la méthode SQL.
+Répondre en français. L'utilisateur veut que ce soit fait **vite et avec peu de tokens** : il envoie le chemin d'un dossier (photos + descriptif court, souvent son texte Facebook/WhatsApp) et attend **un code SQL prêt à coller**. Ne pas regarder les photos une par une, ne pas lancer de build, de navigateur ni de commit pour un simple bien. Ne pas lui demander de passer par l'admin.
 
-Scripts de ce dossier (chemins depuis la racine du projet) :
+Scripts (chemins depuis la racine du projet ; `upload-photos.mjs` lit `.env` à la racine : si on est dans un worktree sans `.env`, lancer les scripts depuis le dépôt principal) :
 - `.claude/skills/publier-bien/contact-sheet.cjs` : planche numérotée des photos (une seule image à lire).
-- `.claude/skills/publier-bien/upload-photos.mjs` : envoie les photos sur Cloudinary (preset de l'admin, dossier `properties`), affiche les `public_id`.
-- `.claude/skills/publier-bien/make-sql.mjs` : JSON du bien → SQL `INSERT … ON CONFLICT (id) DO UPDATE` (prépare aussi les colonnes de traduction / `meuble`).
+- `.claude/skills/publier-bien/upload-photos.mjs` : envoie les photos sur Cloudinary (preset de l'admin, dossier `properties`), affiche `photos` et `photo_principale`.
+- `.claude/skills/publier-bien/make-sql.mjs` : JSON du bien → SQL `INSERT … ON CONFLICT (id) DO UPDATE` (ré-exécutable : crée ou met à jour).
 - `.claude/skills/publier-bien/convert-photos.cjs` : WebP locaux pour la méthode « fichier » (secours).
 
-`sharp` n'est pas une dépendance du projet : l'installer une fois dans le scratchpad (`npm i --no-save --prefix "<scratchpad>/img" sharp`) et passer `SHARP_DIR="<scratchpad>/img/node_modules"`. `upload-photos.mjs` et `make-sql.mjs` n'en ont pas besoin.
+`sharp` (seulement pour la planche) : `npm i --no-save --prefix "<scratchpad>/img" sharp` puis `SHARP_DIR="<scratchpad>/img/node_modules"`. L'installation peut prendre plusieurs minutes : la lancer en arrière-plan et rédiger les textes pendant ce temps.
 
-## Méthode par défaut : SQL (le bien est dans la base et l'admin)
+## Déroulé (nouveau bien)
 
-1. **Lire** `description.txt` (ou le texte du chat). Lister le dossier.
-2. **Ordre des photos** : si les fichiers sont déjà numérotés (`1-…`, `2-…`), garder cet ordre sans les regarder. Sinon générer la planche avec `contact-sheet.cjs` et lire **cette seule image** pour choisir : la plus forte d'abord (piscine/façade pour une villa, salon/patio pour un appartement ou riad), puis extérieur, séjour, cuisine, chambres, salles de bain. Écarter les doublons.
-3. **Envoyer** les photos dans l'ordre choisi : `node .claude/skills/publier-bien/upload-photos.mjs "<photo>" …` → récupérer `photos` et `photo_principale`. Photos HEIC : demander un export JPEG.
-4. **Écrire le JSON du bien** dans le scratchpad (via un fichier `.py` ou l'outil Write : les heredocs bash cassent sur les apostrophes) avec les champs ci-dessous, puis `node .claude/skills/publier-bien/make-sql.mjs <bien.json> <scratchpad>/bien.sql`.
-5. **Donner le SQL** à l'utilisateur : chemin du fichier + contenu dans un bloc ```sql à copier, avec la consigne « Supabase → SQL Editor → coller → Run ». Le bien est en ligne tout de suite (sa page fonctionne sans redéploiement ; le pré-rendu Google suit au prochain déploiement).
-6. **Résumé court** + 1 à 3 points déduits à confirmer.
+1. **Lire le dossier** : lister les fichiers et lire le descriptif (`des.txt`, `description.txt`, `*.md`… ou le texte du chat). Le chat prime sur le fichier quand ils se contredisent (ex. « dernier prix »).
+2. **Bloquant seulement** : vente ou location, et le prix. Sans eux, demander ; pour tout le reste, décider et le signaler à la fin. Si le dossier n'a aucun descriptif, demander les infos en une seule liste.
+3. **Ordre des photos** : fichiers déjà numérotés (`01-…`) → garder l'ordre, sauf mettre en premier la photo la plus forte d'après son nom (piscine/façade pour une villa ; salon/patio pour un appartement ou riad). Sinon générer la planche et lire cette seule image : la plus forte d'abord, puis extérieur, séjour, cuisine, chambres, salles de bain ; écarter les doublons. Photos HEIC : demander un export JPEG. Photos visiblement retouchées par IA : le signaler une fois ; si l'utilisateur confirme, continuer.
+4. **Envoyer** : `node .claude/skills/publier-bien/upload-photos.mjs "<photo>" …` (dans l'ordre choisi ; on peut réordonner les identifiants ensuite sans renvoyer).
+5. **Réécrire l'annonce** en un meilleur descriptif pour le site (voir « Textes ») et écrire le JSON du bien dans le scratchpad (outil Write, pas de heredoc), puis `node .claude/skills/publier-bien/make-sql.mjs <bien.json> <scratchpad>/bien.sql`.
+6. **Livrer le SQL** :
+   - enregistrer une copie à coller dans le dossier du bien : `<dossier>/annonce.sql` (sans les lignes `ALTER TABLE` du début, les colonnes existent déjà) ;
+   - donner ce même SQL dans un bloc ```sql avec la consigne « Supabase → SQL Editor → coller → Run » ;
+   - résumé de l'annonce en 2 à 3 lignes + points à confirmer (numérotés, courts).
+7. **Après « c'est fait »** : vérifier en base (voir « Vérifier en base ») et confirmer en une phrase. « Success. No rows returned » est normal pour un UPDATE / INSERT.
 
-Pas de commit nécessaire. Seule exception : un quartier nouveau ou une caution hors règle demandent un petit changement de code (voir plus bas), à committer et pousser.
+## Mettre à jour une annonce existante
+
+L'utilisateur dit « déjà en ligne », « change les photos », « ajoute ces infos ».
+- Retrouver l'`id` : `grep -ril "<nom>" src/content supabase/seed`, sinon une requête REST (voir plus bas) avec `titre=ilike.*<nom>*`.
+- Donner un **`UPDATE … WHERE id = '<id>'`** limité aux colonnes changées (+ `updated_at = now()`), pas un INSERT complet. Repartir des textes existants (seed ou base) et n'y changer que ce qui est dit.
+- Si une 2e correction arrive avant que le SQL soit lancé : redonner un seul SQL complet qui remplace le précédent.
+- Si la vérification montre que la base n'a pas pris le SQL : l'admin avait probablement la fiche ouverte et l'a ré-enregistrée → demander de fermer la fiche sans enregistrer et de relancer.
+
+## Mettre un bien en tête du catalogue
+
+- SQL seul (immédiat) : `UPDATE public.properties_v2 SET created_at = now() WHERE id = '<id>';` (le catalogue trie par date, du plus récent au plus ancien). Un bien publié ensuite repassera devant : relancer le même SQL.
+- Les biens de `src/content/propertyFeatured.json` (`ids`, dans l'ordre) passent devant tous les autres dans le catalogue et le carrousel de l'accueil ; le SQL ne peut pas les dépasser. Pour y ajouter un bien : modifier le fichier, commit + `git push origin HEAD:main` (visible après le déploiement Vercel).
+
+## Vérifier en base
+
+Lecture publique avec la clé anon du `.env` du dépôt principal (aucune écriture) :
+```bash
+set -a; . ./.env; set +a; curl -s "$VITE_SUPABASE_URL/rest/v1/properties_v2?id=eq.<id>&select=titre,statut,chambres,salles_de_bain,prix_location_longue,photo_principale,updated_at" -H "apikey: $VITE_SUPABASE_ANON_KEY" -H "Authorization: Bearer $VITE_SUPABASE_ANON_KEY"
+```
+Ne pas faire cette vérification avant la livraison du SQL si l'utilisateur est pressé (il préfère le SQL d'abord).
+
+## Textes
+
+Le descriptif de l'utilisateur est un brouillon (fautes, abréviations, « route Des » = route de Fès, « ch » = chambres, « dh » = DH). En faire un texte clair et vendeur, **sans rien inventer** : seulement ce qui est dit ou clairement visible sur les noms de photos.
+
+- `titre` : français, **court : nom + secteur, 2 à 4 mots** (« Villa Talaja Route de Fès »). Il sert à l'URL : ne plus le changer ensuite. Nom tiré du nom du dossier quand il n'y en a pas d'autre.
+- `description_courte` (≈ 200 car.) : type, atout principal, emplacement + distance, pièces, prix.
+- `description_longue` : une phrase d'accroche (type, état meublé, emplacement, surface du terrain, loyer), puis des blocs séparés par une ligne vide ; chaque bloc commence par un titre court sur sa propre ligne puis des puces « • » : « La villa » / « La maison », « Le bungalow » (dépendances), « L'extérieur », « Emplacement » ou « Accès », « Au total » (si plusieurs bâtiments), « Version meublée » (si autre prix), « Frais d'entrée », « Conditions », puis « Visite sur place ou en vidéo sur WhatsApp. »
+- Traductions EN/ES fidèles dans `titre_en/_es`, `description_courte_en/_es`, `description_longue_en/_es` (montants : 14,500 MAD / 14.500 MAD), `traduction_a_relire: false`.
+- Pas d'emojis, pas de « 🔥 », pas de chiffres de marché, pas de « titre foncier vérifié » ni de distances non données.
 
 ### Champs du JSON
 
-`id` (laisser vide = généré), `titre` (français, **court : nom + secteur, 2 à 4 mots**, ex. « Villa Golf Atlas », « Appartement Zara Guéliz » ; il **sert à l'URL**, ne plus le changer ensuite). Le titre affiché plus riche (nom + ce qui distingue le bien, FR/EN/ES) va dans `src/content/propertyHeadlines.json` (commit + push, le site le montre au déploiement suivant), `type` villa | appartement | riad | maison | terrain, `services` (vente, location-longue-duree, location-courte-duree, sous-location), `service` = le premier, `prix_vente` / `prix_location_longue` / `prix_location_courte`, `devise` MAD, `surface_habitable`, `surface_terrain` (ne pas les inverser ; le site montre le terrain en priorité), `chambres`, `salles_de_bain`, `quartier`, `meuble` true/false, `description_courte` (≈ 200 car.), `description_longue`, `titre_en`, `titre_es`, `description_courte_en/_es`, `description_longue_en/_es`, `equipements`, `proximites` ([{"time": "5 km", "place": "Golf Amelkis"}] seulement si l'annonce les donne), `photos`, `photo_principale`, `statut` "publie", `reference` `DP-26-XXXXX` (lettres du nom, unique).
+`id` (UUID : `node -e 'console.log(require("crypto").randomUUID())'`), `titre`, `type` villa | appartement | riad | maison | terrain, `services` (vente, location-longue-duree, location-courte-duree, sous-location), `service` = le premier, `prix_vente` / `prix_location_longue` / `prix_location_courte`, `devise` MAD, `surface_habitable`, `surface_terrain` (« 1000 m² » de terrain → `surface_terrain` ; ne pas les inverser), `chambres` (total, dépendances comprises), `salles_de_bain` (null si inconnu), `quartier`, `meuble` true/false/null, textes ci-dessus, `equipements`, `proximites` ([{"time": "18 km", "place": "Marrakech"}] seulement si l'annonce les donne), `photos`, `photo_principale`, `statut` "publie", `reference` `DP-26-XXXXX` (lettres du nom, unique). Pas de `slug` : le trigger SQL le crée à partir du titre.
 
-- `quartier` : une valeur reconnue par `QUARTIER_TO_ZONE` dans `src/content/zones.ts` (Route de Fes, Chrifia, Palmeraie, Medina, Route d'Essaouira, Gueliz). Autre secteur (golfs, Sidi Rahal, Village Touristique…) : mettre le nom réel et ajouter `"<id>": { "zone": "golf" }` dans `src/content/propertyFacts.json` (donc fixer l'`id` dans le JSON). Quartier vraiment nouveau : ajouter la zone dans `zones.ts` (`ZoneId`, `ZONES`, `QUARTIER_TO_ZONE`, `ZONE_IN`) et dans `scripts/generate-sitemap.cjs` (`ZONE_NAMES`, `QUARTIER_ZONES`).
+- `quartier` : une valeur de `QUARTIER_TO_ZONE` dans `src/content/zones.ts` (Route de Fes, Chrifia, Palmeraie, Medina, Route d'Essaouira, Gueliz). Le lieu-dit précis (Godran, Talaja…) va dans le texte. Autre secteur (golfs, Sidi Rahal, Ourika…) : nom réel et `"<id>": { "zone": "golf" }` dans `src/content/propertyFacts.json` (commit + push). Quartier vraiment nouveau : ajouter la zone dans `zones.ts` (`ZoneId`, `ZONES`, `QUARTIER_TO_ZONE`, `ZONE_IN`) et `scripts/generate-sitemap.cjs` (`ZONE_NAMES`, `QUARTIER_ZONES`).
 - `equipements` : uniquement des libellés connus de `src/lib/propertyI18n.ts` (Piscine, Jardin, Climatisation, Cuisine équipée, Cheminée, Parking, Terrasse, Ascenseur, Gardiennage 24/7, Meublé…), seulement ce qui est dit ou clairement visible.
-- `description_longue` : paragraphes séparés par une ligne vide ; chaque bloc commence par un titre court sur sa propre ligne (« La villa », « L'extérieur », « Emplacement », « Frais d'entrée », « Conditions ») puis des puces « • ». Traductions EN/ES fidèles (montants : 14,500 MAD / 14.500 MAD).
+- Semi-meublé : `meuble: null`, « Semi-meublée » dans le texte, demander la caution (1 ou 2 mois).
+- Titre affiché plus riche (facultatif) : `src/content/propertyHeadlines.json` (FR/EN/ES, commit + push).
 
 ### Règles confirmées (ne pas les contredire)
 
-- Location longue durée : bail 1 an minimum ; **caution 2 mois si meublé, 1 mois si non meublé** ; **frais d'agence : toujours 1 mois de loyer** (affichés automatiquement dans « Conditions » de la fiche, à écrire aussi dans « Frais d'entrée » avec le montant) ; document : passeport ou carte d'identité. Autres frais d'entrée de l'annonce (loyer d'avance, frais d'agence) : les écrire avec les montants calculés. Si le propriétaire exige une autre caution (ex. 2 mois pour un bien vide) : confirmer, puis `"caution_mois": 2` dans l'entrée du bien de `src/content/propertyFacts.json` (lu par `depositMonthsOf()`).
+- Location longue durée : bail 1 an minimum ; **caution 2 mois si meublé, 1 mois si non meublé** ; **frais d'agence : toujours 1 mois de loyer** (dans « Frais d'entrée » avec le montant) ; document : passeport ou carte d'identité. Caution différente exigée par le propriétaire : confirmer, puis `"caution_mois": 2` dans l'entrée du bien de `src/content/propertyFacts.json`.
 - Vente : honoraires seulement s'ils sont donnés (ex. 3 %). Points juridiques généraux, renvoyer au notaire.
-- Pas de chiffres de marché inventés, pas d'emojis ni de « 🔥 » dans les textes du site.
-- Questions : seulement si une info **bloque** (prix absent, vente ou location ?). Sinon décider et signaler à la fin.
 
 ## Méthode de secours : bien « fichier » (sans Supabase)
 
-Si l'utilisateur ne peut pas lancer le SQL : `convert-photos.cjs <slug> "<src>=<nom>" …` → `public/biens/<slug>/`, entrée dans `src/content/fileProperties.json` (mêmes champs), titre affiché dans `src/content/propertyHeadlines.json`, traductions dans `src/content/propertyTranslations.json`, puis `npm run build` (vérifier `dist/bien/<slug>-<id>.html`), commit des seuls fichiers du bien (**jamais `.agents/mcp_config.json`, `.env*`, `CLAUDE.md` modifié par d'autres**) et `git push origin main`. Le bien n'est pas visible dans l'admin. `supabase/seed/biens_fichiers_vers_base.sql` (généré avec `make-sql.mjs` depuis `fileProperties.json` + traductions) fait passer ces biens dans la base ; une ligne de la base remplace l'entrée fichier de même `id`.
+Si l'utilisateur ne peut pas lancer le SQL : `convert-photos.cjs <slug> "<src>=<nom>" …` → `public/biens/<slug>/`, entrée dans `src/content/fileProperties.json` (mêmes champs), titre affiché dans `src/content/propertyHeadlines.json`, traductions dans `src/content/propertyTranslations.json`, puis `npm run build` (vérifier `dist/bien/<slug>-<id>.html`), commit des seuls fichiers du bien (**jamais `.agents/mcp_config.json`, `.env*`, `CLAUDE.md` modifié par d'autres**) et `git push origin main`. Le bien n'est pas visible dans l'admin.
 
 ## Marquer un bien loué ou vendu
 
-- Bien en base : l'utilisateur le passe en « Loué / vendu » dans l'admin (ou SQL `UPDATE public.properties_v2 SET statut = 'vendu-loue' WHERE id = '…';`). Bien fichier : `"statut": "vendu-loue"` dans `fileProperties.json`.
-- Ajouter dans `src/content/propertyDeals.json` : `"<id>": { "profil": { "fr": "un couple belge", "en": "a Belgian couple", "es": "una pareja belga" }, "loyer": 16000, "prix": null, "mois": null }` (`profil` peut être `null` ; `mois` = "AAAA-MM"), puis commit + push.
+- SQL : `UPDATE public.properties_v2 SET statut = 'vendu-loue' WHERE id = '…';` (bien fichier : `"statut": "vendu-loue"` dans `fileProperties.json`).
+- Ajouter dans `src/content/propertyDeals.json` : `"<id>": { "profil": { "fr": "un couple belge", "en": "a Belgian couple", "es": "una pareja belga" }, "loyer": 16000, "prix": null, "mois": "2026-10" }` (`profil` peut être `null`), puis commit + push.
 - **Jamais de nom ni de prénom du client** sans son accord écrit (loi 09-08) : seulement nationalité + famille / couple / personne seule.
 - Si le montant final diffère de l'annonce, mettre aussi l'annonce au montant final.
-- Ces biens passent en tête du catalogue et du carrousel d'accueil, et dans « Récemment loués et vendus ».
