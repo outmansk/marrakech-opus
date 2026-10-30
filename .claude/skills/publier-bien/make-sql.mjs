@@ -30,6 +30,7 @@ const COLUMNS = [
   ["prix_vente", (b) => num(b.prix_vente)],
   ["prix_location_longue", (b) => num(b.prix_location_longue)],
   ["prix_location_courte", (b) => num(b.prix_location_courte)],
+  ["prix", (b) => num(b.prix)], // loyer de sous-location (champ « prix » de l'admin)
   ["devise", (b) => text(b.devise ?? "MAD")],
   ["surface_habitable", (b) => num(b.surface_habitable)],
   ["surface_terrain", (b) => num(b.surface_terrain)],
