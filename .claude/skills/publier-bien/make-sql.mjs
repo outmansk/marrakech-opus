@@ -24,6 +24,8 @@ const json = (v) => `${text(JSON.stringify(v ?? []))}::jsonb`;
 const COLUMNS = [
   ["id", (b) => `'${b.id ?? crypto.randomUUID()}'`],
   ["titre", (b) => text(b.titre)],
+  // Adresse courte et permanente (/bien/<slug>) : la fixer permet un titre long et vendeur.
+  ["slug", (b) => text(b.slug)],
   ["type", (b) => text(b.type)],
   ["service", (b) => text(b.service ?? b.services?.[0])],
   ["services", (b) => arr(b.services)],
@@ -58,18 +60,9 @@ const COLUMNS = [
 ];
 
 const names = COLUMNS.map(([name]) => name);
-const updates = names.filter((n) => n !== "id" && n !== "created_at").map((n) => `${n} = EXCLUDED.${n}`).join(",\n    ");
+const updates = names.filter((n) => !["id", "created_at", "slug"].includes(n)).map((n) => `${n} = EXCLUDED.${n}`).join(",\n    ");
 
-const parts = [
-  "-- Généré par .claude/skills/publier-bien/make-sql.mjs : coller dans Supabase → SQL Editor → Run.",
-  "-- Prépare les colonnes une seule fois (sans effet si elles existent déjà).",
-  `ALTER TABLE public.properties_v2
-  ADD COLUMN IF NOT EXISTS titre_en TEXT, ADD COLUMN IF NOT EXISTS titre_es TEXT,
-  ADD COLUMN IF NOT EXISTS description_courte_en TEXT, ADD COLUMN IF NOT EXISTS description_courte_es TEXT,
-  ADD COLUMN IF NOT EXISTS description_longue_en TEXT, ADD COLUMN IF NOT EXISTS description_longue_es TEXT,
-  ADD COLUMN IF NOT EXISTS traduction_a_relire BOOLEAN NOT NULL DEFAULT true,
-  ADD COLUMN IF NOT EXISTS meuble BOOLEAN;`,
-];
+const parts = ["-- Généré par .claude/skills/publier-bien/make-sql.mjs : Supabase → SQL Editor → coller → Run."];
 for (const b of biens) {
   parts.push(`-- ${b.titre} (${b.reference ?? "sans référence"})
 INSERT INTO public.properties_v2 (${names.join(", ")})
@@ -77,7 +70,6 @@ VALUES (${COLUMNS.map(([, f]) => f(b)).join(", ")})
 ON CONFLICT (id) DO UPDATE SET
     ${updates};`);
 }
-parts.push("NOTIFY pgrst, 'reload schema';");
 const sql = parts.join("\n\n") + "\n";
 
 if (output) {
