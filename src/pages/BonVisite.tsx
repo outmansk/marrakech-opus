@@ -17,6 +17,7 @@ import {
   formatBonPrix,
   formatBonSigneLe,
   fullPhone,
+  JETON_RE,
   signErrorMessage,
   validateBon,
   type BonChamp,
@@ -162,7 +163,7 @@ function Problem({ title, text }: { title: string; text: string }) {
 export default function BonVisite() {
   const { jeton = "" } = useParams();
   const queryClient = useQueryClient();
-  const valid = /^[0-9a-f]{64}$/.test(jeton);
+  const valid = JETON_RE.test(jeton);
   const { data: bon, isPending, isError, refetch } = useQuery({
     queryKey: ["bon-visite", jeton],
     queryFn: () => fetchBon(jeton),

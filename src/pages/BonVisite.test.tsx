@@ -27,7 +27,7 @@ const PENDING: BonVisitePublic = {
 };
 const SIGNED: BonVisitePublic = { ...PENDING, statut: "signe", client_nom: "Sara Test", client_telephone: "+212 612345678", client_email: null, signature: "data:image/png;base64,SIGNATURE", signe_le: "2026-11-05T10:00:00Z", empreinte: "f".repeat(64) };
 
-function open(jeton = JETON) {
+function open(jeton = JETON, base = "/bon") {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   render(
     <HelmetProvider>
@@ -114,6 +114,15 @@ describe("Bon de visite à signer", () => {
     expect(screen.queryByRole("button", { name: "Signer et envoyer" })).not.toBeInTheDocument();
   });
 
+  it("ouvre aussi un bon par son lien court", async () => {
+    open("k7m2x9qp4wza");
+    expect(await screen.findByText("Appartement Test Prestigia")).toBeVisible();
+    expect(rpc).toHaveBeenCalledWith("bon_visite_public", { p_jeton: "k7m2x9qp4wza" });
+  });
+  it("garde les anciens liens /bon-visite/<64 caractères>", async () => {
+    open(JETON, "/bon-visite");
+    expect(await screen.findByText("Appartement Test Prestigia")).toBeVisible();
+  });
   it("refuse un lien incomplet sans interroger la base", async () => {
     open("abc");
     expect(await screen.findByText("Lien incomplet")).toBeVisible();
