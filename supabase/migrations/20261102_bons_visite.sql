@@ -1,4 +1,3 @@
--- ════════════════════════════════════════════════════════════════════════
 -- Bons de visite virtuelle signés à distance.
 -- L'agence prépare le bon dans l'admin (/manage-xk92p/bons-visite) ; la cliente
 -- l'ouvre par un lien secret (/bon-visite/<jeton>), le lit, le signe au doigt.
