@@ -18,8 +18,8 @@ const Footer = () => {
   return (
     <footer className="bg-[#211f1b] text-white">
       {/* ── Main footer grid ────────────────────────────────────────── */}
-      <div className="container mx-auto px-6 md:px-12 py-20 md:py-24">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
+      <div className="container mx-auto px-6 md:px-12 py-14 md:py-24">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16">
 
           {/* Colonne 1 — Brand + tagline + socials */}
           <div className="space-y-6">
@@ -60,12 +60,12 @@ const Footer = () => {
 
           {/* Colonne 2 — Navigation */}
           <div>
-            <p className="text-[10px] tracking-[0.3em] uppercase text-white/30 mb-6 font-sans">
+            <p className="text-[10px] tracking-[0.3em] uppercase text-white/30 mb-4 md:mb-6 font-sans">
               {t("footer.navigation")}
             </p>
             {/* Separator */}
-            <div className="w-full h-[1px] bg-white/8 mb-6" />
-            <nav className="flex flex-col gap-3">
+            <div className="w-full h-[1px] bg-white/8 mb-4 md:mb-6" />
+            <nav className="grid grid-cols-2 gap-x-6 gap-y-3 md:flex md:flex-col">
               {[
                 { to: lp("/"), label: t("nav.accueil") },
                 { to: lp("/catalogue"), label: t("nav.catalogue") },
@@ -93,7 +93,7 @@ const Footer = () => {
             <p className="text-[10px] tracking-[0.3em] uppercase text-white/30 mb-6 font-sans">
               {t("footer.contact")}
             </p>
-            <div className="w-full h-[1px] bg-white/8 mb-6" />
+            <div className="w-full h-[1px] bg-white/8 mb-4 md:mb-6" />
             <div className="flex flex-col gap-5 text-white/50 font-light text-sm">
               <div className="flex items-start gap-3">
                 <MapPin size={16} strokeWidth={1.25} className="mt-0.5 shrink-0 text-white/30" />

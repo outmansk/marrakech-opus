@@ -22,9 +22,21 @@ export default function RecentDeals() {
               "Algunos inmuebles que hemos alquilado o vendido. Por discreción, solo mostramos el perfil de nuestros clientes, nunca su nombre.")}
           </p>
         </div>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {deals.map((property) => <PropertyCard key={property.id} property={property} />)}
+        {/* Phones: one swipeable row (the next card peeks out); tablets and desktop: a grid. */}
+        <div
+          role="region"
+          aria-label={tL("Biens loués et vendus", "Rented and sold homes", "Inmuebles alquilados y vendidos")}
+          className="-mx-5 flex snap-x snap-mandatory gap-3.5 overflow-x-auto overscroll-x-contain px-5 pb-1 scroll-pl-5 scrollbar-hide sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3"
+        >
+          {deals.map((property) => (
+            <div key={property.id} className="flex min-w-0 flex-[0_0_calc(100%-44px)] snap-start sm:block">
+              <PropertyCard property={property} />
+            </div>
+          ))}
         </div>
+        {deals.length > 1 && (
+          <p className="-mt-3 text-[13px] text-[#655f56] sm:hidden">{tL("Glissez pour voir les autres", "Swipe to see more", "Deslice para ver más")}</p>
+        )}
       </div>
     </section>
   );

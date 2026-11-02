@@ -7,6 +7,7 @@ import { LANGS, DEFAULT_LANG, type Lang } from "@/i18n/routing";
 import SmoothScroll from "@/components/SmoothScroll";
 import AttributionCapture from "@/components/AttributionCapture";
 import ScrollProgress from "@/components/ScrollProgress";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 
 /**
  * Public pages are passed in: the browser loads them lazily (App.tsx),
@@ -53,7 +54,12 @@ function LangLayout({ lang }: { lang: Lang }) {
   useIsomorphicLayoutEffect(() => {
     if (i18n.language !== lang) void i18n.changeLanguage(lang);
   }, [i18n, lang]);
-  return <Outlet />;
+  return (
+    <>
+      <Outlet />
+      <FloatingWhatsApp />
+    </>
+  );
 }
 
 const publicRoutes = (p: PublicPages) => [
