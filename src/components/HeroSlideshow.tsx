@@ -1,11 +1,11 @@
 import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, ChevronDown, MapPin, MessageCircle } from "lucide-react";
-import { motion } from "framer-motion";
 import heroImage from "@/assets/hero-marrakech.webp";
 import mobileHeroImage from "@/assets/hero-marrakech-mobile-v2.webp";
 import { QUARTIERS, type BienService } from "@/types/property";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
+import { useLocalePath } from "@/hooks/useLocalePath";
 
 type Intent = Extract<BienService, "vente" | "location-longue-duree" | "location-courte-duree">;
 
@@ -14,6 +14,7 @@ const WHATSAPP_URL = "https://wa.me/212605387041?text=Bonjour%2C%20je%20souhaite
 const HeroSlideshow = () => {
   const navigate = useNavigate();
   const tL = useLocalizedText();
+  const { lp } = useLocalePath();
   const [intent, setIntent] = useState<Intent>("vente");
   const [quartier, setQuartier] = useState("all");
 
@@ -27,7 +28,7 @@ const HeroSlideshow = () => {
     event.preventDefault();
     const params = new URLSearchParams({ type: intent });
     if (quartier !== "all") params.set("quartier", quartier);
-    navigate(`/catalogue?${params.toString()}`);
+    navigate(lp(`/catalogue?${params.toString()}`));
   };
 
   const quartierOptions = (
@@ -59,7 +60,7 @@ const HeroSlideshow = () => {
 
         <div className="absolute inset-x-0 bottom-[74px] z-[2] lg:bottom-16">
           <div className="mx-auto flex max-w-[1312px] flex-col gap-4 px-5 lg:gap-10 lg:px-16">
-            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.7 }} className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+            <div style={{ animationDelay: "0.1s" }} className="anim-enter flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
               <div className="flex max-w-[820px] flex-col gap-4 lg:gap-[22px]">
                 <p className="flex items-center gap-3 text-[11px] font-medium uppercase leading-[1.4] tracking-[0.2em] text-[#f0c9b8] lg:gap-3.5 lg:text-xs lg:leading-none lg:tracking-[0.28em]">
                   <span aria-hidden="true" className="h-px w-7 flex-none bg-[#f0c9b8] lg:w-10" />
@@ -80,16 +81,14 @@ const HeroSlideshow = () => {
                   "Compra, alquiler anual o estancia: encontramos la propiedad que le corresponde."
                 )}
               </p>
-            </motion.div>
+            </div>
 
             {/* Desktop: horizontal search bar */}
-            <motion.form
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25, duration: 0.7 }}
+            <form
+              style={{ animationDelay: "0.2s" }}
               onSubmit={submit}
               aria-label={formLabel}
-              className="hidden items-stretch bg-[#fbf8f2] text-[#211f1b] shadow-[0_40px_80px_-40px_rgba(0,0,0,0.6)] lg:flex"
+              className="anim-enter hidden items-stretch bg-[#fbf8f2] text-[#211f1b] shadow-[0_40px_80px_-40px_rgba(0,0,0,0.6)] lg:flex"
             >
               <div role="group" aria-label={projectLabel} className="flex gap-1 border-r border-[#e3d9ca] p-2">
                 {tabs.map((tab) => (
@@ -118,17 +117,15 @@ const HeroSlideshow = () => {
                 {submitLabel}
                 <ArrowRight size={18} strokeWidth={1.5} aria-hidden="true" />
               </button>
-            </motion.form>
+            </form>
           </div>
         </div>
       </div>
 
       {/* Mobile: search card overlapping the photo */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.6 }}
-        className="relative z-[3] mx-4 -mt-11 border border-[#e6ddd0] bg-[#fffdf9] shadow-[0_30px_50px_-36px_rgba(33,31,27,0.55)] lg:hidden"
+      <div
+        style={{ animationDelay: "0.2s" }}
+        className="anim-enter relative z-[3] mx-4 -mt-11 border border-[#e6ddd0] bg-[#fffdf9] shadow-[0_30px_50px_-36px_rgba(33,31,27,0.55)] lg:hidden"
       >
         <form onSubmit={submit} aria-label={formLabel} className="flex flex-col gap-3 p-4">
           <div role="group" aria-label={projectLabel} className="grid grid-cols-3 gap-1 bg-[#f3ede3] p-1">
@@ -163,7 +160,7 @@ const HeroSlideshow = () => {
           <MessageCircle size={18} strokeWidth={1.4} aria-hidden="true" />
           {tL("Parler à un conseiller", "Talk to an advisor", "Hablar con un asesor")}
         </a>
-      </motion.div>
+      </div>
     </section>
   );
 };

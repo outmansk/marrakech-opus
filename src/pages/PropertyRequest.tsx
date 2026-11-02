@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ChevronDown, ArrowLeft, ArrowRight, Check, ShieldCheck, Loader2 } from "lucide-react";
 import { insertWithOrigin } from "@/lib/social/attribution";
 import { toast } from "sonner";
+import { Helmet } from "react-helmet-async";
 import SEOHead from "@/components/SEOHead";
 import { breadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { useLocalePath } from "@/hooks/useLocalePath";
@@ -666,6 +667,10 @@ export default function PropertyRequest() {
 
   return (
     <div className="request-page-v2 selection:bg-[#1A1A1A] selection:text-white flex flex-col justify-between" lang={language} dir={rtl ? "rtl" : "ltr"}>
+      <Helmet>
+        {/* Fonts of this page only (PropertyRequest.css); the rest of the site uses Cormorant Garamond + Montserrat. */}
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" />
+      </Helmet>
       <SEOHead
         withBrand={false}
         title={t.pageTitle}

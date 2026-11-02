@@ -518,3 +518,27 @@ html.lenis body {
     font-weight: 400;
   }
 }
+
+/* ── Public-site animations (src/components/motion/Animations.tsx) ──────────
+   Content is visible in the pre-rendered HTML; JS only hides blocks still below the screen. */
+.reveal {
+  transition-property: opacity, transform;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.reveal-pending {
+  opacity: 0;
+  transform: translate3d(var(--reveal-x, 0), var(--reveal-y, 28px), 0);
+}
+
+@keyframes anim-fade-up {
+  from { opacity: 0; transform: translate3d(0, 14px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+.anim-page-enter { animation: anim-fade-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+/* Hero and page titles: a short CSS entrance that needs no JavaScript. */
+.anim-enter { animation: anim-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal.reveal-pending { opacity: 1; transform: none; transition: none; }
+  .anim-page-enter, .anim-enter { animation: none; }
+}

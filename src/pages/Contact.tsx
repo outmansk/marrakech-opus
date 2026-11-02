@@ -7,8 +7,7 @@ import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { breadcrumbJsonLd } from "@/lib/breadcrumbs";
-import { motion } from "framer-motion";
-import { Reveal, PageTransition, EASE_LUXURY } from "@/components/motion/Animations";
+import { Reveal, PageTransition } from "@/components/motion/Animations";
 import { toast } from "sonner";
 import { insertWithOrigin } from "@/lib/social/attribution";
 import slide3 from "@/assets/slide2.webp";
@@ -113,22 +112,12 @@ const Contact = () => {
 
           <div className="relative z-10 text-center px-4 sm:px-6">
             <Breadcrumbs crumbs={crumbs} className="mb-5 justify-center !text-white/60" />
-            <motion.p
-              className="text-white/60 text-[10px] md:text-xs tracking-[0.3em] uppercase font-sans font-light mb-4"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: EASE_LUXURY }}
-            >
+            <p className="anim-enter text-white/60 text-[10px] md:text-xs tracking-[0.3em] uppercase font-sans font-light mb-4">
               {tL("ENTRER EN CONTACT", "GET IN TOUCH", "PONERSE EN CONTACTO")}
-            </motion.p>
-            <motion.h1
-              className="text-white font-serif text-4xl sm:text-5xl md:text-6xl font-light tracking-[0.02em] leading-tight"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: EASE_LUXURY }}
-            >
+            </p>
+            <h1 style={{ animationDelay: "0.15s" }} className="anim-enter text-white font-serif text-4xl sm:text-5xl md:text-6xl font-light tracking-[0.02em] leading-tight">
               {t("nav.contact")}
-            </motion.h1>
+            </h1>
           </div>
         </section>
 
