@@ -43,6 +43,10 @@
       "destination": "/spa"
     },
     {
+      "source": "/bon-visite/:jeton",
+      "destination": "/spa"
+    },
+    {
       "source": "/bien/:slug",
       "destination": "/spa"
     },
@@ -165,6 +169,23 @@
         {
           "key": "Content-Security-Policy",
           "value": "frame-ancestors 'self'"
+        }
+      ]
+    },
+    {
+      "source": "/bon-visite/:path*",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
         }
       ]
     }

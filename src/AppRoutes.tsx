@@ -40,6 +40,9 @@ const AdminMessages = lazy(() => import("./pages/admin/AdminMessages"));
 const AdminReseaux = lazy(() => import("./pages/admin/AdminReseaux"));
 const AdminReseauxJournal = lazy(() => import("./pages/admin/AdminReseauxJournal"));
 const AdminReseauxGroupes = lazy(() => import("./pages/admin/AdminReseauxGroupes"));
+const AdminBonsVisite = lazy(() => import("./pages/admin/AdminBonsVisite"));
+// Page de signature d'un bon de visite (lien secret, français, jamais pré-rendue).
+const BonVisite = lazy(() => import("./pages/BonVisite"));
 const ProtectedRoute = lazy(() => import("./components/ProtectedRoute"));
 
 const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
@@ -86,6 +89,9 @@ export default function AppRoutes({ pages }: { pages: PublicPages }) {
             </Route>
           ))}
 
+          {/* ── Bon de visite à signer (lien envoyé à la cliente) ─── */}
+          <Route path="/bon-visite/:jeton" element={<BonVisite />} />
+
           {/* ── Admin (login public) ─────────────────────────────── */}
           <Route path="/manage-xk92p/login" element={<AdminLogin />} />
 
@@ -105,6 +111,7 @@ export default function AppRoutes({ pages }: { pages: PublicPages }) {
             <Route path="visites" element={<AdminVisites />} />
             <Route path="clients" element={<AdminClients />} />
             <Route path="documents" element={<AdminDocuments />} />
+            <Route path="bons-visite" element={<AdminBonsVisite />} />
             <Route path="agenda" element={<AdminAgenda />} />
             <Route path="messages" element={<AdminMessages />} />
             <Route path="reseaux" element={<AdminReseaux />} />
