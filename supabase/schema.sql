@@ -859,6 +859,13 @@ $$;
 
 ALTER TABLE public.bons_visite ALTER COLUMN jeton SET DEFAULT public.jeton_bon_court();
 
+-- Tous les bons passent au lien court, y compris ceux déjà créés (signés ou non).
+-- Le jeton ne fait pas partie de l'empreinte SHA-256 : le contenu signé reste intact.
+-- Le verrou des bons signés est suspendu le temps de cette seule mise à jour.
+ALTER TABLE public.bons_visite DISABLE TRIGGER bons_visite_verrou;
+UPDATE public.bons_visite SET jeton = public.jeton_bon_court() WHERE jeton ~ '^[0-9a-f]{64}$';
+ALTER TABLE public.bons_visite ENABLE TRIGGER bons_visite_verrou;
+
 -- Lecture par la cliente : uniquement le bon de son jeton.
 CREATE OR REPLACE FUNCTION public.bon_visite_public(p_jeton TEXT)
 RETURNS TABLE (

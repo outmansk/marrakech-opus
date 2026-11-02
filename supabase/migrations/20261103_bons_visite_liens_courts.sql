@@ -1,6 +1,6 @@
 -- Liens courts pour les bons de visite : /bon/k7m2x9qp4wza au lieu de /bon-visite/<64 caractères>.
 -- Jeton de 12 caractères (alphabet de 32 signes sans 0/o/1/l : 60 bits aléatoires), toujours impossible à deviner.
--- Les bons déjà envoyés gardent leur jeton long : les deux formats restent acceptés.
+-- Les bons déjà créés passent aussi au lien court (leur ancien lien long ne fonctionne plus : renvoyer le nouveau).
 -- À coller dans Supabase → SQL Editor après 20261102_bons_visite.sql. Idempotent. Annulation : 20261103_bons_visite_liens_courts_down.sql
 BEGIN;
 
@@ -22,6 +22,13 @@ END;
 $$;
 
 ALTER TABLE public.bons_visite ALTER COLUMN jeton SET DEFAULT public.jeton_bon_court();
+
+-- Tous les bons passent au lien court, y compris ceux déjà créés (signés ou non).
+-- Le jeton ne fait pas partie de l'empreinte SHA-256 : le contenu signé reste intact.
+-- Le verrou des bons signés est suspendu le temps de cette seule mise à jour.
+ALTER TABLE public.bons_visite DISABLE TRIGGER bons_visite_verrou;
+UPDATE public.bons_visite SET jeton = public.jeton_bon_court() WHERE jeton ~ '^[0-9a-f]{64}$';
+ALTER TABLE public.bons_visite ENABLE TRIGGER bons_visite_verrou;
 
 -- Lecture par la cliente : uniquement le bon de son jeton.
 CREATE OR REPLACE FUNCTION public.bon_visite_public(p_jeton TEXT)
