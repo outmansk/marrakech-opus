@@ -114,7 +114,7 @@ function PrepForm({ onCreated, onCancel }: { onCreated: (bon: BonVisiteAdmin) =>
       const prix = Number(prep.prix.replace(/\s/g, "").replace(",", "."));
       if (prep.bien.trim().length < 2) throw new Error("Indiquez la référence ou la description du bien.");
       if (prep.quartier.trim().length < 2) throw new Error("Indiquez la résidence ou le quartier.");
-      if (!prep.date_visite) throw new Error("Indiquez la date de la visite virtuelle.");
+      if (!prep.date_visite) throw new Error("Indiquez la date de la visite.");
       if (!Number.isFinite(prix) || prix <= 0) throw new Error("Indiquez un prix en MAD supérieur à 0.");
       const { data, error: dbError } = await supabase.from("bons_visite").insert({
         type_bien: prep.type_bien,
@@ -184,7 +184,7 @@ function PrepForm({ onCreated, onCancel }: { onCreated: (bon: BonVisiteAdmin) =>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-1.5">
-          <span className={field.label}>Date de la visite virtuelle</span>
+          <span className={field.label}>Date de la visite</span>
           <input required type="date" value={prep.date_visite} onChange={(e) => set("date_visite", e.target.value)} className={field.input} />
         </label>
         <div className="flex flex-col gap-1.5">

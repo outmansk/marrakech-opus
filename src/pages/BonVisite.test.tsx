@@ -21,7 +21,7 @@ const JETON = "ab".repeat(32);
 const PENDING: BonVisitePublic = {
   numero: 3, type_bien: "appartement", bien: "Appartement Test Prestigia", quartier: "Prestigia", date_visite: "2026-11-05",
   prix: 900, prix_unite: "nuit",
-  texte: "Je confirme avoir effectué une visite virtuelle du bien indiqué ci-dessus avec l’agence Live In Marrakech.\n\nCe document confirme uniquement la présentation du bien. Il ne constitue ni une réservation, ni un engagement de location ou d’achat.",
+  texte: "Je confirme avoir effectué une visite du bien indiqué ci-dessus avec l’agence Live In Marrakech.\n\nCe document confirme uniquement la présentation du bien. Il ne constitue ni une réservation, ni un engagement de location ou d’achat.",
   texte_confirmation: "Je confirme que les informations ci-dessus sont exactes.",
   statut: "a-signer", client_nom: null, client_telephone: null, client_email: null, signature: null, signe_le: null, empreinte: null,
 };
@@ -59,7 +59,7 @@ describe("Bon de visite à signer", () => {
   it("affiche le bon préparé par l'agence sans champ modifiable pour le bien", async () => {
     open();
     expect(await screen.findByText("Appartement Test Prestigia")).toBeVisible();
-    expect(screen.getByRole("heading", { level: 1, name: "Bon de visite virtuelle" })).toBeVisible();
+    expect(screen.getByRole("heading", { level: 1, name: "Bon de visite" })).toBeVisible();
     expect(screen.getByText("Live In Marrakech")).toBeVisible();
     expect(screen.getByText("900 MAD par nuit")).toBeVisible();
     expect(screen.getByText("5 novembre 2026")).toBeVisible();

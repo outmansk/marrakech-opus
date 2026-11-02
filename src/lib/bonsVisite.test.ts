@@ -23,7 +23,7 @@ const SIGNED: BonVisitePublic = {
   date_visite: "2026-11-02",
   prix: 18000,
   prix_unite: "mois",
-  texte: "Je confirme avoir effectué une visite virtuelle du bien indiqué ci-dessus avec l’agence Live In Marrakech.\n\nCe document confirme uniquement la présentation du bien. Il ne constitue ni une réservation, ni un engagement de location ou d’achat.",
+  texte: "Je confirme avoir effectué une visite du bien indiqué ci-dessus avec l’agence Live In Marrakech.\n\nCe document confirme uniquement la présentation du bien. Il ne constitue ni une réservation, ni un engagement de location ou d’achat.",
   texte_confirmation: "Je confirme que les informations ci-dessus sont exactes.",
   statut: "signe",
   client_nom: "Jeanne Test",
@@ -76,7 +76,7 @@ describe("bons de visite : PDF", () => {
     const doc = await buildBonPdf(SIGNED, { compress: false });
     const raw = doc.output();
     expect(raw.startsWith("%PDF-")).toBe(true);
-    for (const text of ["Bon de visite virtuelle", "BV-0007", "Jeanne Test", "+33 612345678", "jeanne@example.com", "Villa Test avec piscine", "Route de Fès", "2 novembre 2026", "18 000 MAD par mois", "Je confirme que les informations ci-dessus sont exactes.", "15:42", "/Subtype /Image"]) {
+    for (const text of ["Bon de visite", "BV-0007", "Jeanne Test", "+33 612345678", "jeanne@example.com", "Villa Test avec piscine", "Route de Fès", "2 novembre 2026", "18 000 MAD par mois", "Je confirme que les informations ci-dessus sont exactes.", "15:42", "/Subtype /Image"]) {
       expect(raw).toContain(text);
     }
     expect(raw).not.toMatch(/certifi/i);

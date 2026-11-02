@@ -1,5 +1,5 @@
 /**
- * Bons de visite virtuelle signés à distance (table bons_visite,
+ * Bons de visite signés à distance (visite sur place ou à distance) (table bons_visite,
  * SQL : supabase/migrations/20261102_bons_visite.sql).
  * L'agence prépare le bon dans l'admin, la cliente le signe depuis /bon-visite/<jeton>.
  * Le PDF est construit ici, à l'identique pour la cliente et pour l'agence.
@@ -54,7 +54,7 @@ export function bonLink(origin: string, jeton: string) {
 }
 
 export function bonWhatsappText(link: string) {
-  return `Bonjour, voici votre bon de visite virtuelle Live In Marrakech. Merci de le lire, de le compléter et de le signer depuis ce lien : ${link}`;
+  return `Bonjour, voici votre bon de visite Live In Marrakech. Merci de le lire, de le compléter et de le signer depuis ce lien : ${link}`;
 }
 
 /** « 18 000 MAD par mois » (espaces simples : le PDF n'a pas les espaces fines). */
@@ -179,7 +179,7 @@ export async function buildBonPdf(bon: BonVisitePublic, { compress = true } = {}
   const terracotta: [number, number, number] = [156, 85, 61];
   let y = 22;
 
-  doc.setProperties({ title: `Bon de visite virtuelle ${bonReference(bon.numero)}`, author: "Live In Marrakech", creator: "liveinmarrakech.com" });
+  doc.setProperties({ title: `Bon de visite ${bonReference(bon.numero)}`, author: "Live In Marrakech", creator: "liveinmarrakech.com" });
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
@@ -192,7 +192,7 @@ export async function buildBonPdf(bon: BonVisitePublic, { compress = true } = {}
   doc.setFont("times", "bold");
   doc.setFontSize(24);
   doc.setTextColor(...dark);
-  doc.text("Bon de visite virtuelle", M, y);
+  doc.text("Bon de visite", M, y);
   y += 4;
   doc.setDrawColor(...terracotta);
   doc.setLineWidth(0.6);

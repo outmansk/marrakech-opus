@@ -675,7 +675,7 @@ NOTIFY pgrst, 'reload schema';
 COMMIT;
 
 -- ════════════════════════════════════════════════════════════════════════
--- Bons de visite virtuelle signés à distance.
+-- Bons de visite signés à distance (visite sur place ou à distance).
 -- L'agence prépare le bon dans l'admin (/manage-xk92p/bons-visite) ; la cliente
 -- l'ouvre par un lien secret (/bon-visite/<jeton>), le lit, le signe au doigt.
 -- Aucun accès public à la table : la cliente passe uniquement par les deux
@@ -698,7 +698,7 @@ CREATE TABLE IF NOT EXISTS public.bons_visite (
   prix NUMERIC(12, 2) NOT NULL CHECK (prix > 0 AND prix < 100000000),
   prix_unite TEXT NOT NULL CHECK (prix_unite IN ('mois', 'nuit')),
   -- Texte lu et accepté par la cliente (fixé ici, jamais envoyé par le navigateur)
-  texte TEXT NOT NULL DEFAULT 'Je confirme avoir effectué une visite virtuelle du bien indiqué ci-dessus avec l’agence Live In Marrakech.
+  texte TEXT NOT NULL DEFAULT 'Je confirme avoir effectué une visite du bien indiqué ci-dessus avec l’agence Live In Marrakech.
 
 Ce document confirme uniquement la présentation du bien. Il ne constitue ni une réservation, ni un engagement de location ou d’achat.',
   texte_confirmation TEXT NOT NULL DEFAULT 'Je confirme que les informations ci-dessus sont exactes.',
@@ -830,6 +830,23 @@ REVOKE ALL ON FUNCTION public.bon_visite_public(TEXT) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.signer_bon_visite(TEXT, TEXT, TEXT, TEXT, TEXT) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.bon_visite_public(TEXT) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.signer_bon_visite(TEXT, TEXT, TEXT, TEXT, TEXT) TO anon, authenticated;
+
+NOTIFY pgrst, 'reload schema';
+COMMIT;
+
+-- Bons de visite : texte général (visite sur place ou à distance), sans « virtuelle ».
+-- Change le texte par défaut et met à jour les bons pas encore signés.
+-- Les bons déjà signés gardent le texte accepté (verrouillés par trigger).
+-- À coller dans Supabase → SQL Editor. Idempotent. Annulation : 20261103_bons_visite_texte_down.sql
+BEGIN;
+
+ALTER TABLE public.bons_visite ALTER COLUMN texte SET DEFAULT 'Je confirme avoir effectué une visite du bien indiqué ci-dessus avec l’agence Live In Marrakech.
+
+Ce document confirme uniquement la présentation du bien. Il ne constitue ni une réservation, ni un engagement de location ou d’achat.';
+
+UPDATE public.bons_visite
+SET texte = replace(texte, 'une visite virtuelle du bien', 'une visite du bien')
+WHERE statut = 'a-signer' AND texte LIKE '%une visite virtuelle du bien%';
 
 NOTIFY pgrst, 'reload schema';
 COMMIT;

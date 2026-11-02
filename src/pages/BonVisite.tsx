@@ -57,7 +57,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-[100svh] bg-background text-foreground">
       <Helmet htmlAttributes={{ lang: "fr" }}>
-        <title>Bon de visite virtuelle – Live In Marrakech</title>
+        <title>Bon de visite – Live In Marrakech</title>
         <meta name="robots" content="noindex, nofollow" />
         <meta name="referrer" content="no-referrer" />
       </Helmet>
@@ -69,7 +69,7 @@ function Shell({ children }: { children: React.ReactNode }) {
 function Heading({ numero }: { numero?: number }) {
   return (
     <header className="flex flex-col gap-1.5 text-center">
-      <h1 className="m-0 font-serif text-[34px] font-semibold leading-tight sm:text-[40px]">Bon de visite virtuelle</h1>
+      <h1 className="m-0 font-serif text-[34px] font-semibold leading-tight sm:text-[40px]">Bon de visite</h1>
       <p className="m-0 text-sm font-semibold uppercase tracking-[0.18em] text-accent">Live In Marrakech</p>
       {numero !== undefined && <p className="m-0 text-xs text-muted-foreground">N° {bonReference(numero)}</p>}
     </header>
@@ -90,7 +90,7 @@ function BienDetails({ bon }: { bon: BonVisitePublic }) {
     ["Type de bien", TYPE_BIEN_LABELS[bon.type_bien]],
     ["Bien", bon.bien],
     ["Résidence / quartier", bon.quartier],
-    ["Date de la visite virtuelle", formatBonDate(bon.date_visite)],
+    ["Date de la visite", formatBonDate(bon.date_visite)],
     ["Prix proposé", formatBonPrix(bon.prix, bon.prix_unite)],
   ];
   return (
@@ -145,7 +145,7 @@ function Done({ bon, justSigned }: { bon: BonVisitePublic; justSigned: boolean }
 }
 
 function Problem({ title, text }: { title: string; text: string }) {
-  const href = whatsappHref(AGENCY.phone, "Bonjour, je n’arrive pas à ouvrir mon bon de visite virtuelle.");
+  const href = whatsappHref(AGENCY.phone, "Bonjour, je n’arrive pas à ouvrir mon bon de visite.");
   return (
     <Shell>
       <Heading />
