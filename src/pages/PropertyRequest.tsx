@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { ChevronDown, ArrowLeft, ArrowRight, Check, ShieldCheck, Loader2 } from "lucide-react";
 import { insertWithOrigin } from "@/lib/social/attribution";
 import { toast } from "sonner";
-import { Helmet } from "react-helmet-async";
 import SEOHead from "@/components/SEOHead";
 import { breadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { useLocalePath } from "@/hooks/useLocalePath";
@@ -666,11 +665,7 @@ export default function PropertyRequest() {
   ];
 
   return (
-    <div className="request-page-v2 selection:bg-[#1A1A1A] selection:text-white flex flex-col justify-between" lang={language} dir={rtl ? "rtl" : "ltr"}>
-      <Helmet>
-        {/* Fonts of this page only (PropertyRequest.css); the rest of the site uses Cormorant Garamond + Montserrat. */}
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" />
-      </Helmet>
+    <div className="request-page-v2 selection:bg-[#211f1b] selection:text-white flex flex-col justify-between" lang={language} dir={rtl ? "rtl" : "ltr"}>
       <SEOHead
         withBrand={false}
         title={t.pageTitle}
@@ -679,23 +674,23 @@ export default function PropertyRequest() {
       />
 
       {/* Main Luxury Container */}
-      <main className="w-full max-w-lg mx-auto min-h-screen sm:min-h-[92vh] sm:my-6 bg-[#FFFFFF] sm:rounded-[28px] sm:shadow-2xl border-x sm:border border-[#E2DDD4] flex flex-col relative overflow-hidden">
+      <main className="w-full max-w-lg mx-auto min-h-screen sm:min-h-[92vh] sm:my-6 bg-[#FFFFFF] sm:rounded-[28px] sm:shadow-2xl border-x sm:border border-[#e3d9ca] flex flex-col relative overflow-hidden">
         {/* Sticky Header with Stepper */}
-        <header className="pt-6 sm:pt-6 pb-4 px-5 sm:px-8 border-b border-[#E2DDD4] bg-[#FFFFFF]/90 backdrop-blur-md sticky top-0 z-30">
+        <header className="pt-6 sm:pt-6 pb-4 px-5 sm:px-8 border-b border-[#e3d9ca] bg-[#FFFFFF]/90 backdrop-blur-md sticky top-0 z-30">
           <div className="flex items-center justify-between">
             {/* Brand Logo & Tagline */}
             <Link to={lp("/")} aria-label="Live In Marrakech" className="inline-flex flex-col group focus:outline-none">
-              <span className="font-serif-luxury text-[22px] tracking-tight font-semibold text-[#111111] group-hover:text-[#9A6C48] transition-colors">
+              <span className="font-serif-luxury whitespace-nowrap text-[23px] tracking-tight font-semibold text-[#211f1b] group-hover:text-[#a4573e] transition-colors">
                 Live In Marrakech
               </span>
-              <span className="text-[9px] tracking-[0.24em] uppercase text-[#73716E] -mt-1 font-medium">
+              <span className="text-[9px] tracking-[0.24em] uppercase text-[#655f56] -mt-1 font-medium">
                 {t.brandSub}
               </span>
             </Link>
 
             {/* Language Switcher & Direct WhatsApp VIP Link */}
             <div className="flex items-center gap-2">
-              <div className="bg-[#FAF8F5] p-0.5 rounded-full flex items-center border border-[#E2DDD4] text-[11px] font-semibold text-[#4A4A48]">
+              <div className="bg-[#fbf8f2] p-0.5 rounded-full flex items-center border border-[#e3d9ca] text-[11px] font-semibold text-[#4f4a43]">
                 {(["fr", "en", "es", "ar"] as const).map((code) => (
                   <button
                     key={code}
@@ -703,8 +698,8 @@ export default function PropertyRequest() {
                     onClick={() => setLanguage(code)}
                     className={`px-2 py-0.5 rounded-full transition-all ${
                       language === code
-                        ? "bg-[#1A1A1A] text-white shadow-sm"
-                        : "text-[#73716E] hover:text-[#1A1A1A]"
+                        ? "bg-[#211f1b] text-white shadow-sm"
+                        : "text-[#655f56] hover:text-[#211f1b]"
                     }`}
                   >
                     {code.toUpperCase()}
@@ -730,36 +725,36 @@ export default function PropertyRequest() {
 
           {/* Stepper Progress Bar & Breadcrumbs (Steps 1 to 3) */}
           {step < 4 && (
-            <div className="mt-4 pt-3 border-t border-[#F2EEE8]">
+            <div className="mt-4 pt-3 border-t border-[#ede5d8]">
               <div className="flex items-center justify-between text-xs mb-2">
-                <div className="flex items-center gap-1.5 text-[#73716E]">
+                <div className="flex items-center gap-1.5 text-[#655f56]">
                   {step > 1 ? (
                     <button
                       type="button"
                       onClick={handlePrevStep}
-                      className="inline-flex items-center gap-1 text-[#1A1A1A] hover:text-[#4A4A48] font-medium transition-colors"
+                      className="inline-flex items-center gap-1 text-[#211f1b] hover:text-[#4f4a43] font-medium transition-colors"
                     >
                       {rtl ? <ArrowRight size={14} /> : <ArrowLeft size={14} />}
                       <span>{t.prev}</span>
                     </button>
                   ) : (
-                    <span className="text-[12px] text-[#4A4A48] font-medium tracking-wide">
+                    <span className="text-[12px] text-[#4f4a43] font-medium tracking-wide">
                       {t.breadcrumb1}
                     </span>
                   )}
                   {step > 1 && (
-                    <span className="text-[12px] text-[#4A4A48] font-medium tracking-wide">
+                    <span className="text-[12px] text-[#4f4a43] font-medium tracking-wide">
                       · {step === 2 ? t.breadcrumb2 : t.breadcrumb3}
                     </span>
                   )}
                 </div>
-                <span className="text-[11px] font-semibold text-[#1A1A1A] bg-[#FAF8F5] border border-[#E2DDD4] px-2.5 py-0.5 rounded-full">
+                <span className="text-[11px] font-semibold text-[#211f1b] bg-[#fbf8f2] border border-[#e3d9ca] px-2.5 py-0.5 rounded-full">
                   {t.stepOf.replace("{current}", String(step))}
                 </span>
               </div>
               <div className="w-full bg-[#EFECE5] h-1.5 rounded-full overflow-hidden flex">
                 <div
-                  className="bg-[#1A1A1A] h-full transition-all duration-300 ease-out rounded-full"
+                  className="bg-[#211f1b] h-full transition-all duration-300 ease-out rounded-full"
                   style={{
                     width: step === 1 ? "33.33%" : step === 2 ? "66.66%" : "100%",
                   }}
@@ -770,42 +765,42 @@ export default function PropertyRequest() {
         </header>
 
         {/* Content Section */}
-        <div className="flex-1 p-5 sm:p-8 overflow-y-auto bg-[#FAF8F5] custom-scrollbar">
+        <div className="flex-1 p-5 sm:p-8 overflow-y-auto bg-[#fbf8f2] custom-scrollbar">
           {/* ========================================== */}
           {/* STEP 1: VOTRE PROJET                       */}
           {/* ========================================== */}
           {step === 1 && (
             <section className="space-y-6">
               <div>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFFFFF] text-[#4A4A48] border border-[#E2DDD4] text-[11px] font-semibold tracking-wider uppercase mb-3">
-                  <svg className="w-3.5 h-3.5 text-[#1A1A1A]" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFFFFF] text-[#4f4a43] border border-[#e3d9ca] text-[11px] font-semibold tracking-wider uppercase mb-3">
+                  <svg className="w-3.5 h-3.5 text-[#211f1b]" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                     <path d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   {t.step1Tag}
                 </span>
-                <h1 className="font-serif-luxury text-2xl sm:text-3xl text-[#111111] leading-snug font-medium">
+                <h1 className="font-serif-luxury text-[30px] sm:text-[38px] text-[#211f1b] leading-snug font-medium">
                   {t.step1TitlePrefix}
-                  <span className="italic font-serif-luxury text-[#9A6C48]">{t.step1TitleHighlight}</span>.
+                  <span className="italic font-serif-luxury text-[#a4573e]">{t.step1TitleHighlight}</span>.
                 </h1>
-                <p className="text-sm text-[#4A4A48] mt-2 leading-relaxed">
+                <p className="text-sm text-[#4f4a43] mt-2 leading-relaxed">
                   {t.step1Intro}
                 </p>
               </div>
 
               {/* 1.1 Type de Projet Selection */}
               <fieldset className="space-y-3">
-                <legend className="text-xs uppercase font-bold tracking-wider text-[#73716E] flex items-center gap-1.5">
-                  <span className="w-5 h-5 rounded-full bg-[#1A1A1A] text-white text-[10px] inline-flex items-center justify-center font-bold">1</span>
+                <legend className="text-xs uppercase font-bold tracking-wider text-[#655f56] flex items-center gap-1.5">
+                  <span className="w-5 h-5 rounded-full bg-[#211f1b] text-white text-[10px] inline-flex items-center justify-center font-bold">1</span>
                   {t.step1Nature}
                 </legend>
                 <div className="grid grid-cols-1 gap-2.5">
                   {/* Option Acheter */}
                   <label
                     onClick={() => handleSelectProjectType("achat")}
-                    className={`relative flex items-center p-3.5 sm:p-4 rounded-2xl border cursor-pointer transition-luxury shadow-sm ${
+                    className={`relative flex items-center p-3.5 sm:p-4 rounded-lg border cursor-pointer transition-luxury shadow-sm ${
                       form.projectType === "achat"
-                        ? "border-[#1A1A1A] bg-[#FFFFFF] shadow-md ring-1 ring-[#1A1A1A]"
-                        : "border-[#E2DDD4] bg-[#FFFFFF] hover:border-[#1A1A1A]/40"
+                        ? "border-[#211f1b] bg-[#FFFFFF] shadow-md ring-1 ring-[#211f1b]"
+                        : "border-[#e3d9ca] bg-[#FFFFFF] hover:border-[#211f1b]/40"
                     }`}
                   >
                     <input
@@ -816,8 +811,8 @@ export default function PropertyRequest() {
                       className="sr-only"
                     />
                     <div
-                      className={`w-11 h-11 rounded-xl flex items-center justify-center mr-3.5 shrink-0 transition-colors ${
-                        form.projectType === "achat" ? "bg-[#1A1A1A] text-white" : "bg-[#F5F3EE] text-[#4A4A48]"
+                      className={`w-11 h-11 rounded-md flex items-center justify-center mr-3.5 shrink-0 transition-colors ${
+                        form.projectType === "achat" ? "bg-[#211f1b] text-white" : "bg-[#f6f1e8] text-[#4f4a43]"
                       }`}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -826,16 +821,16 @@ export default function PropertyRequest() {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <span className="font-serif-luxury text-base font-semibold text-[#111111]">{t.buyTitle}</span>
-                        <span className="text-xs text-[#111111] font-semibold bg-[#FAF8F5] border border-[#E2DDD4] px-2 py-0.5 rounded-full">{t.buyTag}</span>
+                        <span className="font-serif-luxury text-[19px] font-semibold text-[#211f1b]">{t.buyTitle}</span>
+                        <span className="text-xs text-[#211f1b] font-semibold bg-[#fbf8f2] border border-[#e3d9ca] px-2 py-0.5 rounded-full">{t.buyTag}</span>
                       </div>
-                      <p className="text-xs text-[#4A4A48] mt-0.5">{t.buyDesc}</p>
+                      <p className="text-xs text-[#4f4a43] mt-0.5">{t.buyDesc}</p>
                     </div>
                     <div
                       className={`ml-2 w-5 h-5 rounded-full border flex items-center justify-center text-xs transition-opacity ${
                         form.projectType === "achat"
-                          ? "opacity-100 border-[#1A1A1A] bg-[#1A1A1A] text-white"
-                          : "opacity-0 border-[#DCD6CC]"
+                          ? "opacity-100 border-[#211f1b] bg-[#211f1b] text-white"
+                          : "opacity-0 border-[#ddd2c2]"
                       }`}
                     >
                       ✓
@@ -845,10 +840,10 @@ export default function PropertyRequest() {
                   {/* Option Louer Longue Durée */}
                   <label
                     onClick={() => handleSelectProjectType("longue_duree")}
-                    className={`relative flex items-center p-3.5 sm:p-4 rounded-2xl border cursor-pointer transition-luxury shadow-sm ${
+                    className={`relative flex items-center p-3.5 sm:p-4 rounded-lg border cursor-pointer transition-luxury shadow-sm ${
                       form.projectType === "longue_duree"
-                        ? "border-[#1A1A1A] bg-[#FFFFFF] shadow-md ring-1 ring-[#1A1A1A]"
-                        : "border-[#E2DDD4] bg-[#FFFFFF] hover:border-[#1A1A1A]/40"
+                        ? "border-[#211f1b] bg-[#FFFFFF] shadow-md ring-1 ring-[#211f1b]"
+                        : "border-[#e3d9ca] bg-[#FFFFFF] hover:border-[#211f1b]/40"
                     }`}
                   >
                     <input
@@ -859,8 +854,8 @@ export default function PropertyRequest() {
                       className="sr-only"
                     />
                     <div
-                      className={`w-11 h-11 rounded-xl flex items-center justify-center mr-3.5 shrink-0 transition-colors ${
-                        form.projectType === "longue_duree" ? "bg-[#1A1A1A] text-white" : "bg-[#F5F3EE] text-[#4A4A48]"
+                      className={`w-11 h-11 rounded-md flex items-center justify-center mr-3.5 shrink-0 transition-colors ${
+                        form.projectType === "longue_duree" ? "bg-[#211f1b] text-white" : "bg-[#f6f1e8] text-[#4f4a43]"
                       }`}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -869,16 +864,16 @@ export default function PropertyRequest() {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <span className="font-serif-luxury text-base font-semibold text-[#111111]">{t.rentTitle}</span>
-                        <span className="text-xs text-[#73716E] bg-[#FAF8F5] px-2 py-0.5 rounded-full border border-[#E2DDD4]">{t.rentTag}</span>
+                        <span className="font-serif-luxury text-[19px] font-semibold text-[#211f1b]">{t.rentTitle}</span>
+                        <span className="text-xs text-[#655f56] bg-[#fbf8f2] px-2 py-0.5 rounded-full border border-[#e3d9ca]">{t.rentTag}</span>
                       </div>
-                      <p className="text-xs text-[#4A4A48] mt-0.5">{t.rentDesc}</p>
+                      <p className="text-xs text-[#4f4a43] mt-0.5">{t.rentDesc}</p>
                     </div>
                     <div
                       className={`ml-2 w-5 h-5 rounded-full border flex items-center justify-center text-xs transition-opacity ${
                         form.projectType === "longue_duree"
-                          ? "opacity-100 border-[#1A1A1A] bg-[#1A1A1A] text-white"
-                          : "opacity-0 border-[#DCD6CC]"
+                          ? "opacity-100 border-[#211f1b] bg-[#211f1b] text-white"
+                          : "opacity-0 border-[#ddd2c2]"
                       }`}
                     >
                       ✓
@@ -888,10 +883,10 @@ export default function PropertyRequest() {
                   {/* Option Séjour & Vacances */}
                   <label
                     onClick={() => handleSelectProjectType("court_sejour")}
-                    className={`relative flex items-center p-3.5 sm:p-4 rounded-2xl border cursor-pointer transition-luxury shadow-sm ${
+                    className={`relative flex items-center p-3.5 sm:p-4 rounded-lg border cursor-pointer transition-luxury shadow-sm ${
                       form.projectType === "court_sejour"
-                        ? "border-[#1A1A1A] bg-[#FFFFFF] shadow-md ring-1 ring-[#1A1A1A]"
-                        : "border-[#E2DDD4] bg-[#FFFFFF] hover:border-[#1A1A1A]/40"
+                        ? "border-[#211f1b] bg-[#FFFFFF] shadow-md ring-1 ring-[#211f1b]"
+                        : "border-[#e3d9ca] bg-[#FFFFFF] hover:border-[#211f1b]/40"
                     }`}
                   >
                     <input
@@ -902,8 +897,8 @@ export default function PropertyRequest() {
                       className="sr-only"
                     />
                     <div
-                      className={`w-11 h-11 rounded-xl flex items-center justify-center mr-3.5 shrink-0 transition-colors ${
-                        form.projectType === "court_sejour" ? "bg-[#1A1A1A] text-white" : "bg-[#F5F3EE] text-[#4A4A48]"
+                      className={`w-11 h-11 rounded-md flex items-center justify-center mr-3.5 shrink-0 transition-colors ${
+                        form.projectType === "court_sejour" ? "bg-[#211f1b] text-white" : "bg-[#f6f1e8] text-[#4f4a43]"
                       }`}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -912,16 +907,16 @@ export default function PropertyRequest() {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <span className="font-serif-luxury text-base font-semibold text-[#111111]">{t.stayTitle}</span>
-                        <span className="text-xs text-[#4A4A48] font-medium bg-[#FAF8F5] px-2 py-0.5 rounded-full border border-[#E2DDD4]">{t.stayTag}</span>
+                        <span className="font-serif-luxury text-[19px] font-semibold text-[#211f1b]">{t.stayTitle}</span>
+                        <span className="text-xs text-[#4f4a43] font-medium bg-[#fbf8f2] px-2 py-0.5 rounded-full border border-[#e3d9ca]">{t.stayTag}</span>
                       </div>
-                      <p className="text-xs text-[#4A4A48] mt-0.5">{t.stayDesc}</p>
+                      <p className="text-xs text-[#4f4a43] mt-0.5">{t.stayDesc}</p>
                     </div>
                     <div
                       className={`ml-2 w-5 h-5 rounded-full border flex items-center justify-center text-xs transition-opacity ${
                         form.projectType === "court_sejour"
-                          ? "opacity-100 border-[#1A1A1A] bg-[#1A1A1A] text-white"
-                          : "opacity-0 border-[#DCD6CC]"
+                          ? "opacity-100 border-[#211f1b] bg-[#211f1b] text-white"
+                          : "opacity-0 border-[#ddd2c2]"
                       }`}
                     >
                       ✓
@@ -932,18 +927,18 @@ export default function PropertyRequest() {
 
               {/* 1.2 Catégorie de Bien Selection */}
               <fieldset className="space-y-3 pt-2">
-                <legend className="text-xs uppercase font-bold tracking-wider text-[#73716E] flex items-center gap-1.5">
-                  <span className="w-5 h-5 rounded-full bg-[#FAF8F5] border border-[#E2DDD4] text-[#111111] text-[10px] inline-flex items-center justify-center font-bold">2</span>
+                <legend className="text-xs uppercase font-bold tracking-wider text-[#655f56] flex items-center gap-1.5">
+                  <span className="w-5 h-5 rounded-full bg-[#fbf8f2] border border-[#e3d9ca] text-[#211f1b] text-[10px] inline-flex items-center justify-center font-bold">2</span>
                   {t.categoryTitle}
                 </legend>
                 <div className="grid grid-cols-3 gap-2.5">
                   {/* Villa */}
                   <label
                     onClick={() => updateForm("propertyType", "villa")}
-                    className={`flex flex-col items-center justify-center p-3 rounded-2xl border cursor-pointer text-center transition-luxury ${
+                    className={`flex flex-col items-center justify-center p-3 rounded-lg border cursor-pointer text-center transition-luxury ${
                       form.propertyType === "villa"
-                        ? "border-[#1A1A1A] bg-[#FFFFFF] shadow-sm ring-1 ring-[#1A1A1A]"
-                        : "border-[#E2DDD4] bg-[#FFFFFF] hover:border-[#1A1A1A]/40"
+                        ? "border-[#211f1b] bg-[#FFFFFF] shadow-sm ring-1 ring-[#211f1b]"
+                        : "border-[#e3d9ca] bg-[#FFFFFF] hover:border-[#211f1b]/40"
                     }`}
                   >
                     <input
@@ -954,25 +949,25 @@ export default function PropertyRequest() {
                       className="sr-only"
                     />
                     <div
-                      className={`w-9 h-9 mb-1.5 flex items-center justify-center rounded-xl ${
-                        form.propertyType === "villa" ? "bg-[#1A1A1A] text-white" : "bg-[#FAF8F5] text-[#4A4A48]"
+                      className={`w-9 h-9 mb-1.5 flex items-center justify-center rounded-md ${
+                        form.propertyType === "villa" ? "bg-[#211f1b] text-white" : "bg-[#fbf8f2] text-[#4f4a43]"
                       }`}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
                         <path d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
-                    <span className="text-xs font-semibold text-[#111111]">{t.villaTitle}</span>
-                    <span className="text-[10px] text-[#73716E] mt-0.5">{t.villaDesc}</span>
+                    <span className="text-xs font-semibold text-[#211f1b]">{t.villaTitle}</span>
+                    <span className="text-[10px] text-[#655f56] mt-0.5">{t.villaDesc}</span>
                   </label>
 
                   {/* Appartement */}
                   <label
                     onClick={() => updateForm("propertyType", "appartement")}
-                    className={`flex flex-col items-center justify-center p-3 rounded-2xl border cursor-pointer text-center transition-luxury ${
+                    className={`flex flex-col items-center justify-center p-3 rounded-lg border cursor-pointer text-center transition-luxury ${
                       form.propertyType === "appartement"
-                        ? "border-[#1A1A1A] bg-[#FFFFFF] shadow-sm ring-1 ring-[#1A1A1A]"
-                        : "border-[#E2DDD4] bg-[#FFFFFF] hover:border-[#1A1A1A]/40"
+                        ? "border-[#211f1b] bg-[#FFFFFF] shadow-sm ring-1 ring-[#211f1b]"
+                        : "border-[#e3d9ca] bg-[#FFFFFF] hover:border-[#211f1b]/40"
                     }`}
                   >
                     <input
@@ -983,25 +978,25 @@ export default function PropertyRequest() {
                       className="sr-only"
                     />
                     <div
-                      className={`w-9 h-9 mb-1.5 flex items-center justify-center rounded-xl ${
-                        form.propertyType === "appartement" ? "bg-[#1A1A1A] text-white" : "bg-[#FAF8F5] text-[#4A4A48]"
+                      className={`w-9 h-9 mb-1.5 flex items-center justify-center rounded-md ${
+                        form.propertyType === "appartement" ? "bg-[#211f1b] text-white" : "bg-[#fbf8f2] text-[#4f4a43]"
                       }`}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
                         <path d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6h1.5m-1.5 3h1.5m-1.5 3h1.5M9 21v-3.75a.75.75 0 01.75-.75h4.5a.75.75 0 01.75.75V21" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
-                    <span className="text-xs font-semibold text-[#111111]">{t.aptTitle}</span>
-                    <span className="text-[10px] text-[#73716E] mt-0.5">{t.aptDesc}</span>
+                    <span className="text-xs font-semibold text-[#211f1b]">{t.aptTitle}</span>
+                    <span className="text-[10px] text-[#655f56] mt-0.5">{t.aptDesc}</span>
                   </label>
 
                   {/* Riad */}
                   <label
                     onClick={() => updateForm("propertyType", "riad")}
-                    className={`flex flex-col items-center justify-center p-3 rounded-2xl border cursor-pointer text-center transition-luxury ${
+                    className={`flex flex-col items-center justify-center p-3 rounded-lg border cursor-pointer text-center transition-luxury ${
                       form.propertyType === "riad"
-                        ? "border-[#1A1A1A] bg-[#FFFFFF] shadow-sm ring-1 ring-[#1A1A1A]"
-                        : "border-[#E2DDD4] bg-[#FFFFFF] hover:border-[#1A1A1A]/40"
+                        ? "border-[#211f1b] bg-[#FFFFFF] shadow-sm ring-1 ring-[#211f1b]"
+                        : "border-[#e3d9ca] bg-[#FFFFFF] hover:border-[#211f1b]/40"
                     }`}
                   >
                     <input
@@ -1012,16 +1007,16 @@ export default function PropertyRequest() {
                       className="sr-only"
                     />
                     <div
-                      className={`w-9 h-9 mb-1.5 flex items-center justify-center rounded-xl ${
-                        form.propertyType === "riad" ? "bg-[#1A1A1A] text-white" : "bg-[#FAF8F5] text-[#4A4A48]"
+                      className={`w-9 h-9 mb-1.5 flex items-center justify-center rounded-md ${
+                        form.propertyType === "riad" ? "bg-[#211f1b] text-white" : "bg-[#fbf8f2] text-[#4f4a43]"
                       }`}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
                         <path d="M12 2.25L3 7.5v13.5h18V7.5L12 2.25zM12 7.5a4.5 4.5 0 00-4.5 4.5v7.5h9v-7.5A4.5 4.5 0 0012 7.5z" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
-                    <span className="text-xs font-semibold text-[#111111]">{t.riadTitle}</span>
-                    <span className="text-[10px] text-[#73716E] mt-0.5">{t.riadDesc}</span>
+                    <span className="text-xs font-semibold text-[#211f1b]">{t.riadTitle}</span>
+                    <span className="text-[10px] text-[#655f56] mt-0.5">{t.riadDesc}</span>
                   </label>
                 </div>
               </fieldset>
@@ -1031,13 +1026,13 @@ export default function PropertyRequest() {
                 <button
                   type="button"
                   onClick={() => goToStep(2)}
-                  className="w-full h-13 py-3.5 px-6 rounded-2xl bg-[#1A1A1A] hover:bg-[#2D2D2D] active:scale-[0.99] text-white font-medium text-base shadow-lg shadow-black/15 flex items-center justify-center gap-2 transition-luxury"
+                  className="w-full h-13 py-3.5 px-6 rounded-lg bg-[#211f1b] hover:bg-[#3a352f] active:scale-[0.99] text-white font-medium text-base shadow-lg shadow-black/15 flex items-center justify-center gap-2 transition-luxury"
                 >
                   <span>{t.btnContinueCriteria}</span>
                   {rtl ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
                 </button>
-                <div className="flex items-center justify-center gap-1.5 text-xs text-[#73716E] mt-3">
-                  <ShieldCheck size={14} className="text-[#4A4A48]" />
+                <div className="flex items-center justify-center gap-1.5 text-xs text-[#655f56] mt-3">
+                  <ShieldCheck size={14} className="text-[#4f4a43]" />
                   <span>{t.confidentialHint}</span>
                 </div>
               </div>
@@ -1050,13 +1045,13 @@ export default function PropertyRequest() {
           {step === 2 && (
             <section className="space-y-6">
               <div>
-                <span className="text-xs uppercase font-bold tracking-wider text-[#73716E]">
+                <span className="text-xs uppercase font-bold tracking-wider text-[#655f56]">
                   {t.stepOf.replace("{current}", "2")}
                 </span>
-                <h2 className="font-serif-luxury text-2xl sm:text-3xl text-[#111111] leading-snug font-medium mt-0.5">
+                <h2 className="font-serif-luxury text-[30px] sm:text-[38px] text-[#211f1b] leading-snug font-medium mt-0.5">
                   {form.projectType === "court_sejour" ? t.step2StayTitle : t.step2ClassicTitle}
                 </h2>
-                <p className="text-sm text-[#4A4A48] mt-1">
+                <p className="text-sm text-[#4f4a43] mt-1">
                   {form.projectType === "court_sejour" ? t.step2StaySubtitle : t.step2ClassicSubtitle}
                 </p>
               </div>
@@ -1067,13 +1062,13 @@ export default function PropertyRequest() {
                   {/* Budget Selector */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs uppercase font-bold tracking-wider text-[#73716E]">
+                      <label className="text-xs uppercase font-bold tracking-wider text-[#655f56]">
                         {t.budgetEstimated}
                       </label>
                       <button
                         type="button"
                         onClick={toggleUnknownBudget}
-                        className="text-xs text-[#111111] hover:underline font-semibold"
+                        className="text-xs text-[#211f1b] hover:underline font-semibold"
                       >
                         {form.isBudgetUnknown ? t.budgetSpecifyBtn : t.budgetUnknownBtn}
                       </button>
@@ -1096,10 +1091,10 @@ export default function PropertyRequest() {
                               key={pillVal}
                               type="button"
                               onClick={() => updateForm("budgetValue", pillVal)}
-                              className={`py-2 px-1 rounded-xl border text-center font-semibold transition-luxury ${
+                              className={`py-2 px-1 rounded-md border text-center font-semibold transition-luxury ${
                                 active
-                                  ? "border-[#1A1A1A] bg-[#1A1A1A] text-white"
-                                  : "border-[#E2DDD4] bg-[#FFFFFF] text-[#111111] hover:border-[#1A1A1A]"
+                                  ? "border-[#211f1b] bg-[#211f1b] text-white"
+                                  : "border-[#e3d9ca] bg-[#FFFFFF] text-[#211f1b] hover:border-[#211f1b]"
                               }`}
                             >
                               {display}
@@ -1117,22 +1112,22 @@ export default function PropertyRequest() {
                         value={form.isBudgetUnknown ? t.budgetUnknownBtn : form.budgetValue}
                         onChange={(e) => updateForm("budgetValue", e.target.value)}
                         placeholder="Ex: 5 500 000"
-                        className={`w-full h-12 rounded-xl border border-[#DCD6CC] px-3.5 pr-24 text-[#111111] font-medium focus:border-[#1A1A1A] focus:ring-1 focus:ring-[#1A1A1A] transition-colors ${
-                          form.isBudgetUnknown ? "bg-[#FAF8F5] opacity-60 cursor-not-allowed" : "bg-[#FFFFFF]"
+                        className={`w-full h-12 rounded-md border border-[#ddd2c2] px-3.5 pr-24 text-[#211f1b] font-medium focus:border-[#211f1b] focus:ring-1 focus:ring-[#211f1b] transition-colors ${
+                          form.isBudgetUnknown ? "bg-[#fbf8f2] opacity-60 cursor-not-allowed" : "bg-[#FFFFFF]"
                         }`}
                       />
-                      <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#4A4A48] uppercase tracking-wider bg-[#FAF8F5] border border-[#E2DDD4] px-2 py-1 rounded-md">
+                      <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#4f4a43] uppercase tracking-wider bg-[#fbf8f2] border border-[#e3d9ca] px-2 py-1 rounded-md">
                         {form.projectType === "longue_duree" ? t.budgetCurrencySuffixRent : t.budgetCurrencySuffixSale}
                       </span>
                     </div>
-                    <p className="text-[11px] text-[#73716E] italic">
+                    <p className="text-[11px] text-[#655f56] italic">
                       {form.projectType === "longue_duree" ? t.budgetHelperRent : t.budgetHelperSale}
                     </p>
                   </div>
 
                   {/* Chambres Selector */}
                   <div className="space-y-2">
-                    <label className="text-xs uppercase font-bold tracking-wider text-[#73716E]">
+                    <label className="text-xs uppercase font-bold tracking-wider text-[#655f56]">
                       {t.bedroomsTitle}
                     </label>
                     <div className="grid grid-cols-5 gap-2">
@@ -1142,10 +1137,10 @@ export default function PropertyRequest() {
                           <label
                             key={count}
                             onClick={() => updateForm("bedrooms", count)}
-                            className={`flex items-center justify-center h-12 rounded-xl border cursor-pointer font-semibold text-sm transition-luxury ${
+                            className={`flex items-center justify-center h-12 rounded-md border cursor-pointer font-semibold text-sm transition-luxury ${
                               active
-                                ? "border-[#1A1A1A] bg-[#1A1A1A] text-white"
-                                : "border-[#E2DDD4] bg-[#FFFFFF] text-[#111111] hover:border-[#1A1A1A]"
+                                ? "border-[#211f1b] bg-[#211f1b] text-white"
+                                : "border-[#e3d9ca] bg-[#FFFFFF] text-[#211f1b] hover:border-[#211f1b]"
                             }`}
                           >
                             <input
@@ -1164,14 +1159,14 @@ export default function PropertyRequest() {
 
                   {/* Secteur Préférentiel */}
                   <div className="space-y-2">
-                    <label className="text-xs uppercase font-bold tracking-wider text-[#73716E] flex items-center justify-between">
+                    <label className="text-xs uppercase font-bold tracking-wider text-[#655f56] flex items-center justify-between">
                       <span>{t.districtsTitle}</span>
-                      <span className="text-[11px] font-normal text-[#73716E]">{t.optional}</span>
+                      <span className="text-[11px] font-normal text-[#655f56]">{t.optional}</span>
                     </label>
                     <select
                       value={form.district}
                       onChange={(e) => updateForm("district", e.target.value)}
-                      className="w-full h-12 rounded-xl border border-[#DCD6CC] bg-[#FFFFFF] px-3.5 pr-8 text-[#111111] text-sm focus:border-[#1A1A1A] focus:ring-1 focus:ring-[#1A1A1A]"
+                      className="w-full h-12 rounded-md border border-[#ddd2c2] bg-[#FFFFFF] px-3.5 pr-8 text-[#211f1b] text-sm focus:border-[#211f1b] focus:ring-1 focus:ring-[#211f1b]"
                     >
                       {DISTRICT_OPTIONS.map((dist) => (
                         <option key={dist} value={dist}>
@@ -1186,60 +1181,60 @@ export default function PropertyRequest() {
                 <div className="space-y-5">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs uppercase font-bold tracking-wider text-[#73716E]">
+                      <label className="text-xs uppercase font-bold tracking-wider text-[#655f56]">
                         {t.datesTitle}
                       </label>
-                      <label className="flex items-center gap-1.5 text-xs text-[#4A4A48] cursor-pointer">
+                      <label className="flex items-center gap-1.5 text-xs text-[#4f4a43] cursor-pointer">
                         <input
                           type="checkbox"
                           checked={form.stayFlexibleDates}
                           onChange={(e) => updateForm("stayFlexibleDates", e.target.checked)}
-                          className="rounded border-[#DCD6CC] text-[#1A1A1A] focus:ring-[#1A1A1A]"
+                          className="rounded border-[#ddd2c2] text-[#211f1b] focus:ring-[#211f1b]"
                         />
                         <span>{t.flexibleDates}</span>
                       </label>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <span className="text-[11px] text-[#73716E] block mb-1">{t.arrival}</span>
+                        <span className="text-[11px] text-[#655f56] block mb-1">{t.arrival}</span>
                         <input
                           type="date"
                           value={form.stayArrival}
                           onChange={(e) => updateForm("stayArrival", e.target.value)}
-                          className="w-full h-11 rounded-xl border border-[#DCD6CC] bg-[#FFFFFF] px-3 text-xs text-[#111111]"
+                          className="w-full h-11 rounded-md border border-[#ddd2c2] bg-[#FFFFFF] px-3 text-xs text-[#211f1b]"
                         />
                       </div>
                       <div>
-                        <span className="text-[11px] text-[#73716E] block mb-1">{t.departure}</span>
+                        <span className="text-[11px] text-[#655f56] block mb-1">{t.departure}</span>
                         <input
                           type="date"
                           value={form.stayDeparture}
                           onChange={(e) => updateForm("stayDeparture", e.target.value)}
-                          className="w-full h-11 rounded-xl border border-[#DCD6CC] bg-[#FFFFFF] px-3 text-xs text-[#111111]"
+                          className="w-full h-11 rounded-md border border-[#ddd2c2] bg-[#FFFFFF] px-3 text-xs text-[#211f1b]"
                         />
                       </div>
                     </div>
                   </div>
 
                   {/* Nombre de voyageurs */}
-                  <div className="flex items-center justify-between p-3.5 rounded-xl border border-[#E2DDD4] bg-[#FFFFFF]">
+                  <div className="flex items-center justify-between p-3.5 rounded-md border border-[#e3d9ca] bg-[#FFFFFF]">
                     <div>
-                      <span className="text-sm font-semibold text-[#111111] block">{t.guestsTitle}</span>
-                      <span className="text-xs text-[#4A4A48]">{t.guestsSubtitle}</span>
+                      <span className="text-sm font-semibold text-[#211f1b] block">{t.guestsTitle}</span>
+                      <span className="text-xs text-[#4f4a43]">{t.guestsSubtitle}</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <button
                         type="button"
                         onClick={() => updateForm("stayGuests", Math.max(1, form.stayGuests - 1))}
-                        className="w-8 h-8 rounded-full border border-[#DCD6CC] text-[#111111] flex items-center justify-center hover:bg-[#FAF8F5] font-bold"
+                        className="w-8 h-8 rounded-full border border-[#ddd2c2] text-[#211f1b] flex items-center justify-center hover:bg-[#fbf8f2] font-bold"
                       >
                         -
                       </button>
-                      <span className="w-6 text-center font-bold text-[#111111]">{form.stayGuests}</span>
+                      <span className="w-6 text-center font-bold text-[#211f1b]">{form.stayGuests}</span>
                       <button
                         type="button"
                         onClick={() => updateForm("stayGuests", Math.min(30, form.stayGuests + 1))}
-                        className="w-8 h-8 rounded-full border border-[#DCD6CC] text-[#111111] flex items-center justify-center hover:bg-[#FAF8F5] font-bold"
+                        className="w-8 h-8 rounded-full border border-[#ddd2c2] text-[#211f1b] flex items-center justify-center hover:bg-[#fbf8f2] font-bold"
                       >
                         +
                       </button>
@@ -1248,7 +1243,7 @@ export default function PropertyRequest() {
 
                   {/* Budget par nuit */}
                   <div className="space-y-1.5">
-                    <label className="text-xs uppercase font-bold tracking-wider text-[#73716E]">
+                    <label className="text-xs uppercase font-bold tracking-wider text-[#655f56]">
                       {t.budgetNightTitle}
                     </label>
                     <div className="relative">
@@ -1256,9 +1251,9 @@ export default function PropertyRequest() {
                         type="text"
                         value={form.stayBudgetNight}
                         onChange={(e) => updateForm("stayBudgetNight", e.target.value)}
-                        className="w-full h-11 rounded-xl border border-[#DCD6CC] bg-[#FFFFFF] px-3 pr-28 text-[#111111] font-medium"
+                        className="w-full h-11 rounded-md border border-[#ddd2c2] bg-[#FFFFFF] px-3 pr-28 text-[#211f1b] font-medium"
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#4A4A48] uppercase bg-[#FAF8F5] px-2 py-1 rounded border border-[#E2DDD4]">
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#4f4a43] uppercase bg-[#fbf8f2] px-2 py-1 rounded border border-[#e3d9ca]">
                         {t.budgetCurrencySuffixStay}
                       </span>
                     </div>
@@ -1267,18 +1262,18 @@ export default function PropertyRequest() {
               )}
 
               {/* Accordion: Prestations Exclusives */}
-              <div className="border border-[#E2DDD4] rounded-2xl overflow-hidden bg-[#FFFFFF]">
+              <div className="border border-[#e3d9ca] rounded-lg overflow-hidden bg-[#FFFFFF]">
                 <button
                   type="button"
                   onClick={() => setPreferencesOpen(!preferencesOpen)}
-                  className="w-full p-4 text-left flex items-center justify-between hover:bg-[#FAF8F5] transition-colors focus:outline-none"
+                  className="w-full p-4 text-left flex items-center justify-between hover:bg-[#fbf8f2] transition-colors focus:outline-none"
                 >
-                  <span className="flex items-center gap-2 text-xs uppercase font-bold tracking-wider text-[#111111]">
-                    <span className="text-[#9A6C48]">✦</span> {t.accordionTitle}
+                  <span className="flex items-center gap-2 text-xs uppercase font-bold tracking-wider text-[#211f1b]">
+                    <span className="text-[#a4573e]">✦</span> {t.accordionTitle}
                   </span>
                   <ChevronDown
                     size={16}
-                    className={`text-[#73716E] transition-transform duration-200 ${
+                    className={`text-[#655f56] transition-transform duration-200 ${
                       preferencesOpen ? "rotate-180" : ""
                     }`}
                   />
@@ -1295,8 +1290,8 @@ export default function PropertyRequest() {
                             onClick={() => togglePrestationTag(chip)}
                             className={`px-3 py-1.5 rounded-full border text-xs transition-colors ${
                               active
-                                ? "border-[#1A1A1A] bg-[#1A1A1A] text-white"
-                                : "border-[#DCD6CC] bg-[#FAF8F5] text-[#111111] hover:border-[#1A1A1A]"
+                                ? "border-[#211f1b] bg-[#211f1b] text-white"
+                                : "border-[#ddd2c2] bg-[#fbf8f2] text-[#211f1b] hover:border-[#211f1b]"
                             }`}
                           >
                             {chip}
@@ -1305,7 +1300,7 @@ export default function PropertyRequest() {
                       })}
                     </div>
                     <div>
-                      <label className="text-[11px] text-[#73716E] block mb-1">
+                      <label className="text-[11px] text-[#655f56] block mb-1">
                         {t.notesLabel}
                       </label>
                       <textarea
@@ -1313,7 +1308,7 @@ export default function PropertyRequest() {
                         value={form.notes}
                         onChange={(e) => updateForm("notes", e.target.value)}
                         placeholder={t.notesPlaceholder}
-                        className="w-full rounded-xl border border-[#DCD6CC] bg-[#FAF8F5] p-2.5 text-xs text-[#111111] focus:border-[#1A1A1A] focus:ring-1 focus:ring-[#1A1A1A]"
+                        className="w-full rounded-md border border-[#ddd2c2] bg-[#fbf8f2] p-2.5 text-xs text-[#211f1b] focus:border-[#211f1b] focus:ring-1 focus:ring-[#211f1b]"
                       />
                     </div>
                   </div>
@@ -1325,7 +1320,7 @@ export default function PropertyRequest() {
                 <button
                   type="button"
                   onClick={() => goToStep(3)}
-                  className="w-full h-13 py-3.5 px-6 rounded-2xl bg-[#1A1A1A] hover:bg-[#2D2D2D] active:scale-[0.99] text-white font-medium text-base shadow-lg shadow-black/15 flex items-center justify-center gap-2 transition-luxury"
+                  className="w-full h-13 py-3.5 px-6 rounded-lg bg-[#211f1b] hover:bg-[#3a352f] active:scale-[0.99] text-white font-medium text-base shadow-lg shadow-black/15 flex items-center justify-center gap-2 transition-luxury"
                 >
                   <span>{t.btnValidateContact}</span>
                   {rtl ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
@@ -1333,7 +1328,7 @@ export default function PropertyRequest() {
                 <button
                   type="button"
                   onClick={() => goToStep(1)}
-                  className="w-full py-2 text-xs text-[#73716E] hover:text-[#111111] text-center transition-colors"
+                  className="w-full py-2 text-xs text-[#655f56] hover:text-[#211f1b] text-center transition-colors"
                 >
                   {t.btnEditType}
                 </button>
@@ -1347,31 +1342,31 @@ export default function PropertyRequest() {
           {step === 3 && (
             <section className="space-y-5">
               <div>
-                <span className="text-xs uppercase font-bold tracking-wider text-[#73716E]">
+                <span className="text-xs uppercase font-bold tracking-wider text-[#655f56]">
                   {t.stepOf.replace("{current}", "3")}
                 </span>
-                <h2 className="font-serif-luxury text-2xl sm:text-3xl text-[#111111] leading-snug font-medium mt-0.5">
+                <h2 className="font-serif-luxury text-[30px] sm:text-[38px] text-[#211f1b] leading-snug font-medium mt-0.5">
                   {t.step3Title}
                 </h2>
-                <p className="text-sm text-[#4A4A48] mt-1 leading-relaxed">
+                <p className="text-sm text-[#4f4a43] mt-1 leading-relaxed">
                   {t.step3Subtitle}
                 </p>
               </div>
 
               {/* Summary Brief Badge with Edit shortcut */}
-              <div className="p-3.5 rounded-2xl bg-[#FFFFFF] border border-[#E2DDD4] flex items-center justify-between shadow-sm">
+              <div className="p-3.5 rounded-lg bg-[#FFFFFF] border border-[#e3d9ca] flex items-center justify-between shadow-sm">
                 <div className="space-y-0.5">
-                  <span className="text-[10px] uppercase tracking-wider font-semibold text-[#73716E]">
+                  <span className="text-[10px] uppercase tracking-wider font-semibold text-[#655f56]">
                     {t.currentSearch}
                   </span>
-                  <p className="text-xs font-semibold text-[#111111] truncate max-w-[240px] sm:max-w-xs">
+                  <p className="text-xs font-semibold text-[#211f1b] truncate max-w-[240px] sm:max-w-xs">
                     {getSummaryText()}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => goToStep(2)}
-                  className="text-xs font-semibold text-[#111111] hover:bg-[#FAF8F5] flex items-center gap-1 bg-[#FFFFFF] px-2.5 py-1 rounded-lg border border-[#DCD6CC] transition-colors"
+                  className="text-xs font-semibold text-[#211f1b] hover:bg-[#fbf8f2] flex items-center gap-1 bg-[#FFFFFF] px-2.5 py-1 rounded-lg border border-[#ddd2c2] transition-colors"
                 >
                   <span>{t.edit}</span>
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -1394,8 +1389,8 @@ export default function PropertyRequest() {
 
                 {/* Prénom / Nom */}
                 <div>
-                  <label className="block text-xs uppercase font-bold tracking-wider text-[#73716E] mb-1">
-                    {t.nameLabel} <span className="text-[#111111]">*</span>
+                  <label className="block text-xs uppercase font-bold tracking-wider text-[#655f56] mb-1">
+                    {t.nameLabel} <span className="text-[#211f1b]">*</span>
                   </label>
                   <input
                     type="text"
@@ -1406,8 +1401,8 @@ export default function PropertyRequest() {
                       if (errors.name) setErrors((prev) => ({ ...prev, name: false }));
                     }}
                     placeholder={t.namePlaceholder}
-                    className={`w-full h-12 rounded-xl border bg-[#FFFFFF] px-3.5 text-[#111111] placeholder-[#73716E]/60 focus:border-[#1A1A1A] focus:ring-1 focus:ring-[#1A1A1A] transition-colors ${
-                      errors.name ? "border-red-500 ring-1 ring-red-500" : "border-[#DCD6CC]"
+                    className={`w-full h-12 rounded-md border bg-[#FFFFFF] px-3.5 text-[#211f1b] placeholder-[#655f56]/60 focus:border-[#211f1b] focus:ring-1 focus:ring-[#211f1b] transition-colors ${
+                      errors.name ? "border-red-500 ring-1 ring-red-500" : "border-[#ddd2c2]"
                     }`}
                   />
                   {errors.name && (
@@ -1422,14 +1417,14 @@ export default function PropertyRequest() {
 
                 {/* WhatsApp / Phone with country prefix */}
                 <div>
-                  <label className="block text-xs uppercase font-bold tracking-wider text-[#73716E] mb-1">
-                    {t.phoneLabel} <span className="text-[#111111]">*</span>
+                  <label className="block text-xs uppercase font-bold tracking-wider text-[#655f56] mb-1">
+                    {t.phoneLabel} <span className="text-[#211f1b]">*</span>
                   </label>
                   <div className="flex gap-2">
                     <select
                       value={form.phonePrefix}
                       onChange={(e) => updateForm("phonePrefix", e.target.value)}
-                      className="w-28 h-12 rounded-xl border border-[#DCD6CC] bg-[#FFFFFF] px-2 text-xs font-medium text-[#111111] focus:border-[#1A1A1A] focus:ring-1 focus:ring-[#1A1A1A]"
+                      className="w-28 h-12 rounded-md border border-[#ddd2c2] bg-[#FFFFFF] px-2 text-xs font-medium text-[#211f1b] focus:border-[#211f1b] focus:ring-1 focus:ring-[#211f1b]"
                     >
                       {PHONE_PREFIXES.map(({ code, label }) => (
                         <option key={code} value={code}>
@@ -1446,8 +1441,8 @@ export default function PropertyRequest() {
                         if (errors.phone) setErrors((prev) => ({ ...prev, phone: false }));
                       }}
                       placeholder={t.phonePlaceholder}
-                      className={`flex-1 h-12 rounded-xl border bg-[#FFFFFF] px-3.5 text-[#111111] placeholder-[#73716E]/60 focus:border-[#1A1A1A] focus:ring-1 focus:ring-[#1A1A1A] transition-colors ${
-                        errors.phone ? "border-red-500 ring-1 ring-red-500" : "border-[#DCD6CC]"
+                      className={`flex-1 h-12 rounded-md border bg-[#FFFFFF] px-3.5 text-[#211f1b] placeholder-[#655f56]/60 focus:border-[#211f1b] focus:ring-1 focus:ring-[#211f1b] transition-colors ${
+                        errors.phone ? "border-red-500 ring-1 ring-red-500" : "border-[#ddd2c2]"
                       }`}
                     />
                   </div>
@@ -1459,7 +1454,7 @@ export default function PropertyRequest() {
                       {t.phoneError}
                     </p>
                   )}
-                  <span className="text-[11px] text-[#73716E] mt-1 block">
+                  <span className="text-[11px] text-[#655f56] mt-1 block">
                     {t.phoneHelper}
                   </span>
                 </div>
@@ -1467,17 +1462,17 @@ export default function PropertyRequest() {
                 {/* Email (Optional) */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs uppercase font-bold tracking-wider text-[#73716E]">
+                    <label className="text-xs uppercase font-bold tracking-wider text-[#655f56]">
                       {t.emailLabel}
                     </label>
-                    <span className="text-[11px] text-[#73716E]">{t.optional}</span>
+                    <span className="text-[11px] text-[#655f56]">{t.optional}</span>
                   </div>
                   <input
                     type="email"
                     value={form.email}
                     onChange={(e) => updateForm("email", e.target.value)}
                     placeholder="alexandre@domaine.com"
-                    className="w-full h-12 rounded-xl border border-[#DCD6CC] bg-[#FFFFFF] px-3.5 text-[#111111] placeholder-[#73716E]/60 focus:border-[#1A1A1A] focus:ring-1 focus:ring-[#1A1A1A] transition-colors"
+                    className="w-full h-12 rounded-md border border-[#ddd2c2] bg-[#FFFFFF] px-3.5 text-[#211f1b] placeholder-[#655f56]/60 focus:border-[#211f1b] focus:ring-1 focus:ring-[#211f1b] transition-colors"
                   />
                 </div>
 
@@ -1489,9 +1484,9 @@ export default function PropertyRequest() {
                       required
                       checked={form.consent}
                       onChange={(e) => updateForm("consent", e.target.checked)}
-                      className="mt-0.5 rounded border-[#DCD6CC] text-[#1A1A1A] focus:ring-[#1A1A1A]"
+                      className="mt-0.5 rounded border-[#ddd2c2] text-[#211f1b] focus:ring-[#211f1b]"
                     />
-                    <span className="text-xs text-[#4A4A48] leading-tight">
+                    <span className="text-xs text-[#4f4a43] leading-tight">
                       {t.consentLabel}
                     </span>
                   </label>
@@ -1502,7 +1497,7 @@ export default function PropertyRequest() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full h-14 rounded-2xl bg-[#1A1A1A] hover:bg-[#2D2D2D] active:scale-[0.99] text-white font-medium text-base shadow-lg shadow-black/20 flex items-center justify-center gap-2 transition-luxury disabled:opacity-75"
+                    className="w-full h-14 rounded-lg bg-[#211f1b] hover:bg-[#3a352f] active:scale-[0.99] text-white font-medium text-base shadow-lg shadow-black/20 flex items-center justify-center gap-2 transition-luxury disabled:opacity-75"
                   >
                     {loading ? (
                       <>
@@ -1522,10 +1517,10 @@ export default function PropertyRequest() {
                       href="https://wa.me/212605387041?text=Bonjour,%20je%20préfère%20échanger%20directement%20avec%20un%20conseiller"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs text-[#4A4A48] hover:text-[#1A1A1A] transition-colors"
+                      className="inline-flex items-center gap-1.5 text-xs text-[#4f4a43] hover:text-[#211f1b] transition-colors"
                     >
                       <span>{t.vipWhatsAppLabel}</span>
-                      <span className="font-semibold underline text-[#111111]">{t.vipWhatsAppLink}</span>
+                      <span className="font-semibold underline text-[#211f1b]">{t.vipWhatsAppLink}</span>
                     </a>
                   </div>
                 </div>
@@ -1544,44 +1539,44 @@ export default function PropertyRequest() {
               </div>
 
               <div>
-                <span className="text-xs uppercase font-bold tracking-widest text-[#4A4A48]">
+                <span className="text-xs uppercase font-bold tracking-widest text-[#4f4a43]">
                   {t.successTag}
                 </span>
-                <h2 className="font-serif-luxury text-2xl sm:text-3xl text-[#111111] mt-1">
+                <h2 className="font-serif-luxury text-[30px] sm:text-[38px] text-[#211f1b] mt-1">
                   {t.successTitle}{" "}
-                  <span className="italic text-[#9A6C48]">
+                  <span className="italic text-[#a4573e]">
                     {form.name.trim().split(" ")[0] || ""}
                   </span>
                   .
                 </h2>
-                <p className="text-sm text-[#4A4A48] mt-2 max-w-sm mx-auto leading-relaxed">
+                <p className="text-sm text-[#4f4a43] mt-2 max-w-sm mx-auto leading-relaxed">
                   {t.successSubtitle}
                 </p>
               </div>
 
               {/* Recap Card */}
-              <div className="bg-[#FFFFFF] rounded-2xl border border-[#E2DDD4] p-4 text-left shadow-md space-y-2.5 text-xs">
-                <div className="border-b border-[#FAF8F5] pb-2 flex items-center justify-between">
-                  <span className="font-bold uppercase tracking-wider text-[#73716E]">
+              <div className="bg-[#FFFFFF] rounded-lg border border-[#e3d9ca] p-4 text-left shadow-md space-y-2.5 text-xs">
+                <div className="border-b border-[#fbf8f2] pb-2 flex items-center justify-between">
+                  <span className="font-bold uppercase tracking-wider text-[#655f56]">
                     {t.recapTitle}
                   </span>
-                  <span className="bg-[#FAF8F5] text-[#111111] px-2 py-0.5 rounded font-mono text-[10px] border border-[#E2DDD4]">
+                  <span className="bg-[#fbf8f2] text-[#211f1b] px-2 py-0.5 rounded font-mono text-[10px] border border-[#e3d9ca]">
                     REF: LIM-{leadRef}
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-[#111111]">
+                <div className="grid grid-cols-2 gap-2 text-[#211f1b]">
                   <div>
-                    <span className="text-[#73716E] block text-[10px]">{t.recapProject}</span>
+                    <span className="text-[#655f56] block text-[10px]">{t.recapProject}</span>
                     <span className="font-semibold">{getProjectLabel()} {getPropertyLabel()}</span>
                   </div>
                   <div>
-                    <span className="text-[#73716E] block text-[10px]">{t.recapBudget}</span>
+                    <span className="text-[#655f56] block text-[10px]">{t.recapBudget}</span>
                     <span className="font-semibold">
                       {form.isBudgetUnknown ? t.budgetUnknownBtn : `${form.budgetValue} MAD`}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[#73716E] block text-[10px]">{t.recapRoomsDistrict}</span>
+                    <span className="text-[#655f56] block text-[10px]">{t.recapRoomsDistrict}</span>
                     <span className="font-semibold">
                       {form.projectType === "court_sejour"
                         ? `${form.stayGuests} ${t.guestsTitle.toLowerCase()}`
@@ -1589,7 +1584,7 @@ export default function PropertyRequest() {
                     </span>
                   </div>
                   <div>
-                    <span className="text-[#73716E] block text-[10px]">{t.recapContact}</span>
+                    <span className="text-[#655f56] block text-[10px]">{t.recapContact}</span>
                     <span className="font-semibold">{form.phonePrefix} {form.phone}</span>
                   </div>
                 </div>
@@ -1601,7 +1596,7 @@ export default function PropertyRequest() {
                   href={`https://wa.me/212605387041?text=${whatsappAccelerateMsg}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full h-13 py-3.5 px-4 rounded-2xl bg-[#25D366] hover:bg-[#1EBE5D] text-white font-medium text-sm shadow-md flex items-center justify-center gap-2 transition-luxury"
+                  className="w-full h-13 py-3.5 px-4 rounded-lg bg-[#25D366] hover:bg-[#1EBE5D] text-white font-medium text-sm shadow-md flex items-center justify-center gap-2 transition-luxury"
                 >
                   <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                     <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.976.532 1.943.924 3.15.924 3.182 0 5.767-2.587 5.767-5.766.001-3.187-2.575-5.766-5.768-5.766zm0 10.375c-1.07 0-1.936-.312-2.766-.807l-.2-.119-1.341.352.358-1.309-.131-.209c-.544-.867-.831-1.688-.83-2.526 0-2.54 2.067-4.607 4.61-4.607 2.541 0 4.609 2.067 4.609 4.607 0 2.542-2.068 4.611-4.61 4.611zm7.969-4.609c0 4.418-3.582 8-8 8-1.42 0-2.756-.372-3.921-1.02l-4.079 1.07 1.089-3.985c-.718-1.208-1.139-2.616-1.139-4.115 0-4.418 3.582-8 8-8s8 3.582 8 8z" />
@@ -1611,7 +1606,7 @@ export default function PropertyRequest() {
                 <button
                   type="button"
                   onClick={() => goToStep(1)}
-                  className="w-full py-2.5 text-xs text-[#73716E] hover:text-[#111111] text-center transition-colors"
+                  className="w-full py-2.5 text-xs text-[#655f56] hover:text-[#211f1b] text-center transition-colors"
                 >
                   {t.btnNewSearch}
                 </button>
@@ -1621,10 +1616,10 @@ export default function PropertyRequest() {
         </div>
 
         {/* Card Footer Trust */}
-        <footer className="p-4 sm:px-8 border-t border-[#E2DDD4] bg-[#FFFFFF] text-center text-[#73716E] text-[11px] shrink-0">
-          <div className="flex items-center justify-center gap-3 text-[#4A4A48] font-medium mb-1.5 flex-wrap">
+        <footer className="p-4 sm:px-8 border-t border-[#e3d9ca] bg-[#FFFFFF] text-center text-[#655f56] text-[11px] shrink-0">
+          <div className="flex items-center justify-center gap-3 text-[#4f4a43] font-medium mb-1.5 flex-wrap">
             <span className="flex items-center gap-1">
-              <svg className="w-3.5 h-3.5 text-[#1A1A1A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 text-[#211f1b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
               </svg>
               {t.footerConfidential}
@@ -1634,7 +1629,7 @@ export default function PropertyRequest() {
             <span>•</span>
             <span>{t.footerLocation}</span>
           </div>
-          <p className="text-[10px] text-[#73716E]/80">{t.footerCopyright}</p>
+          <p className="text-[10px] text-[#655f56]/80">{t.footerCopyright}</p>
         </footer>
       </main>
     </div>

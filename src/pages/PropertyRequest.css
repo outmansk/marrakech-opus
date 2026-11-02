@@ -1,14 +1,14 @@
-/* Live In Marrakech - Moroccan Haute Estate Property Request Funnel Styles */
+/* Live In Marrakech - property request funnel. Same fonts and palette as the rest of the site. */
 
 .request-page-v2 {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  color: #1a1a1a;
-  background-color: #f5f3ee;
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #211f1b;
+  background-color: #f6f1e8;
   min-height: 100vh;
 }
 
 .font-serif-luxury {
-  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
 }
 
 /* Micro-transitions */
