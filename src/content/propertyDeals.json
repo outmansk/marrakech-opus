@@ -11,5 +11,11 @@
     "loyer": 16000,
     "prix": null,
     "mois": null
+  },
+  "5909c6c4-a5e9-4502-80c9-be6b944f737b": {
+    "profil": { "fr": "un couple français", "en": "a French couple", "es": "una pareja francesa" },
+    "loyer": 12000,
+    "prix": null,
+    "mois": null
   }
 }

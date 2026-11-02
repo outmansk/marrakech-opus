@@ -6,6 +6,7 @@ import {
   CalendarCheck,
   CalendarClock,
   ExternalLink,
+  FileSignature,
   FileText,
   Files,
   Home,
@@ -101,6 +102,7 @@ export default function AdminLayout() {
     { path: `${BASE}/visites`, label: "Demandes de visite", short: "Visites", icon: CalendarCheck, count: counts?.pendingVisits },
     { path: `${BASE}/clients`, label: "Clients & demandes", short: "Clients", icon: UsersRound, count: counts?.followUps },
     { path: `${BASE}/documents`, label: "Contrats & reçus", short: "Contrats", icon: Files },
+    { path: `${BASE}/bons-visite`, label: "Bons de visite", short: "Bons", icon: FileSignature },
     { path: `${BASE}/messages`, label: "Messages du site", short: "Messages", icon: Mail, count: counts?.newMessages },
   ];
   const isActive = (path: string) => location.pathname.startsWith(path);
@@ -115,6 +117,7 @@ export default function AdminLayout() {
     { label: "Ajouter un bien", icon: Building2, to: `${BASE}/biens?new=1` },
     { label: "Ajouter un client", icon: UserPlus, to: `${BASE}/clients?new=1` },
     { label: "Nouvel article", icon: PenLine, to: `${BASE}/blog?new=1` },
+    { label: "Nouveau bon de visite", icon: FileSignature, to: `${BASE}/bons-visite?new=1` },
   ];
 
   if (!session) return null;
@@ -237,7 +240,7 @@ export default function AdminLayout() {
             ))}
             {sheet === "more" && (
               <>
-                {[byPath("messages"), byPath("visites"), byPath("reseaux"), byPath("blog"), byPath("documents")].map((item) => (
+                {[byPath("messages"), byPath("visites"), byPath("reseaux"), byPath("blog"), byPath("documents"), byPath("bons-visite")].map((item) => (
                   <Link key={item.path} to={item.path} className={cn("flex min-h-[52px] items-center gap-3 rounded-md px-3 text-[15px] hover:bg-muted", isActive(item.path) ? "font-semibold text-primary" : "font-medium")}>
                     <item.icon size={20} strokeWidth={1.7} aria-hidden="true" /><span className="flex-1">{item.label}</span><CountBadge count={item.count ?? 0} />
                   </Link>

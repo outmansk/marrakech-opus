@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -7,121 +7,141 @@ import PropertyRequest from "./PropertyRequest";
 const { insert, toastError } = vi.hoisted(() => ({ insert: vi.fn(), toastError: vi.fn() }));
 vi.mock("@/lib/supabase", () => ({ supabase: { from: () => ({ insert }) } }));
 vi.mock("sonner", () => ({ toast: { error: toastError } }));
-vi.mock("@/components/Header", () => ({ default: () => null }));
-vi.mock("@/components/Footer", () => ({ default: () => null }));
 
-function openRequest(project = "Louer longue durée") {
+/* Parcours « Décrire ma recherche » (design Stitch) : Projet → Critères → Coordonnées → Confirmation. */
+
+function openRequest() {
   render(<HelmetProvider><MemoryRouter><PropertyRequest /></MemoryRouter></HelmetProvider>);
-  fireEvent.click(screen.getByRole("radio", { name: project }));
-  fireEvent.change(screen.getByLabelText("Le quartier idéal"), { target: { value: "Hivernage" } });
-  fireEvent.click(screen.getByRole("button", { name: "Commencer" }));
 }
+const project = (name: RegExp) => screen.getByRole("radio", { name });
+const toCriteria = () => fireEvent.click(screen.getByRole("button", { name: "Continuer vers les critères" }));
+const toContact = () => fireEvent.click(screen.getByRole("button", { name: "Valider et passer à mes coordonnées" }));
+function fillContact(name = "Test Local", phone = "612345678") {
+  fireEvent.change(screen.getByPlaceholderText("Ex: Alexandre de Montmirail"), { target: { value: name } });
+  fireEvent.change(screen.getByPlaceholderText("6 12 34 56 78"), { target: { value: phone } });
+}
+const submit = () => fireEvent.click(screen.getByRole("button", { name: "Transmettre ma recherche" }));
 
 beforeEach(() => {
   vi.clearAllMocks();
+  localStorage.clear();
   vi.spyOn(window, "scrollTo").mockImplementation(() => {});
   insert.mockResolvedValue({ error: null });
 });
 afterEach(cleanup);
 
-describe("Property request guided flow", () => {
-  it("starts without a project and unlocks the neighbourhood only after choosing one", () => {
-    render(<HelmetProvider><MemoryRouter><PropertyRequest /></MemoryRouter></HelmetProvider>);
-    expect(screen.getByLabelText("Le quartier idéal")).toBeDisabled();
-    expect(screen.getAllByRole("radio").every((radio) => !(radio as HTMLInputElement).checked)).toBe(true);
-    fireEvent.click(screen.getByRole("button", { name: "Commencer" }));
-    expect(screen.getByRole("alert")).toHaveTextContent("Choisissez votre projet");
-    expect(screen.getByRole("radio", { name: "Acheter" })).toHaveFocus();
-    fireEvent.click(screen.getByRole("radio", { name: "Acheter" }));
-    expect(screen.getByLabelText("Le quartier idéal")).toBeEnabled();
-    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-    expect(insert).not.toHaveBeenCalled();
-  });
-
-  it.each([
-    ["Acheter", "Budget total d’achat (MAD)"],
-    ["Louer longue durée", "Budget mensuel de location (MAD)"],
-    ["Séjourner", "Budget par nuit (MAD)"],
-  ])("retains the neighbourhood and uses the appropriate budget for %s", (project, budget) => {
-    openRequest(project);
-    expect(screen.getByText(budget)).toBeVisible();
-    expect(screen.getByLabelText("Quartiers souhaités")).toHaveValue("Hivernage");
-    expect(screen.getByText("2 / 3")).toBeVisible();
-  });
-
-  it("validates criteria and keeps them when going back from contact details", () => {
+describe("Décrire ma recherche (parcours en 4 étapes)", () => {
+  it("affiche l'étape 1 avec les trois projets et les trois types de bien", () => {
     openRequest();
-    fireEvent.click(screen.getByRole("button", { name: "Continuer" }));
-    expect(toastError).toHaveBeenLastCalledWith("Choisissez au moins un type de bien.");
-    fireEvent.click(screen.getByRole("button", { name: "Villa" }));
-    fireEvent.change(screen.getByLabelText("Minimum"), { target: { value: "12000" } });
-    fireEvent.change(screen.getByLabelText("Maximum"), { target: { value: "10000" } });
-    fireEvent.click(screen.getByRole("button", { name: "Continuer" }));
-    expect(toastError).toHaveBeenLastCalledWith("Le maximum doit être supérieur au minimum.");
-    fireEvent.change(screen.getByLabelText("Maximum"), { target: { value: "20000" } });
-    fireEvent.click(screen.getByRole("button", { name: "Continuer" }));
-    expect(screen.getByRole("heading", { name: "Pour vous répondre" })).toBeVisible();
-    fireEvent.click(screen.getByRole("button", { name: "Retour" }));
-    expect(screen.getByLabelText("Minimum")).toHaveValue(12000);
-    expect(screen.getByRole("button", { name: "Villa" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByText("Étape 1 sur 3")).toBeVisible();
+    for (const name of [/^Acheter/, /^Louer à l'année/, /^Séjourner/]) expect(project(name)).toBeInTheDocument();
+    for (const name of [/^Villa/, /^Appartement/, /^Riad/]) expect(screen.getByRole("radio", { name })).toBeInTheDocument();
   });
 
-  it("does not carry a monthly budget into a nightly request when the project changes", () => {
+  it("envoie une recherche d'achat avec le type, le budget, les chambres et le quartier choisis", async () => {
     openRequest();
-    fireEvent.change(screen.getByLabelText("Minimum"), { target: { value: "12000" } });
-    fireEvent.click(screen.getByRole("button", { name: "Modifier mon projet" }));
-    expect(screen.getByRole("radio", { name: "Louer longue durée" })).toBeChecked();
-    expect(screen.getByLabelText("Le quartier idéal")).toHaveValue("Hivernage");
-    fireEvent.click(screen.getByRole("radio", { name: "Séjourner" }));
-    fireEvent.click(screen.getByRole("button", { name: "Commencer" }));
-    expect(screen.getByLabelText("Minimum")).toHaveValue(null);
-    expect(screen.getByLabelText("Date d’arrivée souhaitée")).toBeVisible();
-  });
-
-  it("submits a short-stay request with its correct intent, then shows success (mocked database)", async () => {
-    openRequest("Séjourner");
-    fireEvent.click(screen.getByRole("button", { name: "Villa" }));
-    fireEvent.change(screen.getByLabelText("Minimum"), { target: { value: "1500" } });
-    fireEvent.click(screen.getByRole("button", { name: "Continuer" }));
-    fireEvent.change(screen.getByLabelText("Votre nom"), { target: { value: "Test Local" } });
-    fireEvent.change(screen.getByLabelText("Téléphone WhatsApp"), { target: { value: "+212600000000" } });
-    fireEvent.click(screen.getByRole("checkbox"));
-    fireEvent.click(screen.getByRole("button", { name: "Envoyer ma recherche" }));
+    fireEvent.click(project(/^Acheter/));
+    fireEvent.click(screen.getByRole("radio", { name: /^Appartement/ }));
+    toCriteria();
+    expect(screen.getByRole("heading", { name: "Vos critères de sélection" })).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "3M MAD" }));
+    fireEvent.click(screen.getByRole("radio", { name: "2" }));
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "Guéliz (Vie urbaine, commerces, contemporain)" } });
+    toContact();
+    fillContact();
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "+212" } });
+    submit();
     await waitFor(() => expect(insert).toHaveBeenCalledTimes(1));
     expect(insert).toHaveBeenCalledWith(expect.objectContaining({
-      transaction_type: "location-courte-duree", preferred_areas: ["Hivernage"],
-      property_types: ["villa"], budget_min: 1500, source: "Site web", status: "nouveau",
+      name: "Test Local", phone: "+212 612345678", transaction_type: "vente", property_types: ["appartement"],
+      budget_max: 3000000, bedrooms_min: 2, preferred_areas: ["Guéliz"], source: "Site web", status: "nouveau",
     }));
-    expect(await screen.findByRole("heading", { name: "Merci, votre recherche est bien reçue." })).toBeVisible();
-    expect(screen.getByRole("link", { name: "Continuer sur WhatsApp" }).getAttribute("href")).toContain("S%C3%A9journer");
+    expect(await screen.findByText("Demande transmise avec succès")).toBeVisible();
+    expect(screen.getByRole("heading", { name: /Merci/ })).toHaveTextContent("Test");
   });
 
-  it("retains contact details on an error and allows a retry", async () => {
-    insert.mockResolvedValueOnce({ error: { message: "Unavailable" } });
-    openRequest("Acheter");
-    fireEvent.click(screen.getByRole("button", { name: "Appartement" }));
-    fireEvent.click(screen.getByRole("button", { name: "Continuer" }));
-    fireEvent.change(screen.getByLabelText("Votre nom"), { target: { value: "Test Local" } });
-    fireEvent.change(screen.getByLabelText("Téléphone WhatsApp"), { target: { value: "123" } });
-    fireEvent.click(screen.getByRole("checkbox"));
-    fireEvent.click(screen.getByRole("button", { name: "Envoyer ma recherche" }));
+  it("propose des budgets mensuels en location à l'année et accepte un budget inconnu", async () => {
+    openRequest();
+    fireEvent.click(project(/^Louer à l'année/));
+    toCriteria();
+    expect(screen.getByRole("button", { name: "25k MAD" })).toBeVisible();
+    expect(screen.getByText("MAD / mois")).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Je ne sais pas encore" }));
+    toContact();
+    fillContact();
+    submit();
+    await waitFor(() => expect(insert).toHaveBeenCalledTimes(1));
+    expect(insert).toHaveBeenCalledWith(expect.objectContaining({ transaction_type: "location-longue-duree", budget_max: null }));
+  });
+
+  it("envoie un séjour court avec les voyageurs et le budget par nuit, puis propose WhatsApp", async () => {
+    openRequest();
+    fireEvent.click(project(/^Séjourner/));
+    toCriteria();
+    expect(screen.getByRole("heading", { name: "Vos dates & séjour" })).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "+" }));
+    expect(screen.getByText("5")).toBeVisible();
+    toContact();
+    fillContact();
+    submit();
+    await waitFor(() => expect(insert).toHaveBeenCalledTimes(1));
+    const payload = insert.mock.calls[0][0];
+    expect(payload).toEqual(expect.objectContaining({ transaction_type: "location-courte-duree", client_profile: "5 personnes" }));
+    expect(payload.notes).toContain("Séjour : 5 voyageurs.");
+    expect(payload.notes).toContain("Budget nuit: 4 500 MAD");
+    const whatsapp = await screen.findByRole("link", { name: "Accélérer la réponse sur WhatsApp" });
+    expect(whatsapp.getAttribute("href")).toContain("S%C3%A9journer");
+  });
+
+  it("bloque l'envoi sans nom ou sans téléphone valable", () => {
+    openRequest();
+    toCriteria();
+    toContact();
+    fillContact("", "612345678");
+    fireEvent.submit(screen.getByRole("button", { name: "Transmettre ma recherche" }).closest("form")!);
+    expect(toastError).toHaveBeenLastCalledWith("Veuillez indiquer au moins votre prénom pour que nous sachions à qui nous adresser.");
+    fillContact("Test Local", "123");
+    fireEvent.submit(screen.getByRole("button", { name: "Transmettre ma recherche" }).closest("form")!);
+    expect(toastError).toHaveBeenLastCalledWith("Veuillez saisir un numéro de téléphone mobile ou WhatsApp valide.");
     expect(insert).not.toHaveBeenCalled();
-    expect(toastError).toHaveBeenLastCalledWith("Ajoutez un numéro WhatsApp valide.");
-    fireEvent.change(screen.getByLabelText("Téléphone WhatsApp"), { target: { value: "+212600000000" } });
-    fireEvent.click(screen.getByRole("button", { name: "Envoyer ma recherche" }));
-    await waitFor(() => expect(toastError).toHaveBeenLastCalledWith(expect.stringContaining("L’envoi n’a pas abouti")));
-    expect(screen.getByLabelText("Votre nom")).toHaveValue("Test Local");
-    fireEvent.click(screen.getByRole("button", { name: "Envoyer ma recherche" }));
-    expect(await screen.findByRole("heading", { name: "Merci, votre recherche est bien reçue." })).toBeVisible();
   });
 
-  it("preserves the selection across English and Arabic translations", () => {
-    render(<HelmetProvider><MemoryRouter><PropertyRequest /></MemoryRouter></HelmetProvider>);
-    fireEvent.click(screen.getByRole("radio", { name: "Séjourner" }));
+  it("garde les coordonnées après une erreur d'envoi et permet de réessayer", async () => {
+    insert.mockResolvedValueOnce({ error: { message: "Unavailable" } });
+    openRequest();
+    toCriteria();
+    toContact();
+    fillContact();
+    submit();
+    await waitFor(() => expect(toastError).toHaveBeenLastCalledWith(expect.stringContaining("Une erreur est survenue lors de l'envoi")));
+    expect(screen.queryByText("Demande transmise avec succès")).not.toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Ex: Alexandre de Montmirail")).toHaveValue("Test Local");
+    expect(screen.getByPlaceholderText("6 12 34 56 78")).toHaveValue("612345678");
+    submit();
+    expect(await screen.findByText("Demande transmise avec succès")).toBeVisible();
+    expect(insert).toHaveBeenCalledTimes(2);
+  });
+
+  it("garde les critères en revenant en arrière depuis les coordonnées", () => {
+    openRequest();
+    fireEvent.click(screen.getByRole("radio", { name: /^Riad/ }));
+    toCriteria();
+    fireEvent.click(screen.getByRole("button", { name: "10M MAD" }));
+    toContact();
+    expect(screen.getByText(/Acheter Riad · 10 000 000 MAD/)).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Modifier" }));
+    expect(screen.getByDisplayValue("10 000 000")).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "← Modifier le type de bien" }));
+    expect(screen.getByRole("radio", { name: /^Riad/ })).toBeChecked();
+  });
+
+  it("garde la sélection en changeant de langue, et passe en droite-à-gauche en arabe", () => {
+    openRequest();
+    fireEvent.click(project(/^Séjourner/));
     fireEvent.click(screen.getByRole("button", { name: "EN" }));
-    expect(screen.getByRole("radio", { name: "Short stay" })).toBeChecked();
+    expect(project(/^Short stay/)).toBeChecked();
     fireEvent.click(screen.getByRole("button", { name: "AR" }));
-    expect(screen.getByRole("radio", { name: "إقامة قصيرة" })).toBeChecked();
-    expect(screen.getByRole("main").parentElement).toHaveAttribute("dir", "rtl");
+    expect(project(/^إقامة قصيرة/)).toBeChecked();
+    expect(within(document.body).getByRole("main").parentElement).toHaveAttribute("dir", "rtl");
   });
 });

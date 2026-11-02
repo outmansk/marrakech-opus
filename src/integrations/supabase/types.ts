@@ -437,6 +437,48 @@ export type Database = {
         }
         Relationships: []
       }
+      bons_visite: {
+        Row: {
+          id: string
+          numero: number
+          jeton: string
+          type_bien: string
+          bien: string
+          quartier: string
+          date_visite: string
+          prix: number
+          prix_unite: string
+          texte: string
+          texte_confirmation: string
+          statut: string
+          client_nom: string | null
+          client_telephone: string | null
+          client_email: string | null
+          signature: string | null
+          signe_le: string | null
+          empreinte: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          type_bien: string
+          bien: string
+          quartier: string
+          date_visite: string
+          prix: number
+          prix_unite: string
+        }
+        Update: {
+          type_bien?: string
+          bien?: string
+          quartier?: string
+          date_visite?: string
+          prix?: number
+          prix_unite?: string
+        }
+        Relationships: []
+      }
       social_account_alerts: {
         Row: {
           id: string
@@ -733,6 +775,48 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      bon_visite_public: {
+        Args: { p_jeton: string }
+        Returns: {
+          numero: number
+          type_bien: string
+          bien: string
+          quartier: string
+          date_visite: string
+          prix: number
+          prix_unite: string
+          texte: string
+          texte_confirmation: string
+          statut: string
+          client_nom: string | null
+          client_telephone: string | null
+          client_email: string | null
+          signature: string | null
+          signe_le: string | null
+          empreinte: string | null
+        }[]
+      }
+      signer_bon_visite: {
+        Args: { p_jeton: string; p_nom: string; p_telephone: string; p_email: string | null; p_signature: string | null }
+        Returns: {
+          numero: number
+          type_bien: string
+          bien: string
+          quartier: string
+          date_visite: string
+          prix: number
+          prix_unite: string
+          texte: string
+          texte_confirmation: string
+          statut: string
+          client_nom: string | null
+          client_telephone: string | null
+          client_email: string | null
+          signature: string | null
+          signe_le: string | null
+          empreinte: string | null
+        }[]
+      }
       track_social_click: {
         Args: { p_code: number; p_path?: string | null }
         Returns: undefined
