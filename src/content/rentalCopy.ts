@@ -1,4 +1,5 @@
 import type { Lang } from "@/i18n/routing";
+import { AFTERCARE } from "./aftercare";
 
 // Long-term rental pages: texts built from the listings and from the rules confirmed by the agency
 // (1-year lease minimum; deposit 2 months furnished / 1 month unfurnished; passport or ID card only).
@@ -207,7 +208,7 @@ export function rentalFaq(lang: Lang, f: RentalFacts): { q: string; a: string }[
     ],
   }[lang];
 
-  return [price, cheap, ...fixed];
+  return [price, cheap, ...fixed, AFTERCARE[lang].faq];
 }
 
 /** WhatsApp link with a message naming the page the visitor comes from. */

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
-  ArrowUpDown, Bath, BedDouble, Car, Check, Clock, CookingPot, Droplets, Dumbbell, FileText, Flame, Home, KeyRound,
+  ArrowUpDown, Bath, Wrench, BedDouble, Car, Check, Clock, CookingPot, Droplets, Dumbbell, FileText, Flame, Home, KeyRound,
   LandPlot, MapPin, MessageCircle, Route, Ruler, ShieldCheck, Snowflake, Sofa, Sparkles, Sprout, Sun, Thermometer, Trees, Video, Waves, Wifi,
 } from "lucide-react";
 import type { Bien } from "@/types/property";
@@ -10,6 +10,8 @@ import { useLocalizedText } from "@/hooks/useLocalizedText";
 import { distanceLabel, equipmentName, placeName } from "@/lib/propertyI18n";
 import { ZONES, depositMonthsOf, furnishedOf, zoneLabel, zoneOf } from "@/content/zones";
 import { AGENCY } from "@/content/agency";
+import { AFTERCARE } from "@/content/aftercare";
+import { useLocalePath } from "@/hooks/useLocalePath";
 import { descriptionBlocks, formatPrice } from "@/lib/propertyDetail";
 
 // Building blocks of the property page (src/pages/PropertyDetail.tsx). Only real data:
@@ -57,19 +59,22 @@ export function SpecsGrid({ property }: { property: Bien }) {
 /** What the agency actually offers: confirmed facts only. */
 export function Reassurance({ rental }: { rental: boolean }) {
   const tL = useLocalizedText();
+  const { lang } = useLocalePath();
+  const after = AFTERCARE[lang].short;
   const items: { icon: LucideIcon; strong: string; text: string }[] = [
     { icon: Video, strong: tL("Visite sur place ou en vidéo", "In-person or video viewing", "Visita en persona o por vídeo"), text: tL("organisée avec vous sur WhatsApp.", "arranged with you on WhatsApp.", "organizada con usted por WhatsApp.") },
     { icon: MessageCircle, strong: tL("Un seul contact", "One point of contact", "Un único contacto"), text: tL(`téléphone et WhatsApp au ${AGENCY.phoneDisplay}.`, `phone and WhatsApp on ${AGENCY.phoneDisplay}.`, `teléfono y WhatsApp en el ${AGENCY.phoneDisplay}.`) },
     rental
       ? { icon: FileText, strong: tL("Dossier simple", "Simple paperwork", "Trámites sencillos"), text: tL("un passeport ou une carte d’identité suffit.", "a passport or national ID card is all you need.", "basta con un pasaporte o un documento de identidad.") }
       : { icon: KeyRound, strong: tL("Accompagnement", "Support", "Acompañamiento"), text: tL("de la visite jusqu’à la signature chez le notaire.", "from the viewing to signing at the notary.", "desde la visita hasta la firma ante notario.") },
+    { icon: Wrench, strong: after.strong, text: after.text },
   ];
   return (
     <div className="rounded-xl bg-primary-soft p-4 md:p-5">
       <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
         {rental ? tL("Louer avec Live In Marrakech", "Renting with Live In Marrakech", "Alquilar con Live In Marrakech") : tL("Acheter avec Live In Marrakech", "Buying with Live In Marrakech", "Comprar con Live In Marrakech")}
       </p>
-      <ul className="grid gap-2.5 text-sm text-foreground/85 md:grid-cols-3 md:gap-4">
+      <ul className="grid gap-2.5 text-sm text-foreground/85 md:grid-cols-2 md:gap-4">
         {items.map(({ icon: Icon, strong, text }) => (
           <li key={strong} className="flex items-start gap-2.5">
             <Icon size={18} strokeWidth={1.5} className="mt-0.5 shrink-0 text-primary" aria-hidden="true" />

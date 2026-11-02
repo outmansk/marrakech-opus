@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import HeroSlideshow from "@/components/HeroSlideshow";
 import PropertiesCarousel from "@/components/PropertiesCarousel";
 import RecentDeals from "@/components/RecentDeals";
+import AfterSignature from "@/components/AfterSignature";
 import servicesImage from "@/assets/slide1.webp";
 import approachImage from "@/assets/slide4.webp";
 import districtsImage from "@/assets/slide2.webp";
@@ -28,14 +29,14 @@ const Index = () => {
 
   const trust = [
     { icon: ShieldCheck, text: tL("Biens vérifiés", "Verified properties", "Propiedades verificadas") },
-    { icon: Check, text: tL("Accompagnement sur mesure", "Tailored support", "Atención personalizada") },
+    { icon: Check, text: tL("Présents après la signature", "Still there after signing", "Presentes después de la firma") },
     { icon: MessageCircle, text: tL("Réponse rapide sur WhatsApp", "Fast WhatsApp reply", "Respuesta rápida por WhatsApp") },
   ];
 
   const services = [
     { title: tL("Acheter", "Buy", "Comprar"), text: tL("Une sélection précise, des visites privées et une négociation maîtrisée.", "A precise selection, private viewings and expert negotiation.", "Una selección precisa, visitas privadas y negociación experta."), to: landingPath("vente", lang) },
     { title: tL("Louer", "Rent", "Alquilar"), text: tL("Des adresses adaptées à votre rythme de vie, pour un mois ou une année.", "Homes adapted to your lifestyle, for a month or a year.", "Hogares adaptados a su estilo de vida, por un mes o un año."), to: landingPath("location", lang) },
-    { title: tL("Être accompagné", "Be advised", "Ser asesorado"), text: tL("Un interlocuteur unique, du premier échange jusqu’à la remise des clés.", "One dedicated advisor, from the first call to the key handover.", "Un asesor dedicado, desde la primera llamada hasta la entrega de llaves."), to: lp("/contact") },
+    { title: tL("Être accompagné", "Be advised", "Ser asesorado"), text: tL("Un interlocuteur unique, du premier échange à la remise des clés, et bien après : travaux, ménage, entretien.", "One dedicated advisor, from the first call to the key handover and long after: repairs, cleaning, upkeep.", "Un asesor dedicado, desde la primera llamada hasta la entrega de llaves, y mucho después: obras, limpieza, mantenimiento."), to: lp("/a-propos") },
   ];
 
   const requestLabel = tL("Décrire ma recherche", "Tell us what you need", "Cuéntenos qué busca");
@@ -103,6 +104,8 @@ const Index = () => {
             </ol>
           </div>
         </section>
+
+        <AfterSignature />
 
         {/* Notre approche */}
         <section className="px-5 py-16 lg:px-0 lg:py-[136px]">

@@ -6,6 +6,7 @@ import { useLocalizedText } from "@/hooks/useLocalizedText";
 import { propertiesQueryOptions } from "@/hooks/useBiens";
 import { BASE_URL } from "@/hooks/useSEO";
 import { AGENCY } from "@/content/agency";
+import { AFTERCARE } from "@/content/aftercare";
 import { landingPath } from "@/content/landings";
 import { ZONES, zoneOf } from "@/content/zones";
 import { isUnavailable } from "@/lib/propertyServices";
@@ -18,6 +19,7 @@ export default function About() {
   const available = properties.filter((property) => !isUnavailable(property));
   const zones = [...new Set(available.map((property) => zoneOf(property)).filter(Boolean))] as (keyof typeof ZONES)[];
   const story = AGENCY.story[lang];
+  const after = AFTERCARE[lang];
 
   const h1 = tL("À propos de Live In Marrakech", "About Live In Marrakech", "Sobre Live In Marrakech");
   return (
@@ -57,6 +59,18 @@ export default function About() {
           <li><Link to={landingPath("vente", lang)}>{tL("Vente", "Sales", "Venta")}</Link> — {tL("villas, maisons et riads, selon les disponibilités.", "villas, houses and riads, depending on availability.", "villas, casas y riads, según disponibilidad.")}</li>
           <li><Link to={lp("/demande")}>{tL("Recherche sur mesure", "Tailored search", "Búsqueda a medida")}</Link> — {tL("décrivez le bien que vous cherchez, nous vous envoyons une sélection.", "describe the home you are looking for and we send you a selection.", "describa el inmueble que busca y le enviamos una selección.")}</li>
         </ul>
+      </section>
+
+      <section id="apres-la-signature">
+        <h2>{after.title}</h2>
+        <p>{after.intro}</p>
+        <ul>
+          {after.services.map(({ id, title, text }) => (
+            <li key={id}><strong>{title}</strong> — {text}</li>
+          ))}
+        </ul>
+        <p><em>{after.storyLabel} : </em>{after.story}</p>
+        <p>{after.pricing}</p>
       </section>
 
       <section>

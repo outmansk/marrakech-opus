@@ -183,6 +183,15 @@ const RENTAL_RULES = [
   'Security deposit: 2 months of rent for a furnished home, 1 month for an unfurnished one.',
   'Documents required from the tenant: passport or national ID card only.',
 ];
+// After the signature (confirmed Nov 2026) — keep in sync with src/content/aftercare.ts
+const AFTERCARE = [
+  'After the lease or the sale is signed, the agency stays the client’s contact, for tenants, buyers and owners.',
+  'Works and repairs: the agency finds trusted tradespeople (plumber, electrician, painter) and oversees the work.',
+  'Home upkeep: cleaner, gardener, pool maintenance.',
+  'Go-between with the landlord if there is an issue; water, electricity and internet set-up.',
+  'Owners living abroad: follow-up of the property and the tenants.',
+  'Included in the agency fee; overseeing a large project may be charged separately, agreed in advance.',
+];
 const CONTACT = { phone: '+212 6 05 38 70 41', email: 'contact@liveinmarrakech.com' };
 const TYPE_NAMES = { villa: 'villas', appartement: 'apartments', riad: 'riads', maison: 'houses', terrain: 'land' };
 const SERVICE_NAMES = {
@@ -225,6 +234,10 @@ Contact: ${CONTACT.phone} (phone and WhatsApp) · ${CONTACT.email} · ${SITE_URL
 ## Long-term rental rules
 
 ${RENTAL_RULES.map((r) => `- ${r}`).join('\n')}
+
+## After the signature
+
+${AFTERCARE.map((r) => `- ${r}`).join('\n')}
 
 ## Main pages
 
