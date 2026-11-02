@@ -45,7 +45,7 @@ describe("Admin : bons de visite", () => {
     expect(await screen.findByText("Claire Démo", { exact: false })).toBeVisible();
     expect(screen.getByText("À signer", { selector: "span" })).toBeVisible();
     expect(screen.getByText("Signé", { selector: "span" })).toBeVisible();
-    expect(screen.getByRole("link", { name: "Envoyer sur WhatsApp" })).toHaveAttribute("href", expect.stringContaining(encodeURIComponent(`/bon-visite/${JETON}`)));
+    expect(screen.getByRole("link", { name: "Envoyer sur WhatsApp" })).toHaveAttribute("href", expect.stringContaining(encodeURIComponent(`/bon/${JETON}`)));
     expect(screen.getByRole("button", { name: "Télécharger le PDF" })).toBeVisible();
   });
 
@@ -67,7 +67,7 @@ describe("Admin : bons de visite", () => {
     fireEvent.click(screen.getByRole("button", { name: "Créer le bon et obtenir le lien" }));
     expect(await screen.findByText("Bon BV-0003 prêt")).toBeVisible();
     expect(insert).toHaveBeenCalledWith(expect.objectContaining({ type_bien: "appartement", bien: "Appartement Démo (DP-26-DEMO)", quartier: "Prestigia", prix: 900, prix_unite: "nuit" }));
-    expect(screen.getByText(`${window.location.origin}/bon-visite/${"12".repeat(32)}`)).toBeVisible();
+    expect(screen.getByText(`${window.location.origin}/bon/${"12".repeat(32)}`)).toBeVisible();
   });
 
   it("refuse un bon sans prix valable", async () => {

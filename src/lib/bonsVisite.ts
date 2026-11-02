@@ -1,7 +1,7 @@
 /**
  * Bons de visite signés à distance (visite sur place ou à distance) (table bons_visite,
  * SQL : supabase/migrations/20261102_bons_visite.sql).
- * L'agence prépare le bon dans l'admin, la cliente le signe depuis /bon-visite/<jeton>.
+ * L'agence prépare le bon dans l'admin, la cliente le signe depuis /bon/<jeton> (anciens liens : /bon-visite/<jeton>).
  * Le PDF est construit ici, à l'identique pour la cliente et pour l'agence.
  */
 
@@ -42,7 +42,9 @@ export const BON_ADMIN_COLUMNS =
 export const TYPE_BIEN_LABELS: Record<BonTypeBien, string> = { villa: "Villa", appartement: "Appartement" };
 export const PRIX_UNITE_LABELS: Record<BonPrixUnite, string> = { mois: "par mois", nuit: "par nuit" };
 
-export const BON_PATH = "/bon-visite";
+export const BON_PATH = "/bon";
+/** Jeton de lien : 12 caractères (liens courts) ou 64 hexadécimaux (premiers bons envoyés). */
+export const JETON_RE = /^(?:[0-9a-f]{64}|[a-z2-9]{12})$/;
 export const SQL_FILE = "supabase/migrations/20261102_bons_visite.sql";
 
 export function bonReference(numero: number) {

@@ -90,6 +90,7 @@ export default function AppRoutes({ pages }: { pages: PublicPages }) {
           ))}
 
           {/* ── Bon de visite à signer (lien envoyé à la cliente) ─── */}
+          <Route path="/bon/:jeton" element={<BonVisite />} />
           <Route path="/bon-visite/:jeton" element={<BonVisite />} />
 
           {/* ── Admin (login public) ─────────────────────────────── */}
