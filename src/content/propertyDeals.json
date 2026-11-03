@@ -17,5 +17,11 @@
     "loyer": 12000,
     "prix": null,
     "mois": null
+  },
+  "a570cfc9-6859-41e2-9e83-0e5d49e88837": {
+    "profil": { "fr": "un client français", "en": "a French client", "es": "un cliente francés" },
+    "loyer": 13000,
+    "prix": null,
+    "mois": "2026-09"
   }
 }
