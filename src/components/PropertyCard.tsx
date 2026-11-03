@@ -4,6 +4,7 @@ import type { Bien } from "@/types/property";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
 import { useLocalePath } from "@/hooks/useLocalePath";
+import { formatPrice } from "@/lib/propertyDetail";
 import { propertyPath } from "@/lib/propertyUrl";
 import { propertyText, typeName } from "@/lib/propertyI18n";
 import { zoneLabel } from "@/content/zones";
@@ -19,7 +20,6 @@ interface PropertyCardProps {
 
 type PriceKind = "vente" | "location-longue-duree" | "location-courte-duree";
 
-const formatPrice = (price: number, devise: string = 'MAD') => new Intl.NumberFormat("fr-MA").format(price) + " " + devise;
 
 const priceFor = (property: Bien, kind: PriceKind) =>
   kind === "vente" ? property.prix_vente : kind === "location-longue-duree" ? property.prix_location_longue : property.prix_location_courte;
@@ -118,7 +118,7 @@ const PropertyCard = ({ property, activeType }: PropertyCardProps) => {
               </span>
               {amount ? (
                 <p className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                  <span className="whitespace-nowrap font-serif text-[31px] font-medium leading-[1.05]">{formatPrice(amount, devise)}</span>
+                  <span className="whitespace-nowrap font-serif text-[31px] font-medium leading-[1.05]">{formatPrice(amount, devise, lang)}</span>
                   {priceSuffix && <span className="text-[15px] leading-[1.2] text-[#655f56]">{priceSuffix}</span>}
                 </p>
               ) : (
@@ -127,7 +127,7 @@ const PropertyCard = ({ property, activeType }: PropertyCardProps) => {
               {alsoRent && (
                 <p className="text-sm leading-snug text-[#655f56]">
                   {tL("ou à louer à l’année :", "or long-term rent:", "o alquiler de larga duración:")}{" "}
-                  <span className="whitespace-nowrap font-semibold text-[#211f1b]">{formatPrice(alsoRent, devise)} {tL("/ mois", "/ month", "/ mes")}</span>
+                  <span className="whitespace-nowrap font-semibold text-[#211f1b]">{formatPrice(alsoRent, devise, lang)} {tL("/ mois", "/ month", "/ mes")}</span>
                 </p>
               )}
             </div>

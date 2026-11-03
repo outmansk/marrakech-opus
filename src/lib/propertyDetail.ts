@@ -1,10 +1,17 @@
 import type { Bien } from "@/types/property";
+import type { Lang } from "@/i18n/routing";
 import { getServices, isUnavailable } from "@/lib/propertyServices";
 import { zoneOf } from "@/content/zones";
 
 // Helpers of the property page (src/pages/PropertyDetail.tsx, src/components/property/).
 
-export const formatPrice = (price: number, devise = "MAD") => `${new Intl.NumberFormat("fr-MA").format(price)} ${devise}`;
+/** Thousands separator of the page language (fr 11 000, es 11.000, en 11,000), identical on server and client. */
+export function groupDigits(value: number, lang: Lang = "fr") {
+  const separator = lang === "en" ? "," : lang === "es" ? "." : "\u00a0";
+  return String(Math.round(value)).replace(/\B(?=(\d{3})+(?!\d))/g, separator);
+}
+
+export const formatPrice = (price: number, devise = "MAD", lang: Lang = "fr") => `${groupDigits(price, lang)} ${devise}`;
 
 type Block = { title: string | null; body: string };
 

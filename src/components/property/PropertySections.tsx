@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowUpDown, Bath, Wrench, BedDouble, Car, Check, Clock, CookingPot, Droplets, Dumbbell, FileText, Flame, Home, KeyRound,
-  LandPlot, MapPin, MessageCircle, Route, Ruler, ShieldCheck, Snowflake, Sofa, Sparkles, Sprout, Sun, Thermometer, Trees, Video, Waves, Wifi,
+  MapPin, Maximize, MessageCircle, Route, ShieldCheck, Snowflake, Sofa, Sparkles, Sprout, Sun, Thermometer, Trees, Video, Waves, Wifi,
 } from "lucide-react";
 import type { Bien } from "@/types/property";
 import type { Lang } from "@/i18n/routing";
@@ -12,7 +12,7 @@ import { ZONES, depositMonthsOf, furnishedOf, zoneLabel, zoneOf } from "@/conten
 import { AGENCY } from "@/content/agency";
 import { AFTERCARE } from "@/content/aftercare";
 import { useLocalePath } from "@/hooks/useLocalePath";
-import { descriptionBlocks, formatPrice } from "@/lib/propertyDetail";
+import { descriptionBlocks, formatPrice, groupDigits } from "@/lib/propertyDetail";
 
 // Building blocks of the property page (src/pages/PropertyDetail.tsx). Only real data:
 // the property row, the confirmed rental rules and the agency contact details.
@@ -30,29 +30,31 @@ export function SectionHeading({ title, aside }: { title: string; aside?: ReactN
   );
 }
 
-/** Bedrooms, bathrooms, living area, plot: icon cards (2 columns on mobile, 4 on desktop). */
+const area = (value: number, lang: Lang) => `${groupDigits(value, lang)} m²`;
+
+/** Bedrooms, bathrooms, plot, living area: one panel with thin dividers (2 columns on mobile, 4 on desktop). */
 export function SpecsGrid({ property }: { property: Bien }) {
   const tL = useLocalizedText();
+  const { lang } = useLocalePath();
   const specs: { icon: LucideIcon; value: string; label: string }[] = [];
   if (property.chambres != null) specs.push({ icon: BedDouble, value: String(property.chambres), label: property.chambres > 1 ? tL("Chambres", "Bedrooms", "Dormitorios") : tL("Chambre", "Bedroom", "Dormitorio") });
   if (property.salles_de_bain != null) specs.push({ icon: Bath, value: String(property.salles_de_bain), label: property.salles_de_bain > 1 ? tL("Salles de bain", "Bathrooms", "Baños") : tL("Salle de bain", "Bathroom", "Baño") });
-  if (property.surface_terrain) specs.push({ icon: LandPlot, value: `${property.surface_terrain} m²`, label: tL("Terrain", "Plot", "Parcela") });
-  if (property.surface_habitable && property.surface_habitable !== property.surface_terrain) specs.push({ icon: Ruler, value: `${property.surface_habitable} m²`, label: tL("Surface habitable", "Living area", "Superficie habitable") });
+  if (property.surface_terrain) specs.push({ icon: Trees, value: area(property.surface_terrain, lang), label: tL("Terrain", "Plot", "Parcela") });
+  if (property.surface_habitable && property.surface_habitable !== property.surface_terrain) specs.push({ icon: Maximize, value: area(property.surface_habitable, lang), label: tL("Surface habitable", "Living area", "Superficie habitable") });
   if (!specs.length) return null;
   return (
-    <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4 md:gap-3">
-      {specs.map(({ icon: Icon, value, label }) => (
-        <div key={label} className={`${card} flex items-center gap-3 p-3 md:p-4`}>
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary">
-            <Icon size={20} strokeWidth={1.5} aria-hidden="true" />
-          </span>
-          <span className="flex min-w-0 flex-col">
-            <span className="whitespace-nowrap text-[15px] font-semibold text-foreground">{value}</span>
-            <span className="text-[11px] leading-tight text-muted-foreground">{label}</span>
-          </span>
+    <dl className={`grid grid-cols-2 overflow-hidden rounded-xl border border-border/70 bg-card ${specs.length >= 4 ? "md:grid-cols-4" : specs.length === 3 ? "md:grid-cols-3" : ""}`}>
+      {specs.map(({ icon: Icon, value, label }, index) => (
+        <div
+          key={label}
+          className={`flex flex-col gap-1.5 px-4 py-4 md:px-5 md:py-5 ${index % 2 === 1 ? "border-l border-border/70" : ""} ${index >= 2 ? "border-t border-border/70 md:border-t-0" : ""} ${index >= 1 ? "md:border-l" : ""}`}
+        >
+          <Icon size={20} strokeWidth={1.25} className="text-accent" aria-hidden="true" />
+          <dt className="order-3 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">{label}</dt>
+          <dd className="order-2 m-0 whitespace-nowrap font-serif text-[30px] font-medium leading-none lining-nums text-foreground md:text-[34px]">{value}</dd>
         </div>
       ))}
-    </div>
+    </dl>
   );
 }
 
@@ -164,13 +166,13 @@ export function AmenitiesGrid({ equipements, lang }: { equipements: string[]; la
   return (
     <section>
       <SectionHeading title={tL("Équipements et prestations", "Features and amenities", "Equipamiento y servicios")} />
-      <ul className="grid grid-cols-2 gap-2 md:grid-cols-3">
+      <ul className="grid grid-cols-2 gap-x-6 border-t border-border/70 md:grid-cols-3">
         {equipements.map((eq) => {
           const Icon = AMENITY_ICONS[eq] ?? Check;
           return (
-            <li key={eq} className="flex min-h-12 items-center gap-2.5 rounded-lg bg-muted/50 px-3 py-2.5">
-              <Icon size={19} strokeWidth={1.5} className="shrink-0 text-primary" aria-hidden="true" />
-              <span className="text-[13px] font-medium text-foreground/85">{equipmentName(eq, lang)}</span>
+            <li key={eq} className="flex min-h-[52px] items-center gap-3 border-b border-border/70 py-3">
+              <Icon size={20} strokeWidth={1.25} className="shrink-0 text-accent" aria-hidden="true" />
+              <span className="text-[14px] text-foreground/85">{equipmentName(eq, lang)}</span>
             </li>
           );
         })}
@@ -213,17 +215,18 @@ export function LocationBlock({ property, lang }: { property: Bien; lang: Lang }
 /** Confirmed long-term rental rules, with the deposit amount computed from the rent. */
 export function RentalTerms({ property }: { property: Bien }) {
   const tL = useLocalizedText();
+  const { lang } = useLocalePath();
   const rent = property.prix_location_longue;
   const furnished = furnishedOf(property);
   const months = depositMonthsOf(property);
   const deposit = months === null
     ? tL("2 mois (meublé) · 1 mois (vide)", "2 months (furnished) · 1 month (unfurnished)", "2 meses (amueblado) · 1 mes (sin amueblar)")
-    : `${months === 1 ? tL("1 mois de loyer", "1 month’s rent", "1 mes de alquiler") : tL(`${months} mois de loyer`, `${months} months’ rent`, `${months} meses de alquiler`)}${rent ? ` (${formatPrice(rent * months, property.devise)})` : ""}`;
+    : `${months === 1 ? tL("1 mois de loyer", "1 month’s rent", "1 mes de alquiler") : tL(`${months} mois de loyer`, `${months} months’ rent`, `${months} meses de alquiler`)}${rent ? ` (${formatPrice(rent * months, property.devise, lang)})` : ""}`;
   const rows = [
     { label: tL("Durée du bail", "Lease", "Contrato"), value: tL("1 an minimum", "1 year minimum", "1 año como mínimo") },
     ...(furnished !== null ? [{ label: tL("Logement", "Home", "Vivienda"), value: furnished ? tL("Meublé", "Furnished", "Amueblado") : tL("Vide (non meublé)", "Unfurnished", "Sin amueblar") }] : []),
     { label: tL("Dépôt de garantie", "Security deposit", "Fianza"), value: deposit, strong: true },
-    { label: tL("Frais d’agence", "Agency fee", "Honorarios de agencia"), value: `${tL("1 mois de loyer", "1 month’s rent", "1 mes de alquiler")}${rent ? ` (${formatPrice(rent, property.devise)})` : ""}` },
+    { label: tL("Frais d’agence", "Agency fee", "Honorarios de agencia"), value: `${tL("1 mois de loyer", "1 month’s rent", "1 mes de alquiler")}${rent ? ` (${formatPrice(rent, property.devise, lang)})` : ""}` },
     { label: tL("Pièces à fournir", "Documents", "Documentos"), value: tL("Passeport ou carte d’identité", "Passport or national ID card", "Pasaporte o documento de identidad") },
     { label: tL("Visite", "Viewing", "Visita"), value: tL("Sur place ou en vidéo", "In person or by video", "En persona o por vídeo") },
   ];

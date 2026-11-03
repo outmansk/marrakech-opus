@@ -262,7 +262,7 @@ const PropertyDetail = () => {
                   <div className="mt-1 flex flex-col gap-2 rounded-xl bg-muted/60 p-4 md:p-5">
                     {prices.map((price) => (
                       <div key={price.service} className="flex flex-wrap items-baseline gap-x-2">
-                        <span className="text-2xl font-semibold tracking-tight text-primary md:text-3xl">{formatPrice(price.amount, property.devise)}</span>
+                        <span className="text-2xl font-semibold tracking-tight text-primary md:text-3xl">{formatPrice(price.amount, property.devise, lang)}</span>
                         {price.suffix && <span className="text-sm text-muted-foreground">{price.suffix}</span>}
                         {prices.length > 1 && <span className="ml-auto text-[11px] uppercase tracking-[0.12em] text-muted-foreground">{serviceName(price.service, lang)}</span>}
                       </div>
@@ -273,7 +273,7 @@ const PropertyDetail = () => {
                           {furnished ? tL("Meublé", "Furnished", "Amueblado") : tL("Vide", "Unfurnished", "Sin amueblar")}
                         </span>
                         {depositMonths === 1 ? tL("Caution : 1 mois de loyer", "Deposit: 1 month’s rent", "Fianza: 1 mes de alquiler") : tL(`Caution : ${depositMonths} mois de loyer`, `Deposit: ${depositMonths} months’ rent`, `Fianza: ${depositMonths} meses de alquiler`)}
-                        {deposit && ` (${formatPrice(deposit, property.devise)})`}
+                        {deposit && ` (${formatPrice(deposit, property.devise, lang)})`}
                       </p>
                     )}
                   </div>
@@ -307,7 +307,7 @@ const PropertyDetail = () => {
                 <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{unavailable ? unavailableLabel : tL("Réserver ou visiter", "Book or visit", "Reservar o visitar")}</p>
                 {mainPrice && !unavailable && (
                   <p className="mt-3 flex items-baseline gap-1.5">
-                    <span className="text-2xl font-semibold text-primary">{formatPrice(mainPrice.amount, property.devise)}</span>
+                    <span className="text-2xl font-semibold text-primary">{formatPrice(mainPrice.amount, property.devise, lang)}</span>
                     {mainPrice.suffix && <span className="text-sm text-muted-foreground">{mainPrice.suffix}</span>}
                   </p>
                 )}
@@ -348,7 +348,7 @@ const PropertyDetail = () => {
           {mainPrice && !unavailable && (
             <div className="hidden shrink-0 flex-col min-[360px]:flex">
               <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{mainPrice.label}</span>
-              <span className={`font-semibold leading-tight text-primary ${mainPrice.amount >= 1_000_000 ? "text-base" : "text-lg"}`}>{formatPrice(mainPrice.amount, property.devise)}</span>
+              <span className={`font-semibold leading-tight text-primary ${mainPrice.amount >= 1_000_000 ? "text-base" : "text-lg"}`}>{formatPrice(mainPrice.amount, property.devise, lang)}</span>
             </div>
           )}
           <div className="flex flex-1 items-center justify-end gap-2">
