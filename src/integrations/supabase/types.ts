@@ -302,6 +302,10 @@ export type Database = {
           description_longue_es: string | null
           traduction_a_relire: boolean
           meuble: boolean | null
+          conclusion_client: string | null
+          conclusion_mois: string | null
+          conclusion_nationalite: string | null
+          conclusion_montant: number | null
           slug: string | null
           type: string
           updated_at: string
@@ -341,6 +345,10 @@ export type Database = {
           description_longue_es?: string | null
           traduction_a_relire?: boolean
           meuble?: boolean | null
+          conclusion_client?: string | null
+          conclusion_mois?: string | null
+          conclusion_nationalite?: string | null
+          conclusion_montant?: number | null
           slug?: string | null
           type: string
           updated_at?: string
@@ -380,6 +388,10 @@ export type Database = {
           description_longue_es?: string | null
           traduction_a_relire?: boolean
           meuble?: boolean | null
+          conclusion_client?: string | null
+          conclusion_mois?: string | null
+          conclusion_nationalite?: string | null
+          conclusion_montant?: number | null
           slug?: string | null
           type?: string
           updated_at?: string

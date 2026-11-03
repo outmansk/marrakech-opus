@@ -180,6 +180,37 @@ export function useToggleStatus() {
   });
 }
 
+// ─── useConcludeProperty ───────────────────────────────────────────────────
+/** Fiche « Déjà loué / vendu » saisie dans l'admin (profil anonyme, montant, mois). */
+export interface Conclusion {
+  conclusion_client: string | null;
+  conclusion_nationalite: string | null;
+  conclusion_montant: number | null;
+  conclusion_mois: string | null;
+}
+
+/** Passe le bien en « Déjà loué / vendu » avec sa fiche : le site public l'affiche aussitôt (badge, encart, accueil). */
+export function useConcludeProperty() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, ...conclusion }: Conclusion & { id: string }) => {
+      const { data, error } = await supabase.from(TABLE).update({ statut: 'vendu-loue', ...conclusion }).eq('id', id).select().single();
+      if (error) throw error;
+      return data as Bien;
+    },
+    onSuccess: () => {
+      invalidateAll(queryClient);
+      toast.success('Bien marqué « Déjà loué / vendu ». Le site est à jour.');
+    },
+    onError: (err: Error) => {
+      toast.error(/conclusion_/.test(err.message)
+        ? "Les champs « Déjà loué » n'existent pas encore en base : lancez le SQL 20261104_biens_conclusion.sql dans Supabase."
+        : friendlyError(err));
+    },
+  });
+}
+
 // ─── useSetStatut ──────────────────────────────────────────────────────────
 export function useSetStatut() {
   const queryClient = useQueryClient();

@@ -9,6 +9,7 @@ import { supabase } from "@/lib/supabase";
 import { useDeleteProperty, useProperties, useSetStatut } from "@/hooks/useBiens";
 import { useSocialData } from "@/hooks/useSocial";
 import { BienForm } from "@/components/admin/BienForm";
+import { DealDialog } from "@/components/admin/DealDialog";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import StatusBadge from "@/components/admin/StatusBadge";
 import { ActionMenu, Chips, ConfirmDialog, EmptyState, ErrorState, PageHeader, SelectField } from "@/components/admin/ui";
@@ -65,6 +66,7 @@ function useBienActions(onEdit: (bien: Bien) => void) {
   const setStatut = useSetStatut();
   const remove = useDeleteProperty();
   const [toDelete, setToDelete] = useState<Bien | null>(null);
+  const [toConclude, setToConclude] = useState<Bien | null>(null);
 
   const toggleLabel = (bien: Bien) => (bien.statut === "publie" ? "Dépublier" : bien.statut === "vendu-loue" ? "Republier" : "Publier");
   const toggle = (bien: Bien) => setStatut.mutate({ id: bien.id, statut: bien.statut === "publie" ? "brouillon" : "publie" });
@@ -72,14 +74,20 @@ function useBienActions(onEdit: (bien: Bien) => void) {
   const menu = (bien: Bien, owner?: Contact) => [
     { label: "Ajouter un propriétaire / intermédiaire", onSelect: () => navigate(`${BASE}/agenda?vue=contacts&contact=new&role=proprietaire&bien=${bien.id}`) },
     { label: owner ? `Planifier un appel à ${owner.nom}` : "Planifier une tâche pour ce bien", onSelect: () => navigate(`${BASE}/agenda?new=1&type=appel&bien=${bien.id}${owner ? `&avec=${owner.id}` : ""}`) },
-    bien.statut === "vendu-loue"
-      ? { label: "Remettre en brouillon", onSelect: () => setStatut.mutate({ id: bien.id, statut: "brouillon" }) }
-      : { label: "Marquer « Déjà loué / vendu »", onSelect: () => setStatut.mutate({ id: bien.id, statut: "vendu-loue" }) },
+    ...(bien.statut === "vendu-loue"
+      ? [
+        { label: "Modifier les infos « Déjà loué »…", onSelect: () => setToConclude(bien) },
+        { label: "Remettre disponible", onSelect: () => setStatut.mutate({ id: bien.id, statut: "publie" }) },
+        { label: "Remettre en brouillon", onSelect: () => setStatut.mutate({ id: bien.id, statut: "brouillon" }) },
+      ]
+      : [{ label: "Marquer « Déjà loué / vendu »…", onSelect: () => setToConclude(bien) }]),
     { label: "Voir sur le site", onSelect: () => undefined, href: propertyPath(bien) },
     { label: "Envoyer sur WhatsApp", onSelect: () => undefined, href: `https://wa.me/?text=${encodeURIComponent(shareText(bien))}` },
     { label: "Supprimer…", danger: true, onSelect: () => setToDelete(bien) },
   ];
   const dialog = (
+    <>
+    <DealDialog bien={toConclude} onClose={() => setToConclude(null)} />
     <ConfirmDialog
       open={!!toDelete}
       onOpenChange={(open) => !open && setToDelete(null)}
@@ -87,6 +95,7 @@ function useBienActions(onEdit: (bien: Bien) => void) {
       description={toDelete ? `« ${toDelete.titre} » et ses photos seront supprimés définitivement. Cette action est irréversible.` : ""}
       onConfirm={() => toDelete && remove.mutate(toDelete.id)}
     />
+    </>
   );
   return { toggleLabel, toggle, menu, dialog, onEdit, busy: setStatut.isPending };
 }
