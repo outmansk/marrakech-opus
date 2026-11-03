@@ -18,7 +18,6 @@ import {
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
-  PenLine,
   Plus,
   UserPlus,
   UsersRound,
@@ -116,7 +115,6 @@ export default function AdminLayout() {
     { label: "Nouveau contact", icon: UserPlus, to: `${BASE}/agenda?vue=contacts&contact=new` },
     { label: "Ajouter un bien", icon: Building2, to: `${BASE}/biens?new=1` },
     { label: "Ajouter un client", icon: UserPlus, to: `${BASE}/clients?new=1` },
-    { label: "Nouvel article", icon: PenLine, to: `${BASE}/blog?new=1` },
     { label: "Nouveau bon de visite", icon: FileSignature, to: `${BASE}/bons-visite?new=1` },
   ];
 
