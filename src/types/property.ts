@@ -116,6 +116,11 @@ export interface Bien {
   photo_principale: string | null;
   proximites: Array<{ place: string; time: string }>;
   statut: BienStatut;
+  /** Fiche « Déjà loué / vendu » saisie dans l'admin : profil anonyme (type + nationalité), montant conclu, mois AAAA-MM. */
+  conclusion_client?: string | null;
+  conclusion_nationalite?: string | null;
+  conclusion_montant?: number | null;
+  conclusion_mois?: string | null;
   disponible_le: string | null;
   reference: string | null;
   latitude: number | null;
