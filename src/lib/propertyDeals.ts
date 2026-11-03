@@ -3,9 +3,10 @@ import featured from "@/content/propertyFeatured.json";
 import type { Lang } from "@/i18n/routing";
 import type { Bien } from "@/types/property";
 import { isSoldOnly, isUnavailable } from "@/lib/propertyServices";
+import { isClientType, isDealMonth, isNationalite, profileText } from "@/lib/dealProfile";
 
-// Biens conclus par l'agence (src/content/propertyDeals.json) : profil anonyme et montant,
-// affichés seulement quand le bien est au statut « vendu-loue ».
+// Biens conclus par l'agence : profil anonyme et montant, affichés seulement quand le bien est au statut « vendu-loue ».
+// Source : les colonnes conclusion_* de la base (saisies dans l'admin), sinon src/content/propertyDeals.json (anciens biens).
 
 interface Deal { profil: Record<Lang, string> | null; loyer: number | null; prix: number | null; mois: string | null }
 const DEALS = deals as unknown as Record<string, Deal>;
@@ -24,7 +25,23 @@ export const CAROUSEL_QUERY = { statut: ["publie", "vendu-loue"] };
 
 export const RECENT_DEALS_QUERY = { statut: "vendu-loue" };
 
-export const dealOf = (property: Pick<Bien, "id" | "statut">) => (isUnavailable(property) ? DEALS[property.id] ?? null : null);
+type DealColumns = Pick<Bien, "conclusion_client" | "conclusion_nationalite" | "conclusion_montant" | "conclusion_mois" | "services" | "service">;
+
+/** Fiche saisie dans l'admin (colonnes conclusion_*), ou null si rien n'y est renseigné. */
+function dealFromColumns(property: Partial<DealColumns>): Deal | null {
+  const client = isClientType(property.conclusion_client) ? property.conclusion_client : null;
+  const montant = Number(property.conclusion_montant) > 0 ? Number(property.conclusion_montant) : null;
+  const mois = isDealMonth(property.conclusion_mois) ? property.conclusion_mois : null;
+  if (!client && !montant && !mois) return null;
+  const nationalite = isNationalite(property.conclusion_nationalite) ? property.conclusion_nationalite : null;
+  const profil = client ? { fr: profileText(client, nationalite, "fr"), en: profileText(client, nationalite, "en"), es: profileText(client, nationalite, "es") } : null;
+  const services = property.services?.length ? property.services : property.service ? [property.service] : [];
+  const sold = services.length > 0 && services.every((s) => s === "vente");
+  return { profil, loyer: sold ? null : montant, prix: sold ? montant : null, mois };
+}
+
+export const dealOf = (property: Pick<Bien, "id" | "statut"> & Partial<DealColumns>) =>
+  isUnavailable(property) ? dealFromColumns(property) ?? DEALS[property.id] ?? null : null;
 
 const FEATURED: string[] = featured.ids;
 

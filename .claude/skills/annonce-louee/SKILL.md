@@ -17,9 +17,8 @@ Répondre en français, court, et rendre **un SQL prêt à coller** (Supabase �
    ```
    Si le loyer ou le prix final diffère de l'annonce, le mettre aussi (colonne de prix + montants du texte, comme dans `modifier-annonce`).
    Remettre disponible : `statut = 'publie'`. Retirer du site sans supprimer : voir `retirer-annonce`.
-3. **Profil client (facultatif mais utile)** : le badge « Déjà loué », l'encart sur la fiche et la section « Récemment loués et vendus » de l'accueil viennent de `src/content/propertyDeals.json` :
-   `"<id>": { "profil": { "fr": "un couple français", "en": "a French couple", "es": "una pareja francesa" }, "loyer": 12000, "prix": null, "mois": "2026-11" }`
-   (`profil` peut être `null` ; `prix` pour une vente). Ce fichier fait partie du site : l'ajouter, commit + `git push origin HEAD:main` (visible après le déploiement automatique), puis le dire en une ligne. Si l'utilisateur ne donne pas de profil, faire le SQL seul et proposer d'ajouter le profil.
+3. **Profil client** (badge « Déjà loué », encart de la fiche, section « Récemment loués et vendus ») : en base, dans le même SQL, avec des valeurs de liste uniquement :
+   `conclusion_client` = couple | famille | client | cliente | entreprise, `conclusion_nationalite` = francaise | belge | marocaine | espagnole | britannique | italienne | allemande | suisse | neerlandaise | americaine | canadienne | portugaise | russe | saoudienne | emiratie (codes de `src/lib/dealProfile.ts`), `conclusion_montant` = loyer ou prix conclu, `conclusion_mois` = 'AAAA-MM'. Le site compose la phrase en FR/EN/ES tout seul, sans déploiement. L'utilisateur peut aussi le faire lui-même dans l'admin : liste des biens → « … » → « Marquer « Déjà loué / vendu »… ». Ne plus écrire dans `propertyDeals.json` (anciens biens seulement).
 4. Après « c'est fait » : `find-bien.mjs` doit montrer `vendu-loue`.
 
 ## Règles
