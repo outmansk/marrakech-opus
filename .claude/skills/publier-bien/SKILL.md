@@ -66,3 +66,7 @@ Le descriptif de l'utilisateur est un brouillon (fautes, abréviations, « route
 ## Méthode de secours : bien « fichier » (sans Supabase)
 
 Si l'utilisateur ne peut pas lancer le SQL : `convert-photos.cjs <slug> "<src>=<nom>" …` → `public/biens/<slug>/`, entrée dans `src/content/fileProperties.json` (mêmes champs), titre affiché dans `src/content/propertyHeadlines.json`, traductions dans `src/content/propertyTranslations.json`, puis `npm run build` (vérifier `dist/bien/<slug>-<id>.html`), commit des seuls fichiers du bien (**jamais `.agents/mcp_config.json`, `.env*`, `CLAUDE.md` modifié par d'autres**) et `git push origin main`. Le bien n'est pas visible dans l'admin.
+
+## Lancer le SQL soi-même dans Supabase (si l'utilisateur le demande)
+
+L'utilisateur peut demander que Claude lance le SQL avec l'extension Chrome. Utiliser le navigateur où Supabase est déjà connecté (`list_connected_browsers` → « Browser 1 » le 3 novembre 2026 ; l'autre affiche la page de connexion : ne jamais se connecter à sa place). Ouvrir `https://supabase.com/dashboard/project/fuyegiwkfqlsuhjvdbgx/sql/new`, coller le SQL avec `javascript_tool` (`monaco.editor.getModels().at(-1).setValue(sql)`), cliquer « Run », lire « Success », vérifier avec `find-bien.mjs`, puis fermer l'onglet. Un `DELETE` ne se lance qu'après confirmation explicite dans le chat.
