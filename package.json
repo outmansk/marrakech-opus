@@ -15,7 +15,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "generate:sitemap": "node scripts/generate-sitemap.cjs",
-    "seo:check": "node scripts/seo-check.mjs"
+    "seo:check": "node scripts/seo-check.mjs",
+    "indexnow": "node scripts/indexnow.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

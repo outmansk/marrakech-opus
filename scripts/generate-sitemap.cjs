@@ -214,8 +214,27 @@ const areaListings = (page, properties) => properties.filter((p) => zoneOf(p) ==
 const day = (iso) => (iso ? new Date(iso).toISOString().split('T')[0] : undefined);
 const latest = (dates) => dates.filter(Boolean).sort().pop();
 
+const money = (value, devise) => `${new Intl.NumberFormat('en-US').format(value)} ${devise || 'MAD'}`;
+
+/** "- Villas, Fez road: 11,000–23,000 MAD (5 listings)": price range per type and area, from our own listings. */
+function priceLines(properties, service, priceOf) {
+  const groups = {};
+  for (const p of properties) {
+    const value = Number(priceOf(p));
+    if (!(p.services || []).includes(service) || !value) continue;
+    const key = `${TYPE_NAMES[p.type] || p.type}|${areaOf(p) || 'Marrakech'}|${p.devise || 'MAD'}`;
+    (groups[key] ||= []).push(value);
+  }
+  return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b)).map(([key, values]) => {
+    const [type, area, devise] = key.split('|');
+    const [low, high] = [Math.min(...values), Math.max(...values)];
+    const range = low === high ? money(low, devise) : `${new Intl.NumberFormat('en-US').format(low)}–${money(high, devise)}`;
+    return `- ${type.charAt(0).toUpperCase()}${type.slice(1)}, ${area}: ${range} (${values.length} listing${values.length > 1 ? 's' : ''})`;
+  });
+}
+
 /** llms.txt: a factual map of the public site for AI assistants, rebuilt from the data on every build. */
-function buildLlmsTxt({ properties, articles, articleLoc }) {
+function buildLlmsTxt({ properties, deals, articles, articleLoc }) {
   const types = [...new Set(properties.map((p) => p.type))].map((t) => TYPE_NAMES[t] || t);
   const services = [...new Set(properties.flatMap((p) => p.services || []))].map((s) => SERVICE_NAMES[s] || s);
   const areas = [...new Set(properties.map(areaOf).filter(Boolean))].sort();
@@ -224,6 +243,17 @@ function buildLlmsTxt({ properties, articles, articleLoc }) {
   const landingLinks = (lang) => LANDINGS.filter((l) => landingListings(l, properties).length > 0).map((l) => link(l.label[lang], localize(l.paths[lang], lang)));
   const areaLinks = (lang) => AREA_PAGES.filter((a) => areaListings(a, properties).length > 0).map((a) => link(`${ZONE_NAMES[a.zone]} (${lang.toUpperCase()})`, localize(a.paths[lang], lang)));
   const guide = (a) => link(`${a.title} (${(a.lang || 'fr').toUpperCase()})`, articleLoc(a));
+  // Our own figures, dated: what AI assistants can quote instead of guessing market prices.
+  const rents = priceLines(properties, 'location-longue-duree', (p) => p.prix_location_longue);
+  const sales = priceLines(properties, 'vente', (p) => p.prix_vente);
+  const signed = deals
+    .filter((d) => (d.services || []).includes('location-longue-duree'))
+    .map((d) => `- ${(TYPE_NAMES[d.type] || d.type).replace(/^./, (c) => c.toUpperCase()).replace(/s$/, '')}, ${areaOf(d) || 'Marrakech'}: ${money(d.conclusion_montant, d.devise)} a month${d.conclusion_mois ? ` (signed ${d.conclusion_mois})` : ''}`);
+  const figures = [
+    ...(rents.length ? ['Long-term rents per month, by property type and area:', '', ...rents, ''] : []),
+    ...(sales.length ? ['Asking prices of properties for sale, by type and area:', '', ...sales, ''] : []),
+    ...(signed.length ? ['Long-term rentals recently concluded by the agency (rent agreed, client kept anonymous):', '', ...signed, ''] : []),
+  ];
 
   return `# Live In Marrakech
 
@@ -238,7 +268,12 @@ Contact: ${CONTACT.phone} (phone and WhatsApp) · ${CONTACT.email} · ${SITE_URL
 - Areas of the currently listed properties: ${areas.join(', ') || 'not specified'}.
 - Prices are shown on each property page, in Moroccan dirhams (MAD) or euros (EUR), per month for long-term rentals. Availability and prices change: the property page is the reference.
 
-## Long-term rental rules
+${figures.length ? `## Prices in our listings (on ${day(new Date().toISOString())})
+
+These figures come only from the agency's own listings on the date above, not from market statistics. Each property page is the reference.
+
+${figures.join('\n')}
+` : ''}## Long-term rental rules
 
 ${RENTAL_RULES.map((r) => `- ${r}`).join('\n')}
 
@@ -304,12 +339,14 @@ async function main() {
     // Too short to be useful: noindex on the site (isThinArticle in src/content/blog.ts), so not listed here.
     .filter((a) => (a.content || '').split(/\s+/).filter((w) => /\p{L}/u.test(w)).length >= 300);
   // Only properties that are available: rented/sold ones stay online but are not promoted.
-  const baseColumns = 'id,titre,type,services,quartier,updated_at,photo_principale,photos';
+  const baseColumns = 'id,titre,type,services,quartier,updated_at,photo_principale,photos,prix_location_longue,prix_vente,devise';
   let properties = await supabaseQuery('properties_v2', `${baseColumns},titre_en,titre_es,slug`, '&statut=eq.publie');
   if (!properties.length) properties = await supabaseQuery('properties_v2', `${baseColumns},titre_en,titre_es`, '&statut=eq.publie'); // before the slug column exists
   if (!properties.length) properties = await supabaseQuery('properties_v2', baseColumns, '&statut=eq.publie'); // before the translation columns exist
 
   properties = properties.map(withOverrides);
+  // Rented/sold properties with the amount agreed (admin « Déjà loué / vendu » form), for llms.txt.
+  const deals = await supabaseQuery('properties_v2', 'id,type,services,quartier,devise,conclusion_montant,conclusion_mois', '&statut=eq.vendu-loue&conclusion_montant=not.is.null&order=conclusion_mois.desc.nullslast');
   properties.push(...FILE_PROPERTIES.filter((p) => p.statut === 'publie' && !properties.some((row) => row.id === p.id)));
   console.log(`  📦  ${properties.length} propriétés disponibles`);
   console.log(`  📝  ${articles.length} articles publiés\n`);
@@ -383,7 +420,7 @@ ${entries.join('\n\n')}
 
   const publicDir = path.resolve(__dirname, '..', 'public');
   fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), xml, 'utf-8');
-  fs.writeFileSync(path.join(publicDir, 'llms.txt'), buildLlmsTxt({ properties, articles, articleLoc }), 'utf-8');
+  fs.writeFileSync(path.join(publicDir, 'llms.txt'), buildLlmsTxt({ properties, deals, articles, articleLoc }), 'utf-8');
   console.log('✅  public/sitemap.xml and public/llms.txt generated');
   console.log(`   Total URLs: ${entries.length}`);
 }
