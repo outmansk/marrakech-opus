@@ -1,0 +1,17 @@
+{
+  "_comment": "Proper name of a property or of its residence, put in the page <title> because people search for it (\"prestigia ambre\", \"villa rayan marrakech\"). A name starting with the property type (\"Villa Elhaj\") replaces the type; any other name is a residence (\"Prestigia Ambre\") and comes after it. Only names written in the listing itself.",
+  "b0b1924e-b9a3-46f2-92f1-7b10017db25d": "Prestigia Ambre",
+  "76b25b2d-43f5-45a0-bd3e-abf31d386dd3": "Zara",
+  "f15fbf1e-43b1-407d-a275-273457382ae1": "Villa Apple Garden",
+  "97560a47-a9c0-4014-863a-af48298b0bed": "Villa Elhaj",
+  "ccb89162-f950-4f65-b33b-2d1f7a551153": "Villa Machmam",
+  "5e990dd2-cd67-487b-a201-f0b46b7721e3": "Villa Bouzar",
+  "8e584940-602f-4e2f-8db2-b8cdc28e18c6": "Villa Bensilam",
+  "744048a5-2754-4075-a9a7-ddbe7bd79f51": "Villa Swigya",
+  "5ae8e008-1dc3-4e27-8e5f-d056dfd0daca": "Villa Golf Atlas",
+  "3cbf78ee-ebd3-4874-b076-45a1dd493376": "Villa Ourika Golf",
+  "6d2f1c8e-5b7a-4e3f-9a21-3c4d5e6f7a8b": "Villa 3kari",
+  "eefff164-83fb-4b36-bc24-ab8c483748e5": "Villa Talaja",
+  "b7c41e5a-2f86-4d0b-9e3a-6a1d58c0f972": "Villa Rayan",
+  "28342b88-f26c-48fc-be40-52cb54342e9b": "Villa Himri"
+}

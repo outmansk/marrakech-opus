@@ -18,6 +18,8 @@ const fs = require('fs');
 const path = require('path');
 // Search landing pages (villas à vendre…), one translated address per language.
 const LANDINGS = require('../src/content/landings.json');
+// Area pages (villas route de Sidi Rahal…), one translated address per language.
+const AREA_PAGES = require('../src/content/areaPages.json');
 // Proposed EN/ES property texts (used by the site while the translated columns are empty).
 const SUGGESTED_TRANSLATIONS = require('../src/content/propertyTranslations.json');
 // Area of a property when its quartier is empty (same data as src/content/zones.ts).
@@ -34,7 +36,8 @@ const withOverrides = (p) => {
 };
 const ZONE_NAMES = { 'route-de-fes': 'Fez road', 'sidi-rahal': 'Sidi Rahal road', chrifia: 'Chrifia', golf: 'golf area (Prestigia)', palmeraie: 'Palmeraie (Ennakhil)', 'village-touristique': 'Village Touristique', medina: 'Medina', 'route-essaouira': 'Essaouira road', gueliz: 'Gueliz (city centre)', 'route-ourika': 'Ourika road' };
 const QUARTIER_ZONES = { 'Route de Fes': 'route-de-fes', Chrifia: 'chrifia', Palmeraie: 'palmeraie', Medina: 'medina', "Route d'Essaouira": 'route-essaouira', Gueliz: 'gueliz', "Route de l'Ourika": 'route-ourika' };
-const areaOf = (p) => ZONE_NAMES[QUARTIER_ZONES[(p.quartier || '').trim()] || PROPERTY_FACTS[p.id]?.zone] || (p.quartier || '').trim() || null;
+const zoneOf = (p) => QUARTIER_ZONES[(p.quartier || '').trim()] || PROPERTY_FACTS[p.id]?.zone || null;
+const areaOf = (p) => ZONE_NAMES[zoneOf(p)] || (p.quartier || '').trim() || null;
 // Addresses that redirect elsewhere (old blog articles merged into landing pages) stay out of the sitemap.
 const REDIRECTED = new Set((require('../vercel.json').redirects || []).map((r) => r.source));
 
@@ -205,6 +208,9 @@ const SERVICE_NAMES = {
 const landingListings = (landing, properties) =>
   properties.filter((p) => (p.services || []).includes(landing.service) && (!landing.type || p.type === landing.type));
 
+/** Available listings of an area page (same rule as areaAvailable() in src/content/areaPages.ts). */
+const areaListings = (page, properties) => properties.filter((p) => zoneOf(p) === page.zone);
+
 const day = (iso) => (iso ? new Date(iso).toISOString().split('T')[0] : undefined);
 const latest = (dates) => dates.filter(Boolean).sort().pop();
 
@@ -216,6 +222,7 @@ function buildLlmsTxt({ properties, articles, articleLoc }) {
   const link = (label, loc) => `- [${label}](${absolute(loc)})`;
   // Landing pages without stock are noindex on the site: not listed here either.
   const landingLinks = (lang) => LANDINGS.filter((l) => landingListings(l, properties).length > 0).map((l) => link(l.label[lang], localize(l.paths[lang], lang)));
+  const areaLinks = (lang) => AREA_PAGES.filter((a) => areaListings(a, properties).length > 0).map((a) => link(`${ZONE_NAMES[a.zone]} (${lang.toUpperCase()})`, localize(a.paths[lang], lang)));
   const guide = (a) => link(`${a.title} (${(a.lang || 'fr').toUpperCase()})`, articleLoc(a));
 
   return `# Live In Marrakech
@@ -262,6 +269,10 @@ ${landingLinks('en').join('\n')}
 ## Sale and long-term rental pages (ES)
 
 ${landingLinks('es').join('\n')}
+
+## Area pages (all listings of one area, for rent and for sale)
+
+${LANGUAGES.flatMap(areaLinks).join('\n')}
 
 ## Guides
 
@@ -321,6 +332,17 @@ async function main() {
     const lastmod = day(latest(listed.map((p) => p.updated_at)));
     for (const lang of LANGUAGES) {
       entries.push(urlEntry({ loc: alternates[lang], alternates, lastmod, changefreq: 'weekly', priority: landing.type ? '0.8' : '0.9' }));
+    }
+  }
+
+  // Area pages, same rule: only those with an available listing.
+  for (const page of AREA_PAGES) {
+    const listed = areaListings(page, properties);
+    if (!listed.length) continue;
+    const alternates = Object.fromEntries(LANGUAGES.map((lang) => [lang, localize(page.paths[lang], lang)]));
+    const lastmod = day(latest(listed.map((p) => p.updated_at)));
+    for (const lang of LANGUAGES) {
+      entries.push(urlEntry({ loc: alternates[lang], alternates, lastmod, changefreq: 'weekly', priority: '0.7' }));
     }
   }
 

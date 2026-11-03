@@ -148,3 +148,6 @@ export function furnishedOf(property: Pick<Bien, "id" | "meuble">): boolean | nu
   if (property.meuble === true || property.meuble === false) return property.meuble;
   return FACTS[property.id]?.meuble ?? null;
 }
+
+/** "sur la route de Fès", "in Gueliz"…: a zone with the right preposition, for sentences. */
+export const zoneIn = (zone: ZoneId, lang: Lang) => ZONE_IN[zone][lang];

@@ -3,6 +3,7 @@ import type { Lang } from "@/i18n/routing";
 import { getServices } from "@/lib/propertyServices";
 import suggestions from "@/content/propertyTranslations.json";
 import headlines from "@/content/propertyHeadlines.json";
+import names from "@/content/propertyNames.json";
 import { inZone, zoneLabel } from "@/content/zones";
 
 // Property texts and labels in the visitor's language.
@@ -14,6 +15,8 @@ type TextFields = { titre: string; description_courte: string; description_longu
 const SUGGESTED = suggestions as unknown as Record<string, Partial<Record<Lang, TextFields>>>;
 /** Displayed titles (name + what makes the property different); the URL keeps using properties_v2.titre. */
 const HEADLINES = headlines as unknown as Record<string, Partial<Record<Lang, string>>>;
+/** Names people search for, used in the <title> and meta description. */
+const NAMES = names as unknown as Record<string, string>;
 
 export interface PropertyText extends TextFields {
   /** False when /en or /es has to fall back to the French text. */
@@ -128,17 +131,44 @@ function headlinePrice(bien: Bien, lang: Lang) {
 }
 
 
-/** <title> of a property page: "Villa 5 ch. Route de Fes – 25 000 MAD/mois", shortened to fit 60 characters. */
+/** Name searched for ("Villa Elhaj", "Prestigia Ambre"), and whether it already starts with the type. */
+function propertyName(bien: Bien, lang: Lang) {
+  const name = NAMES[bien.id];
+  if (!name) return null;
+  return { name, withType: name.toLowerCase().startsWith(typeName(bien.type, lang).toLowerCase()) };
+}
+
+/**
+ * <title> of a property page, shortened to fit 60 characters:
+ * "Villa 5 ch. Route de Fes – 25 000 MAD/mois", or with its name
+ * "Villa Elhaj, 3 ch., Route de Fès – 11 000 MAD/mois" / "Appartement 2 ch. Prestigia Ambre – 18 000 MAD/mois".
+ */
 export function propertySeoTitle(bien: Bien, lang: Lang) {
   const type = typeName(bien.type, lang);
   const beds = bien.chambres ? pick(lang, ` ${bien.chambres} ch.`, ` ${bien.chambres}-bed`, ` ${bien.chambres} dorm.`) : "";
   const head = lang === "en" && beds ? `${beds.trim()} ${type.toLowerCase()}` : `${type}${beds}`;
   const price = headlinePrice(bien, lang);
-  const candidates = [
-    `${head} ${zoneLabel(bien, lang)}${price ? ` – ${price}` : ""}`,
-    `${head} ${zoneLabel(bien, lang)}`,
-    `${head} Marrakech`,
-  ];
+  const zone = zoneLabel(bien, lang);
+  const named = propertyName(bien, lang);
+  const withPrice = (title: string) => (price ? [`${title} – ${price}`, title] : [title]);
+  let candidates: string[];
+  if (named?.withType) {
+    const bedsShort = bien.chambres ? pick(lang, `${bien.chambres} ch.`, `${bien.chambres} bed`, `${bien.chambres} dorm.`) : "";
+    const parts = (...items: string[]) => items.filter(Boolean).join(", ");
+    candidates = [
+      ...(price ? [`${parts(named.name, bedsShort, zone)} – ${price}`, `${parts(named.name, bedsShort)} – ${price}`] : []),
+      parts(named.name, bedsShort, zone),
+      parts(named.name, bedsShort),
+    ];
+  } else if (named) {
+    candidates = [
+      ...(price ? [`${head} ${named.name}, ${zone} – ${price}`, `${head} ${named.name} – ${price}`] : []),
+      `${head} ${named.name}, ${zone}`,
+      `${head} ${named.name}`,
+    ];
+  } else {
+    candidates = [...withPrice(`${head} ${zone}`), `${head} Marrakech`];
+  }
   return candidates.find((title) => title.length <= 60) ?? candidates[candidates.length - 1].slice(0, 60);
 }
 
@@ -158,7 +188,9 @@ export function propertyMetaDescription(bien: Bien, lang: Lang) {
     headlinePrice(bien, lang),
   ].filter(Boolean).join(", ");
   const cta = pick(lang, "Visite et infos sur WhatsApp.", "Book a visit on WhatsApp.", "Visita e info por WhatsApp.");
-  const text = `${[type, service].filter(Boolean).join(" ")} ${inZone(bien, lang)}`;
+  const named = propertyName(bien, lang);
+  const residence = named && !named.withType ? pick(lang, `, résidence ${named.name}`, `, ${named.name} residence`, `, residencia ${named.name}`) : "";
+  const text = `${[named?.withType ? named.name : type, service].filter(Boolean).join(" ")} ${inZone(bien, lang)}${residence}`;
   const full = `${text}${facts ? `${lang === "fr" ? " : " : ": "}${facts}` : ""}. ${cta}`;
   return full.length <= 155 ? full : `${full.slice(0, 152).replace(/\s+\S*$/, "")}…`;
 }

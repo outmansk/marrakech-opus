@@ -8,6 +8,7 @@ import PropertyCard from "@/components/PropertyCard";
 import SEOHead from "@/components/SEOHead";
 import { PageTransition } from "@/components/motion/Animations";
 import NotFound from "@/pages/NotFound";
+import AreaLanding from "@/pages/AreaLanding";
 import { propertiesQueryOptions } from "@/hooks/useBiens";
 import { useLocalePath } from "@/hooks/useLocalePath";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
@@ -20,6 +21,7 @@ import { LANGS, stripLang, type Lang } from "@/i18n/routing";
 import type { Bien } from "@/types/property";
 import type { Landing } from "@/content/landings";
 import { ZONES, zoneLabel, zoneOf } from "@/content/zones";
+import { areaPageOf, areaPath, findAreaPage } from "@/content/areaPages";
 import { rentalFaq, rentalIntroFigures, rentalSections, whatsappFromPage, type RentalFacts } from "@/content/rentalCopy";
 import { typeName } from "@/lib/propertyI18n";
 
@@ -31,7 +33,15 @@ const priceOf = (property: Bien, landing: Landing) =>
 
 const absolute = (path: string) => `${BASE_URL}${path === "/" ? "" : path}`;
 
+/** Both catch-all routes: an area page (/quartiers/…) or a search landing page (/vente/…), else the 404 page. */
 export default function ServiceLanding() {
+  const { pathname } = useLocation();
+  const { lang } = useLocalePath();
+  const area = findAreaPage(lang, stripLang(pathname));
+  return area ? <AreaLanding key={area.zone} page={area} /> : <SearchLanding />;
+}
+
+function SearchLanding() {
   const { pathname } = useLocation();
   const { lang, lp } = useLocalePath();
   const tL = useLocalizedText();
@@ -121,6 +131,13 @@ export default function ServiceLanding() {
     if (quartier) params.set("quartier", quartier);
     return lp(`/catalogue?${params}`);
   };
+  // "By area" links: the area page when there is one, else the catalogue filtered on the quartier.
+  const areaLinks = new Map<string, { label: string; path: string }>();
+  for (const property of available) {
+    const page = areaPageOf(zoneOf(property));
+    if (page) areaLinks.set(page.zone, { label: ZONES[page.zone].label[lang], path: areaPath(page, lang) });
+    else if (property.quartier) areaLinks.set(property.quartier, { label: property.quartier, path: catalogueLink(property.quartier) });
+  }
 
   const crumbs = [
     { name: tL("Accueil", "Home", "Inicio"), path: lp("/") },
@@ -309,11 +326,11 @@ export default function ServiceLanding() {
               </article>
 
               <aside className="flex flex-col gap-10">
-                {listedAreas.length > 0 && <div>
+                {areaLinks.size > 0 && <div>
                   <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#777065]">{tL("Par quartier", "By area", "Por barrio")}</h2>
                   <ul className="flex flex-wrap gap-2">
-                    {listedAreas.map((area) => (
-                      <li key={area}><Link to={catalogueLink(area)} className="flex min-h-11 items-center border border-[#2b2722]/15 px-4 font-serif text-[18px] transition-colors hover:border-[#a4573e] hover:text-[#a4573e]">{area}</Link></li>
+                    {[...areaLinks.values()].map((area) => (
+                      <li key={area.label}><Link to={area.path} className="flex min-h-11 items-center border border-[#2b2722]/15 px-4 font-serif text-[18px] transition-colors hover:border-[#a4573e] hover:text-[#a4573e]">{area.label}</Link></li>
                     ))}
                   </ul>
                 </div>}
