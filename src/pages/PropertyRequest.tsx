@@ -1,1637 +1,627 @@
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
-import { ChevronDown, ArrowLeft, ArrowRight, Check, ShieldCheck, Loader2 } from "lucide-react";
-import { insertWithOrigin } from "@/lib/social/attribution";
+import type { LucideIcon } from "lucide-react";
+import {
+  ArrowLeft, ArrowRight, Ban, Baby, Box, Briefcase, Building2, CalendarClock, CalendarRange, Check, Compass, Eye, Heart,
+  Home, House, KeyRound, LandPlot, Landmark, Loader2, Luggage, MapPin, MessageCircle, Palette, Palmtree, PartyPopper,
+  ShieldCheck, Shuffle, Sofa, Sparkles, Sprout, Sun, Trees, TrendingUp, User, Users, UsersRound, Waves, Wine, X, Zap,
+} from "lucide-react";
 import { toast } from "sonner";
 import SEOHead from "@/components/SEOHead";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { breadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { insertWithOrigin } from "@/lib/social/attribution";
 import { useLocalePath } from "@/hooks/useLocalePath";
-import { useLocalizedText } from "@/hooks/useLocalizedText";
+import type { Lang } from "@/i18n/routing";
+import { ZONES, type ZoneId } from "@/content/zones";
+import { AGENCY } from "@/content/agency";
+import { groupDigits } from "@/lib/propertyDetail";
+import { whatsappHref } from "@/lib/contact";
 import "./PropertyRequest.css";
 
-type Language = "fr" | "en" | "es" | "ar";
-type ProjectType = "achat" | "longue_duree" | "court_sejour";
-type PropertyType = "villa" | "appartement" | "riad";
-type BedroomCount = "1" | "2" | "3" | "4+" | "Indifférent";
+// « Décrire ma recherche » : a short interactive questionnaire, one question per screen with large
+// tap targets. Single-choice answers move on by themselves; the last screen asks for contact details.
+// Answers go to client_leads (real columns where they exist, the rest as readable French lines in
+// `notes`, which the agency reads in the CRM). Only real areas (src/content/zones.ts) are offered.
 
-interface FormState {
-  projectType: ProjectType;
-  propertyType: PropertyType;
-  budgetValue: string;
-  isBudgetUnknown: boolean;
-  bedrooms: BedroomCount;
-  district: string;
-  stayArrival: string;
-  stayDeparture: string;
-  stayFlexibleDates: boolean;
-  stayGuests: number;
-  stayBudgetNight: string;
-  selectedTags: string[];
-  notes: string;
-  name: string;
-  phonePrefix: string;
-  phone: string;
-  email: string;
-  consent: boolean;
-  website: string; // Honeypot
+type L = Record<Lang, string>;
+type Project = "achat" | "location" | "sejour";
+/** Dates of a stay are kept apart: datesFrom / datesTo (YYYY-MM-DD) and datesFlexible ("1"). */
+type Answers = Partial<Record<QuestionId | "datesFrom" | "datesTo" | "datesFlexible", string | string[]>>;
+type QuestionId =
+  | "project" | "type" | "usage" | "household" | "group" | "occasion" | "style" | "garden" | "pool"
+  | "furnished" | "bedrooms" | "areas" | "budget" | "timing" | "dates";
+
+interface Option {
+  id: string;
+  label: L;
+  hint?: L;
+  icon?: LucideIcon;
+  /** Shorter text for the summary chips. */
+  short?: L;
+  /** Budget bounds (MAD), bedrooms, furnishing: copied into the matching database columns. */
+  min?: number;
+  max?: number;
 }
 
-const DISTRICT_OPTIONS = [
-  "Conseillez-moi selon mon profil",
-  "Hivernage (Calme, palace, prestige)",
-  "Guéliz (Vie urbaine, commerces, contemporain)",
-  "Palmeraie (Oasis, villas de maîtres)",
-  "Route de l'Ourika (Atlas, grands espaces)",
-  "Route d'Amizmiz & Golfs (Fairways, luxe)",
-  "Médina / Riad (Patrimoine, authenticité)",
-  "Targa & Victor Hugo (Familles, résidentiel)",
-  "Agdal (Résidences récentes & piscines)",
+interface Question {
+  id: QuestionId;
+  title: L;
+  subtitle?: L;
+  kind: "single" | "multi" | "dates";
+  options?: (answers: Answers, lang: Lang) => Option[];
+  /** Shown only when this returns true. */
+  when?: (answers: Answers) => boolean;
+  /** Prefix of the summary chip (« Jardin : indispensable »). */
+  chip?: L;
+  /** Label of the answer in the CRM notes (French). Omitted for answers stored in their own column. */
+  note?: string;
+}
+
+const t = (fr: string, en: string, es: string): L => ({ fr, en, es });
+const project = (a: Answers) => a.project as Project | undefined;
+const type = (a: Answers) => a.type as string | undefined;
+const ANY = t("Peu importe", "No preference", "Me da igual");
+
+const money = (value: number, lang: Lang) => (value >= 1_000_000
+  ? `${String(value / 1_000_000).replace(".", lang === "en" ? "." : ",")} M`
+  : groupDigits(value, lang));
+
+function budgetOptions(answers: Answers): Option[] {
+  const p = project(answers);
+  const [unit, steps] = p === "achat"
+    ? [t("MAD", "MAD", "MAD"), [1_500_000, 3_000_000, 5_000_000, 8_000_000]]
+    : p === "sejour"
+      ? [t("MAD / nuit", "MAD / night", "MAD / noche"), [1_500, 3_000, 6_000]]
+      : [t("MAD / mois", "MAD / month", "MAD / mes"), [8_000, 12_000, 18_000, 25_000]];
+  const ranges: Option[] = [
+    { id: `0-${steps[0]}`, max: steps[0], label: t(`Moins de ${money(steps[0], "fr")} ${unit.fr}`, `Under ${money(steps[0], "en")} ${unit.en}`, `Menos de ${money(steps[0], "es")} ${unit.es}`) },
+    ...steps.slice(1).map((high, i) => ({ id: `${steps[i]}-${high}`, min: steps[i], max: high, label: t(`${money(steps[i], "fr")} à ${money(high, "fr")} ${unit.fr}`, `${money(steps[i], "en")} to ${money(high, "en")} ${unit.en}`, `De ${money(steps[i], "es")} a ${money(high, "es")} ${unit.es}`) })),
+    { id: `${steps[steps.length - 1]}+`, min: steps[steps.length - 1], label: t(`Plus de ${money(steps[steps.length - 1], "fr")} ${unit.fr}`, `Over ${money(steps[steps.length - 1], "en")} ${unit.en}`, `Más de ${money(steps[steps.length - 1], "es")} ${unit.es}`) },
+    { id: "unknown", icon: Compass, label: t("Je ne sais pas encore", "I don’t know yet", "Aún no lo sé"), hint: t("On en parle ensemble", "We’ll talk it through", "Lo hablamos juntos") },
+  ];
+  return ranges;
+}
+
+const QUESTIONS: Question[] = [
+  {
+    id: "project", kind: "single",
+    title: t("Quel est votre projet à Marrakech ?", "What is your plan in Marrakech?", "¿Cuál es su proyecto en Marrakech?"),
+    subtitle: t("Touchez une réponse, on passe à la suite.", "Tap an answer to move on.", "Toque una respuesta para continuar."),
+    options: () => [
+      { id: "achat", icon: KeyRound, label: t("Acheter", "Buy", "Comprar"), hint: t("Devenir propriétaire", "Become an owner", "Ser propietario") },
+      { id: "location", icon: CalendarRange, label: t("Louer à l’année", "Rent long term", "Alquilar por años"), hint: t("Bail d’un an minimum", "One-year lease minimum", "Contrato de un año mínimo") },
+      { id: "sejour", icon: Palmtree, label: t("Séjourner", "Stay", "Alojarse"), hint: t("Vacances, courte durée", "Holidays, short stay", "Vacaciones, corta estancia") },
+    ],
+  },
+  {
+    id: "type", kind: "single", note: "Type",
+    title: t("Quel type de bien ?", "What kind of property?", "¿Qué tipo de inmueble?"),
+    options: (a) => [
+      { id: "villa", icon: House, label: t("Villa", "Villa", "Villa"), hint: t("Jardin, souvent piscine", "Garden, often a pool", "Jardín, a menudo piscina") },
+      { id: "appartement", icon: Building2, label: t("Appartement", "Apartment", "Apartamento"), hint: t("En ville ou en résidence", "In town or a residence", "En ciudad o residencia") },
+      { id: "riad", icon: Landmark, label: t("Riad", "Riad", "Riad"), hint: t("Patio, architecture marocaine", "Patio, Moroccan architecture", "Patio, arquitectura marroquí") },
+      { id: "maison", icon: Home, label: t("Maison", "House", "Casa"), hint: t("Plus simple qu’une villa", "Simpler than a villa", "Más sencilla que una villa") },
+      ...(project(a) === "achat" ? [{ id: "terrain", icon: LandPlot, label: t("Terrain", "Land", "Terreno"), hint: t("Pour construire", "To build on", "Para construir") }] : []),
+      { id: "any", icon: Shuffle, label: ANY, hint: t("Montrez-moi ce qui existe", "Show me what there is", "Muéstrenme lo que hay") },
+    ],
+  },
+  {
+    id: "usage", kind: "single", note: "Usage", when: (a) => project(a) === "achat",
+    title: t("C’est pour…", "It’s for…", "Es para…"),
+    options: () => [
+      { id: "vivre", icon: Heart, label: t("Y vivre à l’année", "Living there all year", "Vivir todo el año"), short: t("Pour y vivre", "To live in", "Para vivir") },
+      { id: "secondaire", icon: Sun, label: t("Une résidence secondaire", "A holiday home", "Una segunda residencia"), short: t("Résidence secondaire", "Holiday home", "Segunda residencia") },
+      { id: "airbnb", icon: Luggage, label: t("La louer aux vacanciers (type Airbnb)", "Renting to holidaymakers (Airbnb-style)", "Alquilarla a turistas (tipo Airbnb)"), short: t("Pour Airbnb", "For Airbnb", "Para Airbnb") },
+      { id: "investir", icon: TrendingUp, label: t("Un investissement", "An investment", "Una inversión"), hint: t("Location à l’année ou revente", "Long-term letting or resale", "Alquiler anual o reventa") },
+    ],
+  },
+  {
+    id: "household", kind: "single", note: "Pour", when: (a) => project(a) === "location",
+    title: t("Qui va y habiter ?", "Who will live there?", "¿Quién vivirá allí?"),
+    options: () => [
+      { id: "seul", icon: User, label: t("Moi seul(e)", "Just me", "Yo solo/a") },
+      { id: "couple", icon: Users, label: t("En couple", "A couple", "En pareja") },
+      { id: "famille", icon: Baby, label: t("En famille, avec enfants", "A family with children", "En familia, con niños") },
+      { id: "pro", icon: Briefcase, label: t("Pour le travail", "For work", "Por trabajo"), hint: t("Mutation, entreprise, colocation", "Relocation, company, flat-share", "Traslado, empresa, piso compartido") },
+    ],
+  },
+  {
+    id: "group", kind: "single", note: "Voyageurs", when: (a) => project(a) === "sejour",
+    title: t("Vous serez combien ?", "How many of you?", "¿Cuántos serán?"),
+    options: () => [
+      { id: "2", icon: User, label: t("1 ou 2 personnes", "1 or 2 people", "1 o 2 personas") },
+      { id: "3-4", icon: Users, label: t("3 à 4 personnes", "3 to 4 people", "3 a 4 personas") },
+      { id: "5-8", icon: UsersRound, label: t("5 à 8 personnes", "5 to 8 people", "5 a 8 personas") },
+      { id: "9+", icon: PartyPopper, label: t("9 personnes ou plus", "9 people or more", "9 personas o más") },
+    ],
+  },
+  {
+    id: "occasion", kind: "single", note: "Occasion", when: (a) => project(a) === "sejour",
+    title: t("Pour quelle occasion ?", "What’s the occasion?", "¿Para qué ocasión?"),
+    options: () => [
+      { id: "vacances", icon: Sun, label: t("Des vacances", "A holiday", "Unas vacaciones") },
+      { id: "amis", icon: Wine, label: t("Entre amis", "With friends", "Con amigos") },
+      { id: "evenement", icon: PartyPopper, label: t("Un événement", "An event", "Un evento"), hint: t("Mariage, anniversaire…", "Wedding, birthday…", "Boda, cumpleaños…") },
+      { id: "travail", icon: Briefcase, label: t("Le travail", "Work", "Trabajo") },
+    ],
+  },
+  {
+    id: "style", kind: "single", note: "Style", chip: t("Style", "Style", "Estilo"), when: (a) => type(a) !== "terrain",
+    title: t("Quel style vous ressemble ?", "Which style feels like you?", "¿Qué estilo le representa?"),
+    options: () => [
+      { id: "moderne", icon: Sparkles, label: t("Moderne", "Modern", "Moderno"), hint: t("Lignes épurées, lumineux", "Clean lines, bright", "Líneas limpias, luminoso") },
+      { id: "beldi", icon: Landmark, label: t("Beldi traditionnel", "Traditional beldi", "Beldi tradicional"), hint: t("Zellige, tadelakt, bois sculpté", "Zellige, tadelakt, carved wood", "Zellige, tadelakt, madera tallada") },
+      { id: "beldi-moderne", icon: Palette, label: t("Beldi modernisé", "Modern beldi", "Beldi modernizado"), hint: t("Le charme marocain, le confort d’aujourd’hui", "Moroccan charm, today’s comfort", "Encanto marroquí, confort actual") },
+      { id: "any", icon: Shuffle, label: ANY },
+    ],
+  },
+  {
+    id: "garden", kind: "single", note: "Jardin", chip: t("Jardin", "Garden", "Jardín"), when: (a) => ["villa", "maison", "any", undefined].includes(type(a)),
+    title: t("Un grand jardin, pour vous c’est…", "A large garden is…", "Un jardín grande es…"),
+    options: () => [
+      { id: "essentiel", icon: Trees, label: t("Indispensable, j’adore", "A must, I love it", "Imprescindible, me encanta") },
+      { id: "petit", icon: Sprout, label: t("Un petit extérieur suffit", "A small outdoor space is enough", "Basta un pequeño exterior") },
+      { id: "any", icon: Shuffle, label: t("Ça m’est égal", "I don’t mind", "Me da igual") },
+    ],
+  },
+  {
+    id: "pool", kind: "single", note: "Piscine", chip: t("Piscine", "Pool", "Piscina"), when: (a) => type(a) !== "terrain",
+    title: t("Et la piscine ?", "And a pool?", "¿Y la piscina?"),
+    options: () => [
+      { id: "indispensable", icon: Waves, label: t("Indispensable", "A must", "Imprescindible") },
+      { id: "plus", icon: Sparkles, label: t("Un plus, pas obligatoire", "Nice to have", "Un extra, no obligatorio") },
+      { id: "non", icon: Ban, label: t("Pas nécessaire", "Not needed", "No es necesaria") },
+    ],
+  },
+  {
+    id: "furnished", kind: "single", chip: t("Logement", "Home", "Vivienda"), when: (a) => project(a) === "location",
+    title: t("Meublé ou vide ?", "Furnished or unfurnished?", "¿Amueblado o sin amueblar?"),
+    subtitle: t("Caution : 2 mois de loyer en meublé, 1 mois en vide.", "Deposit: 2 months’ rent furnished, 1 month unfurnished.", "Fianza: 2 meses amueblado, 1 mes sin amueblar."),
+    options: () => [
+      { id: "furnished", icon: Sofa, label: t("Meublé", "Furnished", "Amueblado"), hint: t("Je pose mes valises", "Just bring my suitcases", "Llego con mis maletas") },
+      { id: "unfurnished", icon: Box, label: t("Vide", "Unfurnished", "Sin amueblar"), hint: t("J’apporte mes meubles", "I bring my furniture", "Traigo mis muebles") },
+      { id: "any", icon: Shuffle, label: ANY },
+    ],
+  },
+  {
+    id: "bedrooms", kind: "single", when: (a) => type(a) !== "terrain",
+    title: t("Combien de chambres ?", "How many bedrooms?", "¿Cuántos dormitorios?"),
+    options: () => [
+      ...["1", "2", "3", "4"].map((n) => ({ id: n, min: Number(n), label: t(n, n, n) })),
+      { id: "5", min: 5, label: t("5 et +", "5 +", "5 o más") },
+      { id: "any", label: ANY },
+    ],
+  },
+  {
+    id: "areas", kind: "multi",
+    title: t("Des quartiers en tête ?", "Any areas in mind?", "¿Algún barrio en mente?"),
+    subtitle: t("Plusieurs choix possibles, ou laissez-nous vous conseiller.", "Pick several, or let us advise you.", "Puede elegir varios, o dejar que le aconsejemos."),
+    options: (_a, lang) => [
+      ...(Object.keys(ZONES) as ZoneId[]).map((id) => ({ id, icon: MapPin, label: ZONES[id].label })),
+      { id: "conseil", icon: Compass, label: t("Conseillez-moi", "Advise me", "Aconséjenme") },
+    ].sort((x, y) => (x.id === "conseil" ? 1 : y.id === "conseil" ? -1 : x.label[lang].localeCompare(y.label[lang], lang))),
+  },
+  {
+    id: "budget", kind: "single",
+    title: t("Quel budget ?", "What budget?", "¿Qué presupuesto?"),
+    subtitle: t("Une fourchette suffit, elle reste confidentielle.", "A range is enough, it stays confidential.", "Basta un rango, es confidencial."),
+    options: budgetOptions,
+  },
+  {
+    id: "timing", kind: "single", note: "Quand", chip: t("Quand", "When", "Cuándo"), when: (a) => project(a) !== "sejour",
+    title: t("Pour quand ?", "When?", "¿Para cuándo?"),
+    options: () => [
+      { id: "asap", icon: Zap, label: t("Dès que possible", "As soon as possible", "Lo antes posible") },
+      { id: "1-3", icon: CalendarClock, label: t("Dans 1 à 3 mois", "In 1 to 3 months", "En 1 a 3 meses") },
+      { id: "3+", icon: CalendarRange, label: t("Dans plus de 3 mois", "In more than 3 months", "En más de 3 meses") },
+      { id: "regarde", icon: Eye, label: t("Je regarde seulement", "Just looking", "Solo estoy mirando") },
+    ],
+  },
+  {
+    id: "dates", kind: "dates", when: (a) => project(a) === "sejour",
+    title: t("Vos dates ?", "Your dates?", "¿Sus fechas?"),
+    subtitle: t("Même approximatives.", "Even rough ones.", "Aunque sean aproximadas."),
+  },
 ];
 
-const PRESTATIONS_CHIPS = [
-  "Piscine privée chauffée",
-  "Vue Montagnes de l'Atlas",
-  "En bordure de Golf",
-  "Grand parc sans vis-à-vis",
-  "Gouvernante & Chef cuisinier",
-  "Domaine privé sécurisé 24/7",
-];
+const UI = {
+  title: t("Décrire ma recherche immobilière à Marrakech", "Describe your property search in Marrakech", "Describa su búsqueda inmobiliaria en Marrakech"),
+  description: t(
+    "Achat, location à l’année ou séjour : répondez à quelques questions en une minute, l’agence vous envoie une sélection de biens à Marrakech.",
+    "Buying, long-term rental or a stay: answer a few questions in a minute and the agency sends you a selection of homes in Marrakech.",
+    "Compra, alquiler anual o estancia: responda a unas preguntas en un minuto y la agencia le envía una selección de inmuebles en Marrakech.",
+  ),
+  h1: t("Trouvons votre bien à Marrakech", "Let’s find your home in Marrakech", "Encontremos su inmueble en Marrakech"),
+  minute: t("1 minute · quelques touches", "1 minute · a few taps", "1 minuto · unos toques"),
+  step: t("Question {n} sur {total}", "Question {n} of {total}", "Pregunta {n} de {total}"),
+  back: t("Retour", "Back", "Atrás"),
+  quit: t("Quitter", "Leave", "Salir"),
+  next: t("Continuer", "Continue", "Continuar"),
+  skip: t("Passer", "Skip", "Omitir"),
+  arrival: t("Arrivée", "Arrival", "Llegada"),
+  departure: t("Départ", "Departure", "Salida"),
+  flexible: t("Mes dates sont flexibles", "My dates are flexible", "Mis fechas son flexibles"),
+  contactTitle: t("Dernière étape : où vous répondre ?", "Last step: where can we reach you?", "Último paso: ¿dónde le respondemos?"),
+  contactSub: t("Un conseiller vous écrit sur WhatsApp ou par téléphone avec une sélection.", "An advisor messages you on WhatsApp or calls with a selection.", "Un asesor le escribe por WhatsApp o le llama con una selección."),
+  yourSearch: t("Votre recherche", "Your search", "Su búsqueda"),
+  name: t("Votre nom", "Your name", "Su nombre"),
+  phone: t("Téléphone ou WhatsApp, avec l’indicatif", "Phone or WhatsApp, with country code", "Teléfono o WhatsApp, con prefijo"),
+  email: t("E-mail (facultatif)", "Email (optional)", "Correo (opcional)"),
+  message: t("Autre chose à nous dire ? (facultatif)", "Anything else? (optional)", "¿Algo más? (opcional)"),
+  messagePlaceholder: t("Ex. : plain-pied, proche d’une école, animaux acceptés…", "E.g. single storey, near a school, pets allowed…", "Ej.: una sola planta, cerca de un colegio, se aceptan mascotas…"),
+  consent: t("J’accepte que Live In Marrakech me contacte au sujet de cette recherche.", "I agree that Live In Marrakech may contact me about this search.", "Acepto que Live In Marrakech me contacte sobre esta búsqueda."),
+  privacy: t("Confidentialité", "Privacy", "Privacidad"),
+  submit: t("Envoyer ma recherche", "Send my search", "Enviar mi búsqueda"),
+  nameError: t("Indiquez votre nom (2 lettres minimum).", "Please enter your name (at least 2 letters).", "Indique su nombre (mínimo 2 letras)."),
+  phoneError: t("Indiquez un numéro valide, avec l’indicatif (ex. +33 6 12 34 56 78).", "Enter a valid number with the country code (e.g. +44 7700 900123).", "Indique un número válido con prefijo (ej. +34 612 34 56 78)."),
+  consentError: t("Cochez la case pour que nous puissions vous contacter.", "Tick the box so we can contact you.", "Marque la casilla para que podamos contactarle."),
+  sendError: t("L’envoi n’a pas abouti. Réessayez ou écrivez-nous sur WhatsApp.", "Sending failed. Try again or message us on WhatsApp.", "No se pudo enviar. Inténtelo de nuevo o escríbanos por WhatsApp."),
+  doneTitle: t("Merci {name}, c’est envoyé !", "Thank you {name}, it’s sent!", "¡Gracias {name}, enviado!"),
+  doneText: t("Un conseiller vous recontacte très vite avec une sélection. Pour aller plus vite, écrivez-nous sur WhatsApp.", "An advisor will get back to you shortly with a selection. To speed things up, message us on WhatsApp.", "Un asesor le contactará muy pronto con una selección. Para ir más rápido, escríbanos por WhatsApp."),
+  reference: t("Votre référence", "Your reference", "Su referencia"),
+  whatsapp: t("Continuer sur WhatsApp", "Continue on WhatsApp", "Seguir por WhatsApp"),
+  catalogue: t("Voir les biens disponibles", "See available homes", "Ver los inmuebles disponibles"),
+  safe: t("Vos réponses restent confidentielles", "Your answers stay confidential", "Sus respuestas son confidenciales"),
+};
 
-const PHONE_PREFIXES = [
-  { code: "+212", label: "MA (+212)" },
-  { code: "+33", label: "FR (+33)" },
-  { code: "+32", label: "BE (+32)" },
-  { code: "+41", label: "CH (+41)" },
-  { code: "+44", label: "UK (+44)" },
-  { code: "+1", label: "US (+1)" },
-  { code: "+971", label: "AE (+971)" },
-];
-
-const copy = {
-  fr: {
-    pageTitle: "Décrire ma recherche immobilière à Marrakech",
-    pageDesc: "Location longue durée, achat ou séjour : décrivez le bien que vous cherchez à Marrakech, notre agence vous propose une sélection sur mesure.",
-    brandSub: "Immobilier d'Exception",
-    prev: "Précédent",
-    stepOf: "Étape {current} sur 3",
-    breadcrumb1: "Accueil / Votre projet",
-    breadcrumb2: "Projet / Vos critères",
-    breadcrumb3: "Critères / Coordonnées",
-    step1Tag: "Votre projet à Marrakech",
-    step1TitlePrefix: "Parlons du bien qui ",
-    step1TitleHighlight: "vous correspond",
-    step1Intro: "Quelques réponses suffisent pour que notre équipe sélectionne les propriétés les plus exclusives adaptées à vos attentes.",
-    step1Nature: "Nature de votre démarche",
-    buyTitle: "Acheter",
-    buyTag: "Acquisition",
-    buyDesc: "Villa de maître, riad en médina ou appartement contemporain",
-    rentTitle: "Louer à l'année",
-    rentTag: "Bail > 1 an",
-    rentDesc: "Résidence principale haut de gamme meublée ou vide",
-    stayTitle: "Séjourner",
-    stayTag: "Courte durée",
-    stayDesc: "Vacances, villa privatisée avec services hôteliers",
-    categoryTitle: "Catégorie de bien recherché",
-    villaTitle: "Villa",
-    villaDesc: "Jardin & Piscine",
-    aptTitle: "Appartement",
-    aptDesc: "Terrasse, Vue",
-    riadTitle: "Riad",
-    riadDesc: "Médina & Oasis",
-    btnContinueCriteria: "Continuer vers les critères",
-    confidentialHint: "Vos critères restent strictement confidentiels",
-    step2ClassicTitle: "Vos critères de sélection",
-    step2ClassicSubtitle: "Définissez le cadre de votre projet pour affiner notre recherche exclusive.",
-    step2StayTitle: "Vos dates & séjour",
-    step2StaySubtitle: "Précisez votre période idéale et la composition de votre groupe.",
-    budgetEstimated: "Budget maximum estimé",
-    budgetUnknownBtn: "Je ne sais pas encore",
-    budgetSpecifyBtn: "Préciser un montant",
-    budgetCurrencySuffixSale: "MAD",
-    budgetCurrencySuffixRent: "MAD / mois",
-    budgetCurrencySuffixStay: "MAD / nuit",
-    budgetHelperSale: "Environ 550 000 € · Montant indicatif",
-    budgetHelperRent: "Environ 2 300 € / mois · Charges incluses",
-    bedroomsTitle: "Nombre de chambres souhaité",
-    bedroomsAll: "Tous",
-    districtsTitle: "Secteurs privilégiés",
-    optional: "Facultatif",
-    datesTitle: "Dates de votre séjour",
-    flexibleDates: "Dates flexibles",
-    arrival: "Arrivée",
-    departure: "Départ",
-    guestsTitle: "Nombre de voyageurs",
-    guestsSubtitle: "Adultes et enfants",
-    budgetNightTitle: "Budget par nuit estimé",
-    accordionTitle: "Préférences & Prestations exclusives",
-    notesLabel: "Notes particulières ou demandes sur-mesure",
-    notesPlaceholder: "Ex: plain-pied impératif, exposition sud, suite parentale isolée...",
-    btnValidateContact: "Valider et passer à mes coordonnées",
-    btnEditType: "← Modifier le type de bien",
-    step3Title: "Où devons-nous vous transmettre la sélection ?",
-    step3Subtitle: "Un conseiller privé prendra contact directement via WhatsApp ou appel selon votre préférence.",
-    currentSearch: "Votre recherche actuelle",
-    edit: "Modifier",
-    nameLabel: "Votre Prénom & Nom",
-    namePlaceholder: "Ex: Alexandre de Montmirail",
-    phoneLabel: "WhatsApp / Mobile privilégié",
-    phonePlaceholder: "6 12 34 56 78",
-    phoneHelper: "Privilégié pour l'envoi discret de fiches PDF & visites virtuelles.",
-    emailLabel: "Adresse e-mail",
-    consentLabel: "J'accepte d'être recontacté uniquement par Live In Marrakech dans le cadre de ce projet. Aucune prospection extérieure.",
-    btnSubmit: "Transmettre ma recherche",
-    btnSubmitting: "Envoi sécurisé en cours...",
-    vipWhatsAppLabel: "Échange confidentiel direct avec un conseiller :",
-    vipWhatsAppLink: "Ouvrir WhatsApp VIP",
-    successTag: "Demande transmise avec succès",
-    successTitle: "Merci",
-    successSubtitle: "Notre directeur d'agence analyse vos critères dès maintenant. Une sélection confidentielle de biens off-market vous sera présentée.",
-    recapTitle: "Récapitulatif",
-    recapProject: "Projet",
-    recapBudget: "Budget max",
-    recapRoomsDistrict: "Chambres / Secteur",
-    recapContact: "Contact",
-    btnWhatsAppAccelerate: "Accélérer la réponse sur WhatsApp",
-    btnNewSearch: "Nouvelle recherche immobilière",
-    footerConfidential: "100% Confidentiel",
-    footerOffMarket: "Biens Privés & Off-Market",
-    footerLocation: "Guéliz, Marrakech",
-    footerCopyright: "© 2026 Live In Marrakech Luxury Real Estate. Tous droits réservés.",
-    nameError: "Veuillez indiquer au moins votre prénom pour que nous sachions à qui nous adresser.",
-    phoneError: "Veuillez saisir un numéro de téléphone mobile ou WhatsApp valide.",
-    sendError: "Une erreur est survenue lors de l'envoi. Veuillez réessayer ou nous contacter via WhatsApp.",
-  },
-  en: {
-    pageTitle: "Describe your property search in Marrakech",
-    pageDesc: "Long-term rental, purchase or stay: describe the property you are looking for in Marrakech and our agency will send you a tailored selection.",
-    brandSub: "Luxury Real Estate",
-    prev: "Back",
-    stepOf: "Step {current} of 3",
-    breadcrumb1: "Home / Your project",
-    breadcrumb2: "Project / Your criteria",
-    breadcrumb3: "Criteria / Contact details",
-    step1Tag: "Your project in Marrakech",
-    step1TitlePrefix: "Let's find the home that ",
-    step1TitleHighlight: "truly fits you",
-    step1Intro: "A few answers are all our team needs to select the most exclusive properties matching your expectations.",
-    step1Nature: "Your property goal",
-    buyTitle: "Buy",
-    buyTag: "Acquisition",
-    buyDesc: "Master villa, historic Medina riad or modern penthouse",
-    rentTitle: "Long-term rental",
-    rentTag: "1+ year lease",
-    rentDesc: "High-end primary residence, furnished or unfurnished",
-    stayTitle: "Short stay",
-    stayTag: "Holiday rental",
-    stayDesc: "Private luxury villa with bespoke hotel services",
-    categoryTitle: "Property category",
-    villaTitle: "Villa",
-    villaDesc: "Garden & Pool",
-    aptTitle: "Apartment",
-    aptDesc: "Terrace, View",
-    riadTitle: "Riad",
-    riadDesc: "Medina & Oasis",
-    btnContinueCriteria: "Continue to criteria",
-    confidentialHint: "Your criteria remain strictly confidential",
-    step2ClassicTitle: "Your selection criteria",
-    step2ClassicSubtitle: "Define your requirements to help us curate an exclusive portfolio for you.",
-    step2StayTitle: "Dates & guest details",
-    step2StaySubtitle: "Specify your desired stay period and group composition.",
-    budgetEstimated: "Estimated maximum budget",
-    budgetUnknownBtn: "Undecided yet",
-    budgetSpecifyBtn: "Specify an amount",
-    budgetCurrencySuffixSale: "MAD",
-    budgetCurrencySuffixRent: "MAD / month",
-    budgetCurrencySuffixStay: "MAD / night",
-    budgetHelperSale: "Approx. €550,000 · Indicative amount",
-    budgetHelperRent: "Approx. €2,300 / month · Charges included",
-    bedroomsTitle: "Desired number of bedrooms",
-    bedroomsAll: "Any",
-    districtsTitle: "Preferred neighbourhoods",
-    optional: "Optional",
-    datesTitle: "Your stay dates",
-    flexibleDates: "Flexible dates",
-    arrival: "Check-in",
-    departure: "Check-out",
-    guestsTitle: "Number of guests",
-    guestsSubtitle: "Adults and children",
-    budgetNightTitle: "Estimated nightly budget",
-    accordionTitle: "Exclusive preferences & bespoke amenities",
-    notesLabel: "Specific requirements or custom requests",
-    notesPlaceholder: "E.g. single-story only, south-facing, isolated master suite...",
-    btnValidateContact: "Continue to contact details",
-    btnEditType: "← Change property type",
-    step3Title: "Where should we send your curated selection?",
-    step3Subtitle: "A private advisor will get in touch directly via WhatsApp or phone call at your convenience.",
-    currentSearch: "Current request",
-    edit: "Edit",
-    nameLabel: "Your Full Name",
-    namePlaceholder: "E.g. Alexandre de Montmirail",
-    phoneLabel: "Preferred WhatsApp / Mobile number",
-    phonePlaceholder: "6 12 34 56 78",
-    phoneHelper: "Used for discreet delivery of PDF dossiers & virtual tours.",
-    emailLabel: "Email address",
-    consentLabel: "I agree to be contacted solely by Live In Marrakech regarding this request. No third-party marketing.",
-    btnSubmit: "Submit my search request",
-    btnSubmitting: "Secured transmission in progress...",
-    vipWhatsAppLabel: "Direct confidential chat with an advisor:",
-    vipWhatsAppLink: "Open VIP WhatsApp",
-    successTag: "Request successfully sent",
-    successTitle: "Thank you",
-    successSubtitle: "Our agency director is reviewing your criteria now. A confidential selection of off-market properties will be prepared for you.",
-    recapTitle: "Summary",
-    recapProject: "Project",
-    recapBudget: "Max budget",
-    recapRoomsDistrict: "Bedrooms / Area",
-    recapContact: "Contact",
-    btnWhatsAppAccelerate: "Speed up response on WhatsApp",
-    btnNewSearch: "Start a new property search",
-    footerConfidential: "100% Confidential",
-    footerOffMarket: "Private & Off-Market Listings",
-    footerLocation: "Guéliz, Marrakech",
-    footerCopyright: "© 2026 Live In Marrakech Luxury Real Estate. All rights reserved.",
-    nameError: "Please enter your name so we know how to address you.",
-    phoneError: "Please enter a valid phone or WhatsApp number.",
-    sendError: "An error occurred while submitting. Please try again or reach out on WhatsApp.",
-  },
-  es: {
-    pageTitle: "Describa su búsqueda inmobiliaria en Marrakech",
-    pageDesc: "Alquiler de larga duración, compra o estancia: describa la propiedad que busca en Marrakech y nuestra agencia le enviará una selección a medida.",
-    brandSub: "Inmobiliaria de Excepción",
-    prev: "Atrás",
-    stepOf: "Paso {current} de 3",
-    breadcrumb1: "Inicio / Su proyecto",
-    breadcrumb2: "Proyecto / Criterios",
-    breadcrumb3: "Criterios / Contacto",
-    step1Tag: "Su proyecto en Marrakech",
-    step1TitlePrefix: "Encontremos el lugar que ",
-    step1TitleHighlight: "mejor le encaja",
-    step1Intro: "Unas pocas respuestas bastan para que nuestro equipo seleccione las propiedades más exclusivas adaptadas a sus deseos.",
-    step1Nature: "Objetivo de su búsqueda",
-    buyTitle: "Comprar",
-    buyTag: "Adquisición",
-    buyDesc: "Villa señorial, riad en la medina o ático contemporáneo",
-    rentTitle: "Alquiler anual",
-    rentTag: "Contrato > 1 año",
-    rentDesc: "Residencia principal de alto standing amueblada o vacía",
-    stayTitle: "Estancia corta",
-    stayTag: "Vacaciones",
-    stayDesc: "Villa privada con servicios hoteleros exclusivos",
-    categoryTitle: "Categoría de propiedad",
-    villaTitle: "Villa",
-    villaDesc: "Jardín y Piscina",
-    aptTitle: "Piso",
-    aptDesc: "Terraza, Vistas",
-    riadTitle: "Riad",
-    riadDesc: "Medina y Oasis",
-    btnContinueCriteria: "Continuar a criterios",
-    confidentialHint: "Sus criterios permanecen estrictamente confidenciales",
-    step2ClassicTitle: "Sus criterios de selección",
-    step2ClassicSubtitle: "Defina el marco de su búsqueda para afinar nuestra selección exclusiva.",
-    step2StayTitle: "Fechas y estancia",
-    step2StaySubtitle: "Indique las fechas deseadas y el número de huéspedes.",
-    budgetEstimated: "Presupuesto máximo estimado",
-    budgetUnknownBtn: "Por definir",
-    budgetSpecifyBtn: "Especificar importe",
-    budgetCurrencySuffixSale: "MAD",
-    budgetCurrencySuffixRent: "MAD / mes",
-    budgetCurrencySuffixStay: "MAD / noche",
-    budgetHelperSale: "Aprox. 550.000 € · Importe orientativo",
-    budgetHelperRent: "Aprox. 2.300 € / mes · Gastos incluidos",
-    bedroomsTitle: "Número de dormitorios deseado",
-    bedroomsAll: "Cualquiera",
-    districtsTitle: "Zonas preferidas",
-    optional: "Opcional",
-    datesTitle: "Fechas de su estancia",
-    flexibleDates: "Fechas flexibles",
-    arrival: "Llegada",
-    departure: "Salida",
-    guestsTitle: "Número de viajeros",
-    guestsSubtitle: "Adultos y niños",
-    budgetNightTitle: "Presupuesto estimado por noche",
-    accordionTitle: "Preferencias y prestaciones exclusivas",
-    notesLabel: "Notas particulares o peticiones especiales",
-    notesPlaceholder: "Ej: planta baja indispensable, orientación sur, suite aislada...",
-    btnValidateContact: "Continuar a mis datos",
-    btnEditType: "← Cambiar tipo de inmueble",
-    step3Title: "¿Dónde le enviamos la selección personalizada?",
-    step3Subtitle: "Un asesor privado se pondrá en contacto por WhatsApp o llamada según su preferencia.",
-    currentSearch: "Búsqueda actual",
-    edit: "Modificar",
-    nameLabel: "Nombre y Apellidos",
-    namePlaceholder: "Ej: Alejandro de Montmirail",
-    phoneLabel: "WhatsApp / Teléfono preferido",
-    phonePlaceholder: "6 12 34 56 78",
-    phoneHelper: "Usado para el envío confidencial de dossieres en PDF y visitas virtuales.",
-    emailLabel: "Correo electrónico",
-    consentLabel: "Acepto ser contactado únicamente por Live In Marrakech en relación con este proyecto.",
-    btnSubmit: "Enviar mi búsqueda",
-    btnSubmitting: "Envío seguro en curso...",
-    vipWhatsAppLabel: "Contacto directo y confidencial con un asesor:",
-    vipWhatsAppLink: "Abrir WhatsApp VIP",
-    successTag: "Solicitud enviada con éxito",
-    successTitle: "Gracias",
-    successSubtitle: "Nuestro director de agencia está analizando sus criterios. Le presentaremos una selección confidencial de inmuebles fuera de mercado.",
-    recapTitle: "Resumen",
-    recapProject: "Proyecto",
-    recapBudget: "Presupuesto máx.",
-    recapRoomsDistrict: "Dormitorios / Zona",
-    recapContact: "Contacto",
-    btnWhatsAppAccelerate: "Acelerar respuesta por WhatsApp",
-    btnNewSearch: "Nueva búsqueda inmobiliaria",
-    footerConfidential: "100% Confidencial",
-    footerOffMarket: "Propiedades Privadas & Off-Market",
-    footerLocation: "Guéliz, Marrakech",
-    footerCopyright: "© 2026 Live In Marrakech Luxury Real Estate. Todos los derechos reservados.",
-    nameError: "Por favor, indique al menos su nombre.",
-    phoneError: "Por favor, introduzca un número de teléfono o WhatsApp válido.",
-    sendError: "Ha ocurrido un error al enviar. Inténtelo de nuevo o contáctenos por WhatsApp.",
-  },
-  ar: {
-    pageTitle: "حدد بحثك العقاري في مراكش",
-    pageDesc: "كراء طويل الأمد أو شراء أو إقامة : حدد مواصفات العقار الذي تبحث عنه في مراكش لنقدم لك خيارات حصرية.",
-    brandSub: "عقارات استثنائية",
-    prev: "السابق",
-    stepOf: "المرحلة {current} من 3",
-    breadcrumb1: "الرئيسية / مشروعك",
-    breadcrumb2: "المشروع / المعايير",
-    breadcrumb3: "المعايير / معلومات الاتصال",
-    step1Tag: "مشروعك العقاري في مراكش",
-    step1TitlePrefix: "لنبحث عن العقار الذي ",
-    step1TitleHighlight: "يناسب تطلعاتك",
-    step1Intro: "إجابات بسيطة تتيح لفريقنا اختيار أرقى العقارات التي تتوافق مع متطلباتك الخاصة.",
-    step1Nature: "طبيعة طلبك العقاري",
-    buyTitle: "شراء",
-    buyTag: "تملك",
-    buyDesc: "فيلا راقية، رياض عريق في المدينة أو شقة عصرية",
-    rentTitle: "كراء سنوي",
-    rentTag: "عقد > سنة",
-    rentDesc: "سكن رئيسي فاخر، مفروش أو غير مفروش",
-    stayTitle: "إقامة قصيرة",
-    stayTag: "عطلات",
-    stayDesc: "فيلا خاصة مع خدمات فندقية متكاملة",
-    categoryTitle: "فئة العقار المطلوب",
-    villaTitle: "فيلا",
-    villaDesc: "حديقة ومسبح",
-    aptTitle: "شقة",
-    aptDesc: "شرفة وإطلالة",
-    riadTitle: "رياض",
-    riadDesc: "المدينة العتيقة",
-    btnContinueCriteria: "المتابعة إلى المعايير",
-    confidentialHint: "معلوماتك ومعاييرك تظل سرية تماماً",
-    step2ClassicTitle: "معايير الاختيار",
-    step2ClassicSubtitle: "حدد ملامح طلبك لنقدم لك أفضل الخيارات الحصرية.",
-    step2StayTitle: "تفاصيل الإقامة والتواريخ",
-    step2StaySubtitle: "حدد الفترة المفضلة وعدد الضيوف.",
-    budgetEstimated: "الميزانية القصوى التقديرية",
-    budgetUnknownBtn: "غير محدد بعد",
-    budgetSpecifyBtn: "تحديد المبلغ",
-    budgetCurrencySuffixSale: "درهم",
-    budgetCurrencySuffixRent: "درهم / شهر",
-    budgetCurrencySuffixStay: "درهم / ليلة",
-    budgetHelperSale: "حوالي 550,000 يورو · مبلغ تقريبي",
-    budgetHelperRent: "حوالي 2,300 يورو / شهر · شامل المصاريف",
-    bedroomsTitle: "عدد الغرف المطلوب",
-    bedroomsAll: "الكل",
-    districtsTitle: "الأحياء المفضلة",
-    optional: "اختياري",
-    datesTitle: "تواريخ الإقامة",
-    flexibleDates: "تواريخ مرنة",
-    arrival: "الوصول",
-    departure: "المغادرة",
-    guestsTitle: "عدد النزلاء",
-    guestsSubtitle: "بالغين وأطفال",
-    budgetNightTitle: "الميزانية التقديرية لكل ليلة",
-    accordionTitle: "تفضيلات وخدمات استثنائية",
-    notesLabel: "ملاحظات أو طلبات خاصة",
-    notesPlaceholder: "مثال: طابق أرضي، واجهة جنوبية، جناح رئيسي مستقل...",
-    btnValidateContact: "تأكيد والانتقال للمعلومات",
-    btnEditType: "← تعديل نوع العقار",
-    step3Title: "أين ترغب في استلام الخيارات المقترحة؟",
-    step3Subtitle: "سيتواصل معك مستشار خاص عبر واتساب أو الهاتف حسب رغبتك.",
-    currentSearch: "طلبك الحالي",
-    edit: "تعديل",
-    nameLabel: "الاسم واللقب",
-    namePlaceholder: "مثال: محمد بناني",
-    phoneLabel: "رقم واتساب أو الهاتف",
-    phonePlaceholder: "6 12 34 56 78",
-    phoneHelper: "نستخدمه لإرسال ملفات العقارات والجولات الافتراضية بسرية.",
-    emailLabel: "البريد الإلكتروني",
-    consentLabel: "أوافق على التواصل معي حصرياً من طرف Live In Marrakech بشأن هذا الطلب.",
-    btnSubmit: "إرسال طلبي العقاري",
-    btnSubmitting: "جارٍ الإرسال بأمان...",
-    vipWhatsAppLabel: "تواصل مباشر مع مستشار عبر واتساب:",
-    vipWhatsAppLink: "فتح واتساب VIP",
-    successTag: "تم إرسال الطلب بنجاح",
-    successTitle: "شكراً لك",
-    successSubtitle: "يقوم مدير وكالتنا بدراسة معاييرك الآن، وسيقترح عليك قريباً مجموعة حصرية من العقارات غير المعروضة للعموم.",
-    recapTitle: "ملخص الطلب",
-    recapProject: "المشروع",
-    recapBudget: "الميزانية القصوى",
-    recapRoomsDistrict: "الغرف / الحي",
-    recapContact: "الاتصال",
-    btnWhatsAppAccelerate: "تسريع الرد عبر واتساب",
-    btnNewSearch: "بحث عقاري جديد",
-    footerConfidential: "سرية تامة 100%",
-    footerOffMarket: "عقارات حصرية وخاصة",
-    footerLocation: "جليز، مراكش",
-    footerCopyright: "© 2026 Live In Marrakech Luxury Real Estate. جميع الحقوق محفوظة.",
-    nameError: "يرجى إدخال اسمك لنعرف كيف نخاطبك.",
-    phoneError: "يرجى إدخال رقم هاتف أو واتساب صحيح.",
-    sendError: "حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى أو مراسلتنا عبر واتساب.",
-  },
-} as const;
+const CONTACT_STEP = "contact";
+const DONE_STEP = "done";
+type StepId = QuestionId | typeof CONTACT_STEP | typeof DONE_STEP;
 
 export default function PropertyRequest() {
   const { lang, lp } = useLocalePath();
-  const tL = useLocalizedText();
-
-  // Language state initialized from URL prefix
-  const [language, setLanguage] = useState<Language>(lang);
-  const t = copy[language];
-  const rtl = language === "ar";
-
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const [answers, setAnswers] = useState<Answers>({});
+  const [stepId, setStepId] = useState<StepId>("project");
+  const [direction, setDirection] = useState<"forward" | "back">("forward");
+  const [contact, setContact] = useState({ name: "", phone: "", email: "", message: "", consent: false, website: "" });
+  const [errors, setErrors] = useState<{ name?: boolean; phone?: boolean; consent?: boolean }>({});
   const [loading, setLoading] = useState(false);
-  const [preferencesOpen, setPreferencesOpen] = useState(false);
-  const [leadRef, setLeadRef] = useState<string>("884");
+  const [reference, setReference] = useState("");
+  const advanceTimer = useRef<number>();
+  const summaryRef = useRef<HTMLUListElement>(null);
 
-  const [errors, setErrors] = useState<{ name?: boolean; phone?: boolean }>({});
+  const flow = useMemo(() => QUESTIONS.filter((q) => !q.when || q.when(answers)), [answers]);
+  const steps: StepId[] = [...flow.map((q) => q.id), CONTACT_STEP];
+  const index = stepId === DONE_STEP ? steps.length : Math.max(0, steps.indexOf(stepId));
+  const question = flow.find((q) => q.id === stepId);
+  const progress = stepId === DONE_STEP ? 100 : Math.round((index / steps.length) * 100);
 
-  const [form, setForm] = useState<FormState>({
-    projectType: "achat",
-    propertyType: "villa",
-    budgetValue: "6 000 000",
-    isBudgetUnknown: false,
-    bedrooms: "3",
-    district: DISTRICT_OPTIONS[0],
-    stayArrival: "",
-    stayDeparture: "",
-    stayFlexibleDates: false,
-    stayGuests: 4,
-    stayBudgetNight: "4 500",
-    selectedTags: [],
-    notes: "",
-    name: "",
-    phonePrefix: "+33",
-    phone: "",
-    email: "",
-    consent: true,
-    website: "",
+  const go = (next: StepId, dir: "forward" | "back") => {
+    window.clearTimeout(advanceTimer.current);
+    setDirection(dir);
+    setStepId(next);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const nextAfter = (id: StepId, nextAnswers: Answers): StepId => {
+    const ids: StepId[] = [...QUESTIONS.filter((q) => !q.when || q.when(nextAnswers)).map((q) => q.id), CONTACT_STEP];
+    return ids[ids.indexOf(id) + 1] ?? CONTACT_STEP;
+  };
+  const back = () => index > 0 && go(steps[index - 1], "back");
+
+  const choose = (q: Question, option: Option) => {
+    if (q.kind === "multi") {
+      setAnswers((prev) => {
+        const current = (prev[q.id] as string[] | undefined) ?? [];
+        const picked = option.id === "conseil" ? (current.includes("conseil") ? [] : ["conseil"])
+          : current.includes(option.id) ? current.filter((v) => v !== option.id) : [...current.filter((v) => v !== "conseil"), option.id].slice(0, 8);
+        return { ...prev, [q.id]: picked };
+      });
+      return;
+    }
+    const nextAnswers = { ...answers, [q.id]: option.id };
+    // A new project changes the budget scale and some questions: drop answers that no longer apply.
+    if (q.id === "project" && answers.project !== option.id) {
+      delete nextAnswers.budget;
+      if (option.id !== "achat" && nextAnswers.type === "terrain") delete nextAnswers.type;
+    }
+    setAnswers(nextAnswers);
+    window.clearTimeout(advanceTimer.current);
+    advanceTimer.current = window.setTimeout(() => go(nextAfter(q.id, nextAnswers), "forward"), 260);
+  };
+
+  const label = (q: Question, id: string) => q.options?.(answers, lang).find((o) => o.id === id)?.label[lang] ?? id;
+  const chipLabel = (q: Question, id: string) => {
+    const option = q.options?.(answers, lang).find((o) => o.id === id);
+    const text = option?.short?.[lang] ?? option?.label[lang] ?? id;
+    return q.chip ? `${q.chip[lang]} : ${text.charAt(0).toLowerCase()}${text.slice(1)}` : text;
+  };
+  const frLabel = (q: Question, id: string) => q.options?.(answers, "fr").find((o) => o.id === id)?.label.fr ?? id;
+  const dayMonth = (iso?: string | string[]) => (typeof iso === "string" && iso ? iso.slice(8, 10) + "/" + iso.slice(5, 7) : "");
+  const datesText = [dayMonth(answers.datesFrom), dayMonth(answers.datesTo)].filter(Boolean).join(" → ");
+  const summary = flow.flatMap((q) => {
+    if (q.kind === "dates") return datesText ? [{ q, text: datesText }] : [];
+    const value = answers[q.id];
+    if (!value || (Array.isArray(value) && !value.length)) return [];
+    const text = Array.isArray(value) ? value.map((v) => label(q, v)).join(", ") : chipLabel(q, value);
+    return [{ q, text: q.id === "bedrooms" && value !== "any" ? `${text} ${{ fr: "ch.", en: "bed", es: "dorm." }[lang]}` : text }];
   });
 
-  const updateForm = <K extends keyof FormState>(key: K, value: FormState[K]) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
-  };
+  // Keep the latest answer in view in the one-line summary (phones).
+  useEffect(() => {
+    const row = summaryRef.current;
+    if (row && typeof row.scrollTo === "function") row.scrollTo({ left: row.scrollWidth, behavior: "smooth" });
+  }, [summary.length]);
 
-  const handleSelectProjectType = (type: ProjectType) => {
-    updateForm("projectType", type);
-    if (type === "longue_duree") {
-      updateForm("budgetValue", "25 000");
-    } else if (type === "achat") {
-      updateForm("budgetValue", "6 000 000");
-    }
-  };
-
-  const togglePrestationTag = (tag: string) => {
-    setForm((prev) => {
-      const exists = prev.selectedTags.includes(tag);
-      return {
-        ...prev,
-        selectedTags: exists
-          ? prev.selectedTags.filter((t) => t !== tag)
-          : [...prev.selectedTags, tag],
-      };
-    });
-  };
-
-  const toggleUnknownBudget = () => {
-    if (form.isBudgetUnknown) {
-      updateForm("isBudgetUnknown", false);
-      updateForm("budgetValue", form.projectType === "longue_duree" ? "25 000" : "6 000 000");
-    } else {
-      updateForm("isBudgetUnknown", true);
-      updateForm("budgetValue", "");
-    }
-  };
-
-  const goToStep = (targetStep: 1 | 2 | 3 | 4) => {
-    setStep(targetStep);
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
-
-  const handlePrevStep = () => {
-    if (step > 1) {
-      goToStep((step - 1) as 1 | 2 | 3);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (form.website || loading) return;
-
-    // Validation
-    const nameValid = form.name.trim().length >= 2;
-    const cleanDigits = form.phone.replace(/\D/g, "");
-    const phoneValid = cleanDigits.length >= 6;
-
-    setErrors({
-      name: !nameValid,
-      phone: !phoneValid,
-    });
-
-    if (!nameValid) {
-      toast.error(t.nameError);
-      return;
-    }
-    if (!phoneValid) {
-      toast.error(t.phoneError);
-      return;
-    }
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (contact.website || loading) return;
+    const digits = contact.phone.replace(/\D/g, "");
+    const nextErrors = { name: contact.name.trim().length < 2, phone: digits.length < 8 || digits.length > 15, consent: !contact.consent };
+    setErrors(nextErrors);
+    if (nextErrors.name) return void toast.error(UI.nameError[lang]);
+    if (nextErrors.phone) return void toast.error(UI.phoneError[lang]);
+    if (nextErrors.consent) return void toast.error(UI.consentError[lang]);
 
     setLoading(true);
+    const ref = `LIM-${Date.now().toString(36).slice(-4).toUpperCase()}${Math.random().toString(36).slice(2, 4).toUpperCase()}`;
+    const byId = (id: QuestionId) => QUESTIONS.find((q) => q.id === id)!;
+    const pick = (id: QuestionId) => (flow.some((q) => q.id === id) ? answers[id] : undefined) as string | undefined;
+    const budget = byId("budget").options!(answers, "fr").find((o) => o.id === pick("budget"));
+    const bedrooms = byId("bedrooms").options!(answers, "fr").find((o) => o.id === pick("bedrooms"));
+    const areas = ((answers.areas as string[] | undefined) ?? []).filter((id) => id !== "conseil");
 
-    const generatedRef = String(Math.floor(100 + Math.random() * 900));
-    setLeadRef(generatedRef);
-
-    // Map intent to database transaction_type
-    const dbIntent =
-      form.projectType === "court_sejour"
-        ? "location-courte-duree"
-        : form.projectType === "longue_duree"
-        ? "location-longue-duree"
-        : "vente";
-
-    // Build comprehensive notes field
-    const notesParts: string[] = [];
-    if (form.projectType === "court_sejour") {
-      notesParts.push(`Séjour : ${form.stayGuests} voyageurs.`);
-      if (form.stayArrival || form.stayDeparture) {
-        notesParts.push(`Dates: ${form.stayArrival || "?"} au ${form.stayDeparture || "?"}${form.stayFlexibleDates ? " (dates flexibles)" : ""}`);
-      }
-      if (form.stayBudgetNight) {
-        notesParts.push(`Budget nuit: ${form.stayBudgetNight} MAD`);
-      }
-    }
-    if (form.district && form.district !== DISTRICT_OPTIONS[0]) {
-      notesParts.push(`Secteur souhaité: ${form.district}`);
-    }
-    if (form.selectedTags.length > 0) {
-      notesParts.push(`Prestations: ${form.selectedTags.join(", ")}`);
-    }
-    if (form.notes.trim()) {
-      notesParts.push(`Demandes: ${form.notes.trim()}`);
-    }
-    notesParts.push(`Réf: LIM-${generatedRef}`);
-
-    const numericBudget = form.budgetValue
-      ? Number(form.budgetValue.replace(/\D/g, "")) || null
-      : null;
+    const notes = [
+      ...flow.filter((q) => q.note && pick(q.id) && pick(q.id) !== "any").map((q) => `${q.note} : ${frLabel(q, pick(q.id)!)}`),
+      ...(pick("budget") ? [`Budget : ${budget?.label.fr ?? pick("budget")}`] : []),
+      ...(answers.datesFrom || answers.datesTo ? [`Dates : du ${answers.datesFrom || "?"} au ${answers.datesTo || "?"}${answers.datesFlexible ? " (flexibles)" : ""}`] : []),
+      ...(((answers.areas as string[] | undefined) ?? []).includes("conseil") ? ["Quartier : à conseiller"] : []),
+      ...(contact.message.trim() ? [`Message : ${contact.message.trim().slice(0, 900)}`] : []),
+      `Langue : ${lang.toUpperCase()}`,
+      `Réf : ${ref}`,
+    ].join("\n");
 
     const payload = {
-      name: form.name.trim(),
-      phone: `${form.phonePrefix} ${form.phone.trim()}`,
-      email: form.email.trim() || null,
+      name: contact.name.trim().slice(0, 120),
+      phone: contact.phone.trim(),
+      email: contact.email.trim() || null,
       source: "Site web",
-      transaction_type: dbIntent,
-      property_types: [form.propertyType],
-      budget_min: null,
-      budget_max: numericBudget,
-      preferred_areas: form.district && form.district !== DISTRICT_OPTIONS[0] ? [form.district.split(" ")[0]] : [],
-      bedrooms_min: form.bedrooms === "Indifférent" ? null : form.bedrooms === "4+" ? 4 : Number(form.bedrooms) || null,
-      furnishing: "any" as const,
-      available_from: form.stayArrival || null,
-      reference_location: null,
-      max_distance_km: null,
-      profession: null,
-      client_profile: form.projectType === "court_sejour" ? `${form.stayGuests} personnes` : null,
-      notes: notesParts.length ? notesParts.join(" | ") : null,
       status: "nouveau",
       created_by: null,
+      transaction_type: pick("project") === "achat" ? "vente" : pick("project") === "sejour" ? "location-courte-duree" : "location-longue-duree",
+      property_types: pick("type") && pick("type") !== "any" ? [pick("type")] : [],
+      budget_min: budget?.min ?? null,
+      budget_max: budget?.max ?? null,
+      preferred_areas: areas.map((id) => ZONES[id as ZoneId]?.label.fr ?? id),
+      bedrooms_min: bedrooms?.min ?? null,
+      furnishing: pick("furnished") === "furnished" || pick("furnished") === "unfurnished" ? pick("furnished") : "any",
+      available_from: (answers.datesFrom as string | undefined) || null,
+      client_profile: pick("household") ? frLabel(byId("household"), pick("household")!) : pick("group") ? `${frLabel(byId("group"), pick("group")!)}` : null,
+      notes: notes.slice(0, 1500),
     };
 
     try {
       const { error } = await insertWithOrigin("client_leads", payload);
       if (error) {
-        toast.error(t.sendError);
+        toast.error(UI.sendError[lang]);
       } else {
-        goToStep(4);
+        setReference(ref);
+        go(DONE_STEP, "forward");
       }
     } catch {
-      toast.error(t.sendError);
+      toast.error(UI.sendError[lang]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Summary labels for Step 3
-  const getProjectLabel = () => {
-    if (form.projectType === "achat") return t.buyTitle;
-    if (form.projectType === "longue_duree") return t.rentTitle;
-    return t.stayTitle;
-  };
-
-  const getPropertyLabel = () => {
-    if (form.propertyType === "villa") return t.villaTitle;
-    if (form.propertyType === "appartement") return t.aptTitle;
-    return t.riadTitle;
-  };
-
-  const getSummaryText = () => {
-    const proj = getProjectLabel();
-    const prop = getPropertyLabel();
-    if (form.projectType === "court_sejour") {
-      return `${proj} ${prop} · ${form.stayGuests} ${t.guestsTitle.toLowerCase()} · Marrakech`;
-    }
-    const bgt = form.isBudgetUnknown ? t.budgetUnknownBtn : `${form.budgetValue} MAD`;
-    return `${proj} ${prop} · ${bgt} · ${form.bedrooms} ch.`;
-  };
-
-  const whatsappAccelerateMsg = encodeURIComponent(
-    language === "ar"
-      ? `السلام عليكم، أنا ${form.name.trim() || ""}. لقد أرسلت طلباً بخصوص ${getProjectLabel()} ${getPropertyLabel()} في مراكش (المرجع: LIM-${leadRef}).`
-      : language === "en"
-      ? `Hello Live In Marrakech, I am ${form.name.trim() || ""}. I just submitted an inquiry for: ${getProjectLabel()} ${getPropertyLabel()} in Marrakech (Ref: LIM-${leadRef}).`
-      : language === "es"
-      ? `Hola Live In Marrakech, soy ${form.name.trim() || ""}. Acabo de enviar una búsqueda para: ${getProjectLabel()} ${getPropertyLabel()} en Marrakech (Ref: LIM-${leadRef}).`
-      : `Bonjour Live In Marrakech, je suis ${form.name.trim() || ""}. Je viens d'envoyer une recherche pour : ${getProjectLabel()} ${getPropertyLabel()} à Marrakech (Réf: LIM-${leadRef}).`
-  );
-
   const crumbs = [
-    { name: tL("Accueil", "Home", "Inicio"), path: lp("/") },
-    { name: tL("Ma recherche", "My search", "Mi búsqueda"), path: lp("/demande") },
+    { name: { fr: "Accueil", en: "Home", es: "Inicio" }[lang], path: lp("/") },
+    { name: { fr: "Ma recherche", en: "My search", es: "Mi búsqueda" }[lang], path: lp("/demande") },
   ];
+  const firstName = contact.name.trim().split(/\s+/)[0] ?? "";
+  const whatsappText = {
+    fr: `Bonjour, je viens d’envoyer ma recherche sur votre site (${reference}) : ${summary.map((s) => s.text).join(" · ")}.`,
+    en: `Hello, I just sent my search on your website (${reference}): ${summary.map((s) => s.text).join(" · ")}.`,
+    es: `Hola, acabo de enviar mi búsqueda en su web (${reference}): ${summary.map((s) => s.text).join(" · ")}.`,
+  }[lang];
 
   return (
-    <div className="request-page-v2 selection:bg-[#211f1b] selection:text-white flex flex-col justify-between" lang={language} dir={rtl ? "rtl" : "ltr"}>
-      <SEOHead
-        withBrand={false}
-        title={t.pageTitle}
-        description={t.pageDesc}
-        schema={breadcrumbJsonLd(crumbs)}
-      />
+    <div className="request-page-v2 min-h-[100svh]">
+      <SEOHead withBrand={false} title={UI.title[lang]} description={UI.description[lang]} schema={breadcrumbJsonLd(crumbs)} />
 
-      {/* Main Luxury Container */}
-      <main className="w-full max-w-lg mx-auto min-h-screen sm:min-h-[92vh] sm:my-6 bg-[#FFFFFF] sm:rounded-[28px] sm:shadow-2xl border-x sm:border border-[#e3d9ca] flex flex-col relative overflow-hidden">
-        {/* Sticky Header with Stepper */}
-        <header className="pt-6 sm:pt-6 pb-4 px-5 sm:px-8 border-b border-[#e3d9ca] bg-[#FFFFFF]/90 backdrop-blur-md sticky top-0 z-30">
-          <div className="flex items-center justify-between">
-            {/* Brand Logo & Tagline */}
-            <Link to={lp("/")} aria-label="Live In Marrakech" className="inline-flex flex-col group focus:outline-none">
-              <span className="font-serif-luxury whitespace-nowrap text-[23px] tracking-tight font-semibold text-[#211f1b] group-hover:text-[#a4573e] transition-colors">
-                Live In Marrakech
-              </span>
-              <span className="text-[9px] tracking-[0.24em] uppercase text-[#655f56] -mt-1 font-medium">
-                {t.brandSub}
-              </span>
+      <main className="mx-auto flex min-h-[100svh] w-full max-w-[640px] flex-col px-5 pb-10 sm:px-8">
+        {/* En-tête : marque, progression, quitter */}
+        <header className="sticky top-0 z-20 -mx-5 bg-[#f6f1e8]/95 px-5 pb-3 pt-4 backdrop-blur sm:-mx-8 sm:px-8">
+          <div className="flex items-center justify-between gap-3">
+            <Link to={lp("/")} className="font-serif-luxury whitespace-nowrap text-[23px] font-semibold tracking-tight text-[#211f1b] hover:text-[#a4573e]">
+              Live In Marrakech
             </Link>
-
-            {/* Language Switcher & Direct WhatsApp VIP Link */}
-            <div className="flex items-center gap-2">
-              <div className="bg-[#fbf8f2] p-0.5 rounded-full flex items-center border border-[#e3d9ca] text-[11px] font-semibold text-[#4f4a43]">
-                {(["fr", "en", "es", "ar"] as const).map((code) => (
-                  <button
-                    key={code}
-                    type="button"
-                    onClick={() => setLanguage(code)}
-                    className={`px-2 py-0.5 rounded-full transition-all ${
-                      language === code
-                        ? "bg-[#211f1b] text-white shadow-sm"
-                        : "text-[#655f56] hover:text-[#211f1b]"
-                    }`}
-                  >
-                    {code.toUpperCase()}
-                  </button>
-                ))}
-              </div>
-
-              {/* VIP WhatsApp instant direct button */}
-              <a
-                href="https://wa.me/212605387041?text=Bonjour,%20je%20souhaite%20des%20renseignements%20pour%20un%20bien%20à%20Marrakech"
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Conseiller WhatsApp direct"
-                aria-label="WhatsApp VIP"
-                className="w-8 h-8 rounded-full bg-[#EBF9F0] border border-[#C7EDD2] text-[#1EBE5D] flex items-center justify-center hover:bg-[#25D366] hover:text-white transition-all shadow-sm"
-              >
-                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.976.532 1.943.924 3.15.924 3.182 0 5.767-2.587 5.767-5.766.001-3.187-2.575-5.766-5.768-5.766zm0 10.375c-1.07 0-1.936-.312-2.766-.807l-.2-.119-1.341.352.358-1.309-.131-.209c-.544-.867-.831-1.688-.83-2.526 0-2.54 2.067-4.607 4.61-4.607 2.541 0 4.609 2.067 4.609 4.607 0 2.542-2.068 4.611-4.61 4.611zm7.969-4.609c0 4.418-3.582 8-8 8-1.42 0-2.756-.372-3.921-1.02l-4.079 1.07 1.089-3.985c-.718-1.208-1.139-2.616-1.139-4.115 0-4.418 3.582-8 8-8s8 3.582 8 8z" />
-                </svg>
-              </a>
-            </div>
+            <Link to={lp("/")} aria-label={UI.quit[lang]} className="grid h-11 w-11 place-items-center rounded-full text-[#4f4a43] hover:bg-[#ede5d8]">
+              <X size={20} strokeWidth={1.6} aria-hidden="true" />
+            </Link>
           </div>
-
-          {/* Stepper Progress Bar & Breadcrumbs (Steps 1 to 3) */}
-          {step < 4 && (
-            <div className="mt-4 pt-3 border-t border-[#ede5d8]">
-              <div className="flex items-center justify-between text-xs mb-2">
-                <div className="flex items-center gap-1.5 text-[#655f56]">
-                  {step > 1 ? (
-                    <button
-                      type="button"
-                      onClick={handlePrevStep}
-                      className="inline-flex items-center gap-1 text-[#211f1b] hover:text-[#4f4a43] font-medium transition-colors"
-                    >
-                      {rtl ? <ArrowRight size={14} /> : <ArrowLeft size={14} />}
-                      <span>{t.prev}</span>
-                    </button>
-                  ) : (
-                    <span className="text-[12px] text-[#4f4a43] font-medium tracking-wide">
-                      {t.breadcrumb1}
-                    </span>
-                  )}
-                  {step > 1 && (
-                    <span className="text-[12px] text-[#4f4a43] font-medium tracking-wide">
-                      · {step === 2 ? t.breadcrumb2 : t.breadcrumb3}
-                    </span>
-                  )}
-                </div>
-                <span className="text-[11px] font-semibold text-[#211f1b] bg-[#fbf8f2] border border-[#e3d9ca] px-2.5 py-0.5 rounded-full">
-                  {t.stepOf.replace("{current}", String(step))}
-                </span>
-              </div>
-              <div className="w-full bg-[#EFECE5] h-1.5 rounded-full overflow-hidden flex">
-                <div
-                  className="bg-[#211f1b] h-full transition-all duration-300 ease-out rounded-full"
-                  style={{
-                    width: step === 1 ? "33.33%" : step === 2 ? "66.66%" : "100%",
-                  }}
-                />
-              </div>
-            </div>
-          )}
+          <div className="mt-3 h-1 overflow-hidden rounded-full bg-[#e3d9ca]" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress} aria-label={UI.h1[lang]}>
+            <div className="h-full rounded-full bg-[#a4573e] transition-[width] duration-500 ease-out" style={{ width: `${Math.max(progress, 4)}%` }} />
+          </div>
         </header>
 
-        {/* Content Section */}
-        <div className="flex-1 p-5 sm:p-8 overflow-y-auto bg-[#fbf8f2] custom-scrollbar">
-          {/* ========================================== */}
-          {/* STEP 1: VOTRE PROJET                       */}
-          {/* ========================================== */}
-          {step === 1 && (
-            <section className="space-y-6">
-              <div>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFFFFF] text-[#4f4a43] border border-[#e3d9ca] text-[11px] font-semibold tracking-wider uppercase mb-3">
-                  <svg className="w-3.5 h-3.5 text-[#211f1b]" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                    <path d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  {t.step1Tag}
-                </span>
-                <h1 className="font-serif-luxury text-[30px] sm:text-[38px] text-[#211f1b] leading-snug font-medium">
-                  {t.step1TitlePrefix}
-                  <span className="italic font-serif-luxury text-[#a4573e]">{t.step1TitleHighlight}</span>.
-                </h1>
-                <p className="text-sm text-[#4f4a43] mt-2 leading-relaxed">
-                  {t.step1Intro}
-                </p>
-              </div>
+        <Breadcrumbs crumbs={crumbs} className="mt-3 text-[#655f56]" />
 
-              {/* 1.1 Type de Projet Selection */}
-              <fieldset className="space-y-3">
-                <legend className="text-xs uppercase font-bold tracking-wider text-[#655f56] flex items-center gap-1.5">
-                  <span className="w-5 h-5 rounded-full bg-[#211f1b] text-white text-[10px] inline-flex items-center justify-center font-bold">1</span>
-                  {t.step1Nature}
-                </legend>
-                <div className="grid grid-cols-1 gap-2.5">
-                  {/* Option Acheter */}
-                  <label
-                    onClick={() => handleSelectProjectType("achat")}
-                    className={`relative flex items-center p-3.5 sm:p-4 rounded-lg border cursor-pointer transition-luxury shadow-sm ${
-                      form.projectType === "achat"
-                        ? "border-[#211f1b] bg-[#FFFFFF] shadow-md ring-1 ring-[#211f1b]"
-                        : "border-[#e3d9ca] bg-[#FFFFFF] hover:border-[#211f1b]/40"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="project_type"
-                      checked={form.projectType === "achat"}
-                      onChange={() => handleSelectProjectType("achat")}
-                      className="sr-only"
-                    />
-                    <div
-                      className={`w-11 h-11 rounded-md flex items-center justify-center mr-3.5 shrink-0 transition-colors ${
-                        form.projectType === "achat" ? "bg-[#211f1b] text-white" : "bg-[#f6f1e8] text-[#4f4a43]"
-                      }`}
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                        <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className="font-serif-luxury text-[19px] font-semibold text-[#211f1b]">{t.buyTitle}</span>
-                        <span className="text-xs text-[#211f1b] font-semibold bg-[#fbf8f2] border border-[#e3d9ca] px-2 py-0.5 rounded-full">{t.buyTag}</span>
-                      </div>
-                      <p className="text-xs text-[#4f4a43] mt-0.5">{t.buyDesc}</p>
-                    </div>
-                    <div
-                      className={`ml-2 w-5 h-5 rounded-full border flex items-center justify-center text-xs transition-opacity ${
-                        form.projectType === "achat"
-                          ? "opacity-100 border-[#211f1b] bg-[#211f1b] text-white"
-                          : "opacity-0 border-[#ddd2c2]"
-                      }`}
-                    >
-                      ✓
-                    </div>
-                  </label>
+        {/* Intro (première question seulement) */}
+        {stepId === "project" && (
+          <div className="rq-fade mt-6 flex flex-col gap-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#a4573e]">{UI.minute[lang]}</p>
+            <h1 className="font-serif-luxury m-0 text-[40px] font-medium leading-[1.02] text-[#211f1b] sm:text-[52px]">{UI.h1[lang]}</h1>
+          </div>
+        )}
 
-                  {/* Option Louer Longue Durée */}
-                  <label
-                    onClick={() => handleSelectProjectType("longue_duree")}
-                    className={`relative flex items-center p-3.5 sm:p-4 rounded-lg border cursor-pointer transition-luxury shadow-sm ${
-                      form.projectType === "longue_duree"
-                        ? "border-[#211f1b] bg-[#FFFFFF] shadow-md ring-1 ring-[#211f1b]"
-                        : "border-[#e3d9ca] bg-[#FFFFFF] hover:border-[#211f1b]/40"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="project_type"
-                      checked={form.projectType === "longue_duree"}
-                      onChange={() => handleSelectProjectType("longue_duree")}
-                      className="sr-only"
-                    />
-                    <div
-                      className={`w-11 h-11 rounded-md flex items-center justify-center mr-3.5 shrink-0 transition-colors ${
-                        form.projectType === "longue_duree" ? "bg-[#211f1b] text-white" : "bg-[#f6f1e8] text-[#4f4a43]"
-                      }`}
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                        <path d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className="font-serif-luxury text-[19px] font-semibold text-[#211f1b]">{t.rentTitle}</span>
-                        <span className="text-xs text-[#655f56] bg-[#fbf8f2] px-2 py-0.5 rounded-full border border-[#e3d9ca]">{t.rentTag}</span>
-                      </div>
-                      <p className="text-xs text-[#4f4a43] mt-0.5">{t.rentDesc}</p>
-                    </div>
-                    <div
-                      className={`ml-2 w-5 h-5 rounded-full border flex items-center justify-center text-xs transition-opacity ${
-                        form.projectType === "longue_duree"
-                          ? "opacity-100 border-[#211f1b] bg-[#211f1b] text-white"
-                          : "opacity-0 border-[#ddd2c2]"
-                      }`}
-                    >
-                      ✓
-                    </div>
-                  </label>
-
-                  {/* Option Séjour & Vacances */}
-                  <label
-                    onClick={() => handleSelectProjectType("court_sejour")}
-                    className={`relative flex items-center p-3.5 sm:p-4 rounded-lg border cursor-pointer transition-luxury shadow-sm ${
-                      form.projectType === "court_sejour"
-                        ? "border-[#211f1b] bg-[#FFFFFF] shadow-md ring-1 ring-[#211f1b]"
-                        : "border-[#e3d9ca] bg-[#FFFFFF] hover:border-[#211f1b]/40"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="project_type"
-                      checked={form.projectType === "court_sejour"}
-                      onChange={() => handleSelectProjectType("court_sejour")}
-                      className="sr-only"
-                    />
-                    <div
-                      className={`w-11 h-11 rounded-md flex items-center justify-center mr-3.5 shrink-0 transition-colors ${
-                        form.projectType === "court_sejour" ? "bg-[#211f1b] text-white" : "bg-[#f6f1e8] text-[#4f4a43]"
-                      }`}
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                        <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className="font-serif-luxury text-[19px] font-semibold text-[#211f1b]">{t.stayTitle}</span>
-                        <span className="text-xs text-[#4f4a43] font-medium bg-[#fbf8f2] px-2 py-0.5 rounded-full border border-[#e3d9ca]">{t.stayTag}</span>
-                      </div>
-                      <p className="text-xs text-[#4f4a43] mt-0.5">{t.stayDesc}</p>
-                    </div>
-                    <div
-                      className={`ml-2 w-5 h-5 rounded-full border flex items-center justify-center text-xs transition-opacity ${
-                        form.projectType === "court_sejour"
-                          ? "opacity-100 border-[#211f1b] bg-[#211f1b] text-white"
-                          : "opacity-0 border-[#ddd2c2]"
-                      }`}
-                    >
-                      ✓
-                    </div>
-                  </label>
-                </div>
-              </fieldset>
-
-              {/* 1.2 Catégorie de Bien Selection */}
-              <fieldset className="space-y-3 pt-2">
-                <legend className="text-xs uppercase font-bold tracking-wider text-[#655f56] flex items-center gap-1.5">
-                  <span className="w-5 h-5 rounded-full bg-[#fbf8f2] border border-[#e3d9ca] text-[#211f1b] text-[10px] inline-flex items-center justify-center font-bold">2</span>
-                  {t.categoryTitle}
-                </legend>
-                <div className="grid grid-cols-3 gap-2.5">
-                  {/* Villa */}
-                  <label
-                    onClick={() => updateForm("propertyType", "villa")}
-                    className={`flex flex-col items-center justify-center p-3 rounded-lg border cursor-pointer text-center transition-luxury ${
-                      form.propertyType === "villa"
-                        ? "border-[#211f1b] bg-[#FFFFFF] shadow-sm ring-1 ring-[#211f1b]"
-                        : "border-[#e3d9ca] bg-[#FFFFFF] hover:border-[#211f1b]/40"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="property_type"
-                      checked={form.propertyType === "villa"}
-                      onChange={() => updateForm("propertyType", "villa")}
-                      className="sr-only"
-                    />
-                    <div
-                      className={`w-9 h-9 mb-1.5 flex items-center justify-center rounded-md ${
-                        form.propertyType === "villa" ? "bg-[#211f1b] text-white" : "bg-[#fbf8f2] text-[#4f4a43]"
-                      }`}
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
-                        <path d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
-                    <span className="text-xs font-semibold text-[#211f1b]">{t.villaTitle}</span>
-                    <span className="text-[10px] text-[#655f56] mt-0.5">{t.villaDesc}</span>
-                  </label>
-
-                  {/* Appartement */}
-                  <label
-                    onClick={() => updateForm("propertyType", "appartement")}
-                    className={`flex flex-col items-center justify-center p-3 rounded-lg border cursor-pointer text-center transition-luxury ${
-                      form.propertyType === "appartement"
-                        ? "border-[#211f1b] bg-[#FFFFFF] shadow-sm ring-1 ring-[#211f1b]"
-                        : "border-[#e3d9ca] bg-[#FFFFFF] hover:border-[#211f1b]/40"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="property_type"
-                      checked={form.propertyType === "appartement"}
-                      onChange={() => updateForm("propertyType", "appartement")}
-                      className="sr-only"
-                    />
-                    <div
-                      className={`w-9 h-9 mb-1.5 flex items-center justify-center rounded-md ${
-                        form.propertyType === "appartement" ? "bg-[#211f1b] text-white" : "bg-[#fbf8f2] text-[#4f4a43]"
-                      }`}
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
-                        <path d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6h1.5m-1.5 3h1.5m-1.5 3h1.5M9 21v-3.75a.75.75 0 01.75-.75h4.5a.75.75 0 01.75.75V21" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
-                    <span className="text-xs font-semibold text-[#211f1b]">{t.aptTitle}</span>
-                    <span className="text-[10px] text-[#655f56] mt-0.5">{t.aptDesc}</span>
-                  </label>
-
-                  {/* Riad */}
-                  <label
-                    onClick={() => updateForm("propertyType", "riad")}
-                    className={`flex flex-col items-center justify-center p-3 rounded-lg border cursor-pointer text-center transition-luxury ${
-                      form.propertyType === "riad"
-                        ? "border-[#211f1b] bg-[#FFFFFF] shadow-sm ring-1 ring-[#211f1b]"
-                        : "border-[#e3d9ca] bg-[#FFFFFF] hover:border-[#211f1b]/40"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="property_type"
-                      checked={form.propertyType === "riad"}
-                      onChange={() => updateForm("propertyType", "riad")}
-                      className="sr-only"
-                    />
-                    <div
-                      className={`w-9 h-9 mb-1.5 flex items-center justify-center rounded-md ${
-                        form.propertyType === "riad" ? "bg-[#211f1b] text-white" : "bg-[#fbf8f2] text-[#4f4a43]"
-                      }`}
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
-                        <path d="M12 2.25L3 7.5v13.5h18V7.5L12 2.25zM12 7.5a4.5 4.5 0 00-4.5 4.5v7.5h9v-7.5A4.5 4.5 0 0012 7.5z" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
-                    <span className="text-xs font-semibold text-[#211f1b]">{t.riadTitle}</span>
-                    <span className="text-[10px] text-[#655f56] mt-0.5">{t.riadDesc}</span>
-                  </label>
-                </div>
-              </fieldset>
-
-              {/* Continue CTA */}
-              <div className="pt-4">
-                <button
-                  type="button"
-                  onClick={() => goToStep(2)}
-                  className="w-full h-13 py-3.5 px-6 rounded-lg bg-[#211f1b] hover:bg-[#3a352f] active:scale-[0.99] text-white font-medium text-base shadow-lg shadow-black/15 flex items-center justify-center gap-2 transition-luxury"
-                >
-                  <span>{t.btnContinueCriteria}</span>
-                  {rtl ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
+        {/* Réponses déjà données : un toucher pour revenir à la question */}
+        {summary.length > 0 && stepId !== DONE_STEP && (
+          <ul ref={summaryRef} aria-label={UI.yourSearch[lang]} className="scrollbar-hide -mx-5 mt-4 flex gap-1.5 overflow-x-auto px-5 pb-1 sm:-mx-8 sm:flex-wrap sm:px-8">
+            {summary.map(({ q, text }) => (
+              <li key={q.id} className="rq-pop shrink-0">
+                <button type="button" onClick={() => go(q.id, "back")} className="max-w-[220px] truncate whitespace-nowrap rounded-full border border-[#e3d9ca] bg-white px-3 py-1.5 text-[12px] font-medium text-[#4f4a43] hover:border-[#a4573e] hover:text-[#a4573e]">
+                  {text}
                 </button>
-                <div className="flex items-center justify-center gap-1.5 text-xs text-[#655f56] mt-3">
-                  <ShieldCheck size={14} className="text-[#4f4a43]" />
-                  <span>{t.confidentialHint}</span>
-                </div>
-              </div>
-            </section>
-          )}
+              </li>
+            ))}
+          </ul>
+        )}
 
-          {/* ========================================== */}
-          {/* STEP 2: VOS CRITÈRES                       */}
-          {/* ========================================== */}
-          {step === 2 && (
-            <section className="space-y-6">
-              <div>
-                <span className="text-xs uppercase font-bold tracking-wider text-[#655f56]">
-                  {t.stepOf.replace("{current}", "2")}
-                </span>
-                <h2 className="font-serif-luxury text-[30px] sm:text-[38px] text-[#211f1b] leading-snug font-medium mt-0.5">
-                  {form.projectType === "court_sejour" ? t.step2StayTitle : t.step2ClassicTitle}
-                </h2>
-                <p className="text-sm text-[#4f4a43] mt-1">
-                  {form.projectType === "court_sejour" ? t.step2StaySubtitle : t.step2ClassicSubtitle}
-                </p>
+        <div key={stepId} className={`flex flex-1 flex-col ${direction === "forward" ? "rq-in-forward" : "rq-in-back"}`}>
+          {question && (
+            <section aria-labelledby={`q-${question.id}`} className="mt-7 flex flex-col gap-5">
+              <div className="flex flex-col gap-1.5">
+                <p className="text-[12px] font-medium text-[#655f56]">{UI.step[lang].replace("{n}", String(index + 1)).replace("{total}", String(steps.length))}</p>
+                {stepId === "project"
+                  ? <h2 id={`q-${question.id}`} className="font-serif-luxury m-0 text-[26px] font-medium leading-tight text-[#211f1b]">{question.title[lang]}</h2>
+                  : <h2 id={`q-${question.id}`} className="font-serif-luxury m-0 text-[34px] font-medium leading-[1.08] text-[#211f1b] sm:text-[40px]">{question.title[lang]}</h2>}
+                {question.subtitle && <p className="m-0 text-[14px] leading-relaxed text-[#655f56]">{question.subtitle[lang]}</p>}
               </div>
 
-              {/* Classic Group (Achat / Longue Durée) */}
-              {form.projectType !== "court_sejour" ? (
-                <div className="space-y-5">
-                  {/* Budget Selector */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs uppercase font-bold tracking-wider text-[#655f56]">
-                        {t.budgetEstimated}
-                      </label>
-                      <button
-                        type="button"
-                        onClick={toggleUnknownBudget}
-                        className="text-xs text-[#211f1b] hover:underline font-semibold"
-                      >
-                        {form.isBudgetUnknown ? t.budgetSpecifyBtn : t.budgetUnknownBtn}
-                      </button>
-                    </div>
-
-                    {/* Predefined Quick Pills */}
-                    {!form.isBudgetUnknown && (
-                      <div className="grid grid-cols-4 gap-1.5 text-xs">
-                        {(form.projectType === "longue_duree"
-                          ? ["15 000", "25 000", "45 000", "70 000+"]
-                          : ["3 000 000", "6 000 000", "10 000 000", "15 000 000+"]
-                        ).map((pillVal) => {
-                          const active = form.budgetValue === pillVal;
-                          const display =
-                            form.projectType === "longue_duree"
-                              ? pillVal.replace(" 000", "k MAD")
-                              : pillVal.replace(" 000 000", "M MAD");
-                          return (
-                            <button
-                              key={pillVal}
-                              type="button"
-                              onClick={() => updateForm("budgetValue", pillVal)}
-                              className={`py-2 px-1 rounded-md border text-center font-semibold transition-luxury ${
-                                active
-                                  ? "border-[#211f1b] bg-[#211f1b] text-white"
-                                  : "border-[#e3d9ca] bg-[#FFFFFF] text-[#211f1b] hover:border-[#211f1b]"
-                              }`}
-                            >
-                              {display}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-
-                    {/* Custom Budget Input */}
-                    <div className="relative mt-2">
-                      <input
-                        type="text"
-                        disabled={form.isBudgetUnknown}
-                        value={form.isBudgetUnknown ? t.budgetUnknownBtn : form.budgetValue}
-                        onChange={(e) => updateForm("budgetValue", e.target.value)}
-                        placeholder="Ex: 5 500 000"
-                        className={`w-full h-12 rounded-md border border-[#ddd2c2] px-3.5 pr-24 text-[#211f1b] font-medium focus:border-[#211f1b] focus:ring-1 focus:ring-[#211f1b] transition-colors ${
-                          form.isBudgetUnknown ? "bg-[#fbf8f2] opacity-60 cursor-not-allowed" : "bg-[#FFFFFF]"
-                        }`}
-                      />
-                      <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#4f4a43] uppercase tracking-wider bg-[#fbf8f2] border border-[#e3d9ca] px-2 py-1 rounded-md">
-                        {form.projectType === "longue_duree" ? t.budgetCurrencySuffixRent : t.budgetCurrencySuffixSale}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-[#655f56] italic">
-                      {form.projectType === "longue_duree" ? t.budgetHelperRent : t.budgetHelperSale}
-                    </p>
-                  </div>
-
-                  {/* Chambres Selector */}
-                  <div className="space-y-2">
-                    <label className="text-xs uppercase font-bold tracking-wider text-[#655f56]">
-                      {t.bedroomsTitle}
-                    </label>
-                    <div className="grid grid-cols-5 gap-2">
-                      {(["1", "2", "3", "4+", "Indifférent"] as const).map((count) => {
-                        const active = form.bedrooms === count;
-                        return (
-                          <label
-                            key={count}
-                            onClick={() => updateForm("bedrooms", count)}
-                            className={`flex items-center justify-center h-12 rounded-md border cursor-pointer font-semibold text-sm transition-luxury ${
-                              active
-                                ? "border-[#211f1b] bg-[#211f1b] text-white"
-                                : "border-[#e3d9ca] bg-[#FFFFFF] text-[#211f1b] hover:border-[#211f1b]"
-                            }`}
-                          >
-                            <input
-                              type="radio"
-                              name="bedrooms"
-                              checked={active}
-                              onChange={() => updateForm("bedrooms", count)}
-                              className="sr-only"
-                            />
-                            <span>{count === "Indifférent" ? t.bedroomsAll : count}</span>
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Secteur Préférentiel */}
-                  <div className="space-y-2">
-                    <label className="text-xs uppercase font-bold tracking-wider text-[#655f56] flex items-center justify-between">
-                      <span>{t.districtsTitle}</span>
-                      <span className="text-[11px] font-normal text-[#655f56]">{t.optional}</span>
-                    </label>
-                    <select
-                      value={form.district}
-                      onChange={(e) => updateForm("district", e.target.value)}
-                      className="w-full h-12 rounded-md border border-[#ddd2c2] bg-[#FFFFFF] px-3.5 pr-8 text-[#211f1b] text-sm focus:border-[#211f1b] focus:ring-1 focus:ring-[#211f1b]"
-                    >
-                      {DISTRICT_OPTIONS.map((dist) => (
-                        <option key={dist} value={dist}>
-                          {dist}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
+              {question.kind === "dates" ? (
+                <DatesStep
+                  lang={lang}
+                  value={answers}
+                  onChange={(from, to, flexible) => setAnswers((prev) => ({ ...prev, datesFrom: from || undefined, datesTo: to || undefined, datesFlexible: flexible ? "1" : undefined }))}
+                />
               ) : (
-                /* Stay Group (Séjourner) */
-                <div className="space-y-5">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs uppercase font-bold tracking-wider text-[#655f56]">
-                        {t.datesTitle}
-                      </label>
-                      <label className="flex items-center gap-1.5 text-xs text-[#4f4a43] cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={form.stayFlexibleDates}
-                          onChange={(e) => updateForm("stayFlexibleDates", e.target.checked)}
-                          className="rounded border-[#ddd2c2] text-[#211f1b] focus:ring-[#211f1b]"
-                        />
-                        <span>{t.flexibleDates}</span>
-                      </label>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <span className="text-[11px] text-[#655f56] block mb-1">{t.arrival}</span>
-                        <input
-                          type="date"
-                          value={form.stayArrival}
-                          onChange={(e) => updateForm("stayArrival", e.target.value)}
-                          className="w-full h-11 rounded-md border border-[#ddd2c2] bg-[#FFFFFF] px-3 text-xs text-[#211f1b]"
-                        />
-                      </div>
-                      <div>
-                        <span className="text-[11px] text-[#655f56] block mb-1">{t.departure}</span>
-                        <input
-                          type="date"
-                          value={form.stayDeparture}
-                          onChange={(e) => updateForm("stayDeparture", e.target.value)}
-                          className="w-full h-11 rounded-md border border-[#ddd2c2] bg-[#FFFFFF] px-3 text-xs text-[#211f1b]"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Nombre de voyageurs */}
-                  <div className="flex items-center justify-between p-3.5 rounded-md border border-[#e3d9ca] bg-[#FFFFFF]">
-                    <div>
-                      <span className="text-sm font-semibold text-[#211f1b] block">{t.guestsTitle}</span>
-                      <span className="text-xs text-[#4f4a43]">{t.guestsSubtitle}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() => updateForm("stayGuests", Math.max(1, form.stayGuests - 1))}
-                        className="w-8 h-8 rounded-full border border-[#ddd2c2] text-[#211f1b] flex items-center justify-center hover:bg-[#fbf8f2] font-bold"
-                      >
-                        -
+                <div role={question.kind === "multi" ? "group" : "radiogroup"} aria-labelledby={`q-${question.id}`} className={question.id === "bedrooms" ? "grid grid-cols-3 gap-2.5" : question.id === "areas" ? "flex flex-wrap gap-2" : "grid gap-2.5 sm:grid-cols-2"}>
+                  {question.options!(answers, lang).map((option, i) => {
+                    const value = answers[question.id];
+                    const selected = Array.isArray(value) ? value.includes(option.id) : value === option.id;
+                    const Icon = option.icon;
+                    if (question.id === "areas") {
+                      return (
+                        <button key={option.id} type="button" role="checkbox" aria-checked={selected} onClick={() => choose(question, option)} style={{ animationDelay: `${i * 30}ms` }}
+                          className={`rq-card-in flex min-h-11 items-center gap-1.5 rounded-full border px-4 text-[14px] font-medium transition-all duration-200 active:scale-[0.97] ${selected ? "border-[#a4573e] bg-[#a4573e] text-white" : "border-[#e3d9ca] bg-white text-[#211f1b] hover:border-[#a4573e]"}`}>
+                          {selected ? <Check size={15} strokeWidth={2.2} aria-hidden="true" /> : Icon && <Icon size={15} strokeWidth={1.6} aria-hidden="true" className="text-[#a4573e]" />}
+                          {option.label[lang]}
+                        </button>
+                      );
+                    }
+                    return (
+                      <button key={option.id} type="button" role="radio" aria-checked={selected} onClick={() => choose(question, option)} style={{ animationDelay: `${i * 45}ms` }}
+                        className={`rq-card-in group relative flex items-center gap-3.5 rounded-xl border bg-white text-left transition-all duration-200 active:scale-[0.98] ${question.id === "bedrooms" ? "min-h-[64px] justify-center px-2 text-center" : "min-h-[68px] px-4 py-3"} ${selected ? "border-[#a4573e] shadow-[0_0_0_1px_#a4573e,0_10px_24px_-14px_rgba(164,87,62,0.6)]" : "border-[#e3d9ca] hover:-translate-y-0.5 hover:border-[#cdb9a3] hover:shadow-[0_10px_24px_-18px_rgba(33,31,27,0.5)]"}`}>
+                        {Icon && (
+                          <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-full transition-colors duration-200 ${selected ? "bg-[#a4573e] text-white" : "bg-[#f6f1e8] text-[#a4573e] group-hover:bg-[#ede5d8]"}`}>
+                            <Icon size={20} strokeWidth={1.5} aria-hidden="true" />
+                          </span>
+                        )}
+                        <span className="flex min-w-0 flex-col">
+                          <span className={`${question.id === "bedrooms" ? "font-serif-luxury text-[24px] lining-nums" : "text-[16px]"} font-semibold leading-snug text-[#211f1b]`}>{option.label[lang]}</span>
+                          {option.hint && <span className="text-[13px] leading-snug text-[#655f56]">{option.hint[lang]}</span>}
+                        </span>
+                        {selected && question.id !== "bedrooms" && (
+                          <span className="rq-check absolute right-3 top-3 grid h-6 w-6 place-items-center rounded-full bg-[#a4573e] text-white" aria-hidden="true">
+                            <Check size={14} strokeWidth={2.6} />
+                          </span>
+                        )}
                       </button>
-                      <span className="w-6 text-center font-bold text-[#211f1b]">{form.stayGuests}</span>
-                      <button
-                        type="button"
-                        onClick={() => updateForm("stayGuests", Math.min(30, form.stayGuests + 1))}
-                        className="w-8 h-8 rounded-full border border-[#ddd2c2] text-[#211f1b] flex items-center justify-center hover:bg-[#fbf8f2] font-bold"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Budget par nuit */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs uppercase font-bold tracking-wider text-[#655f56]">
-                      {t.budgetNightTitle}
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={form.stayBudgetNight}
-                        onChange={(e) => updateForm("stayBudgetNight", e.target.value)}
-                        className="w-full h-11 rounded-md border border-[#ddd2c2] bg-[#FFFFFF] px-3 pr-28 text-[#211f1b] font-medium"
-                      />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#4f4a43] uppercase bg-[#fbf8f2] px-2 py-1 rounded border border-[#e3d9ca]">
-                        {t.budgetCurrencySuffixStay}
-                      </span>
-                    </div>
-                  </div>
+                    );
+                  })}
                 </div>
               )}
 
-              {/* Accordion: Prestations Exclusives */}
-              <div className="border border-[#e3d9ca] rounded-lg overflow-hidden bg-[#FFFFFF]">
-                <button
-                  type="button"
-                  onClick={() => setPreferencesOpen(!preferencesOpen)}
-                  className="w-full p-4 text-left flex items-center justify-between hover:bg-[#fbf8f2] transition-colors focus:outline-none"
-                >
-                  <span className="flex items-center gap-2 text-xs uppercase font-bold tracking-wider text-[#211f1b]">
-                    <span className="text-[#a4573e]">✦</span> {t.accordionTitle}
-                  </span>
-                  <ChevronDown
-                    size={16}
-                    className={`text-[#655f56] transition-transform duration-200 ${
-                      preferencesOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                {preferencesOpen && (
-                  <div className="px-4 pb-4 space-y-3">
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {PRESTATIONS_CHIPS.map((chip) => {
-                        const active = form.selectedTags.includes(chip);
-                        return (
-                          <button
-                            key={chip}
-                            type="button"
-                            onClick={() => togglePrestationTag(chip)}
-                            className={`px-3 py-1.5 rounded-full border text-xs transition-colors ${
-                              active
-                                ? "border-[#211f1b] bg-[#211f1b] text-white"
-                                : "border-[#ddd2c2] bg-[#fbf8f2] text-[#211f1b] hover:border-[#211f1b]"
-                            }`}
-                          >
-                            {chip}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-[#655f56] block mb-1">
-                        {t.notesLabel}
-                      </label>
-                      <textarea
-                        rows={2}
-                        value={form.notes}
-                        onChange={(e) => updateForm("notes", e.target.value)}
-                        placeholder={t.notesPlaceholder}
-                        className="w-full rounded-md border border-[#ddd2c2] bg-[#fbf8f2] p-2.5 text-xs text-[#211f1b] focus:border-[#211f1b] focus:ring-1 focus:ring-[#211f1b]"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Navigation CTAs */}
-              <div className="pt-2 space-y-2">
-                <button
-                  type="button"
-                  onClick={() => goToStep(3)}
-                  className="w-full h-13 py-3.5 px-6 rounded-lg bg-[#211f1b] hover:bg-[#3a352f] active:scale-[0.99] text-white font-medium text-base shadow-lg shadow-black/15 flex items-center justify-center gap-2 transition-luxury"
-                >
-                  <span>{t.btnValidateContact}</span>
-                  {rtl ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => goToStep(1)}
-                  className="w-full py-2 text-xs text-[#655f56] hover:text-[#211f1b] text-center transition-colors"
-                >
-                  {t.btnEditType}
-                </button>
-              </div>
+              {(question.kind !== "single" || answers[question.id]) && (
+                <div className="flex flex-col gap-2 pt-1">
+                  {(question.kind !== "single") && (
+                    <button type="button" onClick={() => go(nextAfter(question.id, answers), "forward")} className="flex min-h-[54px] items-center justify-center gap-2 rounded-xl bg-[#211f1b] px-5 text-[15px] font-semibold text-white transition-colors hover:bg-[#a4573e]">
+                      {((answers[question.id] as string[] | undefined)?.length || answers.datesFrom || answers.datesTo) ? UI.next[lang] : UI.skip[lang]}
+                      <ArrowRight size={18} aria-hidden="true" />
+                    </button>
+                  )}
+                  {question.kind === "single" && answers[question.id] && (
+                    <button type="button" onClick={() => go(nextAfter(question.id, answers), "forward")} className="flex min-h-11 items-center justify-center gap-1.5 text-[14px] font-semibold text-[#a4573e]">
+                      {UI.next[lang]}<ArrowRight size={16} aria-hidden="true" />
+                    </button>
+                  )}
+                </div>
+              )}
             </section>
           )}
 
-          {/* ========================================== */}
-          {/* STEP 3: COORDONNÉES & TRANSMISSION         */}
-          {/* ========================================== */}
-          {step === 3 && (
-            <section className="space-y-5">
-              <div>
-                <span className="text-xs uppercase font-bold tracking-wider text-[#655f56]">
-                  {t.stepOf.replace("{current}", "3")}
-                </span>
-                <h2 className="font-serif-luxury text-[30px] sm:text-[38px] text-[#211f1b] leading-snug font-medium mt-0.5">
-                  {t.step3Title}
-                </h2>
-                <p className="text-sm text-[#4f4a43] mt-1 leading-relaxed">
-                  {t.step3Subtitle}
-                </p>
+          {stepId === CONTACT_STEP && (
+            <form onSubmit={submit} noValidate className="mt-7 flex flex-col gap-4">
+              <div className="flex flex-col gap-1.5">
+                <p className="text-[12px] font-medium text-[#655f56]">{UI.step[lang].replace("{n}", String(steps.length)).replace("{total}", String(steps.length))}</p>
+                <h2 className="font-serif-luxury m-0 text-[34px] font-medium leading-[1.08] text-[#211f1b] sm:text-[40px]">{UI.contactTitle[lang]}</h2>
+                <p className="m-0 text-[14px] leading-relaxed text-[#655f56]">{UI.contactSub[lang]}</p>
               </div>
-
-              {/* Summary Brief Badge with Edit shortcut */}
-              <div className="p-3.5 rounded-lg bg-[#FFFFFF] border border-[#e3d9ca] flex items-center justify-between shadow-sm">
-                <div className="space-y-0.5">
-                  <span className="text-[10px] uppercase tracking-wider font-semibold text-[#655f56]">
-                    {t.currentSearch}
-                  </span>
-                  <p className="text-xs font-semibold text-[#211f1b] truncate max-w-[240px] sm:max-w-xs">
-                    {getSummaryText()}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => goToStep(2)}
-                  className="text-xs font-semibold text-[#211f1b] hover:bg-[#fbf8f2] flex items-center gap-1 bg-[#FFFFFF] px-2.5 py-1 rounded-lg border border-[#ddd2c2] transition-colors"
-                >
-                  <span>{t.edit}</span>
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Form */}
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Honeypot anti-spam */}
-                <input
-                  type="text"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  value={form.website}
-                  onChange={(e) => updateForm("website", e.target.value)}
-                  className="hidden"
-                />
-
-                {/* Prénom / Nom */}
-                <div>
-                  <label className="block text-xs uppercase font-bold tracking-wider text-[#655f56] mb-1">
-                    {t.nameLabel} <span className="text-[#211f1b]">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={form.name}
-                    onChange={(e) => {
-                      updateForm("name", e.target.value);
-                      if (errors.name) setErrors((prev) => ({ ...prev, name: false }));
-                    }}
-                    placeholder={t.namePlaceholder}
-                    className={`w-full h-12 rounded-md border bg-[#FFFFFF] px-3.5 text-[#211f1b] placeholder-[#655f56]/60 focus:border-[#211f1b] focus:ring-1 focus:ring-[#211f1b] transition-colors ${
-                      errors.name ? "border-red-500 ring-1 ring-red-500" : "border-[#ddd2c2]"
-                    }`}
-                  />
-                  {errors.name && (
-                    <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
-                      <svg className="w-3 h-3 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path clipRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" fillRule="evenodd" />
-                      </svg>
-                      {t.nameError}
-                    </p>
-                  )}
-                </div>
-
-                {/* WhatsApp / Phone with country prefix */}
-                <div>
-                  <label className="block text-xs uppercase font-bold tracking-wider text-[#655f56] mb-1">
-                    {t.phoneLabel} <span className="text-[#211f1b]">*</span>
-                  </label>
-                  <div className="flex gap-2">
-                    <select
-                      value={form.phonePrefix}
-                      onChange={(e) => updateForm("phonePrefix", e.target.value)}
-                      className="w-28 h-12 rounded-md border border-[#ddd2c2] bg-[#FFFFFF] px-2 text-xs font-medium text-[#211f1b] focus:border-[#211f1b] focus:ring-1 focus:ring-[#211f1b]"
-                    >
-                      {PHONE_PREFIXES.map(({ code, label }) => (
-                        <option key={code} value={code}>
-                          {label}
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      type="tel"
-                      required
-                      value={form.phone}
-                      onChange={(e) => {
-                        updateForm("phone", e.target.value);
-                        if (errors.phone) setErrors((prev) => ({ ...prev, phone: false }));
-                      }}
-                      placeholder={t.phonePlaceholder}
-                      className={`flex-1 h-12 rounded-md border bg-[#FFFFFF] px-3.5 text-[#211f1b] placeholder-[#655f56]/60 focus:border-[#211f1b] focus:ring-1 focus:ring-[#211f1b] transition-colors ${
-                        errors.phone ? "border-red-500 ring-1 ring-red-500" : "border-[#ddd2c2]"
-                      }`}
-                    />
-                  </div>
-                  {errors.phone && (
-                    <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
-                      <svg className="w-3 h-3 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path clipRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" fillRule="evenodd" />
-                      </svg>
-                      {t.phoneError}
-                    </p>
-                  )}
-                  <span className="text-[11px] text-[#655f56] mt-1 block">
-                    {t.phoneHelper}
-                  </span>
-                </div>
-
-                {/* Email (Optional) */}
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs uppercase font-bold tracking-wider text-[#655f56]">
-                      {t.emailLabel}
-                    </label>
-                    <span className="text-[11px] text-[#655f56]">{t.optional}</span>
-                  </div>
-                  <input
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => updateForm("email", e.target.value)}
-                    placeholder="alexandre@domaine.com"
-                    className="w-full h-12 rounded-md border border-[#ddd2c2] bg-[#FFFFFF] px-3.5 text-[#211f1b] placeholder-[#655f56]/60 focus:border-[#211f1b] focus:ring-1 focus:ring-[#211f1b] transition-colors"
-                  />
-                </div>
-
-                {/* Consent */}
-                <div className="pt-1">
-                  <label className="flex items-start gap-2.5 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      required
-                      checked={form.consent}
-                      onChange={(e) => updateForm("consent", e.target.checked)}
-                      className="mt-0.5 rounded border-[#ddd2c2] text-[#211f1b] focus:ring-[#211f1b]"
-                    />
-                    <span className="text-xs text-[#4f4a43] leading-tight">
-                      {t.consentLabel}
-                    </span>
-                  </label>
-                </div>
-
-                {/* Submit CTA Button */}
-                <div className="pt-3">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full h-14 rounded-lg bg-[#211f1b] hover:bg-[#3a352f] active:scale-[0.99] text-white font-medium text-base shadow-lg shadow-black/20 flex items-center justify-center gap-2 transition-luxury disabled:opacity-75"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 size={18} className="animate-spin text-white" />
-                        <span>{t.btnSubmitting}</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>{t.btnSubmit}</span>
-                        {rtl ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
-                      </>
-                    )}
-                  </button>
-
-                  <div className="text-center mt-3">
-                    <a
-                      href="https://wa.me/212605387041?text=Bonjour,%20je%20préfère%20échanger%20directement%20avec%20un%20conseiller"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs text-[#4f4a43] hover:text-[#211f1b] transition-colors"
-                    >
-                      <span>{t.vipWhatsAppLabel}</span>
-                      <span className="font-semibold underline text-[#211f1b]">{t.vipWhatsAppLink}</span>
-                    </a>
-                  </div>
-                </div>
-              </form>
-            </section>
+              <Field label={UI.name[lang]} error={errors.name}>
+                <input autoComplete="name" value={contact.name} onChange={(e) => setContact({ ...contact, name: e.target.value })} className={inputClass(errors.name)} />
+              </Field>
+              <Field label={UI.phone[lang]} error={errors.phone}>
+                <input type="tel" inputMode="tel" autoComplete="tel" placeholder="+33 6 12 34 56 78" value={contact.phone} onChange={(e) => setContact({ ...contact, phone: e.target.value })} className={inputClass(errors.phone)} />
+              </Field>
+              <Field label={UI.email[lang]}>
+                <input type="email" inputMode="email" autoComplete="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} className={inputClass()} />
+              </Field>
+              <Field label={UI.message[lang]}>
+                <textarea rows={3} maxLength={900} placeholder={UI.messagePlaceholder[lang]} value={contact.message} onChange={(e) => setContact({ ...contact, message: e.target.value })} className={`${inputClass()} min-h-[96px] py-3`} />
+              </Field>
+              {/* Champ piège pour les robots : invisible pour les visiteurs. */}
+              <input tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" value={contact.website} onChange={(e) => setContact({ ...contact, website: e.target.value })} name="website" />
+              <label className={`flex cursor-pointer items-start gap-3 rounded-xl border bg-white p-3.5 text-[13px] leading-snug text-[#4f4a43] ${errors.consent ? "border-[#b4432f]" : "border-[#e3d9ca]"}`}>
+                <input type="checkbox" checked={contact.consent} onChange={(e) => setContact({ ...contact, consent: e.target.checked })} className="mt-0.5 h-5 w-5 shrink-0 accent-[#a4573e]" />
+                <span>{UI.consent[lang]} <Link to={lp("/confidentialite")} className="underline underline-offset-2">{UI.privacy[lang]}</Link></span>
+              </label>
+              <button type="submit" disabled={loading} className="flex min-h-[56px] items-center justify-center gap-2 rounded-xl bg-[#a4573e] px-5 text-[16px] font-semibold text-white shadow-[0_14px_28px_-16px_rgba(164,87,62,0.9)] transition-colors hover:bg-[#8c4631] disabled:opacity-70">
+                {loading ? <Loader2 size={20} className="animate-spin" aria-hidden="true" /> : <ArrowRight size={20} aria-hidden="true" />}
+                {UI.submit[lang]}
+              </button>
+              <p className="m-0 flex items-center justify-center gap-1.5 text-[12px] text-[#655f56]"><ShieldCheck size={14} aria-hidden="true" />{UI.safe[lang]}</p>
+            </form>
           )}
 
-          {/* ========================================== */}
-          {/* STEP 4: CONFIRMATION & SUCCÈS              */}
-          {/* ========================================== */}
-          {step === 4 && (
-            <section className="space-y-6 text-center py-4">
-              {/* Success Badge */}
-              <div className="w-20 h-20 mx-auto rounded-full bg-[#EBF9F0] border-2 border-[#1EBE5D] flex items-center justify-center text-[#1EBE5D] animate-subtle-pulse shadow-sm">
-                <Check size={38} strokeWidth={2.4} />
-              </div>
-
-              <div>
-                <span className="text-xs uppercase font-bold tracking-widest text-[#4f4a43]">
-                  {t.successTag}
-                </span>
-                <h2 className="font-serif-luxury text-[30px] sm:text-[38px] text-[#211f1b] mt-1">
-                  {t.successTitle}{" "}
-                  <span className="italic text-[#a4573e]">
-                    {form.name.trim().split(" ")[0] || ""}
-                  </span>
-                  .
-                </h2>
-                <p className="text-sm text-[#4f4a43] mt-2 max-w-sm mx-auto leading-relaxed">
-                  {t.successSubtitle}
-                </p>
-              </div>
-
-              {/* Recap Card */}
-              <div className="bg-[#FFFFFF] rounded-lg border border-[#e3d9ca] p-4 text-left shadow-md space-y-2.5 text-xs">
-                <div className="border-b border-[#fbf8f2] pb-2 flex items-center justify-between">
-                  <span className="font-bold uppercase tracking-wider text-[#655f56]">
-                    {t.recapTitle}
-                  </span>
-                  <span className="bg-[#fbf8f2] text-[#211f1b] px-2 py-0.5 rounded font-mono text-[10px] border border-[#e3d9ca]">
-                    REF: LIM-{leadRef}
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-[#211f1b]">
-                  <div>
-                    <span className="text-[#655f56] block text-[10px]">{t.recapProject}</span>
-                    <span className="font-semibold">{getProjectLabel()} {getPropertyLabel()}</span>
-                  </div>
-                  <div>
-                    <span className="text-[#655f56] block text-[10px]">{t.recapBudget}</span>
-                    <span className="font-semibold">
-                      {form.isBudgetUnknown ? t.budgetUnknownBtn : `${form.budgetValue} MAD`}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-[#655f56] block text-[10px]">{t.recapRoomsDistrict}</span>
-                    <span className="font-semibold">
-                      {form.projectType === "court_sejour"
-                        ? `${form.stayGuests} ${t.guestsTitle.toLowerCase()}`
-                        : `${form.bedrooms} ch.`}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-[#655f56] block text-[10px]">{t.recapContact}</span>
-                    <span className="font-semibold">{form.phonePrefix} {form.phone}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Direct Actions */}
-              <div className="space-y-2.5 pt-2">
-                <a
-                  href={`https://wa.me/212605387041?text=${whatsappAccelerateMsg}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full h-13 py-3.5 px-4 rounded-lg bg-[#25D366] hover:bg-[#1EBE5D] text-white font-medium text-sm shadow-md flex items-center justify-center gap-2 transition-luxury"
-                >
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.976.532 1.943.924 3.15.924 3.182 0 5.767-2.587 5.767-5.766.001-3.187-2.575-5.766-5.768-5.766zm0 10.375c-1.07 0-1.936-.312-2.766-.807l-.2-.119-1.341.352.358-1.309-.131-.209c-.544-.867-.831-1.688-.83-2.526 0-2.54 2.067-4.607 4.61-4.607 2.541 0 4.609 2.067 4.609 4.607 0 2.542-2.068 4.611-4.61 4.611zm7.969-4.609c0 4.418-3.582 8-8 8-1.42 0-2.756-.372-3.921-1.02l-4.079 1.07 1.089-3.985c-.718-1.208-1.139-2.616-1.139-4.115 0-4.418 3.582-8 8-8s8 3.582 8 8z" />
-                  </svg>
-                  <span>{t.btnWhatsAppAccelerate}</span>
+          {stepId === DONE_STEP && (
+            <section className="mt-10 flex flex-col items-center gap-5 text-center" aria-live="polite">
+              <span className="rq-success grid h-20 w-20 place-items-center rounded-full bg-[#a4573e] text-white shadow-[0_18px_36px_-16px_rgba(164,87,62,0.9)]">
+                <Check size={38} strokeWidth={2.2} aria-hidden="true" />
+              </span>
+              <h2 className="font-serif-luxury m-0 text-[36px] font-medium leading-tight text-[#211f1b]">{UI.doneTitle[lang].replace(" {name}", firstName ? ` ${firstName}` : "")}</h2>
+              <p className="m-0 max-w-[440px] text-[15px] leading-relaxed text-[#4f4a43]">{UI.doneText[lang]}</p>
+              <p className="m-0 rounded-full border border-[#e3d9ca] bg-white px-4 py-1.5 text-[13px] text-[#4f4a43]">{UI.reference[lang]} : <strong className="font-semibold text-[#211f1b]">{reference}</strong></p>
+              <div className="flex w-full flex-col gap-2.5 sm:w-auto">
+                <a href={whatsappHref(AGENCY.phone, whatsappText)} target="_blank" rel="noreferrer" className="flex min-h-[54px] items-center justify-center gap-2 rounded-xl bg-[#25d366] px-6 text-[15px] font-semibold text-white">
+                  <MessageCircle size={20} aria-hidden="true" />{UI.whatsapp[lang]}
                 </a>
-                <button
-                  type="button"
-                  onClick={() => goToStep(1)}
-                  className="w-full py-2.5 text-xs text-[#655f56] hover:text-[#211f1b] text-center transition-colors"
-                >
-                  {t.btnNewSearch}
-                </button>
+                <Link to={lp("/catalogue")} className="flex min-h-[50px] items-center justify-center rounded-xl border border-[#e3d9ca] bg-white px-6 text-[15px] font-semibold text-[#211f1b] hover:border-[#a4573e]">
+                  {UI.catalogue[lang]}
+                </Link>
               </div>
             </section>
           )}
         </div>
 
-        {/* Card Footer Trust */}
-        <footer className="p-4 sm:px-8 border-t border-[#e3d9ca] bg-[#FFFFFF] text-center text-[#655f56] text-[11px] shrink-0">
-          <div className="flex items-center justify-center gap-3 text-[#4f4a43] font-medium mb-1.5 flex-wrap">
-            <span className="flex items-center gap-1">
-              <svg className="w-3.5 h-3.5 text-[#211f1b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
-              </svg>
-              {t.footerConfidential}
-            </span>
-            <span>•</span>
-            <span>{t.footerOffMarket}</span>
-            <span>•</span>
-            <span>{t.footerLocation}</span>
-          </div>
-          <p className="text-[10px] text-[#655f56]/80">{t.footerCopyright}</p>
-        </footer>
+        {index > 0 && stepId !== DONE_STEP && (
+          <button type="button" onClick={back} className="mt-8 flex min-h-11 items-center gap-1.5 self-start text-[14px] font-semibold text-[#4f4a43] hover:text-[#a4573e]">
+            <ArrowLeft size={17} aria-hidden="true" />{UI.back[lang]}
+          </button>
+        )}
       </main>
+    </div>
+  );
+}
+
+const inputClass = (error?: boolean) =>
+  `min-h-[52px] w-full rounded-xl border bg-white px-4 text-[16px] text-[#211f1b] outline-none transition-colors placeholder:text-[#a79d90] focus:border-[#a4573e] focus:ring-2 focus:ring-[#a4573e]/15 ${error ? "border-[#b4432f]" : "border-[#e3d9ca]"}`;
+
+function Field({ label, error, children }: { label: string; error?: boolean; children: React.ReactNode }) {
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className={`text-[13px] font-semibold ${error ? "text-[#b4432f]" : "text-[#4f4a43]"}`}>{label}</span>
+      {children}
+    </label>
+  );
+}
+
+function DatesStep({ lang, value, onChange }: { lang: Lang; value: Answers; onChange: (from: string, to: string, flexible: boolean) => void }) {
+  const [from, setFrom] = useState((value.datesFrom as string | undefined) ?? "");
+  const [to, setTo] = useState((value.datesTo as string | undefined) ?? "");
+  const [flexible, setFlexible] = useState(!!value.datesFlexible);
+  const update = (f: string, t2: string, fl: boolean) => { setFrom(f); setTo(t2); setFlexible(fl); onChange(f, t2, fl); };
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-2 gap-2.5">
+        <Field label={UI.arrival[lang]}><input type="date" value={from} onChange={(e) => update(e.target.value, to, flexible)} className={inputClass()} /></Field>
+        <Field label={UI.departure[lang]}><input type="date" value={to} min={from || undefined} onChange={(e) => update(from, e.target.value, flexible)} className={inputClass()} /></Field>
+      </div>
+      <label className="flex min-h-11 cursor-pointer items-center gap-3 text-[14px] text-[#4f4a43]">
+        <input type="checkbox" checked={flexible} onChange={(e) => update(from, to, e.target.checked)} className="h-5 w-5 accent-[#a4573e]" />
+        {UI.flexible[lang]}
+      </label>
     </div>
   );
 }
