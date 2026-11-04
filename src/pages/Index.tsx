@@ -44,7 +44,7 @@ const Index = () => {
   return (
     <PageTransition>
       <div className="min-h-screen overflow-x-clip">
-        <SEOHead title={tL("Immobilier de luxe à Marrakech", "Luxury real estate in Marrakech", "Inmuebles de lujo en Marrakech")} description={tL("Villas, riads et appartements sélectionnés à Marrakech pour acheter, louer ou séjourner.", "Selected villas, riads and apartments in Marrakech to buy, rent or stay.", "Villas, riads y apartamentos seleccionados en Marrakech para comprar, alquilar o alojarse.")} />
+        <SEOHead title={tL("Immobilier de luxe à Marrakech", "Luxury real estate in Marrakech", "Inmuebles de lujo en Marrakech")} description={tL("Villas, riads et appartements à Marrakech à acheter, à louer à l’année ou à sous-louer pour l’exploiter en Airbnb.", "Villas, riads and apartments in Marrakech to buy, rent long term or sublet to run as an Airbnb.", "Villas, riads y apartamentos en Marrakech para comprar, alquilar por años o subarrendar para explotarlos en Airbnb.")} />
         <Header />
         <HeroSlideshow />
 
@@ -73,7 +73,7 @@ const Index = () => {
             <div className="flex flex-col gap-3.5 lg:sticky lg:top-24 lg:gap-[22px]">
               <p className={`${eyebrowClass} text-[#a4573e]`}>{tL("Nos services", "Our services", "Nuestros servicios")}</p>
               <h2 className="text-[40px] font-normal leading-[1.02] tracking-[-0.02em] lg:text-[58px]">
-                {tL("Acheter, louer ou séjourner — ", "Buy, rent or stay — ", "Comprar, alquilar o alojarse — ")}
+                {tL("Acheter, louer ou sous-louer — ", "Buy, rent or sublet — ", "Comprar, alquilar o subarrendar — ")}
                 <em className="italic text-[#a4573e]">{tL("simplement.", "simply.", "fácilmente.")}</em>
               </h2>
               <img

@@ -35,10 +35,10 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("Décrire ma recherche (questionnaire)", () => {
-  it("commence par le titre et les trois projets, sans réponse présélectionnée", () => {
+  it("commence par le titre et les quatre projets, sans réponse présélectionnée", () => {
     openRequest();
     expect(screen.getByRole("heading", { level: 1, name: "Trouvons votre bien à Marrakech" })).toBeInTheDocument();
-    for (const name of [/^Acheter/, /^Louer à l’année/, /^Séjourner/]) {
+    for (const name of [/^Acheter/, /^Louer à l’année/, /^Louer pour sous-louer/, /^Courte durée/]) {
       expect(screen.getByRole("radio", { name })).toHaveAttribute("aria-checked", "false");
     }
   }, 20000);
@@ -104,9 +104,9 @@ describe("Décrire ma recherche (questionnaire)", () => {
     expect(sent().notes).not.toContain("Jardin");
   }, 20000);
 
-  it("séjour : voyageurs, occasion, budget par nuit et dates", async () => {
+  it("courte durée (sur demande) : voyageurs, occasion, budget par nuit et dates", async () => {
     openRequest();
-    await answer(/^Séjourner/, /Quel type de bien/);
+    await answer(/^Courte durée/, /Quel type de bien/);
     await answer(/^Riad/, /Vous serez combien/);
     await answer(/^5 à 8 personnes/, /Pour quelle occasion/);
     await answer(/^Un événement/, /Quel style/);
@@ -130,6 +130,26 @@ describe("Décrire ma recherche (questionnaire)", () => {
     }));
     expect(sent().notes).toContain("Occasion : Un événement");
     expect(sent().notes).toContain("Dates : du 2026-12-20 au 2026-12-27");
+  }, 20000);
+
+  it("sous-location pour Airbnb : enregistrée en location, sans question « qui va y habiter », projet noté", async () => {
+    openRequest();
+    await answer(/^Louer pour sous-louer/, /Quel type de bien/);
+    await answer(/^Appartement/, /Quel style/);
+    await answer(/^Moderne/, /Et la piscine/);
+    await answer(/^Pas nécessaire/, /Meublé ou vide/);
+    await answer(/^Meublé/, /Combien de chambres/);
+    await answer(/^2$/, /Des quartiers/);
+    fireEvent.click(screen.getByRole("button", { name: /Passer/ }));
+    await answer(/^8\s000 à 12\s000 MAD \/ mois/, /Pour quand/);
+    await answer(/^Dès que possible/, /Dernière étape/);
+    fillContact();
+    submit();
+    await waitFor(() => expect(insert).toHaveBeenCalledTimes(1));
+    expect(sent()).toEqual(expect.objectContaining({
+      transaction_type: "location-longue-duree", property_types: ["appartement"], furnishing: "furnished", budget_min: 8000, budget_max: 12000, client_profile: null,
+    }));
+    expect(sent().notes).toContain("Projet : sous-location (exploitation type Airbnb)");
   }, 20000);
 
   it("revient à une question en touchant une réponse du résumé, sans perdre les autres", async () => {

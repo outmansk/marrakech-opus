@@ -9,6 +9,7 @@ meta_description: "Bail d’un an, caution, meublé ou non, séjour de quelques 
 excerpt: "Bail d’un an ou séjour de quelques semaines ? Budget, flexibilité, démarches, confort : les critères pour choisir le bon type de location à Marrakech."
 image_url: /blog/quartiers-marrakech.webp
 date: 2026-10-24
+updated: 2026-11-04
 published: true
 ---
 
@@ -65,13 +66,13 @@ Lors des visites, vérifiez la climatisation **et** le chauffage, l’état de l
 
 Vous trouverez nos [appartements](/location-longue-duree/appartements-marrakech) et nos [villas à louer à l’année](/location-longue-duree/villas-marrakech) avec les loyers à jour. Pour une sélection adaptée à votre budget et à vos dates, [décrivez votre recherche](/demande) : nous vous proposons des biens et organisons les visites, sur place ou en vidéo.
 
-*Les conditions peuvent varier selon le bien. Pour la courte durée, renseignez-vous auprès des autorités locales sur les règles applicables avant de réserver ou de louer. Dernière mise à jour : octobre 2026.*
+*Les conditions peuvent varier selon le bien. Pour la courte durée, renseignez-vous auprès des autorités locales sur les règles applicables avant de réserver ou de louer. Dernière mise à jour : novembre 2026.*
 
 ## Questions fréquentes
 
 ### Quelle est la durée minimale d’un bail à Marrakech ?
 
-Chez Live In Marrakech, la location longue durée se fait par bail écrit d’un an minimum. Pour des séjours plus courts, il s’agit d’une location courte durée, avec d’autres conditions.
+Chez Live In Marrakech, la location longue durée se fait par bail écrit d’un an minimum. L’agence ne propose pas de courte durée en direct : pour un séjour de quelques jours ou semaines, demandez-nous, nous pouvons chercher pour vous.
 
 ### Quel dépôt de garantie faut-il verser ?
 

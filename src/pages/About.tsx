@@ -28,8 +28,8 @@ export default function About() {
       h1={h1}
       title={tL("À propos : agence immobilière à Marrakech", "About us: real estate agency in Marrakech", "Quiénes somos: inmobiliaria en Marrakech")}
       description={tL(
-        "Live In Marrakech, agence immobilière à Marrakech : vente, location à l’année, sous-location et séjours. Nos règles de location et nos coordonnées.",
-        "Live In Marrakech, a real estate agency in Marrakech: sales, long-term rentals, sublets and short stays. Our rental rules and contact details.",
+        "Live In Marrakech, agence immobilière à Marrakech : vente, location à l’année et sous-location pour Airbnb. Nos règles de location et nos coordonnées.",
+        "Live In Marrakech, a real estate agency in Marrakech: sales, long-term rentals and sublets for Airbnb. Our rental rules and contact details.",
         "Live In Marrakech, inmobiliaria en Marrakech: venta, alquiler de larga duración, subarriendo y estancias. Nuestras condiciones y contacto.",
       )}
       schema={[{
@@ -43,9 +43,9 @@ export default function About() {
       <section>
         <p>
           {tL(
-            `Live In Marrakech est une agence immobilière installée à ${AGENCY.city} (${AGENCY.area}). Nous proposons des biens à vendre, à louer à l’année, en sous-location et en séjour de courte durée, à Marrakech et dans ses environs.`,
-            `Live In Marrakech is a real estate agency based in ${AGENCY.city} (${AGENCY.area}). We offer homes for sale, for long-term rent, for sublet and for short stays, in and around Marrakech.`,
-            `Live In Marrakech es una inmobiliaria con sede en ${AGENCY.city} (${AGENCY.area}). Ofrecemos inmuebles en venta, en alquiler de larga duración, en subarriendo y para estancias cortas, en Marrakech y sus alrededores.`,
+            `Live In Marrakech est une agence immobilière installée à ${AGENCY.city} (${AGENCY.area}). Nous proposons des biens à vendre, à louer à l’année et en sous-location (louer un bien pour l’exploiter en Airbnb avec l’accord du propriétaire), à Marrakech et dans ses environs. Pour un séjour de courte durée, demandez-nous : nous cherchons pour vous.`,
+            `Live In Marrakech is a real estate agency based in ${AGENCY.city} (${AGENCY.area}). We offer homes for sale, for long-term rent and for sublet (renting a home to run it as an Airbnb, with the owner’s permission), in and around Marrakech. For a short stay, just ask: we will search for you.`,
+            `Live In Marrakech es una inmobiliaria con sede en ${AGENCY.city} (${AGENCY.area}). Ofrecemos inmuebles en venta, en alquiler de larga duración y en subarriendo (alquilar un inmueble para explotarlo en Airbnb con el permiso del propietario), en Marrakech y sus alrededores. Para una estancia corta, pregúntenos: buscamos por usted.`,
           )}
           {AGENCY.foundedYear && ` ${tL("Agence fondée en", "Founded in", "Fundada en")} ${AGENCY.foundedYear}.`}
         </p>

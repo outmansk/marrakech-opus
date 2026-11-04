@@ -67,7 +67,7 @@ const Catalogue = () => {
         </span>
       </label>
       {[
-        { label: tL("Projet", "Project", "Proyecto"), key: "type", value: activeType, options: [["all", tL("Tous", "All", "Todos")], ["vente", tL("Acheter", "Buy", "Comprar")], ["location-longue-duree", tL("Louer à l'année", "Long-term rent", "Alquiler anual")], ["location-courte-duree", tL("Séjourner", "Stay", "Estancia")]] },
+        { label: tL("Projet", "Project", "Proyecto"), key: "type", value: activeType, options: [["all", tL("Tous", "All", "Todos")], ["vente", tL("Acheter", "Buy", "Comprar")], ["location-longue-duree", tL("Louer à l'année", "Long-term rent", "Alquiler anual")], ["sous-location", tL("Sous-louer (Airbnb)", "Sublet (Airbnb)", "Subarrendar (Airbnb)")]] },
         { label: tL("Type de bien", "Property type", "Tipo"), key: "kind", value: activeKind, options: [["all", tL("Tous les types", "All types", "Todos los tipos")], ...BIEN_TYPES.map((type) => [type, type.charAt(0).toUpperCase() + type.slice(1)])] },
         { label: tL("Quartier", "Neighborhood", "Barrio"), key: "quartier", value: activeQuartier, options: [["all", tL("Tous les quartiers", "All neighborhoods", "Todos los barrios")], ...QUARTIERS.map((quartier) => [quartier, quartier])] },
       ].map((field) => (

@@ -257,7 +257,7 @@ function buildLlmsTxt({ properties, deals, articles, articleLoc }) {
 
   return `# Live In Marrakech
 
-> Live In Marrakech is a real-estate agency in Marrakech, Morocco. The website lists the properties the agency currently offers and publishes practical guides for people who want to rent long term or buy in Marrakech. It is available in French (main language, at the root), English (/en) and Spanish (/es).
+> Live In Marrakech is a real-estate agency in Marrakech, Morocco, focused on three services: sale, long-term rental (one-year lease, to live in) and subletting (renting a home with the owner's permission to run it as an Airbnb-type holiday let). The website lists the properties the agency currently offers and publishes practical guides for people who want to rent long term or buy in Marrakech. It is available in French (main language, at the root), English (/en) and Spanish (/es).
 
 Contact: ${CONTACT.phone} (phone and WhatsApp) · ${CONTACT.email} · ${SITE_URL}
 
@@ -265,6 +265,8 @@ Contact: ${CONTACT.phone} (phone and WhatsApp) · ${CONTACT.email} · ${SITE_URL
 
 - Property types currently listed: ${types.join(', ') || 'none'}.
 - Services currently offered: ${services.join(', ') || 'none'}.
+- Subletting: renting a home whose owner allows the tenant to run it as a holiday let (Airbnb-type); listings marked "subletting allowed" accept it.
+- Short stays (by the night or week) are not the agency's business: only on request, the agency can search case by case.
 - Areas of the currently listed properties: ${areas.join(', ') || 'not specified'}.
 - Prices are shown on each property page, in Moroccan dirhams (MAD) or euros (EUR), per month for long-term rentals. Availability and prices change: the property page is the reference.
 

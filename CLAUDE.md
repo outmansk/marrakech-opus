@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-**Live In Marrakech** (repo name: *marrakech-opus*, live at https://liveinmarrakech.com) — a premium real-estate agency site in Marrakech (sale, long-term rental, short stays, sub-letting). It has two halves in one Vite SPA:
+**Live In Marrakech** (repo name: *marrakech-opus*, live at https://liveinmarrakech.com) — a premium real-estate agency site in Marrakech focused on **sale, long-term rental (to live in) and sub-letting (renting a home to run it as an Airbnb, with the owner's permission)**. Short stays are not promoted: only mentioned as « sur demande » (about, contact, request form, rental guides); the `location-courte-duree` service still exists in code and admin but no listing uses it. It has two halves in one Vite SPA:
 - a **public site** (catalogue, property detail, blog, contact, client request form), multilingual FR/EN/ES;
 - a **hidden back-office** at `/manage-xk92p` used by 1–3 agency staff, often on mobile. Its UI is **French only** (formal "vous"); currency is mostly MAD.
 

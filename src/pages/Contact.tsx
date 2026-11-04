@@ -137,9 +137,9 @@ const Contact = () => {
                   </h2>
                   <p className="text-muted-foreground font-light leading-relaxed">
                     {tL(
-                      "Location à l’année, achat, sous-location ou séjour : écrivez-nous ou appelez-nous, nous répondons à vos questions et organisons les visites, sur place ou en vidéo.",
-                      "Long-term rental, purchase, sublet or short stay: write to us or call us, we answer your questions and arrange viewings, in person or by video.",
-                      "Alquiler de larga duración, compra, subarriendo o estancia: escríbanos o llámenos, respondemos a sus preguntas y organizamos las visitas, en persona o por vídeo."
+                      "Achat, location à l’année ou sous-location pour Airbnb : écrivez-nous ou appelez-nous, nous répondons à vos questions et organisons les visites, sur place ou en vidéo. Un séjour de courte durée ? Demandez-nous, nous cherchons pour vous.",
+                      "Purchase, long-term rental or a sublet to run as an Airbnb: write to us or call us, we answer your questions and arrange viewings, in person or by video. Looking for a short stay? Just ask, we will search for you.",
+                      "Compra, alquiler de larga duración o subarriendo para Airbnb: escríbanos o llámenos, respondemos a sus preguntas y organizamos las visitas, en persona o por vídeo. ¿Busca una estancia corta? Pregúntenos y buscamos por usted."
                     )}
                   </p>
                 </Reveal>
