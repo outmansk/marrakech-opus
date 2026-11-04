@@ -18,6 +18,8 @@ const fs = require('fs');
 const path = require('path');
 // Search landing pages (villas à vendre…), one translated address per language.
 const LANDINGS = require('../src/content/landings.json');
+// Area pages (villas route de Sidi Rahal…), one translated address per language.
+const AREA_PAGES = require('../src/content/areaPages.json');
 // Proposed EN/ES property texts (used by the site while the translated columns are empty).
 const SUGGESTED_TRANSLATIONS = require('../src/content/propertyTranslations.json');
 // Area of a property when its quartier is empty (same data as src/content/zones.ts).
@@ -34,7 +36,8 @@ const withOverrides = (p) => {
 };
 const ZONE_NAMES = { 'route-de-fes': 'Fez road', 'sidi-rahal': 'Sidi Rahal road', chrifia: 'Chrifia', golf: 'golf area (Prestigia)', palmeraie: 'Palmeraie (Ennakhil)', 'village-touristique': 'Village Touristique', medina: 'Medina', 'route-essaouira': 'Essaouira road', gueliz: 'Gueliz (city centre)', 'route-ourika': 'Ourika road' };
 const QUARTIER_ZONES = { 'Route de Fes': 'route-de-fes', Chrifia: 'chrifia', Palmeraie: 'palmeraie', Medina: 'medina', "Route d'Essaouira": 'route-essaouira', Gueliz: 'gueliz', "Route de l'Ourika": 'route-ourika' };
-const areaOf = (p) => ZONE_NAMES[QUARTIER_ZONES[(p.quartier || '').trim()] || PROPERTY_FACTS[p.id]?.zone] || (p.quartier || '').trim() || null;
+const zoneOf = (p) => QUARTIER_ZONES[(p.quartier || '').trim()] || PROPERTY_FACTS[p.id]?.zone || null;
+const areaOf = (p) => ZONE_NAMES[zoneOf(p)] || (p.quartier || '').trim() || null;
 // Addresses that redirect elsewhere (old blog articles merged into landing pages) stay out of the sitemap.
 const REDIRECTED = new Set((require('../vercel.json').redirects || []).map((r) => r.source));
 
@@ -205,18 +208,52 @@ const SERVICE_NAMES = {
 const landingListings = (landing, properties) =>
   properties.filter((p) => (p.services || []).includes(landing.service) && (!landing.type || p.type === landing.type));
 
+/** Available listings of an area page (same rule as areaAvailable() in src/content/areaPages.ts). */
+const areaListings = (page, properties) => properties.filter((p) => zoneOf(p) === page.zone);
+
 const day = (iso) => (iso ? new Date(iso).toISOString().split('T')[0] : undefined);
 const latest = (dates) => dates.filter(Boolean).sort().pop();
 
+const money = (value, devise) => `${new Intl.NumberFormat('en-US').format(value)} ${devise || 'MAD'}`;
+
+/** "- Villas, Fez road: 11,000–23,000 MAD (5 listings)": price range per type and area, from our own listings. */
+function priceLines(properties, service, priceOf) {
+  const groups = {};
+  for (const p of properties) {
+    const value = Number(priceOf(p));
+    if (!(p.services || []).includes(service) || !value) continue;
+    const key = `${TYPE_NAMES[p.type] || p.type}|${areaOf(p) || 'Marrakech'}|${p.devise || 'MAD'}`;
+    (groups[key] ||= []).push(value);
+  }
+  return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b)).map(([key, values]) => {
+    const [type, area, devise] = key.split('|');
+    const [low, high] = [Math.min(...values), Math.max(...values)];
+    const range = low === high ? money(low, devise) : `${new Intl.NumberFormat('en-US').format(low)}–${money(high, devise)}`;
+    return `- ${type.charAt(0).toUpperCase()}${type.slice(1)}, ${area}: ${range} (${values.length} listing${values.length > 1 ? 's' : ''})`;
+  });
+}
+
 /** llms.txt: a factual map of the public site for AI assistants, rebuilt from the data on every build. */
-function buildLlmsTxt({ properties, articles, articleLoc }) {
+function buildLlmsTxt({ properties, deals, articles, articleLoc }) {
   const types = [...new Set(properties.map((p) => p.type))].map((t) => TYPE_NAMES[t] || t);
   const services = [...new Set(properties.flatMap((p) => p.services || []))].map((s) => SERVICE_NAMES[s] || s);
   const areas = [...new Set(properties.map(areaOf).filter(Boolean))].sort();
   const link = (label, loc) => `- [${label}](${absolute(loc)})`;
   // Landing pages without stock are noindex on the site: not listed here either.
   const landingLinks = (lang) => LANDINGS.filter((l) => landingListings(l, properties).length > 0).map((l) => link(l.label[lang], localize(l.paths[lang], lang)));
+  const areaLinks = (lang) => AREA_PAGES.filter((a) => areaListings(a, properties).length > 0).map((a) => link(`${ZONE_NAMES[a.zone]} (${lang.toUpperCase()})`, localize(a.paths[lang], lang)));
   const guide = (a) => link(`${a.title} (${(a.lang || 'fr').toUpperCase()})`, articleLoc(a));
+  // Our own figures, dated: what AI assistants can quote instead of guessing market prices.
+  const rents = priceLines(properties, 'location-longue-duree', (p) => p.prix_location_longue);
+  const sales = priceLines(properties, 'vente', (p) => p.prix_vente);
+  const signed = deals
+    .filter((d) => (d.services || []).includes('location-longue-duree'))
+    .map((d) => `- ${(TYPE_NAMES[d.type] || d.type).replace(/^./, (c) => c.toUpperCase()).replace(/s$/, '')}, ${areaOf(d) || 'Marrakech'}: ${money(d.conclusion_montant, d.devise)} a month${d.conclusion_mois ? ` (signed ${d.conclusion_mois})` : ''}`);
+  const figures = [
+    ...(rents.length ? ['Long-term rents per month, by property type and area:', '', ...rents, ''] : []),
+    ...(sales.length ? ['Asking prices of properties for sale, by type and area:', '', ...sales, ''] : []),
+    ...(signed.length ? ['Long-term rentals recently concluded by the agency (rent agreed, client kept anonymous):', '', ...signed, ''] : []),
+  ];
 
   return `# Live In Marrakech
 
@@ -231,7 +268,12 @@ Contact: ${CONTACT.phone} (phone and WhatsApp) · ${CONTACT.email} · ${SITE_URL
 - Areas of the currently listed properties: ${areas.join(', ') || 'not specified'}.
 - Prices are shown on each property page, in Moroccan dirhams (MAD) or euros (EUR), per month for long-term rentals. Availability and prices change: the property page is the reference.
 
-## Long-term rental rules
+${figures.length ? `## Prices in our listings (on ${day(new Date().toISOString())})
+
+These figures come only from the agency's own listings on the date above, not from market statistics. Each property page is the reference.
+
+${figures.join('\n')}
+` : ''}## Long-term rental rules
 
 ${RENTAL_RULES.map((r) => `- ${r}`).join('\n')}
 
@@ -263,6 +305,10 @@ ${landingLinks('en').join('\n')}
 
 ${landingLinks('es').join('\n')}
 
+## Area pages (all listings of one area, for rent and for sale)
+
+${LANGUAGES.flatMap(areaLinks).join('\n')}
+
 ## Guides
 
 ${articles.map(guide).join('\n')}
@@ -293,12 +339,14 @@ async function main() {
     // Too short to be useful: noindex on the site (isThinArticle in src/content/blog.ts), so not listed here.
     .filter((a) => (a.content || '').split(/\s+/).filter((w) => /\p{L}/u.test(w)).length >= 300);
   // Only properties that are available: rented/sold ones stay online but are not promoted.
-  const baseColumns = 'id,titre,type,services,quartier,updated_at,photo_principale,photos';
+  const baseColumns = 'id,titre,type,services,quartier,updated_at,photo_principale,photos,prix_location_longue,prix_vente,devise';
   let properties = await supabaseQuery('properties_v2', `${baseColumns},titre_en,titre_es,slug`, '&statut=eq.publie');
   if (!properties.length) properties = await supabaseQuery('properties_v2', `${baseColumns},titre_en,titre_es`, '&statut=eq.publie'); // before the slug column exists
   if (!properties.length) properties = await supabaseQuery('properties_v2', baseColumns, '&statut=eq.publie'); // before the translation columns exist
 
   properties = properties.map(withOverrides);
+  // Rented/sold properties with the amount agreed (admin « Déjà loué / vendu » form), for llms.txt.
+  const deals = await supabaseQuery('properties_v2', 'id,type,services,quartier,devise,conclusion_montant,conclusion_mois', '&statut=eq.vendu-loue&conclusion_montant=not.is.null&order=conclusion_mois.desc.nullslast');
   properties.push(...FILE_PROPERTIES.filter((p) => p.statut === 'publie' && !properties.some((row) => row.id === p.id)));
   console.log(`  📦  ${properties.length} propriétés disponibles`);
   console.log(`  📝  ${articles.length} articles publiés\n`);
@@ -321,6 +369,17 @@ async function main() {
     const lastmod = day(latest(listed.map((p) => p.updated_at)));
     for (const lang of LANGUAGES) {
       entries.push(urlEntry({ loc: alternates[lang], alternates, lastmod, changefreq: 'weekly', priority: landing.type ? '0.8' : '0.9' }));
+    }
+  }
+
+  // Area pages, same rule: only those with an available listing.
+  for (const page of AREA_PAGES) {
+    const listed = areaListings(page, properties);
+    if (!listed.length) continue;
+    const alternates = Object.fromEntries(LANGUAGES.map((lang) => [lang, localize(page.paths[lang], lang)]));
+    const lastmod = day(latest(listed.map((p) => p.updated_at)));
+    for (const lang of LANGUAGES) {
+      entries.push(urlEntry({ loc: alternates[lang], alternates, lastmod, changefreq: 'weekly', priority: '0.7' }));
     }
   }
 
@@ -361,7 +420,7 @@ ${entries.join('\n\n')}
 
   const publicDir = path.resolve(__dirname, '..', 'public');
   fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), xml, 'utf-8');
-  fs.writeFileSync(path.join(publicDir, 'llms.txt'), buildLlmsTxt({ properties, articles, articleLoc }), 'utf-8');
+  fs.writeFileSync(path.join(publicDir, 'llms.txt'), buildLlmsTxt({ properties, deals, articles, articleLoc }), 'utf-8');
   console.log('✅  public/sitemap.xml and public/llms.txt generated');
   console.log(`   Total URLs: ${entries.length}`);
 }

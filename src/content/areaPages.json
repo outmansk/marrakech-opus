@@ -1,0 +1,8 @@
+[
+  { "zone": "route-de-fes", "paths": { "fr": "/quartiers/route-de-fes", "en": "/areas/fez-road", "es": "/barrios/carretera-de-fez" } },
+  { "zone": "sidi-rahal", "paths": { "fr": "/quartiers/route-de-sidi-rahal", "en": "/areas/sidi-rahal-road", "es": "/barrios/carretera-de-sidi-rahal" } },
+  { "zone": "golf", "paths": { "fr": "/quartiers/secteur-des-golfs", "en": "/areas/golf-area", "es": "/barrios/zona-de-golf" } },
+  { "zone": "palmeraie", "paths": { "fr": "/quartiers/palmeraie", "en": "/areas/palmeraie", "es": "/barrios/palmeraie" } },
+  { "zone": "route-ourika", "paths": { "fr": "/quartiers/route-de-l-ourika", "en": "/areas/ourika-road", "es": "/barrios/carretera-de-ourika" } },
+  { "zone": "gueliz", "paths": { "fr": "/quartiers/gueliz", "en": "/areas/gueliz", "es": "/barrios/gueliz" } }
+]

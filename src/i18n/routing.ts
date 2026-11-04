@@ -2,6 +2,7 @@
 // One address per language is what lets Google index each version separately.
 
 import landings from "@/content/landings.json";
+import areaPages from "@/content/areaPages.json";
 
 export const LANGS = ["fr", "en", "es"] as const;
 export type Lang = (typeof LANGS)[number];
@@ -40,9 +41,9 @@ export function localizePath(path: string, lang: Lang): string {
 export function languageSwitchPath(pathname: string, search: string, lang: Lang): string {
   const base = stripLang(pathname);
   if (base.startsWith("/blog/")) return localizePath("/blog", lang);
-  // Search landing pages have a translated address in each language.
+  // Search landing pages and area pages have a translated address in each language.
   const from = langFromPath(pathname);
-  const landing = landings.find((entry) => (entry.paths as Record<string, string>)[from] === base);
+  const landing = [...landings, ...areaPages].find((entry) => (entry.paths as Record<string, string>)[from] === base);
   if (landing) return localizePath((landing.paths as Record<Lang, string>)[lang], lang);
   return localizePath(base, lang) + search;
 }

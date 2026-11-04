@@ -22,6 +22,7 @@ import { articleQueryOptions, publishedArticlesQueryOptions } from "./hooks/useA
 import { withFileArticles } from "./content/blog";
 import type { Article } from "./types/article";
 import { LANDINGS, findLanding, landingCopyQueryOptions, landingPath } from "./content/landings";
+import { AREA_PAGES, areaPath, findAreaPage } from "./content/areaPages";
 import Index from "./pages/Index";
 import Catalogue from "./pages/Catalogue";
 import PropertyDetail from "./pages/PropertyDetail";
@@ -50,6 +51,7 @@ export async function getPrerenderPaths(): Promise<string[]> {
 
   const paths = LANGS.flatMap((lang) => [...STATIC_PATHS, ...[...(properties ?? []), ...FILE_PROPERTIES.filter((file) => !(properties ?? []).some((property) => property.id === file.id))].map(propertyPath)].map((path) => localizePath(path, lang)));
   for (const landing of LANDINGS) paths.push(...LANGS.map((lang) => landingPath(landing.id, lang)));
+  for (const page of AREA_PAGES) paths.push(...LANGS.map((lang) => areaPath(page, lang)));
   for (const article of withFileArticles((articles ?? []) as Article[], () => true)) {
     paths.push(localizePath(`/blog/${article.slug}`, LANGS.find((l) => l === article.lang) ?? "fr"));
   }
@@ -68,6 +70,7 @@ async function prefetch(queryClient: QueryClient, url: string) {
       queryClient.prefetchQuery(propertiesQueryOptions({ statut: ["publie", "vendu-loue"] })),
     ]);
   }
+  else if (findAreaPage(lang, path)) await queryClient.prefetchQuery(propertiesQueryOptions({ statut: ["publie", "vendu-loue"] }));
   else if (path === "/") await Promise.all([
     queryClient.prefetchQuery(propertiesQueryOptions(CAROUSEL_QUERY)),
     queryClient.prefetchQuery(propertiesQueryOptions(RECENT_DEALS_QUERY)),

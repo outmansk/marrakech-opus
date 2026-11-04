@@ -4,8 +4,8 @@ lang: fr
 translation_key: acheter-maroc-etranger
 category: vente
 title: "Acheter un bien immobilier au Maroc quand on est étranger : le guide"
-meta_title: "Acheter au Maroc quand on est étranger : le guide"
-meta_description: "Un étranger peut-il acheter au Maroc ? Étapes, documents à vérifier, frais et transfert des fonds : le guide pour acheter à Marrakech."
+meta_title: "Devenir propriétaire au Maroc quand on est étranger"
+meta_description: "Oui, un étranger peut acheter au Maroc sans être résident. Les 5 étapes, les vérifications du titre foncier, les frais et le transfert des fonds."
 excerpt: "Oui, un étranger peut acheter un appartement, une villa ou un riad au Maroc. Voici les étapes, les vérifications indispensables et les points à préparer avec votre notaire."
 image_url: /blog/acheter-maroc-etranger.webp
 date: 2026-10-08

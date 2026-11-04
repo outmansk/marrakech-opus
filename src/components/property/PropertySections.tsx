@@ -1,14 +1,17 @@
 import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowUpDown, Bath, Wrench, BedDouble, Car, Check, Clock, CookingPot, Droplets, Dumbbell, FileText, Flame, Home, KeyRound,
-  MapPin, Maximize, MessageCircle, Route, ShieldCheck, Snowflake, Sofa, Sparkles, Sprout, Sun, Thermometer, Trees, Video, Waves, Wifi,
+  ArrowRight, MapPin, Maximize, MessageCircle, Route, ShieldCheck, Snowflake, Sofa, Sparkles, Sprout, Sun, Thermometer, Trees, Video, Waves, Wifi,
 } from "lucide-react";
 import type { Bien } from "@/types/property";
 import type { Lang } from "@/i18n/routing";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
 import { distanceLabel, equipmentName, placeName } from "@/lib/propertyI18n";
-import { ZONES, depositMonthsOf, furnishedOf, zoneLabel, zoneOf } from "@/content/zones";
+import { ZONES, depositMonthsOf, furnishedOf, zoneIn, zoneLabel, zoneOf } from "@/content/zones";
+import { areaPageOf, areaPath } from "@/content/areaPages";
+import { isUnavailable } from "@/lib/propertyServices";
 import { AGENCY } from "@/content/agency";
 import { AFTERCARE } from "@/content/aftercare";
 import { useLocalePath } from "@/hooks/useLocalePath";
@@ -188,11 +191,18 @@ export function LocationBlock({ property, lang }: { property: Bien; lang: Lang }
   const tL = useLocalizedText();
   const zone = zoneOf(property);
   const nearby = property.proximites ?? [];
+  const areaPage = areaPageOf(zone);
   if (!zone && !nearby.length) return null;
   return (
     <section>
       <SectionHeading title={tL("Situation", "Location", "Ubicación")} aside={<span className="inline-flex items-center gap-1"><MapPin size={14} strokeWidth={1.75} aria-hidden="true" />{zoneLabel(property, lang)}</span>} />
       {zone && <p className="mb-3 text-[15px] font-light leading-relaxed text-foreground/80">{ZONES[zone].text[lang]}</p>}
+      {/* An available property means its area page lists something (rented ones could point to an empty, noindex page). */}
+      {areaPage && !isUnavailable(property) && (
+        <Link to={areaPath(areaPage, lang)} className="mb-4 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-primary underline-offset-4 hover:underline">
+          {tL("Tous nos biens", "All our properties", "Todos nuestros inmuebles")} {zoneIn(areaPage.zone, lang)} <ArrowRight size={14} aria-hidden="true" />
+        </Link>
+      )}
       {nearby.length > 0 && (
         <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {nearby.map((prox) => (

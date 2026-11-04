@@ -4,13 +4,13 @@ lang: en
 translation_key: quartiers-marrakech
 category: location-longue-duree
 title: "Where to live in Marrakech: a guide to the best areas"
-meta_title: "Where to live in Marrakech: a guide to the best areas"
-meta_description: "Gueliz, Hivernage, Medina, Palmeraie, Agdal, Ourika road: a guide to Marrakech neighbourhoods to choose where to live, rent or buy."
+meta_title: "Where to live in Marrakech: 10 areas compared"
+meta_description: "Gueliz, Hivernage, Medina, Palmeraie, Agdal, Fez road… Who each Marrakech area suits, with or without a car, and where to find a villa or an apartment."
 excerpt: "Gueliz to do everything on foot, Hivernage for calm, the Medina for charm, the Palmeraie for space: how to choose your area in Marrakech."
 image_url: /blog/quartiers-marrakech.webp
 date: 2026-10-08
 published: true
-updated: 2026-10-09
+updated: 2026-11-03
 ---
 
 **In short:** to live centrally and do everything on foot, choose **Gueliz**; for calm and an upmarket setting, **Hivernage**; for historic charm, the **Medina**; for space and a garden, the **Palmeraie**, the **Fez road** or the **Ourika road**; for a recent residence with a pool on an often gentler budget, **Agdal**, **Targa** or **Chrifia**.
@@ -19,7 +19,7 @@ updated: 2026-10-09
 
 Built during the French protectorate, Gueliz is Marrakech’s modern centre: shops, cafés, restaurants, galleries, gyms and doctors. Most people live in apartments, in recent buildings or residences from the 1990s and 2000s.
 
-**For:** professionals, couples and expats who want to do everything on foot and manage without a car day to day. **Good to know:** it is lively, so sometimes noisy near the main roads.
+**For:** professionals, couples and expats who want to do everything on foot and manage without a car day to day. **Good to know:** it is lively, so sometimes noisy near the main roads. See our [apartments in Gueliz](/en/areas/gueliz).
 
 ## Hivernage: the upmarket residential area
 
@@ -37,7 +37,7 @@ The old town, a UNESCO World Heritage site, is the realm of riads: houses built 
 
 North-east of the city, the Palmeraie mixes large villas, gated estates, golf courses and upmarket residences among the palm trees. The centre is a drive away.
 
-**For:** families and anyone who wants a big garden and a private pool. **Good to know:** a car is essential. See our [villas for sale](/en/for-sale/villas-marrakech) and [villas for long-term rent](/en/long-term-rental/villas-marrakech).
+**For:** families and anyone who wants a big garden and a private pool. **Good to know:** a car is essential. See [our properties in the Palmeraie](/en/areas/palmeraie), our [villas for sale](/en/for-sale/villas-marrakech) and [villas for long-term rent](/en/long-term-rental/villas-marrakech).
 
 ## Agdal, Targa and Chrifia: recent residential areas
 
@@ -49,7 +49,7 @@ North-east of the city, the Palmeraie mixes large villas, gated estates, golf co
 
 These roads leading out of Marrakech are lined with villas on large plots, often with Atlas views to the south (Ourika, Amizmiz). You gain space and quiet, at the cost of longer trips.
 
-**For:** remote workers, families, building projects. **Good to know:** check access, water supply and the plot’s legal status. Looking for land? [Tell us about your project](/en/demande).
+**For:** remote workers, families, building projects. **Good to know:** check access, water supply and the plot’s legal status. See our villas on the [Fez road](/en/areas/fez-road), the [Sidi Rahal road](/en/areas/sidi-rahal-road) and the [Ourika road](/en/areas/ourika-road). Looking for land? [Tell us about your project](/en/demande).
 
 ## How to choose?
 
@@ -57,7 +57,7 @@ Ask yourself three questions: **do I need a car?** (no in Gueliz and Hivernage, 
 
 Torn between two areas? [Tell us what you need](/en/demande) and we will suggest properties in each.
 
-*Last updated: October 2026.*
+*Last updated: November 2026.*
 
 ## Frequently asked questions
 
