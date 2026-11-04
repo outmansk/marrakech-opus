@@ -7,5 +7,6 @@
   "b0b1924e-b9a3-46f2-92f1-7b10017db25d": { "zone": "golf" },
   "cad5f7d0-ef06-4795-893f-81b7fd3dc7e4": { "zone": "golf" },
   "74b6e091-4e35-470b-9f65-b2e1c05f5100": { "zone": "village-touristique" },
-  "5ae8e008-1dc3-4e27-8e5f-d056dfd0daca": { "zone": "golf", "caution_mois": 2 }
+  "5ae8e008-1dc3-4e27-8e5f-d056dfd0daca": { "zone": "golf", "caution_mois": 2 },
+  "eefff164-83fb-4b36-bc24-ab8c483748e5": { "caution_mois": 1 }
 }
