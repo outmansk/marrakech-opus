@@ -169,6 +169,8 @@ const PropertyDetail = () => {
     ["vente", property.prix_vente, null, tL("Prix de vente", "Sale price", "Precio de venta")],
     ["location-longue-duree", property.prix_location_longue, tL("/ mois", "/ month", "/ mes"), tL("Loyer mensuel", "Monthly rent", "Alquiler mensual")],
     ["location-courte-duree", property.prix_location_courte, tL("/ nuit", "/ night", "/ noche"), tL("Prix par nuit", "Price per night", "Precio por noche")],
+    // Sublet rent (admin « Loyer de sous-location », column prix): after the rent to live in, only when it differs.
+    ["sous-location", property.prix !== property.prix_location_longue ? property.prix : null, tL("/ mois", "/ month", "/ mes"), tL("Loyer en sous-location", "Sublet rent", "Alquiler en subarriendo")],
   ] as [BienService, number | null, string | null, string][])
     .filter(([service, amount]) => property.services.includes(service) && amount)
     .map(([service, amount, suffix, label]) => ({ service, amount: amount as number, suffix, label }));
