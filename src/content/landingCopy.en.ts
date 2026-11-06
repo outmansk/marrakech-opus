@@ -345,6 +345,44 @@ const copy: Record<LandingId, LandingCopy> = {
     ],
     areas: ["Palmeraie", "Route de Fes", "Route de l'Ourika", "Route d'Amizmiz", "Targa"],
   },
+  "sous-location": {
+    title: "Villas to rent for Airbnb in Marrakech (sublet allowed)",
+    description: "Villas to rent in Marrakech whose owner allows subletting, so you can run them as an Airbnb: monthly rent shown, photos, viewings on site or by video.",
+    eyebrow: "Sublet · Airbnb",
+    h1: "Villas to rent and run as an Airbnb in Marrakech",
+    answer: "Subletting means renting a home by the month, with the owner’s permission, to rent it out again to travellers, for example on Airbnb. Every property on this page is offered with that permission. The monthly rent is shown on each listing and viewings take place on site or by video on WhatsApp.",
+    sections: [
+      {
+        heading: "How subletting works",
+        paragraphs: [
+          "You rent the home from the owner and pay them a rent every month. You then run it as a holiday let: listings, guest check-in, cleaning and upkeep are up to you, or to the concierge service you choose.",
+          "The rent is fixed while your income depends on occupancy and the season: work out your figures carefully before you commit, allowing for quiet months and running costs.",
+        ],
+      },
+      {
+        heading: "What to check before you sign",
+        paragraphs: [
+          "The permission to sublet must be written into the lease, with its conditions. In a residence, also read the rules: some forbid holiday lets.",
+          "Renting to tourists is regulated in Morocco and the procedures can change: check with the local authorities or a professional before you start, and declare your income. We can point you in the right direction, but this does not replace advice from a lawyer or an accountant.",
+        ],
+      },
+      {
+        heading: "Choosing the right villa",
+        paragraphs: [
+          "Guests look first at the pool, the garden, the number of bedrooms with a bathroom and how quiet it is. Also check the road access, the distance to the centre and the airport, and who looks after the pool and the garden.",
+          "After the signature, the agency stays your contact: trusted tradespeople, cleaning, gardener, pool maintenance and a go-between with the owner if there is an issue.",
+        ],
+      },
+    ],
+    faq: [
+      { q: "What is subletting in Marrakech?", a: "It means renting a home by the month with the owner’s permission to rent it out again to travellers, for example on Airbnb. You pay a fixed rent to the owner and run the holiday let yourself." },
+      { q: "Does the owner agree?", a: "Yes: this page only lists properties whose owner accepts subletting. Have that permission and its conditions written into the lease." },
+      { q: "Do I need a licence to rent to tourists?", a: "Holiday lets are regulated in Morocco and the rules can change. Check with the local authorities or a professional before you start, and declare the income you receive." },
+      { q: "How much is the rent?", a: "The monthly rent is shown on each listing. The figures at the top of this page are worked out from the properties currently offered for subletting." },
+      { q: "Can I view a property remotely?", a: "Yes. We arrange a live video viewing on WhatsApp, then a visit on site if you wish." },
+    ],
+    areas: ["Route de Fes"],
+  },
 };
 
 export default copy;

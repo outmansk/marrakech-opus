@@ -1,42 +1,44 @@
 # Live In Marrakech
 
-> Live In Marrakech is a real-estate agency in Marrakech, Morocco. The website lists the properties the agency currently offers and publishes practical guides for people who want to rent long term or buy in Marrakech. It is available in French (main language, at the root), English (/en) and Spanish (/es).
+> Live In Marrakech is a real-estate agency in Marrakech, Morocco, focused on three services: sale, long-term rental (one-year lease, to live in) and subletting (renting a home with the owner's permission to run it as an Airbnb-type holiday let). The website lists the properties the agency currently offers and publishes practical guides for people who want to rent long term or buy in Marrakech. It is available in French (main language, at the root), English (/en) and Spanish (/es).
 
 Contact: +212 6 05 38 70 41 (phone and WhatsApp) · contact@liveinmarrakech.com · https://liveinmarrakech.com
 
-## Current offer (generated from the listings on 2026-11-03)
+## Current offer (generated from the listings on 2026-11-06)
 
 - Property types currently listed: villas, riads, houses, apartments.
-- Services currently offered: subletting, sale, long-term rental.
-- Areas of the currently listed properties: Agdal, Chrifia, Fez road, Gueliz (city centre), Medina, Ourika road, Palmeraie (Ennakhil), Sidi Rahal road, Village Touristique, golf area (Prestigia).
+- Services currently offered: sale, long-term rental, subletting.
+- Subletting: renting a home whose owner allows the tenant to run it as a holiday let (Airbnb-type); listings marked "subletting allowed" accept it.
+- Short stays (by the night or week) are not the agency's business: only on request, the agency can search case by case.
+- Areas of the currently listed properties: Agdal, Essaouira, Fez road, Gueliz (city centre), Medina, Ourika road, Palmeraie (Ennakhil), Sidi Rahal road, Village Touristique, golf area (Prestigia).
 - Prices are shown on each property page, in Moroccan dirhams (MAD) or euros (EUR), per month for long-term rentals. Availability and prices change: the property page is the reference.
 
-## Prices in our listings (on 2026-11-03)
+## Prices in our listings (on 2026-11-06)
 
 These figures come only from the agency's own listings on the date above, not from market statistics. Each property page is the reference.
 
 Long-term rents per month, by property type and area:
 
-- Apartments, Chrifia: 7,000 MAD (1 listing)
 - Apartments, golf area (Prestigia): 18,000 MAD (1 listing)
 - Apartments, Gueliz (city centre): 14,500 MAD (1 listing)
 - Houses, Fez road: 8,000 MAD (1 listing)
 - Riads, Palmeraie (Ennakhil): 25,000 MAD (1 listing)
 - Villas, Agdal: 50,000 MAD (1 listing)
-- Villas, Fez road: 11,000–30,000 MAD (6 listings)
+- Villas, Fez road: 11,000–35,000 MAD (8 listings)
 - Villas, golf area (Prestigia): 18,000–60,000 MAD (2 listings)
 - Villas, Ourika road: 12,000–26,000 MAD (2 listings)
-- Villas, Sidi Rahal road: 20,000–60,000 MAD (2 listings)
+- Villas, Sidi Rahal road: 18,000–60,000 MAD (2 listings)
 
 Asking prices of properties for sale, by type and area:
 
+- Apartments, Essaouira: 2,500,000 MAD (1 listing)
 - Houses, Palmeraie (Ennakhil): 2,500,000 MAD (1 listing)
 - Riads, Medina: 5,800,000 MAD (1 listing)
 - Riads, Palmeraie (Ennakhil): 4,000,000 MAD (1 listing)
 - Riads, Village Touristique: 5,000,000 MAD (1 listing)
-- Villas, Fez road: 1,700,000–6,500,000 MAD (7 listings)
+- Villas, Fez road: 1,700,000–6,500,000 MAD (8 listings)
 - Villas, golf area (Prestigia): 4,000,000 MAD (1 listing)
-- Villas, Marrakech: 5,000,000–5,700,000 MAD (2 listings)
+- Villas, Marrakech: 5,700,000 MAD (1 listing)
 - Villas, Sidi Rahal road: 10,000,000 MAD (1 listing)
 
 Long-term rentals recently concluded by the agency (rent agreed, client kept anonymous):
@@ -73,35 +75,41 @@ Long-term rentals recently concluded by the agency (rent agreed, client kept ano
 - [Describe your search (EN)](https://liveinmarrakech.com/en/demande)
 - [Describa su búsqueda (ES)](https://liveinmarrakech.com/es/demande)
 
-## Sale and long-term rental pages (FR)
+## Sale, long-term rental and sublet pages (FR)
 
 - [Biens à vendre](https://liveinmarrakech.com/vente)
 - [Villas à vendre](https://liveinmarrakech.com/vente/villas-marrakech)
+- [Appartements à vendre](https://liveinmarrakech.com/vente/appartements-marrakech)
 - [Riads à vendre](https://liveinmarrakech.com/vente/riads-marrakech)
 - [Maisons à vendre](https://liveinmarrakech.com/vente/maisons-marrakech)
 - [Location longue durée](https://liveinmarrakech.com/location-longue-duree)
 - [Appartements à louer à l’année](https://liveinmarrakech.com/location-longue-duree/appartements-marrakech)
 - [Villas à louer à l’année](https://liveinmarrakech.com/location-longue-duree/villas-marrakech)
+- [Sous-location Airbnb](https://liveinmarrakech.com/sous-location-airbnb)
 
-## Sale and long-term rental pages (EN)
+## Sale, long-term rental and sublet pages (EN)
 
 - [Property for sale](https://liveinmarrakech.com/en/for-sale)
 - [Villas for sale](https://liveinmarrakech.com/en/for-sale/villas-marrakech)
+- [Apartments for sale](https://liveinmarrakech.com/en/for-sale/apartments-marrakech)
 - [Riads for sale](https://liveinmarrakech.com/en/for-sale/riads-marrakech)
 - [Houses for sale](https://liveinmarrakech.com/en/for-sale/houses-marrakech)
 - [Long-term rentals](https://liveinmarrakech.com/en/long-term-rental)
 - [Apartments for long-term rent](https://liveinmarrakech.com/en/long-term-rental/apartments-marrakech)
 - [Villas for long-term rent](https://liveinmarrakech.com/en/long-term-rental/villas-marrakech)
+- [Sublet for Airbnb](https://liveinmarrakech.com/en/sublet-airbnb)
 
-## Sale and long-term rental pages (ES)
+## Sale, long-term rental and sublet pages (ES)
 
 - [Inmuebles en venta](https://liveinmarrakech.com/es/venta)
 - [Villas en venta](https://liveinmarrakech.com/es/venta/villas-marrakech)
+- [Apartamentos en venta](https://liveinmarrakech.com/es/venta/apartamentos-marrakech)
 - [Riads en venta](https://liveinmarrakech.com/es/venta/riads-marrakech)
 - [Casas en venta](https://liveinmarrakech.com/es/venta/casas-marrakech)
 - [Alquiler de larga duración](https://liveinmarrakech.com/es/alquiler-larga-duracion)
 - [Apartamentos en alquiler de larga duración](https://liveinmarrakech.com/es/alquiler-larga-duracion/apartamentos-marrakech)
 - [Villas en alquiler de larga duración](https://liveinmarrakech.com/es/alquiler-larga-duracion/villas-marrakech)
+- [Subarriendo para Airbnb](https://liveinmarrakech.com/es/subarriendo-airbnb)
 
 ## Area pages (all listings of one area, for rent and for sale)
 

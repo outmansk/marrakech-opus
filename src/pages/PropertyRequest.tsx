@@ -25,7 +25,7 @@ import "./PropertyRequest.css";
 // `notes`, which the agency reads in the CRM). Only real areas (src/content/zones.ts) are offered.
 
 type L = Record<Lang, string>;
-type Project = "achat" | "location" | "sejour";
+type Project = "achat" | "location" | "souslocation" | "sejour";
 /** Dates of a stay are kept apart: datesFrom / datesTo (YYYY-MM-DD) and datesFlexible ("1"). */
 type Answers = Partial<Record<QuestionId | "datesFrom" | "datesTo" | "datesFlexible", string | string[]>>;
 type QuestionId =
@@ -91,7 +91,9 @@ const QUESTIONS: Question[] = [
     options: () => [
       { id: "achat", icon: KeyRound, label: t("Acheter", "Buy", "Comprar"), hint: t("Devenir propriétaire", "Become an owner", "Ser propietario") },
       { id: "location", icon: CalendarRange, label: t("Louer à l’année", "Rent long term", "Alquilar por años"), hint: t("Bail d’un an minimum", "One-year lease minimum", "Contrato de un año mínimo") },
-      { id: "sejour", icon: Palmtree, label: t("Séjourner", "Stay", "Alojarse"), hint: t("Vacances, courte durée", "Holidays, short stay", "Vacaciones, corta estancia") },
+      { id: "souslocation", icon: Luggage, label: t("Louer pour sous-louer", "Rent to sublet", "Alquilar para subarrendar"), hint: t("Exploiter le bien en Airbnb", "Run the home as an Airbnb", "Explotarlo en Airbnb") },
+      // Not the agency's focus: offered on request only (the agency searches case by case).
+      { id: "sejour", icon: Palmtree, label: t("Courte durée", "Short stay", "Estancia corta"), hint: t("Sur demande : nous cherchons pour vous", "On request: we search for you", "Bajo petición: buscamos por usted") },
     ],
   },
   {
@@ -175,7 +177,7 @@ const QUESTIONS: Question[] = [
     ],
   },
   {
-    id: "furnished", kind: "single", chip: t("Logement", "Home", "Vivienda"), when: (a) => project(a) === "location",
+    id: "furnished", kind: "single", chip: t("Logement", "Home", "Vivienda"), when: (a) => project(a) === "location" || project(a) === "souslocation",
     title: t("Meublé ou vide ?", "Furnished or unfurnished?", "¿Amueblado o sin amueblar?"),
     subtitle: t("Caution : 2 mois de loyer en meublé, 1 mois en vide.", "Deposit: 2 months’ rent furnished, 1 month unfurnished.", "Fianza: 2 meses amueblado, 1 mes sin amueblar."),
     options: () => [
@@ -228,9 +230,9 @@ const QUESTIONS: Question[] = [
 const UI = {
   title: t("Décrire ma recherche immobilière à Marrakech", "Describe your property search in Marrakech", "Describa su búsqueda inmobiliaria en Marrakech"),
   description: t(
-    "Achat, location à l’année ou séjour : répondez à quelques questions en une minute, l’agence vous envoie une sélection de biens à Marrakech.",
-    "Buying, long-term rental or a stay: answer a few questions in a minute and the agency sends you a selection of homes in Marrakech.",
-    "Compra, alquiler anual o estancia: responda a unas preguntas en un minuto y la agencia le envía una selección de inmuebles en Marrakech.",
+    "Achat, location à l’année ou sous-location pour Airbnb : répondez à quelques questions en une minute, l’agence vous envoie une sélection de biens à Marrakech.",
+    "Buying, long-term rental or a sublet for Airbnb: answer a few questions in a minute and the agency sends you a selection of homes in Marrakech.",
+    "Compra, alquiler anual o subarriendo para Airbnb: responda a unas preguntas en un minuto y la agencia le envía una selección de inmuebles en Marrakech.",
   ),
   h1: t("Trouvons votre bien à Marrakech", "Let’s find your home in Marrakech", "Encontremos su inmueble en Marrakech"),
   minute: t("1 minute · quelques touches", "1 minute · a few taps", "1 minuto · unos toques"),
@@ -362,6 +364,8 @@ export default function PropertyRequest() {
     const areas = ((answers.areas as string[] | undefined) ?? []).filter((id) => id !== "conseil");
 
     const notes = [
+      // client_leads has no "sous-location" type: saved as a long-term rental, the note says it is a sublet.
+      ...(pick("project") === "souslocation" ? ["Projet : sous-location (exploitation type Airbnb)"] : []),
       ...flow.filter((q) => q.note && pick(q.id) && pick(q.id) !== "any").map((q) => `${q.note} : ${frLabel(q, pick(q.id)!)}`),
       ...(pick("budget") ? [`Budget : ${budget?.label.fr ?? pick("budget")}`] : []),
       ...(answers.datesFrom || answers.datesTo ? [`Dates : du ${answers.datesFrom || "?"} au ${answers.datesTo || "?"}${answers.datesFlexible ? " (flexibles)" : ""}`] : []),

@@ -131,5 +131,19 @@
       "en": "/long-term-rental/villas-marrakech",
       "es": "/alquiler-larga-duracion/villas-marrakech"
     }
+  },
+  {
+    "id": "sous-location",
+    "service": "sous-location",
+    "label": {
+      "fr": "Sous-location Airbnb",
+      "en": "Sublet for Airbnb",
+      "es": "Subarriendo para Airbnb"
+    },
+    "paths": {
+      "fr": "/sous-location-airbnb",
+      "en": "/sublet-airbnb",
+      "es": "/subarriendo-airbnb"
+    }
   }
 ]

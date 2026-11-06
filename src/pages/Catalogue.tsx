@@ -67,7 +67,7 @@ const Catalogue = () => {
         </span>
       </label>
       {[
-        { label: tL("Projet", "Project", "Proyecto"), key: "type", value: activeType, options: [["all", tL("Tous", "All", "Todos")], ["vente", tL("Acheter", "Buy", "Comprar")], ["location-longue-duree", tL("Louer à l'année", "Long-term rent", "Alquiler anual")], ["location-courte-duree", tL("Séjourner", "Stay", "Estancia")]] },
+        { label: tL("Projet", "Project", "Proyecto"), key: "type", value: activeType, options: [["all", tL("Tous", "All", "Todos")], ["vente", tL("Acheter", "Buy", "Comprar")], ["location-longue-duree", tL("Louer à l'année", "Long-term rent", "Alquiler anual")], ["sous-location", tL("Sous-louer (Airbnb)", "Sublet (Airbnb)", "Subarrendar (Airbnb)")]] },
         { label: tL("Type de bien", "Property type", "Tipo"), key: "kind", value: activeKind, options: [["all", tL("Tous les types", "All types", "Todos los tipos")], ...BIEN_TYPES.map((type) => [type, type.charAt(0).toUpperCase() + type.slice(1)])] },
         { label: tL("Quartier", "Neighborhood", "Barrio"), key: "quartier", value: activeQuartier, options: [["all", tL("Tous les quartiers", "All neighborhoods", "Todos los barrios")], ...QUARTIERS.map((quartier) => [quartier, quartier])] },
       ].map((field) => (
@@ -119,7 +119,7 @@ const Catalogue = () => {
           <nav aria-label={tL("Recherches fréquentes", "Popular searches", "Búsquedas frecuentes")} className="mx-auto max-w-[1320px] border-t border-[#2b2722]/12 px-5 py-10 md:px-10 xl:px-16">
             <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#777065]">{tL("Recherches fréquentes", "Popular searches", "Búsquedas frecuentes")}</h2>
             <ul className="flex flex-wrap gap-2">
-              {LANDINGS.filter((landing) => landing.type && availableFor(landing, allProperties).length > 0).map((landing) => (
+              {LANDINGS.filter((landing) => (landing.type || landing.id === "sous-location") && availableFor(landing, allProperties).length > 0).map((landing) => (
                 <li key={landing.id}><Link to={landingPath(landing.id, lang)} className="flex min-h-11 items-center border border-[#2b2722]/15 bg-white px-4 text-sm transition-colors hover:border-[#a4573e] hover:text-[#a4573e]">{landing.label[lang]}</Link></li>
               ))}
             </ul>

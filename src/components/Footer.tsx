@@ -71,6 +71,7 @@ const Footer = () => {
                 { to: lp("/catalogue"), label: t("nav.catalogue") },
                 { to: landingPath("vente", currentLang), label: t("services.vente") },
                 { to: landingPath("location", currentLang), label: t("services.location_longue") },
+                { to: landingPath("sous-location", currentLang), label: getLanding("sous-location").label[currentLang] },
                 ...FOOTER_LANDINGS.map((id) => ({ to: landingPath(id, currentLang), label: getLanding(id).label[currentLang] })),
                 { to: lp("/blog"), label: t("nav.blog") },
                 { to: lp("/contact"), label: t("nav.contact") },

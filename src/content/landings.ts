@@ -9,11 +9,12 @@ import registry from "./landings.json";
 
 export type LandingId =
   | "vente" | "vente-villas" | "vente-appartements" | "vente-riads" | "vente-maisons" | "vente-terrains"
-  | "location" | "location-appartements" | "location-villas";
+  | "location" | "location-appartements" | "location-villas"
+  | "sous-location";
 
 export interface Landing {
   id: LandingId;
-  service: Extract<BienService, "vente" | "location-longue-duree">;
+  service: Extract<BienService, "vente" | "location-longue-duree" | "sous-location">;
   /** Absent on the two hub pages (all types of one service). */
   type?: BienType;
   /** Short link text in each language ("Villas à vendre"). */

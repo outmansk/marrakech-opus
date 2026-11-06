@@ -28,8 +28,10 @@ import { typeName } from "@/lib/propertyI18n";
 // Same filter as the catalogue: the pre-render loads this list once for both pages.
 const PUBLIC_STATUTS = ["publie", "vendu-loue"];
 
+// Sublets are rented by the month too; a sublet-only listing may only have the legacy price.
 const priceOf = (property: Bien, landing: Landing) =>
-  (landing.service === "vente" ? property.prix_vente : property.prix_location_longue) || null;
+  (landing.service === "vente" ? property.prix_vente
+    : property.prix_location_longue || (landing.service === "sous-location" ? property.prix : null)) || null;
 
 const absolute = (path: string) => `${BASE_URL}${path === "/" ? "" : path}`;
 
@@ -61,7 +63,7 @@ function SearchLanding() {
   // Pages without stock are noindex: link only to the ones that list something.
   const siblings = LANDINGS.filter((other) => other.service === landing.service && other.type && availableFor(other, properties).length > 0);
   const empty = !isLoading && available.length === 0;
-  const otherHub = LANDINGS.find((other) => other.service !== landing.service && !other.type)!;
+  const otherHubs = LANDINGS.filter((other) => other.service !== landing.service && !other.type && availableFor(other, properties).length > 0);
   const alternates = Object.fromEntries(LANGS.map((l) => [l, landingPath(landing.id, l)])) as Record<Lang, string>;
   const selfPath = landingPath(landing.id, lang);
 
@@ -73,7 +75,7 @@ function SearchLanding() {
   const priceRange = sameCurrency.length === 0 ? null
     : sameCurrency.length === 1 ? format(sameCurrency[0])
     : `${format(Math.min(...sameCurrency))} – ${format(Math.max(...sameCurrency))}`;
-  const perMonth = landing.service === "location-longue-duree" ? tL(" / mois", " / month", " / mes") : "";
+  const perMonth = landing.service !== "vente" ? tL(" / mois", " / month", " / mes") : "";
   const listedAreas = [...new Set(available.map((property) => property.quartier).filter(Boolean))] as string[];
   const lastUpdate = listed.length
     ? new Date(Math.max(...listed.map((property) => Date.parse(property.updated_at)))).toLocaleDateString(lang, { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })
@@ -337,7 +339,7 @@ function SearchLanding() {
                 <div>
                   <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#777065]">{tL("Voir aussi", "See also", "Ver también")}</h2>
                   <ul className="flex flex-col border-t border-[#2b2722]/12">
-                    {[...(landing.type ? [hub] : []), ...siblings.filter((sibling) => sibling.id !== landing.id), otherHub].map((other) => (
+                    {[...(landing.type ? [hub] : []), ...siblings.filter((sibling) => sibling.id !== landing.id), ...otherHubs].map((other) => (
                       <li key={other.id} className="border-b border-[#2b2722]/12">
                         <Link to={landingPath(other.id, lang)} className="flex min-h-12 items-center justify-between gap-3 py-3 text-sm hover:text-[#a4573e]">
                           {other.label[lang]} <ArrowRight size={14} aria-hidden="true" />

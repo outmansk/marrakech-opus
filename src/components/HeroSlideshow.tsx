@@ -7,7 +7,7 @@ import { QUARTIERS, type BienService } from "@/types/property";
 import { useLocalizedText } from "@/hooks/useLocalizedText";
 import { useLocalePath } from "@/hooks/useLocalePath";
 
-type Intent = Extract<BienService, "vente" | "location-longue-duree" | "location-courte-duree">;
+type Intent = Extract<BienService, "vente" | "location-longue-duree" | "sous-location">;
 
 const WHATSAPP_URL = "https://wa.me/212605387041?text=Bonjour%2C%20je%20souhaite%20%C3%AAtre%20conseill%C3%A9%20pour%20un%20bien%20%C3%A0%20Marrakech.";
 
@@ -21,7 +21,7 @@ const HeroSlideshow = () => {
   const tabs: Array<{ value: Intent; label: string; shortLabel: string }> = [
     { value: "vente", label: tL("Acheter", "Buy", "Comprar"), shortLabel: tL("Acheter", "Buy", "Comprar") },
     { value: "location-longue-duree", label: tL("Louer longue durée", "Long-term rent", "Alquiler anual"), shortLabel: tL("Louer", "Rent", "Alquilar") },
-    { value: "location-courte-duree", label: tL("Séjourner", "Stay", "Estancia"), shortLabel: tL("Séjourner", "Stay", "Estancia") },
+    { value: "sous-location", label: tL("Sous-louer (Airbnb)", "Sublet (Airbnb)", "Subarrendar (Airbnb)"), shortLabel: tL("Sous-louer", "Sublet", "Subarrendar") },
   ];
 
   const submit = (event: FormEvent) => {
@@ -76,9 +76,9 @@ const HeroSlideshow = () => {
               </div>
               <p className="max-w-[330px] text-[15px] leading-[1.6] text-[#fbf8f2]/90 lg:mb-2.5 lg:text-base lg:leading-[1.7] lg:text-[#fbf8f2]/[0.88]">
                 {tL(
-                  "Achat, location à l’année ou séjour — nous trouvons le bien qui vous correspond.",
-                  "Purchase, long-term rental or stay — we find the property that fits you.",
-                  "Compra, alquiler anual o estancia: encontramos la propiedad que le corresponde."
+                  "Achat, location à l’année ou sous-location type Airbnb — nous trouvons le bien qui vous correspond.",
+                  "Purchase, long-term rental or an Airbnb-style sublet — we find the property that fits you.",
+                  "Compra, alquiler anual o subarriendo tipo Airbnb: encontramos la propiedad que le corresponde."
                 )}
               </p>
             </div>

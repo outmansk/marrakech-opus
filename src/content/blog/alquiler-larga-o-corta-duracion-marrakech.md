@@ -9,6 +9,7 @@ meta_description: "Contrato de un año, fianza, amueblado o no, estancia de unas
 excerpt: "¿Contrato de un año o estancia de unas semanas? Presupuesto, flexibilidad, trámites y confort: los criterios para elegir el alquiler adecuado en Marrakech."
 image_url: /blog/quartiers-marrakech.webp
 date: 2026-10-24
+updated: 2026-11-04
 published: true
 ---
 
@@ -65,13 +66,13 @@ En las visitas, compruebe el aire acondicionado **y** la calefacción, el estado
 
 Encuentre nuestros [apartamentos](/es/alquiler-larga-duracion/apartamentos-marrakech) y [villas en alquiler de larga duración](/es/alquiler-larga-duracion/villas-marrakech) con los precios al día. Para una selección adaptada a su presupuesto y fechas, [describa su búsqueda](/es/demande): le proponemos viviendas y organizamos las visitas, presenciales o por vídeo.
 
-*Las condiciones pueden variar según la vivienda. Para la corta duración, consulte con las autoridades locales las normas aplicables antes de reservar o alquilar. Última actualización: octubre de 2026.*
+*Las condiciones pueden variar según la vivienda. Para la corta duración, consulte con las autoridades locales las normas aplicables antes de reservar o alquilar. Última actualización: noviembre de 2026.*
 
 ## Preguntas frecuentes
 
 ### ¿Cuál es la duración mínima de un contrato en Marrakech?
 
-En Live In Marrakech, el alquiler de larga duración se hace con contrato escrito de un año como mínimo. Las estancias más cortas son alquileres de corta duración, con otras condiciones.
+En Live In Marrakech, el alquiler de larga duración se hace con contrato escrito de un año como mínimo. La agencia no ofrece estancias cortas directamente: para unos días o semanas, pregúntenos y podemos buscar por usted.
 
 ### ¿Cuánto es la fianza?
 

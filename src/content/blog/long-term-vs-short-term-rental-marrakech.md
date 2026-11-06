@@ -9,6 +9,7 @@ meta_description: "One-year lease, deposit, furnished or not, a few weeks' stay:
 excerpt: "A one-year lease or a few weeks' stay? Budget, flexibility, paperwork, comfort: the criteria for choosing the right type of rental in Marrakech."
 image_url: /blog/quartiers-marrakech.webp
 date: 2026-10-24
+updated: 2026-11-04
 published: true
 ---
 
@@ -65,13 +66,13 @@ During viewings, check the air conditioning **and** the heating, the state of th
 
 Browse our [apartments](/en/long-term-rental/apartments-marrakech) and [villas for long-term rent](/en/long-term-rental/villas-marrakech) with up-to-date rents. For a selection that fits your budget and dates, [tell us what you are looking for](/en/demande): we suggest properties and arrange viewings, in person or by video.
 
-*Conditions may vary by property. For short-term stays, check the rules that apply with the local authorities before booking or renting. Last updated: October 2026.*
+*Conditions may vary by property. For short-term stays, check the rules that apply with the local authorities before booking or renting. Last updated: November 2026.*
 
 ## Frequently asked questions
 
 ### What is the minimum lease length in Marrakech?
 
-At Live In Marrakech, long-term rentals are on a written lease of one year minimum. Shorter stays are short-term rentals, with different conditions.
+At Live In Marrakech, long-term rentals are on a written lease of one year minimum. The agency does not offer short stays directly: for a few days or weeks, just ask and we can search for you.
 
 ### How much is the security deposit?
 

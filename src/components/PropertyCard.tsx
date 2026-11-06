@@ -26,6 +26,8 @@ const priceFor = (property: Bien, kind: PriceKind) =>
 
 const resolvePrice = (property: Bien, activeType?: string): { kind: PriceKind; amount: number | null } => {
   const kinds: PriceKind[] = ["vente", "location-longue-duree", "location-courte-duree"];
+  // Sublet filter or page: the monthly rent, never the sale price of a home also for sale.
+  if (activeType === "sous-location") return { kind: "location-longue-duree", amount: property.prix_location_longue || property.prix || null };
   const active = kinds.find((kind) => kind === activeType);
   if (active && priceFor(property, active)) return { kind: active, amount: priceFor(property, active) };
   const priced = kinds.find((kind) => priceFor(property, kind));
