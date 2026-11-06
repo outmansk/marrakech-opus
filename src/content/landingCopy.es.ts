@@ -345,6 +345,44 @@ const copy: Record<LandingId, LandingCopy> = {
     ],
     areas: ["Palmeraie", "Route de Fes", "Route de l'Ourika", "Route d'Amizmiz", "Targa"],
   },
+  "sous-location": {
+    title: "Villas en alquiler para Airbnb en Marrakech",
+    description: "Villas en alquiler en Marrakech cuyo propietario autoriza el subarriendo, para explotarlas en Airbnb: alquiler mensual indicado, fotos, visita.",
+    eyebrow: "Subarriendo · Airbnb",
+    h1: "Villas en alquiler para explotar en Airbnb en Marrakech",
+    answer: "El subarriendo consiste en alquilar un inmueble por meses, con el permiso del propietario, para volver a alquilarlo a viajeros, por ejemplo en Airbnb. Todos los inmuebles de esta página se ofrecen con ese permiso. El alquiler mensual figura en cada anuncio y la visita se hace en persona o por vídeo en WhatsApp.",
+    sections: [
+      {
+        heading: "Cómo funciona el subarriendo",
+        paragraphs: [
+          "Usted alquila el inmueble al propietario y le paga un alquiler cada mes. Después lo explota como alquiler turístico: anuncios, recepción de los viajeros, limpieza y mantenimiento corren de su cuenta o de la conserjería que elija.",
+          "El alquiler es fijo, mientras que sus ingresos dependen de la ocupación y de la temporada: haga sus cálculos con prudencia antes de comprometerse, teniendo en cuenta los meses flojos y los gastos de funcionamiento.",
+        ],
+      },
+      {
+        heading: "Qué comprobar antes de firmar",
+        paragraphs: [
+          "El permiso para subarrendar debe figurar por escrito en el contrato, con sus condiciones. En una residencia, lea también el reglamento: algunas prohíben el alquiler turístico.",
+          "El alquiler a turistas está regulado en Marruecos y los trámites pueden cambiar: infórmese ante las autoridades locales o un profesional antes de empezar y declare sus ingresos. Le orientamos, pero esto no sustituye el consejo de un abogado o un asesor fiscal.",
+        ],
+      },
+      {
+        heading: "Elegir bien la villa",
+        paragraphs: [
+          "Los viajeros miran primero la piscina, el jardín, el número de dormitorios con baño y la tranquilidad. Compruebe también el acceso en coche, la distancia al centro y al aeropuerto, y quién se ocupa de la piscina y del jardín.",
+          "Después de la firma, la agencia sigue siendo su contacto: profesionales de confianza, limpieza, jardinero, mantenimiento de la piscina y enlace con el propietario si surge algún problema.",
+        ],
+      },
+    ],
+    faq: [
+      { q: "¿Qué es el subarriendo en Marrakech?", a: "Es alquilar un inmueble por meses con el permiso del propietario para volver a alquilarlo a viajeros, por ejemplo en Airbnb. Usted paga un alquiler fijo al propietario y gestiona el alquiler turístico." },
+      { q: "¿Está de acuerdo el propietario?", a: "Sí: en esta página solo mostramos inmuebles cuyo propietario acepta el subarriendo. Haga constar ese permiso y sus condiciones en el contrato." },
+      { q: "¿Hace falta una autorización para alquilar a turistas?", a: "El alquiler turístico está regulado en Marruecos y las normas pueden cambiar. Infórmese ante las autoridades locales o un profesional antes de empezar y declare los ingresos que perciba." },
+      { q: "¿Cuánto cuesta el alquiler?", a: "El alquiler mensual figura en cada anuncio. Las cifras de la parte superior de esta página se calculan a partir de los inmuebles ofrecidos actualmente en subarriendo." },
+      { q: "¿Se puede visitar a distancia?", a: "Sí. Organizamos una visita por vídeo en directo en WhatsApp y después una visita en persona si lo desea." },
+    ],
+    areas: ["Route de Fes"],
+  },
 };
 
 export default copy;

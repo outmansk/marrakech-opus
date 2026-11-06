@@ -346,6 +346,44 @@ const copy: Record<LandingId, LandingCopy> = {
     ],
     areas: ["Palmeraie", "Route de Fes", "Route de l'Ourika", "Route d'Amizmiz", "Targa"],
   },
+  "sous-location": {
+    title: "Location villa pour Airbnb à Marrakech : sous-location",
+    description: "Villas à louer à Marrakech dont le propriétaire autorise la sous-location, pour les exploiter en Airbnb : loyer mensuel affiché, photos, visite.",
+    eyebrow: "Sous-location · Airbnb",
+    h1: "Villas à louer pour faire de l’Airbnb à Marrakech",
+    answer: "La sous-location consiste à louer un bien au mois, avec l’accord du propriétaire, pour le relouer à des voyageurs, par exemple sur Airbnb. Tous les biens de cette page sont proposés avec cette autorisation. Le loyer mensuel est affiché sur chaque annonce et la visite se fait sur place ou en vidéo sur WhatsApp.",
+    sections: [
+      {
+        heading: "Comment fonctionne la sous-location",
+        paragraphs: [
+          "Vous louez le bien au propriétaire et vous lui versez un loyer chaque mois. Vous l’exploitez ensuite en location touristique : annonces, accueil des voyageurs, ménage et entretien sont à votre charge, ou à celle de la conciergerie que vous choisissez.",
+          "Le loyer est fixe, alors que vos revenus dépendent du remplissage et de la saison : faites vos calculs avec prudence avant de vous engager, en tenant compte des mois creux et des frais de fonctionnement.",
+        ],
+      },
+      {
+        heading: "Ce qu’il faut vérifier avant de signer",
+        paragraphs: [
+          "L’autorisation de sous-louer doit être écrite noir sur blanc dans le bail, avec ses conditions. Dans une résidence, lisez aussi le règlement : certaines interdisent la location touristique.",
+          "La location aux touristes est encadrée au Maroc et les démarches peuvent évoluer : renseignez-vous auprès des autorités locales ou d’un professionnel avant de lancer l’activité, et déclarez vos revenus. Nous vous orientons, mais ces points ne remplacent pas l’avis d’un juriste ou d’un comptable.",
+        ],
+      },
+      {
+        heading: "Bien choisir sa villa",
+        paragraphs: [
+          "Les voyageurs regardent d’abord la piscine, le jardin, le nombre de chambres avec salle de bain et le calme. Vérifiez aussi l’accès en voiture, la distance jusqu’au centre et à l’aéroport, et qui s’occupe de l’entretien de la piscine et du jardin.",
+          "Après la signature, l’agence reste votre contact : artisans de confiance, ménage, jardinier, entretien de la piscine et lien avec le propriétaire en cas de souci.",
+        ],
+      },
+    ],
+    faq: [
+      { q: "Qu’est-ce que la sous-location à Marrakech ?", a: "C’est louer un bien au mois avec l’accord du propriétaire pour le relouer à des voyageurs, par exemple sur Airbnb. Vous payez un loyer fixe au propriétaire et vous gérez la location touristique." },
+      { q: "Le propriétaire est-il d’accord ?", a: "Oui : nous ne proposons sur cette page que des biens dont le propriétaire accepte la sous-location. Faites préciser cette autorisation et ses conditions dans le bail." },
+      { q: "Faut-il une autorisation pour louer aux touristes ?", a: "La location touristique est encadrée au Maroc et les règles peuvent évoluer. Renseignez-vous auprès des autorités locales ou d’un professionnel avant de commencer, et déclarez les revenus perçus." },
+      { q: "Combien coûte le loyer ?", a: "Le loyer mensuel est affiché sur chaque annonce. Les chiffres en haut de cette page sont calculés à partir des biens actuellement proposés en sous-location." },
+      { q: "Peut-on visiter à distance ?", a: "Oui. Nous organisons une visite vidéo en direct sur WhatsApp, puis une visite sur place si vous le souhaitez." },
+    ],
+    areas: ["Route de Fes"],
+  },
 };
 
 export default copy;

@@ -119,7 +119,7 @@ const Catalogue = () => {
           <nav aria-label={tL("Recherches fréquentes", "Popular searches", "Búsquedas frecuentes")} className="mx-auto max-w-[1320px] border-t border-[#2b2722]/12 px-5 py-10 md:px-10 xl:px-16">
             <h2 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#777065]">{tL("Recherches fréquentes", "Popular searches", "Búsquedas frecuentes")}</h2>
             <ul className="flex flex-wrap gap-2">
-              {LANDINGS.filter((landing) => landing.type && availableFor(landing, allProperties).length > 0).map((landing) => (
+              {LANDINGS.filter((landing) => (landing.type || landing.id === "sous-location") && availableFor(landing, allProperties).length > 0).map((landing) => (
                 <li key={landing.id}><Link to={landingPath(landing.id, lang)} className="flex min-h-11 items-center border border-[#2b2722]/15 bg-white px-4 text-sm transition-colors hover:border-[#a4573e] hover:text-[#a4573e]">{landing.label[lang]}</Link></li>
               ))}
             </ul>

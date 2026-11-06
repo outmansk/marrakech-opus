@@ -295,15 +295,15 @@ ${link('Describe your search (FR)', '/demande')}
 ${link('Describe your search (EN)', '/en/demande')}
 ${link('Describa su búsqueda (ES)', '/es/demande')}
 
-## Sale and long-term rental pages (FR)
+## Sale, long-term rental and sublet pages (FR)
 
 ${landingLinks('fr').join('\n')}
 
-## Sale and long-term rental pages (EN)
+## Sale, long-term rental and sublet pages (EN)
 
 ${landingLinks('en').join('\n')}
 
-## Sale and long-term rental pages (ES)
+## Sale, long-term rental and sublet pages (ES)
 
 ${landingLinks('es').join('\n')}
 
