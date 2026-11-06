@@ -25,7 +25,8 @@ const priceFor = (property: Bien, kind: PriceKind) =>
   kind === "vente" ? property.prix_vente : kind === "location-longue-duree" ? property.prix_location_longue : property.prix_location_courte;
 
 const resolvePrice = (property: Bien, activeType?: string): { kind: PriceKind; amount: number | null } => {
-  const kinds: PriceKind[] = ["vente", "location-longue-duree", "location-courte-duree"];
+  // Règle de l'agence : un bien à louer ET à vendre affiche d'abord le loyer, le prix de vente en dessous.
+  const kinds: PriceKind[] = ["location-longue-duree", "location-courte-duree", "vente"];
   // Sublet filter or page: the monthly rent, never the sale price of a home also for sale.
   if (activeType === "sous-location") return { kind: "location-longue-duree", amount: property.prix_location_longue || property.prix || null };
   const active = kinds.find((kind) => kind === activeType);
@@ -50,10 +51,10 @@ const PropertyCard = ({ property, activeType }: PropertyCardProps) => {
   const isSale = kind === "vente";
   const isSublet = !isSale && getServices(property).includes("sous-location");
 
-  // Bien à vendre ET à louer à l'année (sans filtre de service) : les deux sur la carte.
-  const alsoRent = (!activeType || activeType === "all") && isSale && getServices(property).includes("location-longue-duree") && property.prix_location_longue ? property.prix_location_longue : null;
-  const badge = alsoRent
-    ? tL("À vendre · À louer", "For sale · For rent", "En venta · En alquiler")
+  // Bien à louer ET à vendre (sans filtre de service) : le loyer d'abord, le prix de vente en dessous.
+  const alsoSale = (!activeType || activeType === "all") && !isSale && getServices(property).includes("vente") && property.prix_vente ? property.prix_vente : null;
+  const badge = alsoSale
+    ? tL("À louer · À vendre", "For rent · For sale", "En alquiler · En venta")
     : isSale
     ? tL("À vendre", "For sale", "En venta")
     : kind === "location-longue-duree"
@@ -126,10 +127,10 @@ const PropertyCard = ({ property, activeType }: PropertyCardProps) => {
               ) : (
                 <p className="font-serif text-[27px] font-medium leading-[1.1]">{tL("Prix sur demande", "Price on request", "Precio bajo petición")}</p>
               )}
-              {alsoRent && (
+              {alsoSale && (
                 <p className="text-sm leading-snug text-[#655f56]">
-                  {tL("ou à louer à l’année :", "or long-term rent:", "o alquiler de larga duración:")}{" "}
-                  <span className="whitespace-nowrap font-semibold text-[#211f1b]">{formatPrice(alsoRent, devise, lang)} {tL("/ mois", "/ month", "/ mes")}</span>
+                  {tL("ou à vendre :", "or for sale:", "o en venta:")}{" "}
+                  <span className="whitespace-nowrap font-semibold text-[#211f1b]">{formatPrice(alsoSale, devise, lang)}</span>
                 </p>
               )}
             </div>

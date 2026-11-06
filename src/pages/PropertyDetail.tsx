@@ -164,11 +164,12 @@ const PropertyDetail = () => {
 
   const alternates = Object.fromEntries(translatedLangs.map((l: Lang) => [l, localizePath(propertyPath(property), l)]));
 
-  // One price line per service offered (the service itself is shown once, on the photo).
+  // One price line per service offered. Agency rule: rent first, the sale price below it.
   const prices = ([
-    ["vente", property.prix_vente, null, tL("Prix de vente", "Sale price", "Precio de venta")],
     ["location-longue-duree", property.prix_location_longue, tL("/ mois", "/ month", "/ mes"), tL("Loyer mensuel", "Monthly rent", "Alquiler mensual")],
+    ["sous-location", property.services.length > 1 ? property.prix : null, tL("/ mois", "/ month", "/ mes"), tL("Sous-location", "Sublease", "Subarriendo")],
     ["location-courte-duree", property.prix_location_courte, tL("/ nuit", "/ night", "/ noche"), tL("Prix par nuit", "Price per night", "Precio por noche")],
+    ["vente", property.prix_vente, null, tL("Prix de vente", "Sale price", "Precio de venta")],
   ] as [BienService, number | null, string | null, string][])
     .filter(([service, amount]) => property.services.includes(service) && amount)
     .map(([service, amount, suffix, label]) => ({ service, amount: amount as number, suffix, label }));
