@@ -534,7 +534,14 @@ html.lenis body {
   from { opacity: 0; transform: translate3d(0, 14px, 0); }
   to   { opacity: 1; transform: none; }
 }
-.anim-page-enter { animation: anim-fade-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+/* Page change: opacity only. This wrapper contains the fixed header; a transform animation on it
+   (even one ending on "none") makes it the header's containing block in Chrome, and the header
+   then scrolls away with the page. */
+@keyframes anim-page-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.anim-page-enter { animation: anim-page-fade 0.45s cubic-bezier(0.16, 1, 0.3, 1) backwards; }
 /* Hero and page titles: a short CSS entrance that needs no JavaScript. */
 .anim-enter { animation: anim-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
 

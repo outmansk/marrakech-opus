@@ -95,7 +95,25 @@ export function useProperties(filters?: PropertyFilters) {
 
 // ─── useProperty ───────────────────────────────────────────────────────────
 export function useProperty(id: string | null) {
-  return useQuery(propertyQueryOptions(id));
+  const queryClient = useQueryClient();
+  return useQuery({
+    ...propertyQueryOptions(id),
+    // Opening a property from the catalogue: start from the row already in a cached list (pre-rendered
+    // or fetched), so the page still shows it when Supabase does not answer. Marked stale, it is
+    // refetched at once; on error React Query keeps this data.
+    initialData: () => propertyFromCachedLists(queryClient, id),
+    initialDataUpdatedAt: 0,
+  });
+}
+
+function propertyFromCachedLists(queryClient: ReturnType<typeof useQueryClient>, id: string | null): Bien | undefined {
+  if (!id) return undefined;
+  for (const [, list] of queryClient.getQueriesData<Bien[] | Bien>({ queryKey: [QUERY_KEY] })) {
+    if (!Array.isArray(list)) continue;
+    const hit = list.find((property) => property.id === id || property.slug === id);
+    if (hit) return hit;
+  }
+  return undefined;
 }
 
 // ─── useCreateProperty ─────────────────────────────────────────────────────
